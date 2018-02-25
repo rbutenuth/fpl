@@ -1,0 +1,38 @@
+package de.codecentric.fpl.datatypes;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+
+import org.junit.Test;
+
+import de.codecentric.fpl.AbstractFplTest;
+import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.parser.ParseException;
+
+public class CurryingTest extends AbstractFplTest {
+    @Test
+    public void testNoArguments() throws ParseException, IOException, EvaluationException {
+        // Result should be the function itself
+        Function f = (Function) evaluate("plus", "( + )");
+        assertEquals(2, f.getMinimumNumberOfParameters());
+        assertTrue(scope.get("+") == f);
+    }
+
+    @Test
+    public void testOneMissingArgument() throws ParseException, IOException, EvaluationException {
+        evaluate("plus", "(set plus3 ( + 3 ))");
+        Function f = (Function)scope.get("plus3");
+        assertEquals(1, f.getMinimumNumberOfParameters());
+        String[] pn = f.getParameterNames();
+        assertEquals(2, pn.length);
+        assertEquals("op2", pn[0]);
+        assertEquals("ops", pn[1]);
+        FplInteger i = (FplInteger)evaluate("plus3", "(plus3 4)");
+        assertEquals(7, i.getValue());
+    }
+
+    // TODO: test recursive currying, currying of a lisp function
+
+}

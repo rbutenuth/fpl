@@ -1,0 +1,122 @@
+
+(if nil (list 1 2 "foo") (list 3 4 "bar"))
+
+evaluates to:
+
+(3 4 "bar")
+
+
+(defun factorial (n)
+   (if (le n 1)
+      1
+      (* n (factorial (- n 1)))
+   )
+)
+
+(factorial 2)
+
+Scope@1: 
+  n = 2
+
+   (if (le n 1)
+      1
+      (* n (factorial (- n 1)))
+   )
+
+if: cond then else
+Scope@2:
+  cond = (le n 1)
+  then = 1
+  else = (* n (factorial (- n 1)))
+
+cond auswerten mit pre = Scope@1: (le n 1) -> nil
+then ignorieren (wegen nil)
+else auswerten mit pre = Scope@1: (* n (factorial (- n 1)))
+
+a: Akkumulator
+b: Zähler
+c: Obergrenze
+
+(defun factorial (n)
+  (rrfac 1 1 n)
+)
+
+(defun rrfac (a b c)
+   (if (lt b c)
+      (rrfac (* a (+ b 1)) (+ b 1) c)
+      a
+   )
+)
+
+
+Scope@0: Global scope
+
+(rrfac 1 1 2)
+Scope@1
+   a = {Scope@0 1}
+   b = {Scope@0 1}
+   c = {Scope@0 2}
+
+   (if (lt b c)
+      (rrfac (* a (+ b 1)) (+ b 1) c)
+      a
+   )
+
+(if cond then else) 
+Scope@2:
+   cond = {Scope@1 (lt b c)}
+   then = {Scope@1 (rrfac (* a (+ b 1)) (+ b 1) c)}
+   else = {Scope@1 1}
+
+
+(lt b c) -> (lt {Scope@0 1} {Scope@0 2}) -> (lt 1 2) -> 1 (entspricht true) 
+also then ausführen: (rrfac (* a (+ b 1)) (+ b 1) c)
+Scope@3
+   a = {Scope@1 (* a (+ b 1))}
+   b = {Scope@1 (+ b 1)} 
+   c = {Scope@1 c}
+
+   (if (lt b c)
+      (rrfac (* a (+ b 1)) (+ b 1) c)
+      a
+   )
+
+(if cond then else) 
+Scope@4:
+   cond = {Scope@3 (lt b c)}
+   then = {Scope@3 (rrfac (* a (+ b 1)) (+ b 1) c)}
+   else = {Scope@3 a}
+
+(lt b c) -> (lt {Scope@3 b} {Scope@3 c})
+         -> (lt {Scope@1 (+ b 1)} {Scope@1 c})
+         -> (lt (+ 1 1) 2)
+         -> nil (enspricht false)
+also else ausführen:
+{Scope@3 a} -> {Scope@1 (* a (+ b 1))}
+            -> (* {Scope@0 1} (+ {Scope@0 1} 1))
+            -> (* 1 (+ 1 1))
+            -> (* 1 2)
+            -> 2
+
+
+Ggf. weitere Tools einbinden:
+- http://www.tutego.de/blog/javainsel/2017/07/jax-rs-mit-jersey-teil-1-restful-web-services/
+- https://github.com/jline/jline3/
+
+
+Notepad++ Scripte:
+
+Selection per http put versenden:
+
+set CURL_EXE = C:\Program Files\Git\mingw64\bin\curl.exe
+set TEMP_FILE = $(SYS.TEMP)\npp_sel.txt
+SEL_SAVETO $(TEMP_FILE)
+"$(CURL_EXE)" -s --user fred:feuerstein -X POST http://localhost:8080/java --data-binary @"$(TEMP_FILE)"
+
+
+Gesamte Datei speichern und versenden:
+
+set CURL_EXE = C:\Program Files\Git\mingw64\bin\curl.exe
+NPP_SAVE
+"$(CURL_EXE)" -s --user fred:feuerstein -X POST http://localhost:8080/java --data-binary @"$(FULL_CURRENT_PATH)"
+
