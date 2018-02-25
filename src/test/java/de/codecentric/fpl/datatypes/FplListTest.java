@@ -15,7 +15,7 @@ import org.junit.Test;
 import de.codecentric.fpl.EvaluationException;
 
 public class FplListTest {
-	// TODO: More operations: remove(int index), insert(element, index), set(element, index)
+	// TODO: More operations: remove(int index), insert(FplValue value, int index), set(FplValue value, int index)
 	
 	@Test
 	public void testEmpty() throws EvaluationException {
