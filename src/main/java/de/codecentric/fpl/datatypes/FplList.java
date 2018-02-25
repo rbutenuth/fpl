@@ -115,47 +115,106 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			arraycopy(buckets, 1, bucketsDst, 0, bucketsDst.length);
 			return new FplList(bucketsDst);
 		}
-		if (buckets[0].length > BASE_SIZE + BASE_SIZE * FACTOR) {
-			int count = buckets[0].length - 1;
-			int additionalBuckets = -1;
-			int bucketFillSize = BASE_SIZE / 2;
-			while (count > 0) {
-				additionalBuckets++;
-				count -= bucketFillSize;
-				bucketFillSize *= FACTOR;
-			}
-			
-			FplValue[][] bucketsDst = new FplValue[buckets.length + additionalBuckets][];
-			bucketFillSize = BASE_SIZE / 2;
-			bucketsDst[0] = new FplValue[bucketFillSize];
-			arraycopy(buckets[0], 1, bucketsDst[0], 0, bucketFillSize);
-
-			int dstIdx = 1;
-			count = buckets[0].length - 1 - bucketFillSize;
-			int inBucketIdx = bucketFillSize + 1;
-			while (count > 0) {
-				bucketFillSize *= FACTOR;
-				if (bucketFillSize > count) {
-					bucketFillSize = count;
-				}
-				bucketsDst[dstIdx] = new FplValue[bucketFillSize];
-				arraycopy(buckets[0], inBucketIdx, bucketsDst[dstIdx], 0, bucketFillSize);
-				dstIdx++;
-				inBucketIdx += bucketFillSize;
-				count -= bucketFillSize;
-			}
-			int srcIdx = 1;
-			while (dstIdx < bucketsDst.length) {
-				bucketsDst[dstIdx++] = buckets[srcIdx++]; 
-			}
-			return new FplList(bucketsDst);
-		} else {
+		if (buckets[0].length <= BASE_SIZE + BASE_SIZE * FACTOR) {
 			FplValue[][] bucketsDst = new FplValue[buckets.length][];
 			arraycopy(buckets, 1, bucketsDst, 1, bucketsDst.length - 1);
 			bucketsDst[0] = new FplValue[buckets[0].length - 1];
 			arraycopy(buckets[0], 1, bucketsDst[0], 0, bucketsDst[0].length);
 			return new FplList(bucketsDst);
 		}
+		// First bucket is too large, split it according "ideal" shape
+		int count = buckets[0].length - 1;
+		int additionalBuckets = -1;
+		int bucketFillSize = BASE_SIZE / 2;
+		while (count > 0) {
+			additionalBuckets++;
+			count -= bucketFillSize;
+			bucketFillSize *= FACTOR;
+		}
+
+		FplValue[][] bucketsDst = new FplValue[buckets.length + additionalBuckets][];
+		bucketFillSize = BASE_SIZE / 2;
+		bucketsDst[0] = new FplValue[bucketFillSize];
+		arraycopy(buckets[0], 1, bucketsDst[0], 0, bucketFillSize);
+
+		int dstIdx = 1;
+		count = buckets[0].length - 1 - bucketFillSize;
+		int inBucketIdx = bucketFillSize + 1;
+		while (count > 0) {
+			bucketFillSize *= FACTOR;
+			if (bucketFillSize > count) {
+				bucketFillSize = count;
+			}
+			bucketsDst[dstIdx] = new FplValue[bucketFillSize];
+			arraycopy(buckets[0], inBucketIdx, bucketsDst[dstIdx], 0, bucketFillSize);
+			dstIdx++;
+			inBucketIdx += bucketFillSize;
+			count -= bucketFillSize;
+		}
+		int srcIdx = 1;
+		while (dstIdx < bucketsDst.length) {
+			bucketsDst[dstIdx++] = buckets[srcIdx++];
+		}
+		return new FplList(bucketsDst);
+	}
+
+	/**
+	 * @return Sublist without the last element.
+	 * @throws EvaluationException
+	 *             If list is empty.
+	 */
+	public FplList removeLast() throws EvaluationException {
+		checkNotEmpty();
+		if (buckets.length == 1 && buckets[0].length == 1) {
+			return EMPTY_LIST;
+		}
+		int lastIdx = buckets.length - 1;
+		if (buckets[lastIdx].length == 1) {
+			FplValue[][] bucketsDst = new FplValue[buckets.length - 1][];
+			arraycopy(buckets, 0, bucketsDst, 0, bucketsDst.length);
+			return new FplList(bucketsDst);
+		}
+		if (buckets[lastIdx].length <= BASE_SIZE + BASE_SIZE * FACTOR) {
+			FplValue[][] bucketsDst = new FplValue[buckets.length][];
+			arraycopy(buckets, 0, bucketsDst, 0, bucketsDst.length - 1);
+			bucketsDst[lastIdx] = new FplValue[buckets[lastIdx].length - 1];
+			arraycopy(buckets[0], 0, bucketsDst[0], 0, bucketsDst[lastIdx].length);
+			return new FplList(bucketsDst);
+		}
+		int count = buckets[lastIdx].length - 1;
+		int additionalBuckets = -1;
+		int bucketFillSize = BASE_SIZE / 2;
+		while (count > 0) {
+			additionalBuckets++;
+			count -= bucketFillSize;
+			bucketFillSize *= FACTOR;
+		}
+
+		FplValue[][] bucketsDst = new FplValue[buckets.length + additionalBuckets][];
+		bucketFillSize = BASE_SIZE / 2;
+		int dstIdx = buckets.length + additionalBuckets - 1;
+		int inBucketIdx = buckets[lastIdx].length - bucketFillSize - 1;
+		bucketsDst[dstIdx] = new FplValue[bucketFillSize];
+		arraycopy(buckets[lastIdx], inBucketIdx, bucketsDst[dstIdx], 0, bucketFillSize);
+
+		dstIdx--;
+		count = buckets[lastIdx].length - 1 - bucketFillSize;
+		while (count > 0) {
+			bucketFillSize *= FACTOR;
+			if (bucketFillSize > count) {
+				bucketFillSize = count;
+			}
+			inBucketIdx -= bucketFillSize;
+			bucketsDst[dstIdx] = new FplValue[bucketFillSize];
+			arraycopy(buckets[lastIdx], inBucketIdx, bucketsDst[dstIdx], 0, bucketFillSize);
+			dstIdx--;
+			count -= bucketFillSize;
+		}
+		lastIdx--;
+		while (dstIdx >= 0) {
+			bucketsDst[dstIdx--] = buckets[lastIdx--];
+		}
+		return new FplList(bucketsDst);
 	}
 
 	/**
