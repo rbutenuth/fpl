@@ -36,7 +36,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	private FplList(FplValue[][] data, int size) {
 		int realSize = size >= 0 ? size : size(data);
 		if (data.length > 3 && (1 << data.length) > realSize) {
-			buckets = reshapedSubList(data, 0, realSize);
+			buckets = reshape(data, realSize);
 		} else {
 			buckets = data;
 		}
@@ -105,25 +105,56 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 * @throws EvaluationException
 	 *             If list is empty.
 	 */
-	public FplList rest() throws EvaluationException {
+	public FplList removeFirst() throws EvaluationException {
 		checkNotEmpty();
 		if (buckets.length == 1 && buckets[0].length == 1) {
 			return EMPTY_LIST;
+		}
+		if (buckets[0].length == 1) {
+			FplValue[][] bucketsDst = new FplValue[buckets.length - 1][];
+			arraycopy(buckets, 1, bucketsDst, 0, bucketsDst.length);
+			return new FplList(bucketsDst);
+		}
+		if (buckets[0].length > BASE_SIZE + BASE_SIZE * FACTOR) {
+			int count = buckets[0].length - 1;
+			int additionalBuckets = -1;
+			int bucketFillSize = BASE_SIZE / 2;
+			while (count > 0) {
+				additionalBuckets++;
+				count -= bucketFillSize;
+				bucketFillSize *= FACTOR;
+			}
+			
+			FplValue[][] bucketsDst = new FplValue[buckets.length + additionalBuckets][];
+			bucketFillSize = BASE_SIZE / 2;
+			bucketsDst[0] = new FplValue[bucketFillSize];
+			arraycopy(buckets[0], 1, bucketsDst[0], 0, bucketFillSize);
+
+			int dstIdx = 1;
+			count = buckets[0].length - 1 - bucketFillSize;
+			int inBucketIdx = bucketFillSize + 1;
+			while (count > 0) {
+				bucketFillSize *= FACTOR;
+				if (bucketFillSize > count) {
+					bucketFillSize = count;
+				}
+				bucketsDst[dstIdx] = new FplValue[bucketFillSize];
+				arraycopy(buckets[0], inBucketIdx, bucketsDst[dstIdx], 0, bucketFillSize);
+				dstIdx++;
+				inBucketIdx += bucketFillSize;
+				count -= bucketFillSize;
+			}
+			int srcIdx = 1;
+			while (dstIdx < bucketsDst.length) {
+				bucketsDst[dstIdx++] = buckets[srcIdx++]; 
+			}
+			return new FplList(bucketsDst);
 		} else {
-			if (buckets[0].length == 1) {
-				FplValue[][] bucketsDst = new FplValue[buckets.length - 1][];
-				arraycopy(buckets, 1, bucketsDst, 0, bucketsDst.length);
-				return new FplList(bucketsDst);
-			}
-			if (buckets[0].length > BASE_SIZE + BASE_SIZE * FACTOR) {
-				return new FplList(reshapedSubList(buckets, 1, size(buckets)));
-			} else {
-				FplValue[][] bucketsDst = new FplValue[buckets.length][];
-				arraycopy(buckets, 1, bucketsDst, 1, bucketsDst.length - 1);
-				bucketsDst[0] = new FplValue[buckets[0].length - 1];
-				arraycopy(buckets[0], 1, bucketsDst[0], 0, bucketsDst[0].length);
-				return new FplList(bucketsDst);
-			}
+			FplValue[][] bucketsDst = new FplValue[buckets.length][];
+			arraycopy(buckets, 1, bucketsDst, 1, bucketsDst.length - 1);
+			bucketsDst[0] = new FplValue[buckets[0].length - 1];
+			arraycopy(buckets[0], 1, bucketsDst[0], 0, bucketsDst[0].length);
+			return new FplList(bucketsDst);
 		}
 	}
 
@@ -500,10 +531,9 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		return buckets.length;
 	}
 
-	private FplValue[][] reshapedSubList(FplValue[][] bucketsSrc, int beginIndex, int endIndex) {
+	private FplValue[][] reshape(FplValue[][] bucketsSrc, int size) {
 		// TODO: Optimization: Don't reshape all buckets, only from left and right until
 		// 1/4 (each) of elements is reached.
-		int size = endIndex - beginIndex;
 		int numBuckets = 2;
 		int bucketSize = BASE_SIZE;
 		int sizeInBuckets = bucketSize;
@@ -526,20 +556,10 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		bucketsDst[i] = new FplValue[rest];
 		int srcIdx = 0, inBucketSrcIdx = 0, dstIdx = 0, inBucketDstIdx = 0;
 
-		// Skip entries up to beginIndex
-		int skip = beginIndex;
-		while (skip > 0) {
-			int length = Math.min(bucketsSrc[srcIdx].length - inBucketSrcIdx, skip);
-			inBucketSrcIdx += length;
-			skip -= length;
-			if (inBucketSrcIdx == bucketsSrc[srcIdx].length) {
-				inBucketSrcIdx = 0;
-				srcIdx++;
-			}
-		}
 		// Copy entries until bucketsDst is filled completely
 		while (srcIdx < bucketsSrc.length) {
-			int length = Math.min(bucketsSrc[srcIdx].length - inBucketSrcIdx, bucketsDst[dstIdx].length - inBucketDstIdx);
+			int length = Math.min(bucketsSrc[srcIdx].length - inBucketSrcIdx,
+					bucketsDst[dstIdx].length - inBucketDstIdx);
 			arraycopy(bucketsSrc[srcIdx], inBucketSrcIdx, bucketsDst[dstIdx], inBucketDstIdx, length);
 			inBucketSrcIdx += length;
 			if (inBucketSrcIdx == bucketsSrc[srcIdx].length) {

@@ -72,7 +72,7 @@ public class ListFunctions {
 		scope.put(new Function("rest", comment("Return list without the first element."), false, "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				return evaluateToList(scope, parameters[0]).rest();
+				return evaluateToList(scope, parameters[0]).removeFirst();
 			}
 		});
 
