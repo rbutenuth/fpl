@@ -1,4 +1,4 @@
-package de.codecentric.fpl;
+package de.codecentric.fpl.benchmark;
 
 public class StopWatch {
 	private boolean running;
