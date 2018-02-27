@@ -18,6 +18,11 @@ public class ListBenchmark {
 
 		printResults("ArrayDeque, construct", run(JavaUtilBenchmark.createArrayDequeAdd()));
 		printResults("ArrayDeque, deconstruct", run(JavaUtilBenchmark.createArrayDequeDeconstruct()));
+
+		printResults("FplList, construct", run(FplListBenchmark.createFplistAdd()));
+		printResults("FplList, get all", run(FplListBenchmark.createFplListGetAll()));
+		printResults("FplList, deconstruct", run(FplListBenchmark.createFplListDeconstruct()));
+
 	}
 
 	private static List<Result> run(Runner candidate) {
@@ -41,10 +46,7 @@ public class ListBenchmark {
 		StringBuilder line1 = new StringBuilder();
 		StringBuilder line2 = new StringBuilder();
 		line1.append(title).append('\t');
-		for (int i = 0; i < title.length(); i++) {
-			line2.append(' ');
-		}
-		line2.append('\t');
+		line2.append(title).append('\t');
 		for (Result r : results) {
 			line1.append(r.getProblemSize()).append('\t');
 			line2.append(r.getMillis()).append('\t');

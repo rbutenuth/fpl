@@ -309,11 +309,14 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			}
 			int sourceLength = srcIdx < bucketsSrc.length ? bucketsSrc[srcIdx].length : 0;
 			if (carryLength + sourceLength >= maxSize) {
-				if (carryLength > minSize) {
-					bucketsDst[dstIdx] = new FplValue[minSize];
-					arraycopy(carryBucket, carryStart, bucketsDst[dstIdx], 0, minSize);
-					carryLength -= minSize;
-					carryStart += minSize;
+				// The second part (sourceLengeh > maxSize) avoids the splitting of a large block.
+				// Results in one more bucket, but avoids copying values around.
+				if (carryLength > minSize || sourceLength > maxSize) {
+					int copyLength = Math.min(carryLength, minSize);
+					bucketsDst[dstIdx] = new FplValue[copyLength];
+					arraycopy(carryBucket, carryStart, bucketsDst[dstIdx], 0, copyLength);
+					carryLength -= copyLength;
+					carryStart += copyLength;
 					dstIdx++;
 				} else {
 					// carry fits completely, source bucket not
@@ -422,10 +425,13 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			}
 			int sourceLength = srcIdx >= 0 ? bucketsSrc[srcIdx].length : 0;
 			if (carryLength + sourceLength >= maxSize) {
-				if (carryLength > minSize) {
-					bucketsDst[dstIdx] = new FplValue[minSize];
-					arraycopy(carryBucket, carryStart + carryLength - minSize, bucketsDst[dstIdx], 0, minSize);
-					carryLength -= minSize;
+				// The second part (sourceLengeh > maxSize) avoids the splitting of a large block.
+				// Results in one more bucket, but avoids copying values around.
+				if (carryLength > minSize || sourceLength > maxSize) {
+					int copyLength = Math.min(carryLength, minSize);
+					bucketsDst[dstIdx] = new FplValue[copyLength];
+					arraycopy(carryBucket, carryStart + carryLength - copyLength, bucketsDst[dstIdx], 0, copyLength);
+					carryLength -= copyLength;
 					dstIdx--;
 				} else {
 					// carry fits completely, source bucket not

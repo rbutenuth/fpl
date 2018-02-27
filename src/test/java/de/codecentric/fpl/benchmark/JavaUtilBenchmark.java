@@ -13,9 +13,9 @@ public class JavaUtilBenchmark {
 
 			@Override
 			public void run() {
-				List<Integer> list = new ArrayList<>();
+				List<Long> list = new ArrayList<>();
 				for (int i = 0; i < problemSize; i++) {
-					list.add(Integer.valueOf(i));
+					list.add(Long.valueOf(i));
 				}
 			}
 		};
@@ -23,15 +23,15 @@ public class JavaUtilBenchmark {
 
 	public static Runner createArrayListGetAll() {
 		return new AbstractRunner() {
-			private List<Integer> list;
-			private Sink<Integer> sink;
+			private List<Long> list;
+			private Sink<Long> sink;
 
 			@Override
 			public void prepare(int problemSize) {
 				super.prepare(problemSize);
 				list = new ArrayList<>(problemSize);
 				for (int i = 0; i < problemSize; i++) {
-					list.add(Integer.valueOf(i));
+					list.add(Long.valueOf(i));
 				}
 				sink = new Sink<>();
 			}
@@ -54,15 +54,15 @@ public class JavaUtilBenchmark {
 
 	public static Runner createArrayListDeconstruct() {
 		return new AbstractRunner() {
-			private List<Integer> list;
-			private Sink<Integer> sink;
+			private List<Long> list;
+			private Sink<Long> sink;
 
 			@Override
 			public void prepare(int problemSize) {
 				super.prepare(problemSize);
 				list = new ArrayList<>(problemSize);
 				for (int i = 0; i < problemSize; i++) {
-					list.add(Integer.valueOf(i));
+					list.add(Long.valueOf(i));
 				}
 				sink = new Sink<>();
 			}
@@ -88,9 +88,9 @@ public class JavaUtilBenchmark {
 
 			@Override
 			public void run() {
-				List<Integer> list = new LinkedList<>();
+				List<Long> list = new LinkedList<>();
 				for (int i = 0; i < problemSize; i++) {
-					list.add(Integer.valueOf(i));
+					list.add(Long.valueOf(i));
 				}
 			}
 		};
@@ -98,15 +98,15 @@ public class JavaUtilBenchmark {
 
 	public static Runner createLinkedListGetAll() {
 		return new AbstractRunner() {
-			private List<Integer> list;
-			private Sink<Integer> sink;
+			private List<Long> list;
+			private Sink<Long> sink;
 
 			@Override
 			public void prepare(int problemSize) {
 				super.prepare(problemSize);
 				list = new LinkedList<>();
 				for (int i = 0; i < problemSize; i++) {
-					list.add(Integer.valueOf(i));
+					list.add(Long.valueOf(i));
 				}
 				sink = new Sink<>();
 			}
@@ -129,15 +129,15 @@ public class JavaUtilBenchmark {
 
 	public static Runner createLinkedListDeconstruct() {
 		return new AbstractRunner() {
-			private LinkedList<Integer> list;
-			private Sink<Integer> sink;
+			private LinkedList<Long> list;
+			private Sink<Long> sink;
 
 			@Override
 			public void prepare(int problemSize) {
 				super.prepare(problemSize);
 				list = new LinkedList<>();
 				for (int i = 0; i < problemSize; i++) {
-					list.add(Integer.valueOf(i));
+					list.add(Long.valueOf(i));
 				}
 				sink = new Sink<>();
 			}
@@ -163,9 +163,9 @@ public class JavaUtilBenchmark {
 
 			@Override
 			public void run() {
-				Deque<Integer> deque = new ArrayDeque<>();
+				Deque<Long> deque = new ArrayDeque<>();
 				for (int i = 0; i < problemSize; i++) {
-					deque.add(Integer.valueOf(i));
+					deque.add(Long.valueOf(i));
 				}
 			}
 		};
@@ -173,15 +173,15 @@ public class JavaUtilBenchmark {
 
 	public static Runner createArrayDequeDeconstruct() {
 		return new AbstractRunner() {
-			private Deque<Integer> deque;
-			private Sink<Integer> sink;
+			private Deque<Long> deque;
+			private Sink<Long> sink;
 
 			@Override
 			public void prepare(int problemSize) {
 				super.prepare(problemSize);
 				deque = new ArrayDeque<>();
 				for (int i = 0; i < problemSize; i++) {
-					deque.add(Integer.valueOf(i));
+					deque.add(Long.valueOf(i));
 				}
 				sink = new Sink<>();
 			}

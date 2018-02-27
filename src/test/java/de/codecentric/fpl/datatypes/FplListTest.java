@@ -126,7 +126,6 @@ public class FplListTest {
 	public void testRemoveFirstSizeHundred() throws EvaluationException {
 		FplList list = create(0, 99);
 		FplList rest = list.removeFirst();
-		assertEquals(99, rest.size());
 		check(1, 99, rest);
 	}
 
@@ -134,7 +133,6 @@ public class FplListTest {
 	public void testRemoveFirstSizeFiftyAppendFifty() throws EvaluationException {
 		FplList list = create(0, 49).append(create(50, 99));
 		FplList rest = list.removeFirst();
-		assertEquals(99, rest.size());
 		check(1, 99, rest);
 	}
 
@@ -165,7 +163,6 @@ public class FplListTest {
 	public void testRemoveLastSizeHundred() throws EvaluationException {
 		FplList list = create(0, 99);
 		FplList rest = list.removeLast();
-		assertEquals(99, rest.size());
 		check(0, 98, rest);
 	}
 
@@ -173,7 +170,6 @@ public class FplListTest {
 	public void testRemoveLastSizeFiftyAppendFifty() throws EvaluationException {
 		FplList list = create(0, 49).append(create(50, 99));
 		FplList rest = list.removeLast();
-		assertEquals(99, rest.size());
 		check(0, 98, rest);
 	}
 
@@ -244,7 +240,6 @@ public class FplListTest {
 	public void testAddBigCarry() throws EvaluationException {
 		FplList list = create(0, 99).append(create(100, 199));
 		list = list.addAtEnd(value(200));
-		assertEquals(201, list.size());
 		check(0, 200, list);
 	}
 
@@ -252,8 +247,14 @@ public class FplListTest {
 	public void testAddOnLongArray() throws EvaluationException {
 		FplList list = create(0, 99);
 		list = list.addAtEnd(value(100));
-		assertEquals(101, list.size());
 		check(0, 100, list);
+	}
+
+	@Test
+	public void testAddOverflowInBigBucket() throws EvaluationException {
+		FplList list = create(0, 99).append(create(100, 107));
+		list = list.addAtEnd(value(108));
+		check(0, 108, list);
 	}
 
 	@Test
@@ -273,7 +274,6 @@ public class FplListTest {
 	public void testConsBigCarry() throws EvaluationException {
 		FplList list = create(1, 100).append(create(101, 200));
 		list = list.addAtStart(value(0));
-		assertEquals(201, list.size());
 		check(0, 200, list);
 	}
 
@@ -281,8 +281,14 @@ public class FplListTest {
 	public void testConsOnLongArray() throws EvaluationException {
 		FplList list = create(1, 100);
 		list = list.addAtStart(value(0));
-		assertEquals(101, list.size());
 		check(0, 100, list);
+	}
+
+	@Test
+	public void testConsOverflowInBigBucket() throws EvaluationException {
+		FplList list = create(1, 8).append(create(9, 108));
+		list = list.addAtStart(value(0));
+		check(0, 108, list);
 	}
 
 	@Test
@@ -325,7 +331,7 @@ public class FplListTest {
 	 * @param list List to check
 	 */
 	private void check(int start, int end, FplList list) throws EvaluationException {
-		//assertEquals(end - start, list.size());
+		assertEquals(end - start + 1, list.size());
 		Iterator<FplValue> iter = list.iterator();
 		int value = start;
 		while (iter.hasNext()) {
