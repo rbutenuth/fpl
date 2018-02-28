@@ -1,32 +1,67 @@
 package de.codecentric.fpl.benchmark;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 public class ListBenchmark {
-	private static int MAX_COUNT = 1048576;
+	private static int MAX_COUNT = 16 * 1048576;
 	private static long MAX_TIME = 1000L;
+	private static LinkedHashMap<String, ArrayList<Result>> results = new LinkedHashMap<>();
 
 	public static void main(String[] args) {
-		printResults("ArrayList, construct", run(JavaUtilBenchmark.createArrayListAdd()));
-		printResults("ArrayList, get all", run(JavaUtilBenchmark.createArrayListGetAll()));
-		printResults("ArrayList, deconstruct", run(JavaUtilBenchmark.createArrayListDeconstruct()));
+		for (int i = 0; i < 5; i++) {
+			System.out.println("Run " + i);
 
-		printResults("LinkedList, construct", run(JavaUtilBenchmark.createLinkedListAdd()));
-		printResults("LinkedList, get all", run(JavaUtilBenchmark.createLinkedListGetAll()));
-		printResults("LinkedList, deconstruct", run(JavaUtilBenchmark.createLinkedListDeconstruct()));
+			mergeResults("ArrayList, construct", run(JavaUtilBenchmark.createArrayListAdd()));
+			mergeResults("ArrayList, get all", run(JavaUtilBenchmark.createArrayListGetAll()));
+			//mergeResults("ArrayList, deconstruct", run(JavaUtilBenchmark.createArrayListDeconstruct()));
+			
+			//mergeResults("ArrayListSync, construct", run(JavaUtilBenchmark.createArrayListAddSynchronized()));
+			//mergeResults("ArrayListSync, get all", run(JavaUtilBenchmark.createArrayListGetAllSynchronized()));
+			//mergeResults("ArrayListSync, deconstruct", run(JavaUtilBenchmark.createArrayListDeconstructSynchronized()));
+			
+			//mergeResults("LinkedList, construct", run(JavaUtilBenchmark.createLinkedListAdd()));
+			//mergeResults("LinkedList, get all", run(JavaUtilBenchmark.createLinkedListGetAll()));
+			//mergeResults("LinkedList, deconstruct", run(JavaUtilBenchmark.createLinkedListDeconstruct()));
+			
+			//mergeResults("ArrayDeque, construct", run(JavaUtilBenchmark.createArrayDequeAdd()));
+			//mergeResults("ArrayDeque, deconstruct", run(JavaUtilBenchmark.createArrayDequeDeconstruct()));
+			
+			mergeResults("FplList, construct", run(FplListBenchmark.createFplistAdd()));
+			mergeResults("FplList, get all", run(FplListBenchmark.createFplListGetAll()));
+			mergeResults("FplList, deconstruct", run(FplListBenchmark.createFplListDeconstruct()));
+		}
 
-		printResults("ArrayDeque, construct", run(JavaUtilBenchmark.createArrayDequeAdd()));
-		printResults("ArrayDeque, deconstruct", run(JavaUtilBenchmark.createArrayDequeDeconstruct()));
-
-		printResults("FplList, construct", run(FplListBenchmark.createFplistAdd()));
-		printResults("FplList, get all", run(FplListBenchmark.createFplListGetAll()));
-		printResults("FplList, deconstruct", run(FplListBenchmark.createFplListDeconstruct()));
-
+		printAllResults();
 	}
 
-	private static List<Result> run(Runner candidate) {
-		List<Result> results = new ArrayList<>();
+	private static void mergeResults(String name, ArrayList<Result> run) {
+		System.out.println("Merge " + name);
+		ArrayList<Result> existingRun = results.get(name);
+		if (existingRun == null) {
+			results.put(name, run);
+		} else {
+			merge(existingRun, run);
+		}
+	}
+
+	private static void merge(ArrayList<Result> existingRun, ArrayList<Result> run) {
+		while (existingRun.size() > run.size()) {
+			existingRun.remove(existingRun.size() - 1);
+		}
+		for (int i = 0; i < existingRun.size(); i++) {
+			Result e = existingRun.get(i);
+			Result r = run.get(i);
+			if (r.getMillis() < e.getMillis()) {
+				e.setMillis(r.getMillis());
+			}
+		}
+	}
+
+	private static ArrayList<Result> run(Runner candidate) {
+		ArrayList<Result> results = new ArrayList<>();
 		for (int count = 1; count <= MAX_COUNT; count *= 4) {
 			StopWatch sw = new StopWatch();
 			candidate.prepare(count);
@@ -42,6 +77,12 @@ public class ListBenchmark {
 		return results;
 	}
 	
+	private static void printAllResults() {
+		for (Entry<String, ArrayList<Result>> entry : results.entrySet()) {
+			printResults(entry.getKey(), entry.getValue());
+		}
+	}
+
 	private static void printResults(String title, List<Result> results) {
 		StringBuilder line1 = new StringBuilder();
 		StringBuilder line2 = new StringBuilder();
@@ -58,7 +99,7 @@ public class ListBenchmark {
 	
 	private static class Result {
 		private final int problemSize;
-		private final long millis;
+		private long millis;
 		
 		public Result(int problemSize, long millis) {
 			this.problemSize = problemSize;
@@ -72,5 +113,9 @@ public class ListBenchmark {
 		public long getMillis() {
 			return millis;
 		}
+		
+		public void setMillis(long millis) {
+			this.millis = millis;
+		}	
 	}
 }

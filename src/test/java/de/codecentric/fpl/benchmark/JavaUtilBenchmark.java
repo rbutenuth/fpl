@@ -42,7 +42,7 @@ public class JavaUtilBenchmark {
 					sink.use(list.get(i));
 				}
 			}
-			
+
 			@Override
 			public void cleanup() {
 				super.cleanup();
@@ -73,7 +73,7 @@ public class JavaUtilBenchmark {
 					sink.use(list.remove(0));
 				}
 			}
-			
+
 			@Override
 			public void cleanup() {
 				super.cleanup();
@@ -82,7 +82,88 @@ public class JavaUtilBenchmark {
 			}
 		};
 	}
-	
+
+	public static Runner createArrayListAddSynchronized() {
+		return new AbstractRunner() {
+
+			@Override
+			public void run() {
+				List<Long> list = new ArrayList<>();
+				for (int i = 0; i < problemSize; i++) {
+					synchronized (list) {
+						list.add(Long.valueOf(i));
+					}
+				}
+			}
+		};
+	}
+
+	public static Runner createArrayListGetAllSynchronized() {
+		return new AbstractRunner() {
+			private List<Long> list;
+			private Sink<Long> sink;
+
+			@Override
+			public void prepare(int problemSize) {
+				super.prepare(problemSize);
+				list = new ArrayList<>(problemSize);
+				for (int i = 0; i < problemSize; i++) {
+					list.add(Long.valueOf(i));
+				}
+				sink = new Sink<>();
+			}
+
+			@Override
+			public void run() {
+				for (int i = 0; i < problemSize; i++) {
+					synchronized (list) {
+						sink.use(list.get(i));
+					}
+				}
+			}
+
+			@Override
+			public void cleanup() {
+				super.cleanup();
+				list = null;
+				sink = null;
+			}
+		};
+	}
+
+	public static Runner createArrayListDeconstructSynchronized() {
+		return new AbstractRunner() {
+			private List<Long> list;
+			private Sink<Long> sink;
+
+			@Override
+			public void prepare(int problemSize) {
+				super.prepare(problemSize);
+				list = new ArrayList<>(problemSize);
+				for (int i = 0; i < problemSize; i++) {
+					list.add(Long.valueOf(i));
+				}
+				sink = new Sink<>();
+			}
+
+			@Override
+			public void run() {
+				for (int i = 0; i < problemSize; i++) {
+					synchronized (list) {
+						sink.use(list.remove(0));
+					}
+				}
+			}
+
+			@Override
+			public void cleanup() {
+				super.cleanup();
+				list = null;
+				sink = null;
+			}
+		};
+	}
+
 	public static Runner createLinkedListAdd() {
 		return new AbstractRunner() {
 
@@ -117,7 +198,7 @@ public class JavaUtilBenchmark {
 					sink.use(list.get(i));
 				}
 			}
-			
+
 			@Override
 			public void cleanup() {
 				super.cleanup();
@@ -148,7 +229,7 @@ public class JavaUtilBenchmark {
 					sink.use(list.remove(0));
 				}
 			}
-			
+
 			@Override
 			public void cleanup() {
 				super.cleanup();
@@ -157,7 +238,7 @@ public class JavaUtilBenchmark {
 			}
 		};
 	}
-	
+
 	public static Runner createArrayDequeAdd() {
 		return new AbstractRunner() {
 
@@ -192,7 +273,7 @@ public class JavaUtilBenchmark {
 					sink.use(deque.pop());
 				}
 			}
-			
+
 			@Override
 			public void cleanup() {
 				super.cleanup();
@@ -200,5 +281,5 @@ public class JavaUtilBenchmark {
 				sink = null;
 			}
 		};
-	}	
+	}
 }

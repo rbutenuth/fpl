@@ -1,8 +1,5 @@
 package de.codecentric.fpl.benchmark;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplList;

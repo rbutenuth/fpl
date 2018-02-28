@@ -115,7 +115,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			arraycopy(buckets, 1, bucketsDst, 0, bucketsDst.length);
 			return new FplList(bucketsDst);
 		}
-		if (buckets[0].length <= BASE_SIZE + BASE_SIZE * FACTOR) {
+		if (buckets[0].length <= BASE_SIZE) {
 			FplValue[][] bucketsDst = new FplValue[buckets.length][];
 			arraycopy(buckets, 1, bucketsDst, 1, bucketsDst.length - 1);
 			bucketsDst[0] = new FplValue[buckets[0].length - 1];
