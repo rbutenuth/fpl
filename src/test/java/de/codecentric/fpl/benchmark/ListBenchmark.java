@@ -14,13 +14,12 @@ public class ListBenchmark {
 		for (int i = 0; i < 5; i++) {
 			System.out.println("Run " + i);
 
-			mergeResults("ArrayList, construct", run(JavaUtilBenchmark.createArrayListAdd()));
-			mergeResults("ArrayList, get all", run(JavaUtilBenchmark.createArrayListGetAll()));
-			//mergeResults("ArrayList, deconstruct", run(JavaUtilBenchmark.createArrayListDeconstruct()));
+			//mergeResults("ArrayList, construct", run(JavaUtilBenchmark.createArrayListAdd()));
+			//mergeResults("ArrayList, get all", run(JavaUtilBenchmark.arrayListGetAll()));
+			//mergeResults("ArrayList, iterator", run(JavaUtilBenchmark.arrayListIterator()));
+			//mergeResults("ArrayList, rec. join", run(JavaUtilBenchmark.createArrayListJoin()));
 			
-			//mergeResults("ArrayListSync, construct", run(JavaUtilBenchmark.createArrayListAddSynchronized()));
-			//mergeResults("ArrayListSync, get all", run(JavaUtilBenchmark.createArrayListGetAllSynchronized()));
-			//mergeResults("ArrayListSync, deconstruct", run(JavaUtilBenchmark.createArrayListDeconstructSynchronized()));
+			//mergeResults("ArrayList, deconstruct", run(JavaUtilBenchmark.createArrayListDeconstruct()));
 			
 			//mergeResults("LinkedList, construct", run(JavaUtilBenchmark.createLinkedListAdd()));
 			//mergeResults("LinkedList, get all", run(JavaUtilBenchmark.createLinkedListGetAll()));
@@ -29,9 +28,11 @@ public class ListBenchmark {
 			//mergeResults("ArrayDeque, construct", run(JavaUtilBenchmark.createArrayDequeAdd()));
 			//mergeResults("ArrayDeque, deconstruct", run(JavaUtilBenchmark.createArrayDequeDeconstruct()));
 			
-			mergeResults("FplList, construct", run(FplListBenchmark.createFplistAdd()));
-			mergeResults("FplList, get all", run(FplListBenchmark.createFplListGetAll()));
-			mergeResults("FplList, deconstruct", run(FplListBenchmark.createFplListDeconstruct()));
+			//mergeResults("FplList, construct", run(FplListBenchmark.createFplistAdd()));
+			mergeResults("FplList, rec. join", run(FplListBenchmark.createFplListJoin()));
+			//mergeResults("FplList, get all", run(FplListBenchmark.fplListGetAll()));
+			//mergeResults("FplList, iterator", run(FplListBenchmark.fplListIterator()));
+			//mergeResults("FplList, deconstruct", run(FplListBenchmark.createFplListDeconstruct()));
 		}
 
 		printAllResults();

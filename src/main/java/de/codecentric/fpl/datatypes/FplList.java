@@ -309,7 +309,8 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			}
 			int sourceLength = srcIdx < bucketsSrc.length ? bucketsSrc[srcIdx].length : 0;
 			if (carryLength + sourceLength >= maxSize) {
-				// The second part (sourceLengeh > maxSize) avoids the splitting of a large block.
+				// The second part (sourceLengeh > maxSize) avoids the splitting of a large
+				// block.
 				// Results in one more bucket, but avoids copying values around.
 				if (carryLength > minSize || sourceLength > maxSize) {
 					int copyLength = Math.min(carryLength, minSize);
@@ -425,7 +426,8 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			}
 			int sourceLength = srcIdx >= 0 ? bucketsSrc[srcIdx].length : 0;
 			if (carryLength + sourceLength >= maxSize) {
-				// The second part (sourceLengeh > maxSize) avoids the splitting of a large block.
+				// The second part (sourceLengeh > maxSize) avoids the splitting of a large
+				// block.
 				// Results in one more bucket, but avoids copying values around.
 				if (carryLength > minSize || sourceLength > maxSize) {
 					int copyLength = Math.min(carryLength, minSize);
@@ -492,6 +494,21 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			arraycopy(list.buckets, 0, b, buckets.length, list.buckets.length);
 			return new FplList(b, -1);
 		}
+	}
+
+	/**
+	 * Returns a portion of this list between the specified {@code fromIndex},
+	 * inclusive, and {@code toIndex}, exclusive. (If {@code fromIndex} and
+	 * {@code toIndex} are equal, the returned list is empty.)
+	 */
+	public FplList subList(int fromIndex, int toIndex) throws EvaluationException {
+		if (fromIndex > toIndex) {
+			throw new EvaluationException("fromIndex > toIndex");
+		}
+		if (fromIndex == toIndex) {
+			return EMPTY_LIST;
+		}
+		throw new EvaluationException("implement me");
 	}
 
 	/**

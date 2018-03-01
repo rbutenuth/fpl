@@ -325,6 +325,18 @@ public class FplListTest {
 		assertEquals(5, list.numberOfBuckets());
 	}
 	
+	@Test(expected = EvaluationException.class)
+	public void testSubListBadRange() throws EvaluationException {
+		FplList list = FplList.EMPTY_LIST;
+		list.subList(10, 0);
+	}
+	
+	@Test
+	public void testFromEqualsToResultsInEmpty() throws EvaluationException {
+		FplList list = create(0, 9);
+		assertEquals(0, list.subList(3, 3).size()); 
+	}
+	
 	/**
 	 * @param start First element
 	 * @param end Last element in list
