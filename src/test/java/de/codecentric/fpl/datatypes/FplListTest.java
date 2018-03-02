@@ -323,13 +323,50 @@ public class FplListTest {
 			check(0, (i + 1) * 5 - 1, list);
 		}
 		check(0, 49, list);
-		// TODO: assertEquals(5, list.numberOfBuckets());
+		// The "7" depends on BASE_SIZE and FACTOR in FplList
+		assertEquals(7, list.numberOfBuckets());
 	}
 	
 	@Test(expected = EvaluationException.class)
 	public void testSubListBadRange() throws EvaluationException {
 		FplList list = FplList.EMPTY_LIST;
 		list.subList(10, 0);
+	}
+	
+	@Test(expected = EvaluationException.class)
+	public void testSubListNegativeFrom() throws EvaluationException {
+		FplList list = FplList.EMPTY_LIST;
+		list.subList(-1, 3);
+	}
+	
+	@Test(expected = EvaluationException.class)
+	public void testSubListEndBeyondEndOfList() throws EvaluationException {
+		FplList list = create(1, 10);
+		list.subList(3, 12);
+	}
+	
+	@Test
+	public void testSubListOfShortList() throws EvaluationException {
+		FplList list = create(1, 10);
+		list = list.subList(3, 5);
+		check(4, 5, list);
+	}
+	
+	@Test
+	public void testSubListCompleteFromOneBucket() throws EvaluationException {
+		FplList list = create(1, 10);
+		list = list.subList(0, 10);
+		check(1, 10, list);
+	}
+	
+	@Test
+	public void testSubListCompleteFromSeveral() throws EvaluationException {
+		FplList list = FplList.EMPTY_LIST;
+		for (int i = 1; i <= 10; i++) {
+			list = list.addAtEnd(value(i));
+		}
+		list = list.subList(0, 10);
+		check(1, 10, list);
 	}
 	
 	@Test

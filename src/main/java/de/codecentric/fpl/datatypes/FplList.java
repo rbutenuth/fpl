@@ -17,7 +17,7 @@ import de.codecentric.fpl.data.Scope;
 public class FplList implements FplValue, Iterable<FplValue> {
 	public static final FplList EMPTY_LIST = new FplList();
 
-	private static final int BASE_SIZE = 6;
+	private static final int BASE_SIZE = 3;
 	private static final int FACTOR = 3;
 
 	private final FplValue[][] buckets;
@@ -35,7 +35,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	// With reshape, size < 0 means "unknown"
 	private FplList(FplValue[][] data, int size) {
 		int realSize = size >= 0 ? size : size(data);
-		if (data.length > 3 && (1 << data.length) > realSize) {
+		if (data.length > 3 && (1 << data.length) > realSize + 1) {
 			buckets = reshape(data, realSize);
 		} else {
 			buckets = data;
@@ -507,13 +507,57 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 * {@code toIndex} are equal, the returned list is empty.)
 	 */
 	public FplList subList(int fromIndex, int toIndex) throws EvaluationException {
+		if (fromIndex < 0) {
+			throw new EvaluationException("fromIndex < 0");
+		}
 		if (fromIndex > toIndex) {
 			throw new EvaluationException("fromIndex > toIndex");
 		}
 		if (fromIndex == toIndex) {
 			return EMPTY_LIST;
 		}
-		throw new EvaluationException("implement me");
+		int bucketFromIdx = 0;
+		int count = 0;
+		int lastCount = 0;
+		while (count + buckets[bucketFromIdx].length <= fromIndex) {
+			lastCount = count;
+			count += buckets[bucketFromIdx].length;
+			bucketFromIdx++;
+			if (bucketFromIdx >= buckets.length) {
+				throw new EvaluationException("fromIndex >= size");
+			}
+		}
+		int inBucketFromIdx = fromIndex - count;
+
+		int bucketToIdx = bucketFromIdx;
+		count = lastCount;
+		while (count + buckets[bucketToIdx].length <= toIndex - 1) {
+			count += buckets[bucketToIdx].length;
+			bucketToIdx++;
+			if (bucketToIdx >= buckets.length) {
+				throw new EvaluationException("toIndex >= size + 1");
+			}
+		}
+		int inBucketToIdx = toIndex - 1 - count;
+
+		if (bucketFromIdx == bucketToIdx) {
+			return subList(buckets[bucketFromIdx], inBucketFromIdx, inBucketToIdx);
+		}
+
+		boolean firstBucketComplete = inBucketFromIdx == 0;
+		boolean lastBucketComplete = inBucketToIdx == buckets[bucketToIdx].length - 1;
+		return null; // new FplList(bucketsDst);
+	}
+
+	private FplList subList(FplValue[] fplValues, int first, int last) {
+		int count = last - first + 1;
+		if (count <= BASE_SIZE) {
+			FplValue[][] b = new FplValue[1][];
+			b[0] = new FplValue[count];
+			arraycopy(fplValues, first, b[0], 0, count);
+			return new FplList(b);
+		}
+		return null;
 	}
 
 	/**
