@@ -28,11 +28,13 @@ public class ListBenchmark {
 			//mergeResults("ArrayDeque, construct", run(JavaUtilBenchmark.createArrayDequeAdd()));
 			//mergeResults("ArrayDeque, deconstruct", run(JavaUtilBenchmark.createArrayDequeDeconstruct()));
 			
-			//mergeResults("FplList, construct", run(FplListBenchmark.createFplistAdd()));
-			mergeResults("FplList, rec. join", run(FplListBenchmark.createFplListJoin()));
+			mergeResults("FplList, construct", run(FplListBenchmark.createFplistAdd()));
+			//mergeResults("FplList, rec. join", run(FplListBenchmark.createFplListJoin()));
 			//mergeResults("FplList, get all", run(FplListBenchmark.fplListGetAll()));
 			//mergeResults("FplList, iterator", run(FplListBenchmark.fplListIterator()));
 			//mergeResults("FplList, deconstruct", run(FplListBenchmark.createFplListDeconstruct()));
+			
+			//mergeResults("Clojure Vector, cons", run(ClojureBenchmark.createPersistentVectorCons()));
 		}
 
 		printAllResults();

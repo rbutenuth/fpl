@@ -17,8 +17,8 @@ import de.codecentric.fpl.data.Scope;
 public class FplList implements FplValue, Iterable<FplValue> {
 	public static final FplList EMPTY_LIST = new FplList();
 
-	private static final int BASE_SIZE = 8;
-	private static final int FACTOR = 4;
+	private static final int BASE_SIZE = 6;
+	private static final int FACTOR = 3;
 
 	private final FplValue[][] buckets;
 
@@ -287,7 +287,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			FplValue[] carryBucket, int carryStart, int carryLength, int maxSize) {
 		int minSize;
 		// Copy with potential carry
-		while (carryLength != 0 || srcIdx < bucketsSrc.length) {
+		while (carryLength != 0) {
 			maxSize *= FACTOR;
 			minSize = maxSize / 2;
 			while (carryLength >= maxSize) {
@@ -339,10 +339,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 						arraycopy(bucketsSrc[srcIdx], 0, bucketsDst[dstIdx], carryLength, sourceLength);
 						carryLength = 0;
 					} else {
-						// The following line is the reason for this complicated method: When we don't
-						// have to handle any more carry, just copy *the reference* and not *the
-						// content*
-						// of the array: Fast and memory preserving!
 						bucketsDst[dstIdx] = bucketsSrc[srcIdx];
 					}
 				} else {
@@ -353,6 +349,12 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				srcIdx++;
 				dstIdx++;
 			}
+		}
+		while (srcIdx < bucketsSrc.length) {
+			if (dstIdx == bucketsDst.length) {
+				bucketsDst = copyOf(bucketsDst, bucketsDst.length + 1);
+			}
+			bucketsDst[dstIdx++] = bucketsSrc[srcIdx++];
 		}
 
 		return new FplList(bucketsDst);
@@ -403,7 +405,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			FplValue[] carryBucket, int carryStart, int carryLength, int maxSize) {
 		int minSize;
 		// Copy with potential carry
-		while (carryLength != 0 || srcIdx >= 0) {
+		while (carryLength != 0) {
 			maxSize *= FACTOR;
 			minSize = maxSize / 2;
 			while (carryLength >= maxSize) {
@@ -456,10 +458,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 						arraycopy(carryBucket, carryStart, bucketsDst[dstIdx], sourceLength, carryLength);
 						carryLength = 0;
 					} else {
-						// The following line is the reason for this complicated method: When we don't
-						// have to handle any more carry, just copy *the reference* and not *the
-						// content*
-						// of the array: Fast and memory preserving!
 						bucketsDst[dstIdx] = bucketsSrc[srcIdx];
 					}
 				} else {
@@ -470,6 +468,13 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				srcIdx--;
 				dstIdx--;
 			}
+		}
+		while (srcIdx >= 0) {
+			if (dstIdx < 0) {
+				bucketsDst = incrementSizeLeft(bucketsDst);
+				dstIdx = 0;
+			}
+			bucketsDst[dstIdx--] = bucketsSrc[srcIdx--];
 		}
 
 		return new FplList(bucketsDst);
@@ -630,16 +635,18 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int rest = size;
 		int i = 0, j = numBuckets - 1;
 		while (i < j) {
-			bucketsDst[i++] = new FplValue[bucketSize / 2];
-			bucketsDst[j--] = new FplValue[bucketSize / 2];
-			rest -= bucketSize;
+			bucketsDst[i] = new FplValue[bucketSize / 2];
+			bucketsDst[j] = new FplValue[bucketSize / 2];
+			rest -= bucketsDst[i].length + bucketsDst[j].length;
 			bucketSize *= FACTOR;
+			i++;
+			j--;
 		}
 		bucketsDst[i] = new FplValue[rest];
 		int srcIdx = 0, inBucketSrcIdx = 0, dstIdx = 0, inBucketDstIdx = 0;
 
 		// Copy entries until bucketsDst is filled completely
-		while (srcIdx < bucketsSrc.length) {
+		while (srcIdx < bucketsSrc.length && dstIdx < bucketsDst.length) {
 			int length = Math.min(bucketsSrc[srcIdx].length - inBucketSrcIdx,
 					bucketsDst[dstIdx].length - inBucketDstIdx);
 			arraycopy(bucketsSrc[srcIdx], inBucketSrcIdx, bucketsDst[dstIdx], inBucketDstIdx, length);
