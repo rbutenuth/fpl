@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class ClojurePersistentVector {
+public class ClojurePersistentVector implements Iterable<Object> {
 
 	@SuppressWarnings("serial")
 	public static class Node implements Serializable {

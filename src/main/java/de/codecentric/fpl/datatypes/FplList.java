@@ -583,25 +583,25 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		return new Iterator<FplValue>() {
 			private int bucketsIdx = 0;
 			private int inBucketIdx = 0;
+			private boolean atEnd = isEmpty();
 
 			@Override
 			public boolean hasNext() {
-				return bucketsIdx < buckets.length && inBucketIdx < buckets[bucketsIdx].length;
+				return !atEnd;
 			}
 
 			@Override
 			public FplValue next() {
-				FplValue result;
-				try {
-					result = buckets[bucketsIdx][inBucketIdx];
+				if (atEnd) {
+					throw new NoSuchElementException();
+				}
+				FplValue result = buckets[bucketsIdx][inBucketIdx];
 					inBucketIdx++;
 					if (inBucketIdx == buckets[bucketsIdx].length) {
 						bucketsIdx++;
 						inBucketIdx = 0;
+						atEnd = bucketsIdx == buckets.length;
 					}
-				} catch (IndexOutOfBoundsException e) {
-					throw new NoSuchElementException();
-				}
 				return result;
 			}
 		};
@@ -637,6 +637,10 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			((FplFunction) result).setPosition(((PositionHolder) firstElemUnevaluated).getPosition());
 		}
 		return result;
+	}
+
+	public boolean isEmpty() {
+		return buckets.length == 0 || buckets[0].length == 0;
 	}
 
 	/**
@@ -709,8 +713,9 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		return bucketsDst;
 	}
 
+	
 	private void checkNotEmpty() throws EvaluationException {
-		if (buckets.length == 0 || buckets[0].length == 0) {
+		if (isEmpty()) {
 			throw new EvaluationException("List is empty");
 		}
 	}
