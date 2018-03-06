@@ -354,9 +354,11 @@ public class FplListTest {
 	
 	@Test
 	public void testSubListCompleteFromOneBucket() throws EvaluationException {
-		FplList list = create(1, 10);
-		list = list.subList(0, 10);
-		check(1, 10, list);
+		for (int size = 10; size < 100; size++) {
+			FplList list = create(1, size);
+			list = list.subList(0, size);
+			check(1, size, list);
+		}
 	}
 	
 	@Test

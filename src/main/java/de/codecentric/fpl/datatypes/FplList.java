@@ -550,14 +550,20 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	private FplList subList(FplValue[] fplValues, int first, int last) {
-		int count = last - first + 1;
-		if (count <= BASE_SIZE) {
+		int size = last - first + 1;
+		if (size <= BASE_SIZE) {
 			FplValue[][] b = new FplValue[1][];
-			b[0] = new FplValue[count];
-			arraycopy(fplValues, first, b[0], 0, count);
+			b[0] = new FplValue[size];
+			arraycopy(fplValues, first, b[0], 0, size);
 			return new FplList(b);
 		}
-		return null;
+		FplValue[][] bucketsDst = createTwoSidedShape(size);
+		for (int i = 0, bucketIdx = 0; bucketIdx < bucketsDst.length; bucketIdx++) {
+			FplValue[] bucketDst = bucketsDst[bucketIdx];
+			arraycopy(fplValues, i, bucketDst, 0, bucketDst.length);
+			i += bucketDst.length;
+		}
+		return new FplList(bucketsDst);
 	}
 
 	/**
@@ -567,6 +573,38 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		return size(buckets);
 	}
 
+	private FplValue[][] createTwoSidedShape(int size) {
+		int numberOfBuckets = 0;
+		int rest = size;
+		int bucketSize = BASE_SIZE;
+		while (rest > 2 * bucketSize) {
+			numberOfBuckets += 2;
+			rest -= 2 * (bucketSize / 2); // fill one half in each
+			bucketSize *= FACTOR;
+		}
+		numberOfBuckets += rest > bucketSize ? 2 : 1;
+		FplValue[][] createdBuckets = new FplValue[numberOfBuckets][];
+
+		rest = size;
+		bucketSize = BASE_SIZE;
+		int i = 0, j = numberOfBuckets - 1;
+		while (i < j - 1) {
+			createdBuckets[i++] = new FplValue[bucketSize / 2];
+			createdBuckets[j--] = new FplValue[bucketSize / 2];
+			rest -= 2 * (bucketSize / 2);
+			bucketSize *= FACTOR;
+		}
+		if (i == j - 1) { 
+			// two remaining buckets: i and i+1
+			createdBuckets[i] = new FplValue[rest / 2];
+			createdBuckets[j--] = new FplValue[rest - rest / 2];
+		} else { 
+			// one remaining bucket: i = j
+			createdBuckets[i] = new FplValue[rest];
+		}
+		return createdBuckets;
+	}
+	
 	private int size(FplValue[][] b) {
 		int count = 0;
 		for (FplValue[] bucket : b) {
