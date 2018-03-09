@@ -364,11 +364,12 @@ public class FplListTest {
 	@Test
 	public void testSubListCompleteFromSeveral() throws EvaluationException {
 		FplList list = FplList.EMPTY_LIST;
-		for (int i = 1; i <= 10; i++) {
+		int size = 100;
+		for (int i = 1; i <= size; i++) {
 			list = list.addAtEnd(value(i));
 		}
-		list = list.subList(0, 10);
-		check(1, 10, list);
+		list = list.subList(0, size);
+		check(1, size, list);
 	}
 	
 	@Test
@@ -383,7 +384,7 @@ public class FplListTest {
 	 * @param list List to check
 	 */
 	private void check(int start, int end, FplList list) throws EvaluationException {
-		assertEquals(end - start + 1, list.size());
+		assertEquals("List size", end - start + 1, list.size());
 		Iterator<FplValue> iter = list.iterator();
 		int value = start;
 		while (iter.hasNext()) {

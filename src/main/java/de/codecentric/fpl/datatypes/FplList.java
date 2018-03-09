@@ -533,15 +533,104 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		}
 		int inBucketToIdx = toIndex - 1 - count;
 
+		if (fromIndex == 0 && bucketToIdx == buckets.length - 1 && inBucketToIdx == buckets[bucketToIdx].length - 1) {
+			return this;
+		}
+		
 		if (bucketFromIdx == bucketToIdx) {
 			return subList(buckets[bucketFromIdx], inBucketFromIdx, inBucketToIdx);
 		}
+		int numBucketsLeft = computeNumberOfBucketsLeft(buckets[bucketFromIdx], inBucketFromIdx);
+		int numBucketsRight = computeNumberOfBucketsRight(buckets[bucketToIdx], inBucketToIdx);
+		int numBucketsCenter = bucketToIdx - bucketFromIdx - 1;
 
-		boolean firstBucketComplete = inBucketFromIdx == 0;
-		boolean lastBucketComplete = inBucketToIdx == buckets[bucketToIdx].length - 1;
+		// TODO: Wenn Anzahl buckets zu groß, dann kein Fill sondern direkt rehape (dazu reshape ändern, damit reshapeSublist geht)
 		
+		FplValue[][] bucketsDst = new FplValue[numBucketsLeft + numBucketsCenter + numBucketsRight][];
+
+		createAndFillShapeFromLeft(buckets[bucketFromIdx], inBucketFromIdx, bucketsDst);
+		arraycopy(buckets, bucketFromIdx + 1, bucketsDst, numBucketsLeft, numBucketsCenter);
+		createAndFillShapeFromRight(buckets[bucketToIdx], inBucketToIdx, bucketsDst);
 		
-		return null; // new FplList(bucketsDst);
+		return new FplList(bucketsDst);
+	}
+
+	private void createAndFillShapeFromLeft(FplValue[] bucket, int inBucketFromIdx, FplValue[][] bucketsDst) {
+		if (inBucketFromIdx == 0 ) {
+			bucketsDst[0] = bucket;
+		} else {
+			int bucketSize = BASE_SIZE;
+			int bucketDstIndex = 0;
+			int rest = bucket.length - inBucketFromIdx;
+			while (rest > bucketSize) {
+				int size = Math.min(bucketSize / 2, rest);
+				bucketsDst[bucketDstIndex] = new FplValue[size];
+				arraycopy(bucket, inBucketFromIdx, bucketsDst[bucketDstIndex], 0, size);
+				bucketDstIndex++;
+				inBucketFromIdx += size;
+				rest -= size;
+				bucketSize *= FACTOR;
+			}
+			bucketsDst[bucketDstIndex] = new FplValue[rest];
+			arraycopy(bucket, inBucketFromIdx, bucketsDst[bucketDstIndex], 0, rest);
+		}
+	}
+
+	private void createAndFillShapeFromRight(FplValue[] bucket, int inBucketToIdx, FplValue[][] bucketsDst) {
+		if (inBucketToIdx == bucket.length - 1) {
+			bucketsDst[bucketsDst.length - 1] = bucket;
+		} else {
+			int bucketSize = BASE_SIZE;
+			int bucketDstIndex = bucketsDst.length - 1;
+			int rest = inBucketToIdx + 1;
+			while (rest > bucketSize) {
+				int size = Math.min(bucketSize / 2, rest);
+				bucketsDst[bucketDstIndex] = new FplValue[size];
+				arraycopy(bucket, inBucketToIdx - size, bucketsDst[bucketDstIndex], 0, size);
+				bucketDstIndex--;
+				inBucketToIdx += size;
+				rest -= size;
+				bucketSize *= FACTOR;
+			}
+			bucketsDst[bucketDstIndex] = new FplValue[rest];
+			arraycopy(bucket, 0, bucketsDst[bucketDstIndex], 0, rest);
+		}
+	}
+
+	private int computeNumberOfBucketsLeft(FplValue[] fplValues, int inBucketIdx) {
+		if (inBucketIdx == 0) {
+			return 1;
+		}
+		int count = fplValues.length - inBucketIdx;
+		if (count < BASE_SIZE) {
+			return 1;
+		}
+		
+		return numBucketsForCount(count);
+	}
+
+	private int computeNumberOfBucketsRight(FplValue[] fplValues, int inBucketIdx) {
+		if (inBucketIdx == 0) {
+			return 1;
+		}
+		int count = inBucketIdx;
+		if (count < BASE_SIZE) {
+			return 1;
+		}
+
+		return numBucketsForCount(count);
+	}
+
+	private int numBucketsForCount(int count) {
+		int rest = count;
+		int bucketSize = BASE_SIZE;
+		int buckets = 1;
+		while (rest > bucketSize) {
+			rest -= bucketSize / 2;  // fill to half
+			bucketSize *= FACTOR;
+			buckets++;
+		}
+		return buckets;
 	}
 
 	private FplList subList(FplValue[] fplValues, int first, int last) {
