@@ -7,14 +7,14 @@ import java.util.Map.Entry;
 
 public class ListBenchmark {
 	private static int MAX_COUNT = 16 * 1048576;
-	private static long MAX_TIME = 1000L;
+	private static long MAX_TIME = 10000L;
 	private static LinkedHashMap<String, ArrayList<Result>> results = new LinkedHashMap<>();
 
 	public static void main(String[] args) {
 		for (int i = 0; i < 5; i++) {
 			System.out.println("Run " + i);
 
-			//mergeResults("ArrayList, construct", run(JavaUtilBenchmark.createArrayListAdd()));
+			mergeResults("ArrayList, construct", run(JavaUtilBenchmark.createArrayListAdd()));
 			//mergeResults("ArrayList, get all", run(JavaUtilBenchmark.arrayListGetAll()));
 			//mergeResults("ArrayList, iterator", run(JavaUtilBenchmark.arrayListIterator()));
 			//mergeResults("ArrayList, rec. join", run(JavaUtilBenchmark.createArrayListJoin()));
@@ -28,15 +28,15 @@ public class ListBenchmark {
 			//mergeResults("ArrayDeque, construct", run(JavaUtilBenchmark.createArrayDequeAdd()));
 			//mergeResults("ArrayDeque, deconstruct", run(JavaUtilBenchmark.createArrayDequeDeconstruct()));
 			
-			//mergeResults("FplList, construct", run(FplListBenchmark.createFplistAdd()));
+			mergeResults("FplList, construct", run(FplListBenchmark.createFplistAdd()));
 			//mergeResults("FplList, rec. join", run(FplListBenchmark.createFplListJoin()));
 			//mergeResults("FplList, get all", run(FplListBenchmark.fplListGetAll()));
-			mergeResults("FplList, iterator", run(FplListBenchmark.fplListIterator()));
+			//mergeResults("FplList, iterator", run(FplListBenchmark.fplListIterator()));
 			//mergeResults("FplList, deconstruct", run(FplListBenchmark.createFplListDeconstruct()));
 			
-			//mergeResults("Clojure Vector, cons", run(ClojureBenchmark.createPersistentVectorCons()));
+			mergeResults("Clojure Vector, cons", run(ClojureBenchmark.createPersistentVectorCons()));
 			//mergeResults("Clojure Vector, get all", run(ClojureBenchmark.getAll()));
-			mergeResults("Clojure Vector, iterator", run(ClojureBenchmark.iterator()));
+			//mergeResults("Clojure Vector, iterator", run(ClojureBenchmark.iterator()));
 			//mergeResults("Clojure Vector, deconstruct", run(ClojureBenchmark.deconstruct()));
 		}
 

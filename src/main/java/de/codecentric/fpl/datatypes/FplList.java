@@ -17,8 +17,8 @@ import de.codecentric.fpl.data.Scope;
 public class FplList implements FplValue, Iterable<FplValue> {
 	public static final FplList EMPTY_LIST = new FplList();
 
-	private static final int BASE_SIZE = 3;
-	private static final int FACTOR = 3;
+	private static final int BASE_SIZE = 8;
+	private static final int FACTOR = 4;
 
 	private final FplValue[][] buckets;
 
@@ -261,7 +261,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int carryStart = 0;
 		int carryLength = 0;
 		int maxSize = BASE_SIZE;
-		int minSize = maxSize / 2;
 
 		// Initial phase: Add to first bucket or create new bucket (and initial carry)
 		if (firstLength < maxSize) {
@@ -270,17 +269,14 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			bucketsDst[dstIdx][0] = element;
 			carryLength = 0;
 		} else {
-			// Don't fill bucket completely, so we don't get a carry in the next add()
-			bucketsDst[dstIdx] = new FplValue[minSize];
+			bucketsDst[dstIdx] = new FplValue[1];
 			bucketsDst[dstIdx][0] = element;
 			carryBucket = buckets[bucketsSrc];
-			carryStart = minSize - 1;
-			carryLength = buckets[bucketsSrc].length - minSize + 1;
-			arraycopy(buckets[bucketsSrc], 0, bucketsDst[dstIdx], 1, minSize - 1);
+			carryLength = buckets[bucketsSrc].length;
 		}
 		bucketsSrc++;
 		dstIdx++;
-		return carryToRight(buckets, bucketsSrc, bucketsDst, dstIdx, carryBucket, carryStart, carryLength, maxSize);
+		return carryToRight(buckets, bucketsSrc, bucketsDst, dstIdx, carryBucket, carryStart, carryLength, 2 * maxSize);
 	}
 
 	private FplList carryToRight(FplValue[][] bucketsSrc, int srcIdx, FplValue[][] bucketsDst, int dstIdx, //
@@ -372,7 +368,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		if (buckets.length == 0) {
 			return new FplList(value);
 		}
-		// No append to empty list, there is at least one bucket
+		// Not empty, there is at least one bucket
 		FplValue[][] bud = new FplValue[buckets.length][];
 		int srcIdx = buckets.length - 1;
 		int dstIdx = buckets.length - 1;
@@ -381,7 +377,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int carryStart = 0;
 		int carryLength = 0;
 		int maxSize = BASE_SIZE;
-		int minSize = maxSize / 2;
 
 		// Initial phase: Add to last bucket or create new bucket (and initial carry)
 		if (lastLength < maxSize) {
@@ -389,16 +384,14 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			bud[dstIdx][lastLength] = value;
 			carryLength = 0;
 		} else {
-			// Don't fill bucket completely, so we don't get a carry in the next add()
-			bud[dstIdx] = new FplValue[minSize];
-			bud[dstIdx][minSize - 1] = value;
+			bud[dstIdx] = new FplValue[1];
+			bud[dstIdx][0] = value;
 			carryBucket = buckets[srcIdx];
-			carryLength = buckets[srcIdx].length - minSize + 1;
-			arraycopy(buckets[srcIdx], carryLength, bud[dstIdx], 0, minSize - 1);
+			carryLength = buckets[srcIdx].length;
 		}
 		srcIdx--;
 		dstIdx--;
-		return carryToLeft(buckets, srcIdx, bud, dstIdx, carryBucket, carryStart, carryLength, maxSize);
+		return carryToLeft(buckets, srcIdx, bud, dstIdx, carryBucket, carryStart, carryLength, 2 * maxSize);
 	}
 
 	private static FplList carryToLeft(FplValue[][] bucketsSrc, int srcIdx, FplValue[][] bucketsDst, int dstIdx, //
@@ -546,6 +539,8 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 		boolean firstBucketComplete = inBucketFromIdx == 0;
 		boolean lastBucketComplete = inBucketToIdx == buckets[bucketToIdx].length - 1;
+		
+		
 		return null; // new FplList(bucketsDst);
 	}
 

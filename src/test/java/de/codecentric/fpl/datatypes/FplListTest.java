@@ -323,8 +323,8 @@ public class FplListTest {
 			check(0, (i + 1) * 5 - 1, list);
 		}
 		check(0, 49, list);
-		// The "7" depends on BASE_SIZE and FACTOR in FplList
-		assertEquals(7, list.numberOfBuckets());
+		// The "5" depends on BASE_SIZE and FACTOR in FplList
+		assertEquals(5, list.numberOfBuckets());
 	}
 	
 	@Test(expected = EvaluationException.class)
