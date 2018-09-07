@@ -1,8 +1,9 @@
 package de.codecentric.fpl.datatypes;
 
-import java.util.ArrayList;
-import static java.util.Arrays.copyOf;
 import static java.lang.System.arraycopy;
+import static java.util.Arrays.copyOf;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -20,26 +21,30 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	private static final int BASE_SIZE = 8;
 	private static final int FACTOR = 4;
 
-	private final FplValue[][] buckets;
+	private final FplValue[] linear;
+	private final FplValue[][] shape;
 
 	// private because there is EMPTY_LIST
 	private FplList() {
-		buckets = new FplValue[0][];
+		linear = new FplValue[0];
+		shape = null;
 	}
 
 	// Without reshape
 	private FplList(FplValue[][] data) {
-		this.buckets = data;
+		linear = null;
+		this.shape = data;
 	}
 
 	// With reshape, size < 0 means "unknown"
 	private FplList(FplValue[][] data, int size) {
 		int realSize = size >= 0 ? size : size(data);
 		if (data.length > 3 && (1 << data.length) > realSize + 1) {
-			buckets = reshape(data, realSize);
+			shape = reshape(data, realSize);
 		} else {
-			buckets = data;
+			shape = data;
 		}
+		linear = null;
 	}
 
 	/**
@@ -49,8 +54,9 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 *            The value
 	 */
 	public FplList(FplValue value) {
-		buckets = new FplValue[1][];
-		buckets[0] = bucket(value);
+		linear = new FplValue[1];
+		linear[0] = value;
+		shape = null;
 	}
 
 	/**
@@ -61,22 +67,24 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 *            the array.
 	 */
 	public FplList(FplValue[] values) {
-		buckets = new FplValue[1][];
-		buckets[0] = values;
+		// TODO: create shape if values.length > BASE_SIZE
+		linear = values;
+		shape = null;
 	}
 
 	public FplList(Iterator<FplValue> iter) {
-		buckets = new FplValue[1][];
+		linear = null;
+		shape = new FplValue[1][];
 		ArrayList<FplValue> li = new ArrayList<>();
 		while (iter.hasNext()) {
 			li.add(iter.next());
 		}
-		buckets[0] = li.toArray(new FplValue[li.size()]);
+		shape[0] = li.toArray(new FplValue[li.size()]);
 	}
 
 	public FplList(List<FplValue> values) {
-		buckets = new FplValue[1][];
-		buckets[0] = values.toArray(new FplValue[values.size()]);
+		linear = values.toArray(new FplValue[values.size()]);
+		shape = null;
 	}
 
 	/**
@@ -86,7 +94,11 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 */
 	public FplValue first() throws EvaluationException {
 		checkNotEmpty();
-		return buckets[0][0];
+		if (linear == null) {
+			return shape[0][0];
+		} else {
+			return linear[0];
+		}
 	}
 
 	/**
@@ -96,8 +108,12 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 */
 	public FplValue last() throws EvaluationException {
 		checkNotEmpty();
-		FplValue[] lastBucket = buckets[buckets.length - 1];
-		return lastBucket[lastBucket.length - 1];
+		if (linear == null) {
+			FplValue[] lastBucket = shape[shape.length - 1];
+			return lastBucket[lastBucket.length - 1];
+		} else {
+			return linear[linear.length - 1];
+		}
 	}
 
 	/**
@@ -107,23 +123,23 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 */
 	public FplList removeFirst() throws EvaluationException {
 		checkNotEmpty();
-		if (buckets.length == 1 && buckets[0].length == 1) {
+		if (shape.length == 1 && shape[0].length == 1) {
 			return EMPTY_LIST;
 		}
-		if (buckets[0].length == 1) {
-			FplValue[][] bucketsDst = new FplValue[buckets.length - 1][];
-			arraycopy(buckets, 1, bucketsDst, 0, bucketsDst.length);
+		if (shape[0].length == 1) {
+			FplValue[][] bucketsDst = new FplValue[shape.length - 1][];
+			arraycopy(shape, 1, bucketsDst, 0, bucketsDst.length);
 			return new FplList(bucketsDst);
 		}
-		if (buckets[0].length <= BASE_SIZE) {
-			FplValue[][] bucketsDst = new FplValue[buckets.length][];
-			arraycopy(buckets, 1, bucketsDst, 1, bucketsDst.length - 1);
-			bucketsDst[0] = new FplValue[buckets[0].length - 1];
-			arraycopy(buckets[0], 1, bucketsDst[0], 0, bucketsDst[0].length);
+		if (shape[0].length <= BASE_SIZE) {
+			FplValue[][] bucketsDst = new FplValue[shape.length][];
+			arraycopy(shape, 1, bucketsDst, 1, bucketsDst.length - 1);
+			bucketsDst[0] = new FplValue[shape[0].length - 1];
+			arraycopy(shape[0], 1, bucketsDst[0], 0, bucketsDst[0].length);
 			return new FplList(bucketsDst);
 		}
 		// First bucket is too large, split it according "ideal" shape
-		int count = buckets[0].length - 1;
+		int count = shape[0].length - 1;
 		int additionalBuckets = -1;
 		int bucketFillSize = BASE_SIZE / 2;
 		while (count > 0) {
@@ -132,13 +148,13 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			bucketFillSize *= FACTOR;
 		}
 
-		FplValue[][] bucketsDst = new FplValue[buckets.length + additionalBuckets][];
+		FplValue[][] bucketsDst = new FplValue[shape.length + additionalBuckets][];
 		bucketFillSize = BASE_SIZE / 2;
 		bucketsDst[0] = new FplValue[bucketFillSize];
-		arraycopy(buckets[0], 1, bucketsDst[0], 0, bucketFillSize);
+		arraycopy(shape[0], 1, bucketsDst[0], 0, bucketFillSize);
 
 		int dstIdx = 1;
-		count = buckets[0].length - 1 - bucketFillSize;
+		count = shape[0].length - 1 - bucketFillSize;
 		int inBucketIdx = bucketFillSize + 1;
 		while (count > 0) {
 			bucketFillSize *= FACTOR;
@@ -146,14 +162,14 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				bucketFillSize = count;
 			}
 			bucketsDst[dstIdx] = new FplValue[bucketFillSize];
-			arraycopy(buckets[0], inBucketIdx, bucketsDst[dstIdx], 0, bucketFillSize);
+			arraycopy(shape[0], inBucketIdx, bucketsDst[dstIdx], 0, bucketFillSize);
 			dstIdx++;
 			inBucketIdx += bucketFillSize;
 			count -= bucketFillSize;
 		}
 		int srcIdx = 1;
 		while (dstIdx < bucketsDst.length) {
-			bucketsDst[dstIdx++] = buckets[srcIdx++];
+			bucketsDst[dstIdx++] = shape[srcIdx++];
 		}
 		return new FplList(bucketsDst);
 	}
@@ -165,23 +181,23 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 */
 	public FplList removeLast() throws EvaluationException {
 		checkNotEmpty();
-		if (buckets.length == 1 && buckets[0].length == 1) {
+		if (shape.length == 1 && shape[0].length == 1) {
 			return EMPTY_LIST;
 		}
-		int lastIdx = buckets.length - 1;
-		if (buckets[lastIdx].length == 1) {
-			FplValue[][] bucketsDst = new FplValue[buckets.length - 1][];
-			arraycopy(buckets, 0, bucketsDst, 0, bucketsDst.length);
+		int lastIdx = shape.length - 1;
+		if (shape[lastIdx].length == 1) {
+			FplValue[][] bucketsDst = new FplValue[shape.length - 1][];
+			arraycopy(shape, 0, bucketsDst, 0, bucketsDst.length);
 			return new FplList(bucketsDst);
 		}
-		if (buckets[lastIdx].length <= BASE_SIZE + BASE_SIZE * FACTOR) {
-			FplValue[][] bucketsDst = new FplValue[buckets.length][];
-			arraycopy(buckets, 0, bucketsDst, 0, bucketsDst.length - 1);
-			bucketsDst[lastIdx] = new FplValue[buckets[lastIdx].length - 1];
-			arraycopy(buckets[0], 0, bucketsDst[0], 0, bucketsDst[lastIdx].length);
+		if (shape[lastIdx].length <= BASE_SIZE + BASE_SIZE * FACTOR) {
+			FplValue[][] bucketsDst = new FplValue[shape.length][];
+			arraycopy(shape, 0, bucketsDst, 0, bucketsDst.length - 1);
+			bucketsDst[lastIdx] = new FplValue[shape[lastIdx].length - 1];
+			arraycopy(shape[0], 0, bucketsDst[0], 0, bucketsDst[lastIdx].length);
 			return new FplList(bucketsDst);
 		}
-		int count = buckets[lastIdx].length - 1;
+		int count = shape[lastIdx].length - 1;
 		int additionalBuckets = -1;
 		int bucketFillSize = BASE_SIZE / 2;
 		while (count > 0) {
@@ -190,15 +206,15 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			bucketFillSize *= FACTOR;
 		}
 
-		FplValue[][] bucketsDst = new FplValue[buckets.length + additionalBuckets][];
+		FplValue[][] bucketsDst = new FplValue[shape.length + additionalBuckets][];
 		bucketFillSize = BASE_SIZE / 2;
-		int dstIdx = buckets.length + additionalBuckets - 1;
-		int inBucketIdx = buckets[lastIdx].length - bucketFillSize - 1;
+		int dstIdx = shape.length + additionalBuckets - 1;
+		int inBucketIdx = shape[lastIdx].length - bucketFillSize - 1;
 		bucketsDst[dstIdx] = new FplValue[bucketFillSize];
-		arraycopy(buckets[lastIdx], inBucketIdx, bucketsDst[dstIdx], 0, bucketFillSize);
+		arraycopy(shape[lastIdx], inBucketIdx, bucketsDst[dstIdx], 0, bucketFillSize);
 
 		dstIdx--;
-		count = buckets[lastIdx].length - 1 - bucketFillSize;
+		count = shape[lastIdx].length - 1 - bucketFillSize;
 		while (count > 0) {
 			bucketFillSize *= FACTOR;
 			if (bucketFillSize > count) {
@@ -206,13 +222,13 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			}
 			inBucketIdx -= bucketFillSize;
 			bucketsDst[dstIdx] = new FplValue[bucketFillSize];
-			arraycopy(buckets[lastIdx], inBucketIdx, bucketsDst[dstIdx], 0, bucketFillSize);
+			arraycopy(shape[lastIdx], inBucketIdx, bucketsDst[dstIdx], 0, bucketFillSize);
 			dstIdx--;
 			count -= bucketFillSize;
 		}
 		lastIdx--;
 		while (dstIdx >= 0) {
-			bucketsDst[dstIdx--] = buckets[lastIdx--];
+			bucketsDst[dstIdx--] = shape[lastIdx--];
 		}
 		return new FplList(bucketsDst);
 	}
@@ -227,250 +243,177 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 */
 	public FplValue get(int position) throws EvaluationException {
 		checkNotEmpty();
-		if (position < 0) {
-			throw new EvaluationException("position < 0");
-		}
-		int bucketIdx = 0;
-		int count = 0;
-		while (count + buckets[bucketIdx].length <= position) {
-			count += buckets[bucketIdx].length;
-			bucketIdx++;
-			if (bucketIdx >= buckets.length) {
-				throw new EvaluationException("position >= size");
+		if (linear == null) {
+			if (position < 0) {
+				throw new EvaluationException("position < 0");
 			}
+			int bucketIdx = 0;
+			int count = 0;
+			while (count + shape[bucketIdx].length <= position) {
+				count += shape[bucketIdx].length;
+				bucketIdx++;
+				if (bucketIdx >= shape.length) {
+					throw new EvaluationException("position >= size");
+				}
+			}
+			return shape[bucketIdx][position - count];
+		} else {
+			return linear[position];
 		}
-		return buckets[bucketIdx][position - count];
 	}
 
 	/**
-	 * @param element
+	 * Add one value as new first element of the list. (The "cons" of Lisp)
+	 * 
+	 * @param value
 	 *            Element to insert at front.
 	 * @return New List: This list plus one new element at front.
 	 */
-	public FplList addAtStart(FplValue element) {
-		// Shortcut for cons to empty list
-		if (buckets.length == 0) {
-			return new FplList(element);
-		}
-		// No append to empty list, there is at least one bucket
-		FplValue[][] bucketsDst = new FplValue[buckets.length][];
-		int bucketsSrc = 0;
-		int dstIdx = 0;
-		int firstLength = buckets[bucketsSrc].length;
-		FplValue[] carryBucket = null;
-		int carryStart = 0;
-		int carryLength = 0;
-		int maxSize = BASE_SIZE;
-
-		// Initial phase: Add to first bucket or create new bucket (and initial carry)
-		if (firstLength < maxSize) {
-			bucketsDst[dstIdx] = new FplValue[firstLength + 1];
-			arraycopy(buckets[bucketsSrc], 0, bucketsDst[dstIdx], 1, firstLength);
-			bucketsDst[dstIdx][0] = element;
-			carryLength = 0;
+	public FplList addAtStart(FplValue value) {
+		if (linear == null) {
+			return addAtStartShaped(value);
 		} else {
-			bucketsDst[dstIdx] = new FplValue[1];
-			bucketsDst[dstIdx][0] = element;
-			carryBucket = buckets[bucketsSrc];
-			carryLength = buckets[bucketsSrc].length;
+			return addAtStartLinear(value);
 		}
-		bucketsSrc++;
-		dstIdx++;
-		return carryToRight(buckets, bucketsSrc, bucketsDst, dstIdx, carryBucket, carryStart, carryLength, 2 * maxSize);
 	}
 
-	private FplList carryToRight(FplValue[][] bucketsSrc, int srcIdx, FplValue[][] bucketsDst, int dstIdx, //
-			FplValue[] carryBucket, int carryStart, int carryLength, int maxSize) {
-		int minSize;
-		// Copy with potential carry
-		while (carryLength != 0) {
-			maxSize *= FACTOR;
-			minSize = maxSize / 2;
-			while (carryLength >= maxSize) {
-				if (dstIdx == bucketsDst.length) {
-					bucketsDst = copyOf(bucketsDst, bucketsDst.length + 1);
-				}
-				// Again: Don't fill completely, only to minSize
-				bucketsDst[dstIdx] = new FplValue[minSize];
-				arraycopy(carryBucket, carryStart, bucketsDst[dstIdx], 0, minSize);
-				carryLength -= minSize;
-				carryStart += minSize;
-				dstIdx++;
+	private FplList addAtStartLinear(FplValue value) {
+		if (linear.length < BASE_SIZE) {
+			FplValue[] destLinear = new FplValue[linear.length + 1];
+			arraycopy(linear, 0, destLinear, 1, linear.length);
+			destLinear[0] = value;
+			return new FplList(destLinear);
+		} else {
+			FplValue[][] dstShape = new FplValue[2][];
+			dstShape[0] = new FplValue[1];
+			dstShape[0][0] = value;
+			dstShape[1] = linear;
+			return new FplList(dstShape);
+		}
+	}
+
+	private FplList addAtStartShaped(FplValue value) {
+		int firstLength = shape[0].length;
+		if (firstLength < BASE_SIZE) {
+			// Value fits into the first bucket
+			FplValue[][] dstShape = new FplValue[shape.length][];
+			arraycopy(shape, 1, dstShape, 1, shape.length - 1);
+			FplValue[] firstBucket = new FplValue[firstLength + 1];
+			arraycopy(shape[0], 0, firstBucket, 1, firstLength);
+			firstBucket[0] = value;
+			dstShape[0] = firstBucket;
+			return new FplList(dstShape);
+		} else {
+			// Value does not fit into the first bucket, create a new first bucket
+			FplValue[] newFirstBucket = new FplValue[1];
+			newFirstBucket[0] = value;
+			int lastCarryIdx = 1;
+			int carrySize = shape[0].length;
+			int maxSize = BASE_SIZE * FACTOR;
+			while (lastCarryIdx < shape.length // we are still within the array
+					&& shape[lastCarryIdx].length + carrySize <= maxSize // carry fits in bucket 
+					&& shape[lastCarryIdx].length <= maxSize // next bucket is not too big
+					// TODO: stop when buckets are getting smaller
+			) {
+				carrySize += shape[lastCarryIdx++].length;
 				maxSize *= FACTOR;
-				minSize = maxSize / 2;
 			}
-			// now: carryLength < maxSize
-			if (dstIdx == bucketsDst.length) {
-				bucketsDst = copyOf(bucketsDst, bucketsDst.length + 1);
-			}
-			int sourceLength = srcIdx < bucketsSrc.length ? bucketsSrc[srcIdx].length : 0;
-			if (carryLength + sourceLength >= maxSize) {
-				// The second part (sourceLengeh > maxSize) avoids the splitting of a large
-				// block.
-				// Results in one more bucket, but avoids copying values around.
-				if (carryLength > minSize || sourceLength > maxSize) {
-					int copyLength = Math.min(carryLength, minSize);
-					bucketsDst[dstIdx] = new FplValue[copyLength];
-					arraycopy(carryBucket, carryStart, bucketsDst[dstIdx], 0, copyLength);
-					carryLength -= copyLength;
-					carryStart += copyLength;
-					dstIdx++;
-				} else {
-					// carry fits completely, source bucket not
-					bucketsDst[dstIdx] = new FplValue[minSize];
-					int takeFromBucket = minSize - carryLength;
-					arraycopy(carryBucket, carryStart, bucketsDst[dstIdx], 0, carryLength);
-					arraycopy(bucketsSrc[srcIdx], 0, bucketsDst[dstIdx], carryLength, takeFromBucket);
-					carryLength = bucketsSrc[srcIdx].length - takeFromBucket;
-					carryBucket = bucketsSrc[srcIdx];
-					carryStart = takeFromBucket;
-					srcIdx++;
-					dstIdx++;
-				}
-			} else { // carry + next bucket fit in destination bucket
-				if (srcIdx < bucketsSrc.length) {
-					if (carryLength > 0) {
-						bucketsDst[dstIdx] = new FplValue[carryLength + sourceLength];
-						arraycopy(carryBucket, carryStart, bucketsDst[dstIdx], 0, carryLength);
-						arraycopy(bucketsSrc[srcIdx], 0, bucketsDst[dstIdx], carryLength, sourceLength);
-						carryLength = 0;
-					} else {
-						bucketsDst[dstIdx] = bucketsSrc[srcIdx];
-					}
-				} else {
-					bucketsDst[dstIdx] = new FplValue[carryLength];
-					arraycopy(carryBucket, carryStart, bucketsDst[dstIdx], 0, carryLength);
-					carryLength = 0;
-				}
-				srcIdx++;
-				dstIdx++;
-			}
-		}
-		while (srcIdx < bucketsSrc.length) {
-			if (dstIdx == bucketsDst.length) {
-				bucketsDst = copyOf(bucketsDst, bucketsDst.length + 1);
-			}
-			bucketsDst[dstIdx++] = bucketsSrc[srcIdx++];
-		}
+			lastCarryIdx--;
 
-		return new FplList(bucketsDst);
+			FplValue[][] bucketsDst = new FplValue[shape.length - lastCarryIdx + 1][];
+			// First bucket with the new element
+			bucketsDst[0] = newFirstBucket;
+			// Collect carry
+			FplValue[] carry = new FplValue[carrySize];
+			for (int i = 0, dst = 0; i <= lastCarryIdx; i++) {
+				arraycopy(shape[i], 0, carry, dst, shape[i].length);
+				dst += shape[i].length;
+			}
+			bucketsDst[1] = carry;
+			// Copy buckets (behind carry)
+			if (bucketsDst.length - 2 > 0) {
+				arraycopy(shape, lastCarryIdx + 1, bucketsDst, 2, bucketsDst.length - 2);
+			}
+			
+ 			return new FplList(bucketsDst);
+		}
 	}
-
+	
 	/**
-	 * Append one element to a list.
+	 * Append one value at the end of the list.
 	 * 
 	 * @param value
 	 *            Element to be appended
 	 * @return New List: This list plus the new element at the end.
 	 */
 	public FplList addAtEnd(FplValue value) {
-		// Shortcut for append to empty list
-		if (buckets.length == 0) {
-			return new FplList(value);
-		}
-		// Not empty, there is at least one bucket
-		FplValue[][] bud = new FplValue[buckets.length][];
-		int srcIdx = buckets.length - 1;
-		int dstIdx = buckets.length - 1;
-		int lastLength = buckets[srcIdx].length;
-		FplValue[] carryBucket = null;
-		int carryStart = 0;
-		int carryLength = 0;
-		int maxSize = BASE_SIZE;
-
-		// Initial phase: Add to last bucket or create new bucket (and initial carry)
-		if (lastLength < maxSize) {
-			bud[dstIdx] = copyOf(buckets[srcIdx], lastLength + 1);
-			bud[dstIdx][lastLength] = value;
-			carryLength = 0;
+		if (linear == null) {
+			return addAtEndShaped(value);
 		} else {
-			bud[dstIdx] = new FplValue[1];
-			bud[dstIdx][0] = value;
-			carryBucket = buckets[srcIdx];
-			carryLength = buckets[srcIdx].length;
+			return addAtEndLinear(value);
 		}
-		srcIdx--;
-		dstIdx--;
-		return carryToLeft(buckets, srcIdx, bud, dstIdx, carryBucket, carryStart, carryLength, 2 * maxSize);
 	}
 
-	private static FplList carryToLeft(FplValue[][] bucketsSrc, int srcIdx, FplValue[][] bucketsDst, int dstIdx, //
-			FplValue[] carryBucket, int carryStart, int carryLength, int maxSize) {
-		int minSize;
-		// Copy with potential carry
-		while (carryLength != 0) {
-			maxSize *= FACTOR;
-			minSize = maxSize / 2;
-			while (carryLength >= maxSize) {
-				if (dstIdx < 0) {
-					bucketsDst = incrementSizeLeft(bucketsDst);
-					dstIdx = 0;
-				}
-				// Again: Don't fill completely, only to minSize
-				bucketsDst[dstIdx] = new FplValue[minSize];
-				arraycopy(carryBucket, carryStart + carryLength - minSize, bucketsDst[dstIdx], 0, minSize);
-				carryLength -= minSize;
-				dstIdx--;
-				maxSize *= FACTOR;
-				minSize = maxSize / 2;
-			}
-			// now: carryLength < maxSize
-			if (dstIdx < 0) {
-				bucketsDst = incrementSizeLeft(bucketsDst);
-				dstIdx = 0;
-			}
-			int sourceLength = srcIdx >= 0 ? bucketsSrc[srcIdx].length : 0;
-			if (carryLength + sourceLength >= maxSize) {
-				// The second part (sourceLengeh > maxSize) avoids the splitting of a large
-				// block.
-				// Results in one more bucket, but avoids copying values around.
-				if (carryLength > minSize || sourceLength > maxSize) {
-					int copyLength = Math.min(carryLength, minSize);
-					bucketsDst[dstIdx] = new FplValue[copyLength];
-					arraycopy(carryBucket, carryStart + carryLength - copyLength, bucketsDst[dstIdx], 0, copyLength);
-					carryLength -= copyLength;
-					dstIdx--;
-				} else {
-					// carry fits completely, source bucket not
-					bucketsDst[dstIdx] = new FplValue[minSize];
-					int takeFromBucket = minSize - carryLength;
-					arraycopy(bucketsSrc[srcIdx], bucketsSrc[srcIdx].length - takeFromBucket, bucketsDst[dstIdx], 0,
-							takeFromBucket);
-					arraycopy(carryBucket, carryStart, bucketsDst[dstIdx], takeFromBucket, carryLength);
-					carryLength = bucketsSrc[srcIdx].length - takeFromBucket;
-					carryBucket = bucketsSrc[srcIdx];
-					carryStart = 0;
-					srcIdx--;
-					dstIdx--;
-				}
-			} else { // carry + next bucket fit in destination bucket
-				if (srcIdx >= 0) {
-					if (carryLength > 0) {
-						bucketsDst[dstIdx] = new FplValue[carryLength + sourceLength];
-						arraycopy(bucketsSrc[srcIdx], 0, bucketsDst[dstIdx], 0, sourceLength);
-						arraycopy(carryBucket, carryStart, bucketsDst[dstIdx], sourceLength, carryLength);
-						carryLength = 0;
-					} else {
-						bucketsDst[dstIdx] = bucketsSrc[srcIdx];
-					}
-				} else {
-					bucketsDst[dstIdx] = new FplValue[carryLength];
-					arraycopy(carryBucket, carryStart, bucketsDst[dstIdx], 0, carryLength);
-					carryLength = 0;
-				}
-				srcIdx--;
-				dstIdx--;
-			}
+	private FplList addAtEndLinear(FplValue value) {
+		if (linear.length < BASE_SIZE) {
+			FplValue[] destLinear = copyOf(linear, linear.length + 1);
+			destLinear[linear.length] = value;
+			return new FplList(destLinear);
+		} else {
+			FplValue[][] dstShape = new FplValue[2][];
+			dstShape[0] = linear;
+			dstShape[1] = new FplValue[1];
+			dstShape[1][0] = value;
+			return new FplList(dstShape);
 		}
-		while (srcIdx >= 0) {
-			if (dstIdx < 0) {
-				bucketsDst = incrementSizeLeft(bucketsDst);
-				dstIdx = 0;
-			}
-			bucketsDst[dstIdx--] = bucketsSrc[srcIdx--];
-		}
+	}
 
-		return new FplList(bucketsDst);
+	private FplList addAtEndShaped(FplValue value) {
+		int lastShapeIdx = shape.length - 1;
+		int lastLength = shape[lastShapeIdx].length;
+		if (lastLength < BASE_SIZE) {
+			// Value fits into the last bucket
+			FplValue[][] dstShape = new FplValue[shape.length][];
+			arraycopy(shape, 0, dstShape, 0, shape.length - 1);
+			FplValue[] lastBucket = copyOf(shape[lastShapeIdx], lastLength + 1);
+			lastBucket[lastLength] = value;
+			dstShape[lastShapeIdx] = lastBucket;
+			return new FplList(dstShape);
+		} else {
+			// Value does not fit into the last bucket, create a new last bucket
+			FplValue[] newLastBucket = new FplValue[1];
+			newLastBucket[0] = value;
+			int lastCarryIdx = lastShapeIdx;
+			int firstCarryIdx = lastCarryIdx - 1;
+			int carrySize = shape[lastShapeIdx].length;
+			int maxSize = BASE_SIZE * FACTOR;
+			while (firstCarryIdx >= 0 // we are still within the array
+					&& shape[firstCarryIdx].length + carrySize <= maxSize // carry fits in bucket 
+					&& shape[firstCarryIdx].length <= maxSize // next bucket is not too big
+					// TODO: stop when buckets are getting smaller
+			) {
+				carrySize += shape[firstCarryIdx--].length;
+				maxSize *= FACTOR;
+			}
+			firstCarryIdx++;
+
+			FplValue[][] bucketsDst = new FplValue[firstCarryIdx + 2][];
+			// Copy buckets (before carry)
+			if (firstCarryIdx > 0) {
+				arraycopy(shape, 0, bucketsDst, 0, firstCarryIdx);
+			}
+			// Collect carry
+			FplValue[] carry = new FplValue[carrySize];
+			for (int i = firstCarryIdx, dst = 0; i <= lastCarryIdx; i++) {
+				arraycopy(shape[i], 0, carry, dst, shape[i].length);
+				dst += shape[i].length;
+			}
+			bucketsDst[bucketsDst.length - 2] = carry;
+			// Last bucket with the new element
+			bucketsDst[bucketsDst.length - 1] = newLastBucket;
+			
+ 			return new FplList(bucketsDst);
+		}
 	}
 
 	/**
@@ -481,15 +424,15 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 * @return This list with appended list.
 	 */
 	public FplList append(FplList list) {
-		if (buckets.length == 0) {
+		if (shape.length == 0) {
 			return list;
 		}
-		if (list == null || list.buckets.length == 0) {
+		if (list == null || list.shape.length == 0) {
 			return this;
 		} else {
-			FplValue[][] b = new FplValue[buckets.length + list.buckets.length][];
-			arraycopy(buckets, 0, b, 0, buckets.length);
-			arraycopy(list.buckets, 0, b, buckets.length, list.buckets.length);
+			FplValue[][] b = new FplValue[shape.length + list.shape.length][];
+			arraycopy(shape, 0, b, 0, shape.length);
+			arraycopy(list.shape, 0, b, shape.length, list.shape.length);
 			return new FplList(b, -1);
 		}
 	}
@@ -512,11 +455,11 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int bucketFromIdx = 0;
 		int count = 0;
 		int lastCount = 0;
-		while (count + buckets[bucketFromIdx].length <= fromIndex) {
+		while (count + shape[bucketFromIdx].length <= fromIndex) {
 			lastCount = count;
-			count += buckets[bucketFromIdx].length;
+			count += shape[bucketFromIdx].length;
 			bucketFromIdx++;
-			if (bucketFromIdx >= buckets.length) {
+			if (bucketFromIdx >= shape.length) {
 				throw new EvaluationException("fromIndex >= size");
 			}
 		}
@@ -524,39 +467,41 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 		int bucketToIdx = bucketFromIdx;
 		count = lastCount;
-		while (count + buckets[bucketToIdx].length <= toIndex - 1) {
-			count += buckets[bucketToIdx].length;
+		while (count + shape[bucketToIdx].length <= toIndex - 1) {
+			count += shape[bucketToIdx].length;
 			bucketToIdx++;
-			if (bucketToIdx >= buckets.length) {
+			if (bucketToIdx >= shape.length) {
 				throw new EvaluationException("toIndex >= size + 1");
 			}
 		}
 		int inBucketToIdx = toIndex - 1 - count;
 
-		if (fromIndex == 0 && bucketToIdx == buckets.length - 1 && inBucketToIdx == buckets[bucketToIdx].length - 1) {
+		// Optimization: Return origin list when subList of complete list is requested
+		if (fromIndex == 0 && bucketToIdx == shape.length - 1 && inBucketToIdx == shape[bucketToIdx].length - 1) {
 			return this;
 		}
-		
+
 		if (bucketFromIdx == bucketToIdx) {
-			return subList(buckets[bucketFromIdx], inBucketFromIdx, inBucketToIdx);
+			return subList(shape[bucketFromIdx], inBucketFromIdx, inBucketToIdx);
 		}
-		int numBucketsLeft = computeNumberOfBucketsLeft(buckets[bucketFromIdx], inBucketFromIdx);
-		int numBucketsRight = computeNumberOfBucketsRight(buckets[bucketToIdx], inBucketToIdx);
+		int numBucketsLeft = computeNumberOfBucketsLeft(shape[bucketFromIdx], inBucketFromIdx);
+		int numBucketsRight = computeNumberOfBucketsRight(shape[bucketToIdx], inBucketToIdx);
 		int numBucketsCenter = bucketToIdx - bucketFromIdx - 1;
 
-		// TODO: Wenn Anzahl buckets zu groß, dann kein Fill sondern direkt rehape (dazu reshape ändern, damit reshapeSublist geht)
-		
+		// TODO: Wenn Anzahl buckets zu groß, dann kein Fill sondern direkt rehape (dazu
+		// reshape ändern, damit reshapeSublist geht)
+
 		FplValue[][] bucketsDst = new FplValue[numBucketsLeft + numBucketsCenter + numBucketsRight][];
 
-		createAndFillShapeFromLeft(buckets[bucketFromIdx], inBucketFromIdx, bucketsDst);
-		arraycopy(buckets, bucketFromIdx + 1, bucketsDst, numBucketsLeft, numBucketsCenter);
-		createAndFillShapeFromRight(buckets[bucketToIdx], inBucketToIdx, bucketsDst);
-		
+		createAndFillShapeFromLeft(shape[bucketFromIdx], inBucketFromIdx, bucketsDst);
+		arraycopy(shape, bucketFromIdx + 1, bucketsDst, numBucketsLeft, numBucketsCenter);
+		createAndFillShapeFromRight(shape[bucketToIdx], inBucketToIdx, bucketsDst);
+
 		return new FplList(bucketsDst);
 	}
 
 	private void createAndFillShapeFromLeft(FplValue[] bucket, int inBucketFromIdx, FplValue[][] bucketsDst) {
-		if (inBucketFromIdx == 0 ) {
+		if (inBucketFromIdx == 0) {
 			bucketsDst[0] = bucket;
 		} else {
 			int bucketSize = BASE_SIZE;
@@ -605,7 +550,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		if (count < BASE_SIZE) {
 			return 1;
 		}
-		
+
 		return numBucketsForCount(count);
 	}
 
@@ -626,7 +571,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int bucketSize = BASE_SIZE;
 		int buckets = 1;
 		while (rest > bucketSize) {
-			rest -= bucketSize / 2;  // fill to half
+			rest -= bucketSize / 2; // fill to half
 			bucketSize *= FACTOR;
 			buckets++;
 		}
@@ -654,7 +599,11 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 * @return Number of elements in the list.
 	 */
 	public int size() {
-		return size(buckets);
+		if (linear == null) {
+			return size(shape);
+		} else {
+			return linear.length;
+		}
 	}
 
 	private FplValue[][] createTwoSidedShape(int size) {
@@ -678,17 +627,17 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			rest -= 2 * (bucketSize / 2);
 			bucketSize *= FACTOR;
 		}
-		if (i == j - 1) { 
+		if (i == j - 1) {
 			// two remaining buckets: i and i+1
 			createdBuckets[i] = new FplValue[rest / 2];
 			createdBuckets[j--] = new FplValue[rest - rest / 2];
-		} else { 
+		} else {
 			// one remaining bucket: i = j
 			createdBuckets[i] = new FplValue[rest];
 		}
 		return createdBuckets;
 	}
-	
+
 	private int size(FplValue[][] b) {
 		int count = 0;
 		for (FplValue[] bucket : b) {
@@ -702,31 +651,50 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 */
 	@Override
 	public Iterator<FplValue> iterator() {
-		return new Iterator<FplValue>() {
-			private int bucketsIdx = 0;
-			private int inBucketIdx = 0;
-			private boolean atEnd = isEmpty();
+		if (linear == null) {
+			return new Iterator<FplValue>() {
+				private int bucketsIdx = 0;
+				private int inBucketIdx = 0;
+				private boolean atEnd = isEmpty();
 
-			@Override
-			public boolean hasNext() {
-				return !atEnd;
-			}
-
-			@Override
-			public FplValue next() {
-				if (atEnd) {
-					throw new NoSuchElementException();
+				@Override
+				public boolean hasNext() {
+					return !atEnd;
 				}
-				FplValue result = buckets[bucketsIdx][inBucketIdx];
+
+				@Override
+				public FplValue next() {
+					if (atEnd) {
+						throw new NoSuchElementException();
+					}
+					FplValue result = shape[bucketsIdx][inBucketIdx];
 					inBucketIdx++;
-					if (inBucketIdx == buckets[bucketsIdx].length) {
+					if (inBucketIdx == shape[bucketsIdx].length) {
 						bucketsIdx++;
 						inBucketIdx = 0;
-						atEnd = bucketsIdx == buckets.length;
+						atEnd = bucketsIdx == shape.length;
 					}
-				return result;
-			}
-		};
+					return result;
+				}
+			};
+		} else {
+			return new Iterator<FplValue>() {
+				private int pos = 0;
+
+				@Override
+				public boolean hasNext() {
+					return pos < linear.length;
+				}
+
+				@Override
+				public FplValue next() {
+					if (pos == linear.length) {
+						throw new NoSuchElementException();
+					}
+					return linear[pos++];
+				}
+			};
+		}
 	}
 
 	/**
@@ -734,10 +702,10 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 */
 	@Override
 	public FplValue evaluate(Scope scope) throws EvaluationException {
-		if (buckets.length == 0 || buckets[0].length == 0) {
+		if (shape.length == 0 || shape[0].length == 0) {
 			return this; // empty list evaluates to empty list
 		}
-		FplValue firstElemUnevaluated = buckets[0][0];
+		FplValue firstElemUnevaluated = shape[0][0];
 		FplValue firstElem = firstElemUnevaluated.evaluate(scope);
 		if (!(firstElem instanceof Function)) {
 			throw new EvaluationException("Not a function: " + firstElem);
@@ -748,11 +716,11 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int inBucketIdx = 0;
 		for (int i = 0; i < params.length; i++) {
 			inBucketIdx++;
-			if (inBucketIdx == buckets[bucketIdx].length) {
+			if (inBucketIdx == shape[bucketIdx].length) {
 				inBucketIdx = 0;
 				bucketIdx++;
 			}
-			params[i] = buckets[bucketIdx][inBucketIdx];
+			params[i] = shape[bucketIdx][inBucketIdx];
 		}
 		FplValue result = f.call(scope, params);
 		if (result instanceof FplFunction && firstElem instanceof PositionHolder) {
@@ -762,7 +730,11 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	public boolean isEmpty() {
-		return buckets.length == 0 || buckets[0].length == 0;
+		if (linear == null) {
+			return shape.length == 0 || shape[0].length == 0;
+		} else {
+			return linear.length == 0;
+		}
 	}
 
 	/**
@@ -785,7 +757,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	// Only used for testing
 	int numberOfBuckets() {
-		return buckets.length;
+		return shape.length;
 	}
 
 	private FplValue[][] reshape(FplValue[][] bucketsSrc, int size) {
@@ -835,7 +807,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		return bucketsDst;
 	}
 
-	
 	private void checkNotEmpty() throws EvaluationException {
 		if (isEmpty()) {
 			throw new EvaluationException("List is empty");

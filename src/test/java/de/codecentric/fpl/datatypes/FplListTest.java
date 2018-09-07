@@ -224,9 +224,9 @@ public class FplListTest {
 	}
 	
 	@Test
-	public void testAdd() throws EvaluationException {
+	public void testAddAtEnd() throws EvaluationException {
 		FplList list = FplList.EMPTY_LIST;
-		final int size = 100;
+		final int size = 1001;
 		for (int i = 0; i < size; i++) {
 			list = list.addAtEnd(value(i));
 			assertEquals(i + 1, list.size());
@@ -234,6 +234,7 @@ public class FplListTest {
 				assertEquals(value(j), list.get(j));
 			}
 		}
+		System.out.println();
 	}
 
 	@Test
@@ -258,9 +259,9 @@ public class FplListTest {
 	}
 
 	@Test
-	public void testCons() throws EvaluationException {
+	public void testAddAtStart() throws EvaluationException {
 		FplList list = FplList.EMPTY_LIST;
-		final int size = 100;
+		final int size = 1000;
 		for (int i = size - 1; i >= 0; i--) {
 			list = list.addAtStart(value(i));
 			assertEquals(size - i, list.size());
