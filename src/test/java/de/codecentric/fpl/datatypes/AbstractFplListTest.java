@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Iterator;
 
-import org.junit.Test;
-
 import de.codecentric.fpl.EvaluationException;
 
 public class AbstractFplListTest {
@@ -31,14 +29,22 @@ public class AbstractFplListTest {
 		assertEquals(end + 1, value);
 	}
 
+	protected FplList create(int start, int end, int... bucketSizes) {
+		return new FplList(createValues(start, end), bucketSizes);
+	}
+	
 	protected FplList create(int start, int end) {
+		return new FplList(createValues(start, end));
+	}
+
+	private FplValue[] createValues(int start, int end) {
 		FplValue[] values = new FplValue[end - start + 1];
 		for (int i = start, j = 0; i <= end; i++, j++) {
 			values[j] = value(i);
 		}
-		return new FplList(values);
+		return values;
 	}
-
+	
 	protected FplInteger value(int i) {
 		return FplInteger.valueOf(i);
 	}
