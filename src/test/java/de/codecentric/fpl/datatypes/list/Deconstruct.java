@@ -5,11 +5,10 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.datatypes.AbstractFplListTest;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.FplList;
 
-public class Deconstruct extends AbstractFplListTest {
+public class Deconstruct extends AbstractListTest {
 	@Test
 	public void testRemoveFirstSizeOne() throws EvaluationException {
 		FplList list = new FplList(new FplValue[1]);

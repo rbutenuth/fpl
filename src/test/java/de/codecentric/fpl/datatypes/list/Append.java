@@ -1,14 +1,10 @@
 package de.codecentric.fpl.datatypes.list;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.datatypes.AbstractFplListTest;
-import de.codecentric.fpl.datatypes.list.FplList;
 
-public class Append extends AbstractFplListTest {
+public class Append extends AbstractListTest {
 	
 	@Test
 	public void firstEmpty() throws EvaluationException {

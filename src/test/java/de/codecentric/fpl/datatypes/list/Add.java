@@ -5,10 +5,9 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.datatypes.AbstractFplListTest;
 import de.codecentric.fpl.datatypes.list.FplList;
 
-public class Add extends AbstractFplListTest {
+public class Add extends AbstractListTest {
 	@Test
 	public void testAddAtEnd() throws EvaluationException {
 		FplList list = FplList.EMPTY_LIST;

@@ -1,13 +1,15 @@
-package de.codecentric.fpl.datatypes;
+package de.codecentric.fpl.datatypes.list;
 
 import static org.junit.Assert.assertEquals;
 
 import java.util.Iterator;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.datatypes.FplInteger;
+import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.FplList;
 
-public class AbstractFplListTest {
+public class AbstractListTest {
 
 
 	/**

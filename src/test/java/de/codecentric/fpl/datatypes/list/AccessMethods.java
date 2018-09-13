@@ -10,11 +10,10 @@ import java.util.NoSuchElementException;
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.datatypes.AbstractFplListTest;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.FplList;
 
-public class AccessMethods extends AbstractFplListTest {
+public class AccessMethods extends AbstractListTest {
 	@Test(expected = NoSuchElementException.class)
 	public void testIterateTooMuch() {
 		Iterator<FplValue> iter = new FplList(value(1)).iterator();
@@ -25,102 +24,106 @@ public class AccessMethods extends AbstractFplListTest {
 	}
 
 	@Test
-	public void testToString() {
+	public void listToString() {
 		assertEquals("(0 1 2)", create(0, 2).toString());
 	}
 
 	@Test
-	public void testFirstSizeOne() throws EvaluationException {
+	public void firstSizeOne() throws EvaluationException {
 		FplList list = new FplList(value(1));
 		assertEquals(value(1), list.first());
 	}
 
 	@Test
-	public void testLastSizeOne() throws EvaluationException {
+	public void firstSmall() throws EvaluationException {
+		FplList list = create(3, 5);
+		assertEquals(value(3), list.first());
+	}
+
+	@Test
+	public void firstLarge() throws EvaluationException {
+		FplList list = create(3, 50);
+		assertEquals(value(3), list.first());
+	}
+
+	@Test(expected = EvaluationException.class)
+	public void firstEmptyFails() throws EvaluationException {
+		FplList list = new FplList(new FplValue[0]);
+		list.first();
+	}
+
+	@Test
+	public void lastSizeOne() throws EvaluationException {
 		FplList list = new FplList(value(1));
 		assertEquals(value(1), list.last());
 	}
 
 	@Test
-	public void testIterator() throws EvaluationException {
-		FplList list = create(3, 10);
-		check(3, 10, list);
+	public void lastLarge() throws EvaluationException {
+		FplList list = create(3, 50);
+		assertEquals(value(50), list.last());
 	}
 
+	
 	@Test(expected = EvaluationException.class)
-	public void testFirstEmptyFails() throws EvaluationException {
-		FplList list = new FplList(new FplValue[0]);
-		list.first();
-	}
-
-	@Test(expected = EvaluationException.class)
-	public void testRestEmptyFails() throws EvaluationException {
+	public void removeFirstEmptyFails() throws EvaluationException {
 		FplList list = new FplList(new FplValue[0]);
 		list.removeFirst();
 	}
 
+	@Test
+	public void removeFirstSmall() throws EvaluationException {
+		FplList list = create(0, 5).removeFirst();
+		check(1, 5, list);
+	}
+	
+	@Test
+	public void removeFirstWhenFirstBucketIsOfSizeOne() throws EvaluationException {
+		FplList list = create(0, 9, 1, 9).removeFirst();
+		check(1, 9, list);
+	}
+	
+	@Test
+	public void removeFirstWhenFirstBucketIsOfSizeTwo() throws EvaluationException {
+		FplList list = create(0, 10, 2, 9).removeFirst();
+		check(1, 10, list);
+	}
+	
 	@Test(expected = EvaluationException.class)
-	public void testLastEmptyFails() throws EvaluationException {
+	public void lastEmptyFails() throws EvaluationException {
 		FplList list = new FplList(new FplValue[0]);
 		list.removeFirst();
 	}
 
+	@Test
+	public void removeLastWhenLastBucketIsOfSizeOne() throws EvaluationException {
+		FplList list = create(0, 9, 9, 1).removeLast();
+		check(0, 8, list);
+	}
+	
+	@Test
+	public void removeLastWhenLastBucketIsOfSizeTwo() throws EvaluationException {
+		FplList list = create(0, 10, 9, 2).removeLast();
+		check(0, 9, list);
+	}
+	
 	@Test(expected = EvaluationException.class)
-	public void testSubListBadRange() throws EvaluationException {
-		FplList list = FplList.EMPTY_LIST;
-		list.subList(10, 0);
+	public void getFromEmptyList() throws EvaluationException {
+		FplList.EMPTY_LIST.get(0);
 	}
-
+	
 	@Test(expected = EvaluationException.class)
-	public void testSubListNegativeFrom() throws EvaluationException {
-		FplList list = FplList.EMPTY_LIST;
-		list.subList(-1, 3);
+	public void getSmallListIndexNegative() throws EvaluationException {
+		create(0, 3).get(-1);
 	}
-
+	
 	@Test(expected = EvaluationException.class)
-	public void testSubListEndBeyondEndOfList() throws EvaluationException {
-		FplList list = create(1, 10);
-		list.subList(3, 12);
+	public void getSmallListIndexOutOfBounds() throws EvaluationException {
+		create(0, 3).get(4);
 	}
-
-	@Test
-	public void testSubListOfShortList() throws EvaluationException {
-		FplList list = create(1, 10);
-		list = list.subList(3, 5);
-		check(4, 5, list);
+	
+	@Test(expected = EvaluationException.class)
+	public void getLargelListIndexOutOfBounds() throws EvaluationException {
+		create(0, 100).get(101);
 	}
-
-	@Test
-	public void testSubListCompleteFromOneBucket() throws EvaluationException {
-		for (int size = 10; size < 100; size++) {
-			FplList list = create(1, size);
-			list = list.subList(0, size);
-			check(1, size, list);
-		}
-	}
-
-	@Test
-	public void testSubListCompleteFromShortList() throws EvaluationException {
-		FplList list = create(1, 7);
-		list = list.subList(0, 4);
-		check(1, 4, list);
-	}
-
-	@Test
-	public void testSubListCompleteFromSeveral() throws EvaluationException {
-		FplList list = FplList.EMPTY_LIST;
-		int size = 100;
-		for (int i = 1; i <= size; i++) {
-			list = list.addAtEnd(value(i));
-		}
-		list = list.subList(0, size);
-		check(1, size, list);
-	}
-
-	@Test
-	public void testFromEqualsToResultsInEmpty() throws EvaluationException {
-		FplList list = create(0, 9);
-		assertEquals(0, list.subList(3, 3).size());
-	}
-
 }

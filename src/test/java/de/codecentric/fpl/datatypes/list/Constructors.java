@@ -9,27 +9,42 @@ import java.util.Collections;
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.datatypes.AbstractFplListTest;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.FplList;
 
-public class Constructors extends AbstractFplListTest {
+public class Constructors extends AbstractListTest {
 	@Test
-	public void testEmpty() throws EvaluationException {
+	public void empty() throws EvaluationException {
 		FplList list = new FplList(new FplValue[0]);
 		assertEquals(0, list.size());
 		assertFalse(list.iterator().hasNext());
 	}
 
 	@Test
-	public void testElementConstructor() throws EvaluationException {
+	public void elementConstructor() throws EvaluationException {
 		FplList list = new FplList(value(42));
 		assertEquals(1, list.size());
 		assertEquals(value(42), list.get(0));
 	}
 
 	@Test
-	public void testListConstructor() throws EvaluationException {
+	public void emptyListConstructor() throws EvaluationException {
+		FplList list = new FplList(Collections.emptyList());
+		assertEquals(0, list.size());
+	}
+	
+	@Test
+	public void bigArrayConstructor() throws EvaluationException {
+		FplValue[] values = new FplValue[100];
+		for (int i = 0; i < values.length; i++) {
+			values[i] = value(i);
+		}
+		FplList list = new FplList(values);
+		check(0, values.length - 1, list);
+	}
+
+	@Test
+	public void smallListConstructor() throws EvaluationException {
 		int start = 3;
 		int end = 10;
 		FplValue[] values = new FplValue[end - start + 1];
@@ -41,9 +56,20 @@ public class Constructors extends AbstractFplListTest {
 	}
 
 	@Test
-	public void testEmptyListConstructor() throws EvaluationException {
-		FplList list = new FplList(Collections.emptyList());
-		assertEquals(0, list.size());
+	public void bigListConstructor() throws EvaluationException {
+		FplValue[] values = new FplValue[100];
+		for (int i = 0; i < values.length; i++) {
+			values[i] = value(i);
+		}
+		FplList list = new FplList(Arrays.asList(values));
+		check(0, values.length - 1, list);
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void badShape() throws EvaluationException {
+		FplValue[] values = new FplValue[0];
+		int[] bucketSizes = new int[1];
+		bucketSizes[0] = 1;
+		new FplList(values, bucketSizes);
+	}
 }
