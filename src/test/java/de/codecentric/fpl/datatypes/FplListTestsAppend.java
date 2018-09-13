@@ -68,16 +68,22 @@ public class FplListTestsAppend extends AbstractFplListTest {
 		check(0, 19, list);
 	}
 
-	//@Test
-	public void testReshape() throws EvaluationException {
-		FplList list = FplList.EMPTY_LIST;
-		for (int i = 0; i < 10; i++) {
-			list = list.append(create(i * 5, i * 5 + 4));
-			check(0, (i + 1) * 5 - 1, list);
-		}
-		check(0, 49, list);
-		// The "5" depends on BASE_SIZE and FACTOR in FplList
-		assertEquals(5, list.numberOfBuckets());
+	@Test
+	public void shapedShapedBucketsCombinableNeedReshape() throws EvaluationException {
+		FplList list = create(0, 5, 1, 1, 4).append(create(6, 11, 4, 1, 1));
+		check(0, 11, list);
+	}
+
+	@Test
+	public void shapedShapedWithoutReshape() throws EvaluationException {
+		FplList list = create(0, 15, 8, 8).append(create(16, 31, 8, 8));
+		check(0, 31, list);
+	}
+
+	@Test
+	public void shapedShapedWithReshape() throws EvaluationException {
+		FplList list = create(0, 15, 2, 2, 2, 2, 8).append(create(16, 31, 8, 2, 2, 2, 2));
+		check(0, 31, list);
 	}
 
 }

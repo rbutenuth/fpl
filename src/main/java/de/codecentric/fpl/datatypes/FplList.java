@@ -548,70 +548,112 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	private FplList appendShapedShaped(FplList list) {
+		int totalSize = size() + list.size();
+		int totalBuckets = shape.length + list.shape.length;
+
 		FplValue[] lastBucket = shape[shape.length - 1];
 		FplValue[] listFirstBucket = list.shape[0];
 
 		if (lastBucket.length + listFirstBucket.length <= BASE_SIZE) {
-			FplValue[][] buckets = new FplValue[shape.length + list.shape.length - 1][];
-			arraycopy(shape, 0, buckets, 0, shape.length - 1);
-			FplValue[] bucket = new FplValue[lastBucket.length + listFirstBucket.length];
-			arraycopy(lastBucket, 0, bucket, 0, lastBucket.length);
-			arraycopy(listFirstBucket, 0, bucket, lastBucket.length, listFirstBucket.length);
-			buckets[shape.length - 1] = bucket;
-			arraycopy(list.shape, 1, buckets, shape.length, list.shape.length - 1);
-			return new FplList(buckets);
+			if (needsReshaping(shape.length + list.shape.length - 1, totalSize)) {
+				return new FplList(mergedShape(shape, list.shape, totalSize));
+			} else {
+				FplValue[][] buckets = new FplValue[shape.length + list.shape.length - 1][];
+				arraycopy(shape, 0, buckets, 0, shape.length - 1);
+				FplValue[] bucket = new FplValue[lastBucket.length + listFirstBucket.length];
+				arraycopy(lastBucket, 0, bucket, 0, lastBucket.length);
+				arraycopy(listFirstBucket, 0, bucket, lastBucket.length, listFirstBucket.length);
+				buckets[shape.length - 1] = bucket;
+				arraycopy(list.shape, 1, buckets, shape.length, list.shape.length - 1);
+				return new FplList(buckets);
+			}
 		} else {
-			FplValue[][] buckets = copyOf(shape, shape.length + list.shape.length);
-			arraycopy(list.shape, 0, buckets, shape.length, list.shape.length);
-			// TODO: rehape!
-			return new FplList(buckets);
+			if (needsReshaping(shape.length + list.shape.length, totalSize)) {
+				return new FplList(mergedShape(shape, list.shape, totalSize));
+			} else {
+				FplValue[][] buckets = copyOf(shape, shape.length + list.shape.length);
+				arraycopy(list.shape, 0, buckets, shape.length, list.shape.length);
+				return new FplList(buckets);
+			}
 		}
 	}
 
-	private FplValue[][] reshape(FplValue[][] buckets, int size) {
-		// TODO: Optimization: Don't reshape all buckets, only from left and right until
-		// 1/4 (each) of elements is reached.
-		int numBuckets = 2;
-		int bucketSize = BASE_SIZE;
-		int sizeInBuckets = bucketSize;
-		while (sizeInBuckets < size) {
-			bucketSize *= FACTOR;
-			sizeInBuckets += bucketSize;
-			numBuckets += 2;
-		}
-		numBuckets--;
-		FplValue[][] bucketsDst = new FplValue[numBuckets][];
-		bucketSize = BASE_SIZE;
-		int rest = size;
-		int i = 0, j = numBuckets - 1;
-		while (i < j) {
-			bucketsDst[i] = new FplValue[bucketSize / 2];
-			bucketsDst[j] = new FplValue[bucketSize / 2];
-			rest -= bucketsDst[i].length + bucketsDst[j].length;
-			bucketSize *= FACTOR;
-			i++;
-			j--;
-		}
-		bucketsDst[i] = new FplValue[rest];
-		int srcIdx = 0, inBucketSrcIdx = 0, dstIdx = 0, inBucketDstIdx = 0;
+	private boolean needsReshaping(int numberOfBuckets, int size) {
+		return (1 << numberOfBuckets) > size;
+	}
 
-		// Copy entries until bucketsDst is filled completely
-		while (srcIdx < buckets.length && dstIdx < bucketsDst.length) {
-			int length = Math.min(buckets[srcIdx].length - inBucketSrcIdx, bucketsDst[dstIdx].length - inBucketDstIdx);
-			arraycopy(buckets[srcIdx], inBucketSrcIdx, bucketsDst[dstIdx], inBucketDstIdx, length);
-			inBucketSrcIdx += length;
-			if (inBucketSrcIdx == buckets[srcIdx].length) {
-				inBucketSrcIdx = 0;
-				srcIdx++;
+	private FplValue[][] mergedShape(FplValue[][] left, FplValue[][] right, int totalSize) {
+		FplValue[][] buckets = createEmptyShape(totalSize);
+
+		int idx = 0, inBucketIdx = 0, dstIdx = 0, inBucketDstIdx = 0;
+		// Copy entries from "left"
+		while (idx < left.length) {
+			int length = Math.min(left[idx].length - inBucketIdx, buckets[dstIdx].length - inBucketDstIdx);
+			arraycopy(left[idx], inBucketIdx, buckets[dstIdx], inBucketDstIdx, length);
+			inBucketIdx += length;
+			if (inBucketIdx == left[idx].length) {
+				inBucketIdx = 0;
+				idx++;
 			}
 			inBucketDstIdx += length;
-			if (inBucketDstIdx == bucketsDst[dstIdx].length) {
+			if (inBucketDstIdx == buckets[dstIdx].length) {
 				inBucketDstIdx = 0;
 				dstIdx++;
 			}
 		}
+		// Copy entries from "right"
+		idx = 0; inBucketIdx = 0;
+		while (idx < right.length) {
+			int length = Math.min(right[idx].length - inBucketIdx, buckets[dstIdx].length - inBucketDstIdx);
+			arraycopy(right[idx], inBucketIdx, buckets[dstIdx], inBucketDstIdx, length);
+			inBucketIdx += length;
+			if (inBucketIdx == right[idx].length) {
+				inBucketIdx = 0;
+				idx++;
+			}
+			inBucketDstIdx += length;
+			if (inBucketDstIdx == buckets[dstIdx].length) {
+				inBucketDstIdx = 0;
+				dstIdx++;
+			}
+		}
+		
+		return buckets;
+	}
 
-		return bucketsDst;
+	/**
+	 * Create an empty shape starting at both ends with size 3/4 * BASE_SIZE and
+	 * increasing by FACTOR to the middle.
+	 * 
+	 * @param size
+	 *            It place for this number of values.
+	 * @return Array of arrays, all values <code>null</code>
+	 */
+	private FplValue[][] createEmptyShape(int size) {
+		int numBuckets = 2;
+		int bucketSize = 3 * BASE_SIZE / 4;
+		int sizeInBuckets = 2 * bucketSize;
+		while (sizeInBuckets < size) {
+			bucketSize *= FACTOR;
+			sizeInBuckets += 2 * bucketSize;
+			numBuckets += 2;
+		}
+		numBuckets--;
+		FplValue[][] emptyShape = new FplValue[numBuckets][];
+		bucketSize = BASE_SIZE;
+		int rest = size;
+		int i = 0, j = numBuckets - 1;
+		while (i < j) {
+			emptyShape[i] = new FplValue[bucketSize / 2];
+			emptyShape[j] = new FplValue[bucketSize / 2];
+			rest -= emptyShape[i].length + emptyShape[j].length;
+			bucketSize *= FACTOR;
+			i++;
+			j--;
+		}
+		emptyShape[i] = new FplValue[rest];
+
+		return emptyShape;
 	}
 
 	/**
