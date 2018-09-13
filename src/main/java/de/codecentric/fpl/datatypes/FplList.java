@@ -931,25 +931,31 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 */
 	@Override
 	public FplValue evaluate(Scope scope) throws EvaluationException {
-		if (shape.length == 0 || shape[0].length == 0) {
+		if (isEmpty()) {
 			return this; // empty list evaluates to empty list
 		}
-		FplValue firstElemUnevaluated = shape[0][0];
+		FplValue firstElemUnevaluated = first();
 		FplValue firstElem = firstElemUnevaluated.evaluate(scope);
 		if (!(firstElem instanceof Function)) {
 			throw new EvaluationException("Not a function: " + firstElem);
 		}
 		Function f = (Function) firstElem;
-		FplValue[] params = new FplValue[size() - 1];
-		int bucketIdx = 0;
-		int inBucketIdx = 0;
-		for (int i = 0; i < params.length; i++) {
-			inBucketIdx++;
-			if (inBucketIdx == shape[bucketIdx].length) {
-				inBucketIdx = 0;
-				bucketIdx++;
+		FplValue[] params;
+		if (linear == null) {
+			params = new FplValue[size() - 1];
+			int bucketIdx = 0;
+			int inBucketIdx = 0;
+			for (int i = 0; i < params.length; i++) {
+				inBucketIdx++;
+				if (inBucketIdx == shape[bucketIdx].length) {
+					inBucketIdx = 0;
+					bucketIdx++;
+				}
+				params[i] = shape[bucketIdx][inBucketIdx];
 			}
-			params[i] = shape[bucketIdx][inBucketIdx];
+		} else {
+			params = new FplValue[linear.length - 1];
+			arraycopy(linear, 1, params, 0, params.length);
 		}
 		FplValue result = f.call(scope, params);
 		if (result instanceof FplFunction && firstElem instanceof PositionHolder) {

@@ -32,14 +32,14 @@ public abstract class Function extends Atom implements Named, PositionHolder {
 	private Position position;
 
 	private List<String> comment;
-	
-	private final String [] parameterComments;
-	
+
+	private final String[] parameterComments;
+
 	/**
 	 * @param position
 	 *            Position in source code.
-	 * @param
-	 * 			  comment A list of lines with comment in markdown syntax
+	 * @param comment
+	 *            A list of lines with comment in markdown syntax
 	 * @param name
 	 *            Not null, not empty.
 	 * @param parameterNames
@@ -64,7 +64,7 @@ public abstract class Function extends Atom implements Named, PositionHolder {
 	 * @param name
 	 *            Not null, not empty.
 	 * @param varArg
-	 * 			  Is this a function with variable argument list? 
+	 *            Is this a function with variable argument list?
 	 * @param parameterNames
 	 *            Names of the parameters. If last ends with "...", function is
 	 *            variable argument function.
@@ -74,45 +74,58 @@ public abstract class Function extends Atom implements Named, PositionHolder {
 	}
 
 	public static List<String> comment(String... lines) {
-    	List<String> result = new ArrayList<>();
-    	for (String line: lines) {
-    		result.add(line);
-    	}
-    	return result;
-    }
-	
+		List<String> result = new ArrayList<>();
+		for (String line : lines) {
+			result.add(line);
+		}
+		return result;
+	}
+
 	/**
-	 * Call a function (with parameters). When this method is called, the number
-	 * of parameters has already been checked. When there are not enough parameters,
+	 * Call a function (with parameters). When this method is called, the number of
+	 * parameters has already been checked. When there are not enough parameters,
 	 * the method is not called, instead Currying takes place.
 	 * 
 	 * @param scope
 	 *            Evaluation scope.
 	 * @param parameters
-	 *            The parameters of the function.
+	 *            The parameters of the function. Do not change the array elements!
 	 * @return The result of the function.
 	 * @throws EvaluationException
 	 *             If execution fails.
 	 */
 	protected abstract FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException;
 
+	/**
+	 * Call a function (with parameters). When there are not enough parameters for
+	 * the function, do Currying.
+	 * 
+	 * @param scope
+	 *            Evaluation scope.
+	 * @param parameters
+	 *            The parameters of the function. Do not change the array elements!
+	 * @return The result of the function (may be a Curryied function).
+	 * @throws EvaluationException
+	 *             If execution fails.
+	 */
 	public final FplValue call(Scope scope, FplValue[] parameters) throws EvaluationException {
-        int missing = checkNumberOfParameters(parameters);
-        if (missing > 0) {
-            if (parameters.length == 0) {
-                return this;
-            } else {
-                return makeCurryFunction(scope, parameters, missing);
-            }
-        }
-        try {
-        	return callInternal(scope, parameters);
-        } catch (EvaluationException e) {
-        	e.add(new StackTraceElement(getClass().getName(), getName(), getPosition().getName(), getPosition().getLine()));
-        	throw e;
-        }
+		int missing = checkNumberOfParameters(parameters);
+		if (missing > 0) {
+			if (parameters.length == 0) {
+				return this;
+			} else {
+				return makeCurryFunction(scope, parameters, missing);
+			}
+		}
+		try {
+			return callInternal(scope, parameters);
+		} catch (EvaluationException e) {
+			e.add(new StackTraceElement(getClass().getName(), getName(), getPosition().getName(),
+					getPosition().getLine()));
+			throw e;
+		}
 	}
-	
+
 	/**
 	 * @param parameters
 	 *            Parameters
@@ -155,8 +168,8 @@ public abstract class Function extends Atom implements Named, PositionHolder {
 	}
 
 	/**
-	 * Evaluate an expression, check for boolean value. <code>null</code> (nil),
-	 * the integer value 0, and an empty list are <code>false</code>, everything else is
+	 * Evaluate an expression, check for boolean value. <code>null</code> (nil), the
+	 * integer value 0, and an empty list are <code>false</code>, everything else is
 	 * <code>true</code>
 	 * 
 	 * @param scope
@@ -173,10 +186,10 @@ public abstract class Function extends Atom implements Named, PositionHolder {
 		}
 		FplValue value = expression.evaluate(scope);
 		if (value instanceof FplList) {
-			return ((FplList)value).size() > 0;
+			return ((FplList) value).size() > 0;
 		} else if (value instanceof FplInteger) {
 			FplInteger i = (FplInteger) value;
-			return  i.getValue() != 0;
+			return i.getValue() != 0;
 		} else {
 			return false;
 		}
@@ -190,7 +203,7 @@ public abstract class Function extends Atom implements Named, PositionHolder {
 	public List<String> getComment() {
 		return Collections.unmodifiableList(comment);
 	}
-	
+
 	/**
 	 * @param position
 	 *            Position where function is defined. May be
@@ -204,7 +217,7 @@ public abstract class Function extends Atom implements Named, PositionHolder {
 	public String getName() {
 		return name;
 	}
-	
+
 	public boolean isVarArg() {
 		return varArg;
 	}
@@ -220,7 +233,7 @@ public abstract class Function extends Atom implements Named, PositionHolder {
 	public int getNumberOfParameterNames() {
 		return minimumNumberOfParameters + (varArg ? 1 : 0);
 	}
-	
+
 	/**
 	 * @return Parameter names, last one does not end with "...", even when this is
 	 *         a variable argument function
@@ -232,52 +245,52 @@ public abstract class Function extends Atom implements Named, PositionHolder {
 	public String getParameterName(int index) {
 		return parameterNames[index];
 	}
-	
+
 	public String getParameterComment(int index) {
 		return parameterComments[index];
 	}
-	
+
 	public void setParameterComment(int index, String comment) {
 		parameterComments[index] = comment == null ? "" : comment;
 	}
-	
+
 	/**
 	 * @return Does this function accepts a variable number of parameters?
 	 */
 	public boolean isVararg() {
 		return varArg;
 	}
-	
-    public CurryFunction makeCurryFunction(Scope scope, FplValue[] parameters, int missing) throws EvaluationException {
-        String curryName = name + "-curry-" + Integer.toString(missing);
-        String[] curryParameterNames = new String[missing + (varArg ? 1 : 0)];
-        System.arraycopy(parameterNames, parameters.length, curryParameterNames, 0, curryParameterNames.length);
-        FplValue[] givenParameters = new FplValue[parameters.length];
-        for (int i = 0; i < givenParameters.length; i++) {
-        	FplValue p = parameters[i];
-            if (p instanceof LazyExpression || p instanceof Atom) {
-                givenParameters[i] = p;
-            } else {
-                givenParameters[i] = new LazyExpression(scope, p);
-            }
-        }
-        return new CurryFunction(curryName, givenParameters, curryParameterNames, varArg);
-    }
 
-    private class CurryFunction extends Function {
-        private FplValue[] givenParameters;
+	public CurryFunction makeCurryFunction(Scope scope, FplValue[] parameters, int missing) throws EvaluationException {
+		String curryName = name + "-curry-" + Integer.toString(missing);
+		String[] curryParameterNames = new String[missing + (varArg ? 1 : 0)];
+		System.arraycopy(parameterNames, parameters.length, curryParameterNames, 0, curryParameterNames.length);
+		FplValue[] givenParameters = new FplValue[parameters.length];
+		for (int i = 0; i < givenParameters.length; i++) {
+			FplValue p = parameters[i];
+			if (p instanceof LazyExpression || p instanceof Atom) {
+				givenParameters[i] = p;
+			} else {
+				givenParameters[i] = new LazyExpression(scope, p);
+			}
+		}
+		return new CurryFunction(curryName, givenParameters, curryParameterNames, varArg);
+	}
 
-        private CurryFunction(String name, FplValue[] lazies, String[] parameterNames, boolean varArg) {
-            super(name, Function.this.getComment(), Function.this.varArg, parameterNames);
-            this.givenParameters = lazies;
-        }
+	private class CurryFunction extends Function {
+		private FplValue[] givenParameters;
 
-        @Override
-        public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-            FplValue[] allParams = new FplValue[givenParameters.length + parameters.length];
-            System.arraycopy(givenParameters, 0, allParams, 0, givenParameters.length);
-            System.arraycopy(parameters, 0, allParams, givenParameters.length, parameters.length);
-            return Function.this.callInternal(scope, allParams);
-        }
-    }
+		private CurryFunction(String name, FplValue[] lazies, String[] parameterNames, boolean varArg) {
+			super(name, Function.this.getComment(), Function.this.varArg, parameterNames);
+			this.givenParameters = lazies;
+		}
+
+		@Override
+		public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			FplValue[] allParams = new FplValue[givenParameters.length + parameters.length];
+			System.arraycopy(givenParameters, 0, allParams, 0, givenParameters.length);
+			System.arraycopy(parameters, 0, allParams, givenParameters.length, parameters.length);
+			return Function.this.callInternal(scope, allParams);
+		}
+	}
 }
