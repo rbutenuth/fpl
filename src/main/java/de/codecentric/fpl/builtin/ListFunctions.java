@@ -8,10 +8,10 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.FplFunction;
 import de.codecentric.fpl.datatypes.FplInteger;
-import de.codecentric.fpl.datatypes.FplList;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.Parameter;
+import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
  * Basic list functions and quote.

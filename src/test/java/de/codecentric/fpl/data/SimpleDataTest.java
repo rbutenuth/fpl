@@ -11,10 +11,10 @@ import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
-import de.codecentric.fpl.datatypes.FplList;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.LazyExpression;
 import de.codecentric.fpl.datatypes.Symbol;
+import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
 
 /**

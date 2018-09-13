@@ -8,11 +8,11 @@ import org.junit.Test;
 
 import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
-import de.codecentric.fpl.datatypes.FplList;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.Symbol;
+import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
 
 public class FunctionTest {

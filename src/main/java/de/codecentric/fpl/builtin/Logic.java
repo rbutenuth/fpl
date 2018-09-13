@@ -6,10 +6,10 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
-import de.codecentric.fpl.datatypes.FplList;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.Symbol;
+import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
  * Basic logic functions. <code>LInteger(0)</code> and <code>null</code> are false, everything else is true.

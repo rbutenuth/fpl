@@ -7,10 +7,10 @@ import java.util.List;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.FplFunction;
-import de.codecentric.fpl.datatypes.FplList;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.Symbol;
+import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
  * Lisp "lambda".

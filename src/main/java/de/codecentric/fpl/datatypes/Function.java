@@ -8,6 +8,7 @@ import java.util.List;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
 
 /**

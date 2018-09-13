@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Iterator;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.datatypes.list.FplList;
 
 public class AbstractFplListTest {
 

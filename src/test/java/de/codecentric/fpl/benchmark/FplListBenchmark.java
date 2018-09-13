@@ -2,8 +2,8 @@ package de.codecentric.fpl.benchmark;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
-import de.codecentric.fpl.datatypes.FplList;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.list.FplList;
 
 public class FplListBenchmark {
 

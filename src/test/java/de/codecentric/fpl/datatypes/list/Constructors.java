@@ -1,4 +1,4 @@
-package de.codecentric.fpl.datatypes;
+package de.codecentric.fpl.datatypes.list;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -9,8 +9,11 @@ import java.util.Collections;
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.datatypes.AbstractFplListTest;
+import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.list.FplList;
 
-public class FplListTestsConstructors extends AbstractFplListTest {
+public class Constructors extends AbstractFplListTest {
 	@Test
 	public void testEmpty() throws EvaluationException {
 		FplList list = new FplList(new FplValue[0]);

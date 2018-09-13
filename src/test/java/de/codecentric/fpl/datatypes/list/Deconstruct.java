@@ -1,12 +1,15 @@
-package de.codecentric.fpl.datatypes;
+package de.codecentric.fpl.datatypes.list;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.datatypes.AbstractFplListTest;
+import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.list.FplList;
 
-public class FplListTestsDeconstruct extends AbstractFplListTest {
+public class Deconstruct extends AbstractFplListTest {
 	@Test
 	public void testRemoveFirstSizeOne() throws EvaluationException {
 		FplList list = new FplList(new FplValue[1]);

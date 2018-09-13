@@ -1,4 +1,4 @@
-package de.codecentric.fpl.datatypes;
+package de.codecentric.fpl.datatypes.list;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,8 +10,11 @@ import java.util.NoSuchElementException;
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.datatypes.AbstractFplListTest;
+import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.list.FplList;
 
-public class FplListTestsAccessMethods extends AbstractFplListTest {
+public class AccessMethods extends AbstractFplListTest {
 	@Test(expected = NoSuchElementException.class)
 	public void testIterateTooMuch() {
 		Iterator<FplValue> iter = new FplList(value(1)).iterator();

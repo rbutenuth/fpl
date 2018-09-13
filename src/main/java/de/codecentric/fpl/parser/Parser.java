@@ -10,10 +10,10 @@ import java.util.Set;
 
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
-import de.codecentric.fpl.datatypes.FplList;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Symbol;
+import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
  * A simple Lisp parser.

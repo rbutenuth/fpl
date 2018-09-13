@@ -1,4 +1,4 @@
-package de.codecentric.fpl.datatypes;
+package de.codecentric.fpl.datatypes.list;
 
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.copyOf;
@@ -10,6 +10,9 @@ import java.util.NoSuchElementException;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.datatypes.FplFunction;
+import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.Function;
 
 // TODO: More operations:
 // remove(int index)
