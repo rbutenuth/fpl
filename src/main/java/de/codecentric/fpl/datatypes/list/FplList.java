@@ -763,7 +763,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	private void createAndFillShapeFromRight(FplValue[] bucket, int inBucketToIdx, FplValue[][] bucketsDst) {
-		if (inBucketToIdx == bucket.length - 1) {
+		if (inBucketToIdx == bucket.length) {
 			bucketsDst[bucketsDst.length - 1] = bucket;
 		} else {
 			int bucketSize = 3 * BASE_SIZE / 4;
@@ -829,7 +829,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			FplValue[][] bucketsDst = createEmptyShape(size);
 			for (int i = 0, bucketIdx = 0; bucketIdx < bucketsDst.length; bucketIdx++) {
 				FplValue[] bucketDst = bucketsDst[bucketIdx];
-				arraycopy(fplValues, i, bucketDst, 0, bucketDst.length);
+				arraycopy(fplValues, first + i, bucketDst, 0, bucketDst.length);
 				i += bucketDst.length;
 			}
 			return new FplList(bucketsDst);

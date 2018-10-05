@@ -86,13 +86,27 @@ public class SubList extends AbstractListTest {
 	}
 
 	@Test
+	public void subListBucketsWithin() throws EvaluationException {
+		FplList list = create(0, 15, 4, 8, 4);
+		check(2, 7, list.subList(2, 7));
+	}
+
+	@Test
 	public void subListBucketsStartWithPartFromLastBucket() throws EvaluationException {
 		FplList list = create(0, 15, 4, 8, 4);
 		check(0, 13, list.subList(0, 13));
 	}
 
 	@Test
+	public void subListBucketsEnd() throws EvaluationException {
+		FplList list = create(0, 15, 4, 8, 4);
+		check(3, 15, list.subList(3, 16));
+	}
+
+	@Test
 	public void subListFromOneLargeBucket() throws EvaluationException {
+		FplList list = create(0, 39, 4, 32, 4);
+		check(5, 16, list.subList(5, 17));
 	}
 
 	@Test

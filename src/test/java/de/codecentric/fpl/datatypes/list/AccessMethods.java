@@ -15,10 +15,21 @@ import de.codecentric.fpl.datatypes.list.FplList;
 
 public class AccessMethods extends AbstractListTest {
 	@Test(expected = NoSuchElementException.class)
-	public void testIterateTooMuch() {
+	public void testIterateTooMuchSmallList() {
 		Iterator<FplValue> iter = new FplList(value(1)).iterator();
 		assertTrue(iter.hasNext());
 		assertEquals(value(1), iter.next());
+		assertFalse(iter.hasNext());
+		iter.next();
+	}
+
+	@Test(expected = NoSuchElementException.class)
+	public void testIterateTooMuchLargeList() {
+		Iterator<FplValue> iter = create(0, 99).iterator();
+		for (int i = 0; i <= 99; i++) {
+			assertTrue(iter.hasNext());
+			assertEquals(value(i), iter.next());
+		}
 		assertFalse(iter.hasNext());
 		iter.next();
 	}
