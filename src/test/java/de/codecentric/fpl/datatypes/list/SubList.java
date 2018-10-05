@@ -1,17 +1,11 @@
 package de.codecentric.fpl.datatypes.list;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.list.FplList;
 
 public class SubList extends AbstractListTest {
 	@Test(expected = EvaluationException.class)
@@ -27,9 +21,29 @@ public class SubList extends AbstractListTest {
 	}
 
 	@Test(expected = EvaluationException.class)
-	public void subListEndBeyondEndOfList() throws EvaluationException {
+	public void largeSubListEndBeyondEndOfList() throws EvaluationException {
 		FplList list = create(1, 10);
 		list.subList(3, 12);
+	}
+
+	@Test(expected = EvaluationException.class)
+	public void smallSubListEndBeyondEndOfList() throws EvaluationException {
+		FplList list = create(1, 7);
+		list.subList(3, 8);
+	}
+
+	@Test
+	public void subListCompleteOfShortList() throws EvaluationException {
+		FplList list = create(1, 6);
+		FplList subList = list.subList(0, 6);
+		assertTrue(list == subList);
+	}
+
+	@Test
+	public void subListCompleteOfLargeList() throws EvaluationException {
+		FplList list = create(1, 23, 4, 15, 4);
+		FplList subList = list.subList(0, 23);
+		assertTrue(list == subList);
 	}
 
 	@Test
@@ -40,30 +54,45 @@ public class SubList extends AbstractListTest {
 	}
 
 	@Test
-	public void subListCompleteFromOneBucket() throws EvaluationException {
-		for (int size = 10; size < 100; size++) {
-			FplList list = create(1, size);
-			list = list.subList(0, size);
-			check(1, size, list);
-		}
+	public void subListStartOfShortList() throws EvaluationException {
+		FplList list = create(0, 6);
+		list = list.subList(0, 6);
+		check(0, 5, list);
 	}
 
 	@Test
-	public void subListCompleteFromShortList() throws EvaluationException {
-		FplList list = create(1, 7);
-		list = list.subList(0, 4);
-		check(1, 4, list);
+	public void subListEndOfShortList() throws EvaluationException {
+		FplList list = create(0, 6);
+		list = list.subList(1, 7);
+		check(1, 6, list);
 	}
 
 	@Test
-	public void subListCompleteFromSeveral() throws EvaluationException {
-		FplList list = FplList.EMPTY_LIST;
-		int size = 100;
-		for (int i = 1; i <= size; i++) {
-			list = list.addAtEnd(value(i));
-		}
-		list = list.subList(0, size);
-		check(1, size, list);
+	public void subListFromOneSmallBucket() throws EvaluationException {
+		FplList list = create(0, 15, 4, 8, 4);
+		check(5, 6, list.subList(5, 7));
+	}
+
+	@Test(expected = EvaluationException.class)
+	public void subListStartBeyondEndOfList() throws EvaluationException {
+		FplList list = create(0, 15, 4, 8, 4);
+		check(5, 6, list.subList(16, 17));
+	}
+
+	@Test
+	public void subListBucketsStart() throws EvaluationException {
+		FplList list = create(0, 15, 4, 8, 4);
+		check(0, 7, list.subList(0, 7));
+	}
+
+	@Test
+	public void subListBucketsStartWithPartFromLastBucket() throws EvaluationException {
+		FplList list = create(0, 15, 4, 8, 4);
+		check(0, 13, list.subList(0, 13));
+	}
+
+	@Test
+	public void subListFromOneLargeBucket() throws EvaluationException {
 	}
 
 	@Test
