@@ -75,4 +75,11 @@ public class Add extends AbstractListTest {
 		list = list.addAtStart(value(0));
 		check(0, 108, list);
 	}
+	
+	@Test
+	public void testAddAtFrontOverflowInSmallBucket() throws EvaluationException {
+		FplList list = create(1, 8).append(create(9, 16));
+		list = list.addAtStart(value(0));
+		check(0, 16, list);
+	}
 }

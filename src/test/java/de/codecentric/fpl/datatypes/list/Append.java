@@ -84,4 +84,10 @@ public class Append extends AbstractListTest {
 		check(0, 31, list);
 	}
 
+	@Test
+	public void shapedShapedWithReshape2() throws EvaluationException {
+		FplList list = create(0, 15, 8, 2, 2, 2, 2).append(create(16, 31, 2, 2, 2, 2, 8));
+		check(0, 31, list);
+	}
+
 }

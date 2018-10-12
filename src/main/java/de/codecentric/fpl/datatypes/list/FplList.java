@@ -17,7 +17,7 @@ import de.codecentric.fpl.datatypes.Function;
 // TODO: More operations:
 // remove(int index)
 // insert(FplValue value, int index),
-// set(FplValue value, int index)
+// set/replace(FplValue value, int index)
 
 /**
  * An FPL List.
@@ -375,7 +375,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int maxSize = BASE_SIZE * FACTOR;
 		while (lastCarryIdx < shape.length // we are still within the array
 				&& shape[lastCarryIdx].length + carrySize <= maxSize // carry fits in bucket
-				&& shape[lastCarryIdx].length <= maxSize // next bucket is not too big
+				&& shape[lastCarryIdx].length <= maxSize * FACTOR// next bucket is not too big
 		// TODO: stop when buckets are getting smaller
 		) {
 			carrySize += shape[lastCarryIdx++].length;
@@ -454,7 +454,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int maxSize = BASE_SIZE * FACTOR;
 		while (firstCarryIdx >= 0 // we are still within the array
 				&& shape[firstCarryIdx].length + carrySize <= maxSize // carry fits in bucket
-				&& shape[firstCarryIdx].length <= maxSize // next bucket is not too big
+				&& shape[firstCarryIdx].length <= maxSize * FACTOR // next bucket is not too big
 		// TODO: stop when buckets are getting smaller
 		) {
 			carrySize += shape[firstCarryIdx--].length;
