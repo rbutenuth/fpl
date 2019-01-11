@@ -18,6 +18,7 @@ public class Constructors extends AbstractListTest {
 		FplList list = new FplList(new FplValue[0]);
 		assertEquals(0, list.size());
 		assertFalse(list.iterator().hasNext());
+		assertEquals(0, list.numberOfBuckets());
 	}
 
 	@Test
@@ -25,6 +26,7 @@ public class Constructors extends AbstractListTest {
 		FplList list = new FplList(value(42));
 		assertEquals(1, list.size());
 		assertEquals(value(42), list.get(0));
+		assertEquals(0, list.numberOfBuckets());
 	}
 
 	@Test
@@ -41,6 +43,7 @@ public class Constructors extends AbstractListTest {
 		}
 		FplList list = new FplList(values);
 		check(0, values.length - 1, list);
+		assertEquals(1, list.numberOfBuckets());
 	}
 
 	@Test
@@ -63,6 +66,7 @@ public class Constructors extends AbstractListTest {
 		}
 		FplList list = new FplList(Arrays.asList(values));
 		check(0, values.length - 1, list);
+		assertEquals(1, list.numberOfBuckets());
 	}
 
 	@Test(expected = IllegalArgumentException.class)

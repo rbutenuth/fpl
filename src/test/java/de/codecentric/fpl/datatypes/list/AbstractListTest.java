@@ -11,14 +11,11 @@ import de.codecentric.fpl.datatypes.list.FplList;
 
 public class AbstractListTest {
 
-
 	/**
-	 * @param start
-	 *            First element
-	 * @param end
-	 *            Last element in list
-	 * @param list
-	 *            List to check
+	 * @param start First element (including)
+	 * @param end   Last element in list (including)
+	 * @param list  List to check, must contain elements from <code>start</code> and
+	 *              <code>end</code>
 	 */
 	protected void check(int start, int end, FplList list) throws EvaluationException {
 		assertEquals("List size", end - start + 1, list.size());
@@ -35,7 +32,13 @@ public class AbstractListTest {
 	protected FplList create(int start, int end, int... bucketSizes) {
 		return new FplList(createValues(start, end), bucketSizes);
 	}
-	
+
+	/**
+	 * @param start first element of generated list (including)
+	 * @param end   last element of generated list (including)
+	 * @return List of {@link FplInteger}, including <code>start</code> and
+	 *         <code>end</code>
+	 */
 	protected FplList create(int start, int end) {
 		return new FplList(createValues(start, end));
 	}
@@ -47,7 +50,7 @@ public class AbstractListTest {
 		}
 		return values;
 	}
-	
+
 	protected FplInteger value(int i) {
 		return FplInteger.valueOf(i);
 	}

@@ -772,7 +772,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			while (rest > bucketSize) {
 				int size = Math.min(bucketSize / 2, rest);
 				bucketsDst[bucketDstIndex] = new FplValue[size];
-				arraycopy(bucket, inBucketToIdx - size, bucketsDst[bucketDstIndex], 0, size);
+				arraycopy(bucket, inBucketToIdx - size + 1, bucketsDst[bucketDstIndex], 0, size);
 				bucketDstIndex--;
 				inBucketToIdx += size;
 				rest -= size;
@@ -785,29 +785,22 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	private int computeNumberOfBucketsLeft(FplValue[] fplValues, int inBucketIdx) {
 		if (inBucketIdx == 0) {
-			return 1;
+			return 1; // It is possible to copy the complete bucket by reference
 		}
-		int count = fplValues.length - inBucketIdx;
-		if (count < BASE_SIZE) {
-			return 1;
-		}
-
-		return numBucketsForCount(count);
+		return numBucketsForCount(fplValues.length - inBucketIdx);
 	}
 
 	private int computeNumberOfBucketsRight(FplValue[] fplValues, int inBucketIdx) {
-		if (inBucketIdx == 0) {
-			return 1;
+		if (inBucketIdx == fplValues.length) {
+			return 1; // It is possible to copy the complete bucket by reference
 		}
-		int count = inBucketIdx;
-		if (count < BASE_SIZE) {
-			return 1;
-		}
-
-		return numBucketsForCount(count);
+		return numBucketsForCount(inBucketIdx);
 	}
 
 	private int numBucketsForCount(int count) {
+		if (count < BASE_SIZE) {
+			return 1;
+		}
 		int rest = count;
 		int bucketSize = 3 * BASE_SIZE / 4;
 		int buckets = 1;

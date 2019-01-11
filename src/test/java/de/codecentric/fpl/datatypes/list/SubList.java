@@ -110,6 +110,13 @@ public class SubList extends AbstractListTest {
 	}
 
 	@Test
+	public void subListFromSeveralLargeBuckets() throws EvaluationException {
+		FplList list = create(0, 99, 20, 20, 20, 20, 20);
+		check(0, 99, list);
+		check(5, 95, list.subList(5, 95));
+	}
+
+	@Test
 	public void fromEqualsToResultsInEmpty() throws EvaluationException {
 		FplList list = create(0, 9);
 		assertEquals(0, list.subList(3, 3).size());

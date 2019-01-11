@@ -14,6 +14,14 @@ import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 public class AccessMethods extends AbstractListTest {
+	
+	@Test
+	public void createAndCheck() throws EvaluationException {
+		FplList list = create(0, 9);
+		assertEquals(10, list.size());
+		check(0, 9, list);
+	}
+	
 	@Test(expected = NoSuchElementException.class)
 	public void testIterateTooMuchSmallList() {
 		Iterator<FplValue> iter = new FplList(value(1)).iterator();
