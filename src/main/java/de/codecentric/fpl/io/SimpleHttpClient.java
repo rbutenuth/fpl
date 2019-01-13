@@ -12,7 +12,7 @@ import java.util.Base64;
 public class SimpleHttpClient {
 
 	public static void main(String[] args) throws Exception {
-		boolean lastBlockOnly = args.length == 4 && "lastBlockOnly".equals(args[4]);
+		boolean lastBlockOnly = args.length == 5 && "lastBlockOnly".equals(args[4]);
 
 		try (InputStream is = new FileInputStream(args[3])) {
 			System.out.println(post(args[0], args[1], args[2], is, lastBlockOnly));

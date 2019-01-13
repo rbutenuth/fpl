@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -77,6 +79,45 @@ public class SimpleHttpTest {
 		String response = SimpleHttpClient.post(baseUrl, user, password, stream("nil"), false);
 		// nil -> null -> terminates the parsing loop, therefore "nothing" returned as result.
 		assertEquals("nil", response.trim());
+	}
+
+//	boolean lastBlockOnly = args.length == 4 && "lastBlockOnly".equals(args[4]);
+//
+//	try (InputStream is = new FileInputStream(args[3])) {
+//		System.out.println(post(args[0], args[1], args[2], is, lastBlockOnly));
+//	}
+
+	@Test
+	public void testNullResultViaMain() throws Exception {
+		File file = File.createTempFile("test", ".lisp");
+		FileWriter writer = new FileWriter(file);
+		writer.write("nil");
+		writer.close();
+		String[] args = new String[4];
+		args[0] = baseUrl;
+		args[1] = user;
+		args[2] = password;
+		args[3] = file.getAbsolutePath();
+		SimpleHttpClient.main(args);
+		// nil -> null -> terminates the parsing loop, therefore "nothing" returned as result.
+		file.delete();
+	}
+
+	@Test
+	public void testNullResultViaMainLastBlockOnly() throws Exception {
+		File file = File.createTempFile("test", ".lisp");
+		FileWriter writer = new FileWriter(file);
+		writer.write("nil\r\nnil");
+		writer.close();
+		String[] args = new String[5];
+		args[0] = baseUrl;
+		args[1] = user;
+		args[2] = password;
+		args[3] = file.getAbsolutePath();
+		args[4] = "lastBlockOnly";
+		SimpleHttpClient.main(args);
+		// nil -> null -> terminates the parsing loop, therefore "nothing" returned as result.
+		file.delete();
 	}
 
 	@Test

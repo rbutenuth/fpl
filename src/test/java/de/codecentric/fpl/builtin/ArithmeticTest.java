@@ -43,6 +43,12 @@ public class ArithmeticTest extends AbstractFplTest {
     }
 
     @Test
+    public void testPlusWithLongList() throws Exception {
+        FplInteger i = (FplInteger)evaluate("plus", "(+ 3 4 3 4 3 4 3 4 3 4 3 4 3 4)");
+        assertEquals(49, i.getValue());
+    }
+
+    @Test
     public void testIntegerModulusInteger() throws Exception {
         FplInteger i = (FplInteger)evaluate("plus", "(% 13 4)");
         assertEquals(1, i.getValue());
