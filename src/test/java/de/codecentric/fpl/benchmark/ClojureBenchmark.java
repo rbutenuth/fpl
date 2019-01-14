@@ -1,6 +1,5 @@
 package de.codecentric.fpl.benchmark;
 
-import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.clojure.ClojurePersistentVector;
 
 public class ClojureBenchmark {

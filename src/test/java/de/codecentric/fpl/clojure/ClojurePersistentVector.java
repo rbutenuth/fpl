@@ -168,7 +168,7 @@ public class ClojurePersistentVector implements Iterable<Object> {
 		};
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Iterator iterator() {
 		return rangedIterator(0, count());
 	}
