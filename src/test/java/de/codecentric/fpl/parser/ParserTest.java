@@ -71,7 +71,17 @@ public class ParserTest extends AbstractFplTest {
     @Test
     public void testSimpleList() throws Exception {
         Parser p = parser("simple list", "(symbol 42 3.1415 \"a string\")");
-        assertTrue(p.hasNext());
+        verifySimpleList(p);
+    }
+
+    @Test
+    public void testSimpleJsonList() throws Exception {
+        Parser p = parser("simple json-list", "[symbol, 42, 3.1415, \"a string\"]");
+        verifySimpleList(p);
+    }
+
+	private void verifySimpleList(Parser p) throws ParseException, IOException {
+		assertTrue(p.hasNext());
         FplList l = (FplList)p.next();
         assertEquals(4, l.size());
         Iterator<FplValue> iter = l.iterator();
@@ -89,7 +99,7 @@ public class ParserTest extends AbstractFplTest {
         assertEquals("a string", str.getContent());
         assertFalse(iter.hasNext());
         assertFalse(p.hasNext());
-    }
+	}
 
     @Test
     public void testNestedList() throws Exception {

@@ -5,14 +5,11 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A simple scanner. The reader is closed when EOF is reached.
  */
 public class Scanner {
-	private final Pattern INT_PATTERN = Pattern.compile("-?[0-9]+");
 	private Reader rd;
 	private String name;
 	private int line;
@@ -120,35 +117,53 @@ public class Scanner {
 	}
 
 	private Token number(Position position) throws IOException, ParseException {
-		StringBuilder sb = new StringBuilder();
+		boolean negative = false;
 		if (ch == '-') {
-			sb.append('-');
+			readChar();
+			negative = true;
+		}
+		long value = 0;
+		while (Character.isDigit(ch)) {
+			value = 10 * value + ch - '0';
 			readChar();
 		}
-		while (ch != -1 && ch != '(' && ch != ')' && ch != '\'' && !Character.isWhitespace(ch)) {
-			sb.append((char) ch);
-			readChar();
-		}
-		String str = sb.toString();
-		Matcher m = INT_PATTERN.matcher(str);
-		if (m.matches()) {
-			try {
-				return new Token(position, Long.parseLong(str));
-			} catch (NumberFormatException e) {
-				// should never happen
+		if (ch == '.' || ch == 'e' || ch == 'E') {
+			double dValue = value;
+			if (ch == '.') {
+				readChar();
+				double base = 0.1;
+				while (Character.isDigit(ch)) {
+					dValue += base * (ch - '0');
+					base /= 10;
+					readChar();
+				}
 			}
-		}
-
-		try {
-			return new Token(position, Double.valueOf(str));
-		} catch (NumberFormatException e) {
-			throw new ParseException(position, "Bad number: " + str);
+			boolean negativeExponent = false;
+			if (ch == 'e' || ch == 'E') {
+				readChar();
+				if (ch == '+') {
+					readChar();
+				} else if (ch == '-') {
+					negativeExponent = true;
+					readChar();
+				}
+				int expValue = 0;
+				while (Character.isDigit(ch)) {
+					expValue = 10 * expValue + ch - '0';
+					readChar();
+				}
+				dValue *= Math.pow(10, negativeExponent ? -expValue : expValue);
+			}
+			return new Token(position, negative ? -dValue : dValue);
+		} else {
+			return new Token(position, negative ? -value : value);
 		}
 	}
 
 	private Token symbol(Position position) throws IOException {
+		final String NON_SYMBOL_CHARS = "\"[](),";
 		StringBuilder sb = new StringBuilder();
-		while (ch != '(' && ch != ')' && ch != '\'' && !Character.isWhitespace(ch) && ch != -1) {
+		while (ch != -1 && !Character.isWhitespace(ch) && NON_SYMBOL_CHARS.indexOf(ch) == -1) {
 			sb.append((char) ch);
 			readChar();
 		}

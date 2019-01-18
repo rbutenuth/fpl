@@ -126,12 +126,20 @@ public class Parser {
 
 	private FplValue list() throws ParseException, IOException {
 		fetchNextToken(); // skip LEFT_PAREN
-		List<FplValue> elements = new ArrayList<>();
-		while (nextToken != null && nextToken.getId() != Token.Id.RIGHT_PAREN) {
-			elements.add(value());
-		}
 		if (nextToken == null) {
 			throw new ParseException(lastToken.getPosition(), "Unexpected end of source in list");
+		}
+		if (nextToken.getId() == Token.Id.RIGHT_PAREN) {
+			fetchNextToken();
+			return FplList.EMPTY_LIST;
+		}
+		List<FplValue> elements = new ArrayList<>();
+		elements.add(value());
+		while (nextToken.getId() != Token.Id.RIGHT_PAREN) {
+			elements.add(value());
+			if (nextToken == null) {
+				throw new ParseException(lastToken.getPosition(), "Unexpected end of source in list");
+			}
 		}
 		fetchNextToken(); // skip RIGHT_PAREN
 		return new FplList(elements);
@@ -139,12 +147,24 @@ public class Parser {
 
 	private FplValue jsonList() throws ParseException, IOException {
 		fetchNextToken(); // skip LEFT_SQUARE_BRACKET
+		if (nextToken == null) {
+			throw new ParseException(lastToken.getPosition(), "Unexpected end of source in list");
+		}
+		if (nextToken.getId() == Token.Id.RIGHT_SQUARE_BRACKET) {
+			fetchNextToken();
+			return FplList.EMPTY_LIST;
+		}
 		List<FplValue> elements = new ArrayList<>();
-		while (nextToken != null && nextToken.getId() != Token.Id.RIGHT_SQUARE_BRACKET) {
+		elements.add(value());
+		while (nextToken != null && nextToken.getId() == Token.Id.COMMA) {
+			fetchNextToken(); // skip COMMA
 			elements.add(value());
 		}
 		if (nextToken == null) {
-			throw new ParseException(lastToken.getPosition(), "Unexpected end of source in list");
+			throw new ParseException(lastToken.getPosition(), "Unexpected end of source in json list");
+		}
+		if (nextToken.getId() != Token.Id.RIGHT_SQUARE_BRACKET) {
+			throw new ParseException(nextToken.getPosition(), "Unexpected token in json list: " + nextToken);
 		}
 		fetchNextToken(); // skip RIGHT_SQUARE_BRACKET
 		return new FplList(elements);

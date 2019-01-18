@@ -13,25 +13,35 @@ public final class Token {
 	 */
 	public enum Id {
 		/** ( */
-		LEFT_PAREN,
+		LEFT_PAREN(true),
 		/** ) */
-		RIGHT_PAREN,
+		RIGHT_PAREN(true),
 		/** [ */
-		LEFT_SQUARE_BRACKET,
+		LEFT_SQUARE_BRACKET(true),
 		/** ] */
-		RIGHT_SQUARE_BRACKET,
+		RIGHT_SQUARE_BRACKET(true),
 		/** , */
-		COMMA,
+		COMMA(true),
 		/** 'x, short for (qoute x) */
-		QUOTE,
+		QUOTE(true),
 		/** Integral number (stored as {@link BigInteger} */
-		INTEGER,
+		INTEGER(false),
 		/** Double precision number */
-		DOUBLE,
+		DOUBLE(false),
 		/** Symbol */
-		SYMBOL,
+		SYMBOL(false),
 		/** String */
-		STRING
+		STRING(false);
+		
+		private Id(boolean primitive) {
+			this.primitive = primitive;
+		}
+		
+		private final boolean primitive;
+		
+		public boolean isPrimitive() {
+			return primitive;
+		}
 	};
 
 	private final Position position;
@@ -57,7 +67,7 @@ public final class Token {
 		if (position == null) {
 			throw new NullPointerException("position");
 		}
-		if (id != Id.LEFT_PAREN && id != Id.RIGHT_PAREN && id != Id.QUOTE && id != Id.LEFT_SQUARE_BRACKET && id != Id.RIGHT_SQUARE_BRACKET) {
+		if (!id.isPrimitive()) {
 			throw new IllegalArgumentException("id = " + id);
 		}
 		this.position = position;
@@ -202,9 +212,9 @@ public final class Token {
 		case COMMA:
 			return ",";
 		case DOUBLE:
-			Double.toString(doubleValue);
+			return Double.toString(doubleValue);
 		case INTEGER:
-			Long.toString(integerValue);
+			return Long.toString(integerValue);
 		case LEFT_PAREN:
 			return "(";
 		case LEFT_SQUARE_BRACKET:
