@@ -25,14 +25,10 @@ public class Scanner {
 	/**
 	 * Create scanner with default start line 1.
 	 * 
-	 * @param name
-	 *            Name of the source (filename), not null.
-	 * @param line
-	 *            First line in the source, &gt;= 1.
-	 * @param rd
-	 *            Reader, not null.
-	 * @throws IOException
-	 *             In case {@link Reader} throws.
+	 * @param name Name of the source (filename), not null.
+	 * @param line First line in the source, &gt;= 1.
+	 * @param rd   Reader, not null.
+	 * @throws IOException In case {@link Reader} throws.
 	 */
 	public Scanner(String name, int line, Reader rd) throws IOException {
 		if (name == null) {
@@ -52,12 +48,9 @@ public class Scanner {
 	/**
 	 * Create scanner with default start line 1.
 	 * 
-	 * @param name
-	 *            Name of the source (filename), not null.
-	 * @param rd
-	 *            Reader, not null.
-	 * @throws IOException
-	 *             In case {@link Reader} throws.
+	 * @param name Name of the source (filename), not null.
+	 * @param rd   Reader, not null.
+	 * @throws IOException In case {@link Reader} throws.
 	 */
 	public Scanner(String name, Reader rd) throws IOException {
 		this(name, 1, rd);
@@ -65,10 +58,8 @@ public class Scanner {
 
 	/**
 	 * @return Next token or null for end of input.
-	 * @throws IOException
-	 *             In case {@link Reader} throws.
-	 * @throws ParseException
-	 *             Illegal token.
+	 * @throws IOException    In case {@link Reader} throws.
+	 * @throws ParseException Illegal token.
 	 */
 	public Token next() throws IOException, ParseException {
 		skipComment();
@@ -82,6 +73,15 @@ public class Scanner {
 		} else if (ch == ')') {
 			readChar();
 			return new Token(position, Token.Id.RIGHT_PAREN);
+		} else if (ch == '[') {
+			readChar();
+			return new Token(position, Token.Id.LEFT_SQUARE_BRACKET);
+		} else if (ch == ']') {
+			readChar();
+			return new Token(position, Token.Id.RIGHT_SQUARE_BRACKET);
+		} else if (ch == ',') {
+			readChar();
+			return new Token(position, Token.Id.COMMA);
 		} else if (ch == '\'') {
 			readChar();
 			return new Token(position, Token.Id.QUOTE);
@@ -97,7 +97,7 @@ public class Scanner {
 	public void clearCommentLines() {
 		commentLines = new ArrayList<>();
 	}
-	
+
 	private void skipComment() throws IOException {
 		while (ch == ';' || Character.isWhitespace(ch)) {
 			if (ch == ';') {
@@ -204,20 +204,20 @@ public class Scanner {
 			if (ch == -1) {
 				throw new ParseException(position, "Unterminated string at end of input");
 			}
-			char low = Character.toLowerCase((char)ch);
+			char low = Character.toLowerCase((char) ch);
 			result += hexDigit(low, position);
-			
+
 		}
 		return result;
 	}
 
 	private char hexDigit(char low, Position position) throws ParseException {
 		if (low >= '0' && low <= '9') {
-			return (char)(low - '0');
+			return (char) (low - '0');
 		} else if (low >= 'a' && low <= 'f') {
-			return (char)(low - 'a' + 10);
+			return (char) (low - 'a' + 10);
 		}
-		throw new ParseException(position, "Illegal hex digit: " + (char)ch);
+		throw new ParseException(position, "Illegal hex digit: " + (char) ch);
 	}
 
 	private void readChar() throws IOException {

@@ -16,6 +16,12 @@ public final class Token {
 		LEFT_PAREN,
 		/** ) */
 		RIGHT_PAREN,
+		/** [ */
+		LEFT_SQUARE_BRACKET,
+		/** ] */
+		RIGHT_SQUARE_BRACKET,
+		/** , */
+		COMMA,
 		/** 'x, short for (qoute x) */
 		QUOTE,
 		/** Integral number (stored as {@link BigInteger} */
@@ -51,7 +57,7 @@ public final class Token {
 		if (position == null) {
 			throw new NullPointerException("position");
 		}
-		if (id != Id.LEFT_PAREN && id != Id.RIGHT_PAREN && id != Id.QUOTE) {
+		if (id != Id.LEFT_PAREN && id != Id.RIGHT_PAREN && id != Id.QUOTE && id != Id.LEFT_SQUARE_BRACKET && id != Id.RIGHT_SQUARE_BRACKET) {
 			throw new IllegalArgumentException("id = " + id);
 		}
 		this.position = position;
@@ -188,5 +194,33 @@ public final class Token {
 	
 	public List<String> getCommentLines() {
 		return Collections.unmodifiableList(commentLines);
+	}
+	
+	@Override
+	public String toString() {
+		switch (id) {
+		case COMMA:
+			return ",";
+		case DOUBLE:
+			Double.toString(doubleValue);
+		case INTEGER:
+			Long.toString(integerValue);
+		case LEFT_PAREN:
+			return "(";
+		case LEFT_SQUARE_BRACKET:
+			return "[";
+		case QUOTE:
+			return "'";
+		case RIGHT_PAREN:
+			return ")";
+		case RIGHT_SQUARE_BRACKET:
+			return "]";
+		case STRING:
+			return '"' + stringValue + '"';
+		case SYMBOL:
+			return stringValue;
+		default:
+			throw new IllegalStateException();
+		}
 	}
 }

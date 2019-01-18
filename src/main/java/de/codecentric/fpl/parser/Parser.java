@@ -74,8 +74,12 @@ public class Parser {
 		case LEFT_PAREN:
 			result = list();
 			break;
+		case LEFT_SQUARE_BRACKET:
+			result = jsonList();
+			break;
 		case RIGHT_PAREN:
-			throw new ParseException(nextToken.getPosition(), "Expression can not start with )");
+		case COMMA:
+			throw new ParseException(nextToken.getPosition(), "Expression can not start with " + nextToken);
 		case DOUBLE:
 			result = new FplDouble(nextToken.getDoubleValue());
 			fetchNextToken();
@@ -130,6 +134,19 @@ public class Parser {
 			throw new ParseException(lastToken.getPosition(), "Unexpected end of source in list");
 		}
 		fetchNextToken(); // skip RIGHT_PAREN
+		return new FplList(elements);
+	}
+
+	private FplValue jsonList() throws ParseException, IOException {
+		fetchNextToken(); // skip LEFT_SQUARE_BRACKET
+		List<FplValue> elements = new ArrayList<>();
+		while (nextToken != null && nextToken.getId() != Token.Id.RIGHT_SQUARE_BRACKET) {
+			elements.add(value());
+		}
+		if (nextToken == null) {
+			throw new ParseException(lastToken.getPosition(), "Unexpected end of source in list");
+		}
+		fetchNextToken(); // skip RIGHT_SQUARE_BRACKET
 		return new FplList(elements);
 	}
 

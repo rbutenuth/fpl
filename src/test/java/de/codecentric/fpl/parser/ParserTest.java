@@ -38,6 +38,15 @@ public class ParserTest extends AbstractFplTest {
     }
 
     @Test
+    public void testEmptyJsonList() throws Exception {
+        Parser p = parser("empty json list", "[]");
+        assertTrue(p.hasNext());
+        FplList l = (FplList)p.next();
+        assertEquals(0, l.size());
+        assertFalse(p.hasNext());
+    }
+
+    @Test
     public void testString() throws Exception {
         Parser p = parser("string", "\"a string\"");
         assertTrue(p.hasNext());
