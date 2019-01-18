@@ -137,4 +137,55 @@ public class ScannerTest {
 
         assertNull(sc.next());
     }
+    
+    @Test
+    public void testJsonEscapes() throws Exception {
+        Scanner sc = new Scanner("test", new StringReader("\"\\/\\f\\b\")"));
+        Token t = sc.next();
+        assertNotNull(t);
+        assertEquals(Token.Id.STRING, t.getId());
+        assertEquals("/\f\b", t.getStringValue());
+    }
+    
+    @Test
+    public void testHexEscape() throws Exception {
+        Scanner sc = new Scanner("test", new StringReader("\"\\u12ab\")"));
+        Token t = sc.next();
+        assertNotNull(t);
+        assertEquals(Token.Id.STRING, t.getId());
+        String s = t.getStringValue();
+        assertEquals(1, s.length());
+        char ch = s.charAt(0);
+        assertEquals(0x12ab, ch);
+    }
+    
+    @Test()
+    public void testBadHexDigit() throws Exception {
+        Scanner sc = new Scanner("test", new StringReader("\"\\u12z4\""));
+        try {
+            sc.next();
+        } catch (ParseException pe) {
+            assertEquals("Illegal hex digit: z", pe.getMessage());
+        }
+    }
+    
+    @Test()
+    public void testShortHexSequence() throws Exception {
+        Scanner sc = new Scanner("test", new StringReader("\"\\u12\""));
+        try {
+            sc.next();
+        } catch (ParseException pe) {
+            assertEquals("Illegal hex digit: \"", pe.getMessage());
+        }
+    }
+    
+    @Test()
+    public void testEndOfSourceInHexSequence() throws Exception {
+        Scanner sc = new Scanner("test", new StringReader("\"\\u12"));
+        try {
+            sc.next();
+        } catch (ParseException pe) {
+            assertEquals("Unterminated string at end of input", pe.getMessage());
+        }
+    }
 }

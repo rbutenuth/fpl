@@ -173,6 +173,12 @@ public class Scanner {
 					sb.append('\r');
 				} else if (ch == 't') {
 					sb.append('\t');
+				} else if (ch == 'f') {
+					sb.append('\f');
+				} else if (ch == 'b') {
+					sb.append('\b');
+				} else if (ch == 'u') {
+					sb.append(readHexadecimalCharacter(position));
 				} else {
 					sb.append((char) ch);
 				}
@@ -188,6 +194,30 @@ public class Scanner {
 			readChar();
 		}
 		return new Token(position, Token.Id.STRING, sb.toString(), Collections.emptyList());
+	}
+
+	private char readHexadecimalCharacter(Position position) throws IOException, ParseException {
+		char result = 0;
+		for (int i = 0; i < 4; i++) {
+			result <<= 4;
+			readChar();
+			if (ch == -1) {
+				throw new ParseException(position, "Unterminated string at end of input");
+			}
+			char low = Character.toLowerCase((char)ch);
+			result += hexDigit(low, position);
+			
+		}
+		return result;
+	}
+
+	private char hexDigit(char low, Position position) throws ParseException {
+		if (low >= '0' && low <= '9') {
+			return (char)(low - '0');
+		} else if (low >= 'a' && low <= 'f') {
+			return (char)(low - 'a' + 10);
+		}
+		throw new ParseException(position, "Illegal hex digit: " + (char)ch);
 	}
 
 	private void readChar() throws IOException {
