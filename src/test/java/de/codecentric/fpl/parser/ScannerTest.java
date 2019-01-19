@@ -29,7 +29,6 @@ public class ScannerTest {
         new Scanner("bla", 0, new StringReader(""));
     }
 
-
     @Test(expected = ParseException.class)
     public void testUnterminatedString() throws Exception {
         Scanner sc = new Scanner("test", new StringReader("'( bla \") ; sinnfrei"));
@@ -83,7 +82,7 @@ public class ScannerTest {
 
     @Test
     public void testNumber() throws Exception {
-        Scanner sc = new Scanner("test", new StringReader("123\t-456 ;comment \n1.23e4"));
+        Scanner sc = new Scanner("test", new StringReader("123\t-456 ;comment \n1.23e4\n-31.4e-1\n2.78E+0\n3.14"));
         Token t = sc.next();
         assertNotNull(t);
         assertEquals(Token.Id.INTEGER, t.getId());
@@ -98,9 +97,25 @@ public class ScannerTest {
         assertNotNull(t);
         assertEquals(Token.Id.DOUBLE, t.getId());
         assertEquals(1.23e4, t.getDoubleValue(), 0.001);
+
+        t = sc.next();
+        assertNotNull(t);
+        assertEquals(Token.Id.DOUBLE, t.getId());
+        assertEquals(-31.4e-1, t.getDoubleValue(), 0.001);
+        
+        t = sc.next();
+        assertNotNull(t);
+        assertEquals(Token.Id.DOUBLE, t.getId());
+        assertEquals(2.78, t.getDoubleValue(), 0.001);
+        
+        t = sc.next();
+        assertNotNull(t);
+        assertEquals(Token.Id.DOUBLE, t.getId());
+        assertEquals(3.14, t.getDoubleValue(), 0.001);
+        
         Position p = t.getPosition();
         assertEquals("test", p.getName());
-        assertEquals(2, p.getLine());
+        assertEquals(5, p.getLine());
         assertEquals(1, p.getColumn());
     }
 
