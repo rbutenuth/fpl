@@ -98,8 +98,8 @@ public class MapScopeTest {
 		outer.put("key", new FplString("oldValue"));
 		FplValue old = inner.change("key", new FplString("newValue"));
 		assertEquals("\"oldValue\"", old.toString());
-		assertEquals("\"oldValue\"", inner.get("key").toString());
-		assertEquals("\"oldValue\"", inner.get("key").toString());
+		assertEquals("\"newValue\"", inner.get("key").toString());
+		assertEquals("\"newValue\"", inner.get("key").toString());
 	}
 
 	@Test
@@ -107,7 +107,7 @@ public class MapScopeTest {
 		inner.put("key", new FplString("oldValue"));
 		FplValue old = inner.change("key", new FplString("newValue"));
 		assertEquals("\"oldValue\"", old.toString());
-		assertEquals("\"oldValue\"", inner.get("key").toString());
+		assertEquals("\"newValue\"", inner.get("key").toString());
 		assertNull(outer.get("key"));
 	}
 

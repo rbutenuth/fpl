@@ -81,7 +81,7 @@ public class ParameterScopeTest {
 		outer.put("key", new FplString("oldValue"));
 		FplValue old = inner.change("key", new FplString("newValue"));
 		assertEquals("\"oldValue\"", old.toString());
-		assertEquals("\"oldValue\"", inner.get("key").toString());
-		assertEquals("\"oldValue\"", outer.get("key").toString());
+		assertEquals("\"newValue\"", inner.get("key").toString());
+		assertEquals("\"newValue\"", outer.get("key").toString());
 	}
 }
