@@ -13,9 +13,7 @@ import de.codecentric.fpl.datatypes.FplValue;
  */
 public class MapScope implements Scope {
     private Map<String, FplValue> map;
-
     private Scope next;
-
     private boolean sealed;
 
     /**
@@ -65,27 +63,6 @@ public class MapScope implements Scope {
         	map.put(key, value);
         }
     }
-
-    @Override
-    public void putGlobal(String key, FplValue value) throws EvaluationException {
-        Scope chain = this;
-        while (chain.getNext() != null && !chain.getNext().isSealed()) {
-            chain = chain.getNext();
-        }
-        chain.put(key, value);
-    }
-
-	@Override
-	public FplValue change(String key, FplValue newValue) throws EvaluationException {
-        for (Scope chain = this; chain != null; chain = chain.getNext()) {
-        	FplValue oldValue = chain.get(key);
-        	if (oldValue != null) {
-        		chain.put(key, newValue);
-        		return oldValue;
-        	}
-        }
-		throw new EvaluationException("No value with key " + key + " found in scope");
-	}
 
 	@Override
     public boolean isSealed() {
