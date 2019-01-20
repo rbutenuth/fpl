@@ -75,9 +75,6 @@ public class MapScope implements Scope {
 	
     @Override
     public void putGlobal(String key, FplValue value) throws EvaluationException {
-        if (sealed) {
-            throw new EvaluationException("Scope is sealed");
-        }
         Scope chain = this;
         while (chain.getNext() != null && !chain.getNext().isSealed()) {
             chain = chain.getNext();

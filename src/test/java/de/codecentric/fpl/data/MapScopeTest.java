@@ -76,7 +76,7 @@ public class MapScopeTest {
 		outer.put("foo", new FplString("foo"));
 	}
 	
-	@Test(expected = EvaluationException.class)
+	@Test
 	public void testPutGlobalSealed() throws EvaluationException {
 		inner.setSealed(true);
 		inner.putGlobal("foo", new FplString("bar"));
