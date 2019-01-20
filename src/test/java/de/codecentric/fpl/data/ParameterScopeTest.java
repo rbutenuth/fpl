@@ -13,6 +13,7 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.datatypes.FplString;
+import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Symbol;
 
 public class ParameterScopeTest {
@@ -73,5 +74,14 @@ public class ParameterScopeTest {
 	@Test(expected = EvaluationException.class)
 	public void testPutEmptyKey() throws EvaluationException {
 		inner.put("", new FplString("foot"));
+	}
+	
+	@Test
+	public void testChangeInner() throws EvaluationException {
+		outer.put("key", new FplString("oldValue"));
+		FplValue old = inner.change("key", new FplString("newValue"));
+		assertEquals("\"oldValue\"", old.toString());
+		assertEquals("\"oldValue\"", inner.get("key").toString());
+		assertEquals("\"oldValue\"", outer.get("key").toString());
 	}
 }

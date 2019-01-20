@@ -40,13 +40,13 @@ public class ParameterScope implements Scope {
 	}
 	
 	@Override
-	public void put(Named value) throws EvaluationException {
-		next.put(value);
+	public void putGlobal(String key, FplValue value) throws EvaluationException {
+		next.putGlobal(key, value);
 	}
 
 	@Override
-	public void putGlobal(String key, FplValue value) throws EvaluationException {
-		next.putGlobal(key, value);
+	public FplValue change(String key, FplValue newValue) throws EvaluationException {
+		return next.change(key, newValue);
 	}
 
 	@Override

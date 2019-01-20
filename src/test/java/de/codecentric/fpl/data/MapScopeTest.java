@@ -14,6 +14,7 @@ import org.junit.Test;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.datatypes.FplString;
+import de.codecentric.fpl.datatypes.FplValue;
 
 public class MapScopeTest {
 	MapScope outer;
@@ -91,7 +92,30 @@ public class MapScopeTest {
 	public void testPutEmptyKey() throws EvaluationException {
 		outer.put("", new FplString("foo"));
 	}
+	
+	@Test
+	public void testChangeOuter() throws EvaluationException {
+		outer.put("key", new FplString("oldValue"));
+		FplValue old = inner.change("key", new FplString("newValue"));
+		assertEquals("\"oldValue\"", old.toString());
+		assertEquals("\"oldValue\"", inner.get("key").toString());
+		assertEquals("\"oldValue\"", inner.get("key").toString());
+	}
 
+	@Test
+	public void testChangeInner() throws EvaluationException {
+		inner.put("key", new FplString("oldValue"));
+		FplValue old = inner.change("key", new FplString("newValue"));
+		assertEquals("\"oldValue\"", old.toString());
+		assertEquals("\"oldValue\"", inner.get("key").toString());
+		assertNull(outer.get("key"));
+	}
+
+	@Test(expected = EvaluationException.class)
+	public void testChangeNotExisting() throws EvaluationException {
+		inner.change("non-existing-key", new FplString("foo"));
+	}
+	
 	@Test
 	public void testAllKeys() throws EvaluationException {
 		outer.put("b", new FplString("b"));

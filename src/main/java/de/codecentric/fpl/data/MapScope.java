@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Named;
 
 /**
  * Just a little bit more than a {@link Map}, can be nested.
@@ -67,12 +66,6 @@ public class MapScope implements Scope {
         }
     }
 
-
-	@Override
-	public void put(Named value) throws EvaluationException {
-		put(value.getName(), value);
-	}
-	
     @Override
     public void putGlobal(String key, FplValue value) throws EvaluationException {
         Scope chain = this;
@@ -82,7 +75,19 @@ public class MapScope implements Scope {
         chain.put(key, value);
     }
 
-    @Override
+	@Override
+	public FplValue change(String key, FplValue newValue) throws EvaluationException {
+        for (Scope chain = this; chain != null; chain = chain.getNext()) {
+        	FplValue oldValue = chain.get(key);
+        	if (oldValue != null) {
+        		chain.put(key, newValue);
+        		return oldValue;
+        	}
+        }
+		throw new EvaluationException("No value with key " + key + " found in scope");
+	}
+
+	@Override
     public boolean isSealed() {
         return sealed;
     }

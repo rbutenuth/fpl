@@ -34,7 +34,9 @@ public interface Scope {
      * @param value The value of the symbol, null values are allowed.
      * @throws EvaluationException If scope is sealed (see {@link #isSealed()}).
      */
-    public void put(Named value) throws EvaluationException;
+	public default void put(Named value) throws EvaluationException {
+		put(value.getName(), value);
+	}
 
     /**
      * Search scopes starting from this one via {@link #getNext()}. If a {@link #isSealed()} scope is found, put the value in
@@ -44,6 +46,16 @@ public interface Scope {
      * @throws EvaluationException If this scope is sealed.
      */
     public void putGlobal(String key, FplValue value) throws EvaluationException;
+
+    /**
+     * Search a value through the chain of Scopes and change it's value. Fails if the value is not found
+     * or the Scope with the value is sealed. 
+     * @param key Name of value to change, not null, not empty
+     * @param newValue The new value
+     * @return The old value.
+     * @throws EvaluationException If scope is sealed or value is not found.
+     */
+    public FplValue change(String key, FplValue newValue) throws EvaluationException;
     
     /**
      * @return Is this scope read only?
