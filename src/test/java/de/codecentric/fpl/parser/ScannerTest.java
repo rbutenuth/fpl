@@ -44,6 +44,7 @@ public class ScannerTest {
         Token t = sc.next();
         assertNotNull(t);
         assertEquals(Token.Id.SYMBOL, t.getId());
+        assertEquals("symbol", t.toString());
         List<String> comments = t.getCommentLines();
         assertEquals(3, comments.size());
         assertEquals("  commentLine1", comments.get(0));
@@ -52,11 +53,12 @@ public class ScannerTest {
     }
     
     @Test
-    public void testParentAndSymbol() throws Exception {
-        Scanner sc = new Scanner("test", new StringReader("'( bla \n\r) ; sinnfrei\n\r;leer"));
+    public void testParenthesisAndSymbol() throws Exception {
+        Scanner sc = new Scanner("test", new StringReader("'( bla \n\r) ; sinnfrei\n\r;leer\n{[,]}"));
         Token t = sc.next();
         assertNotNull(t);
         assertEquals(Token.Id.QUOTE, t.getId());
+        assertEquals("'", t.toString());
         Position p = t.getPosition();
         assertEquals("test", p.getName());
         assertEquals(1, p.getLine());
@@ -65,6 +67,7 @@ public class ScannerTest {
         t = sc.next();
         assertNotNull(t);
         assertEquals(Token.Id.LEFT_PAREN, t.getId());
+        assertEquals("(", t.toString());
 
         t = sc.next();
         assertNotNull(t);
@@ -75,6 +78,32 @@ public class ScannerTest {
         t = sc.next();
         assertNotNull(t);
         assertEquals(Token.Id.RIGHT_PAREN, t.getId());
+        assertEquals(")", t.toString());
+
+        t = sc.next();
+        assertNotNull(t);
+        assertEquals(Token.Id.LEFT_CURLY_BRACKET, t.getId());
+        assertEquals("{", t.toString());
+
+        t = sc.next();
+        assertNotNull(t);
+        assertEquals(Token.Id.LEFT_SQUARE_BRACKET, t.getId());
+        assertEquals("[", t.toString());
+
+        t = sc.next();
+        assertNotNull(t);
+        assertEquals(Token.Id.COMMA, t.getId());
+        assertEquals(",", t.toString());
+
+        t = sc.next();
+        assertNotNull(t);
+        assertEquals(Token.Id.RIGHT_SQUARE_BRACKET, t.getId());
+        assertEquals("]", t.toString());
+
+        t = sc.next();
+        assertNotNull(t);
+        assertEquals(Token.Id.RIGHT_CURLY_BRACKET, t.getId());
+        assertEquals("}", t.toString());
 
         t = sc.next();
         assertNull(t);
@@ -87,6 +116,7 @@ public class ScannerTest {
         assertNotNull(t);
         assertEquals(Token.Id.INTEGER, t.getId());
         assertEquals(123, t.getIntegerValue());
+        assertEquals("123", t.toString());
 
         t = sc.next();
         assertNotNull(t);
@@ -97,6 +127,7 @@ public class ScannerTest {
         assertNotNull(t);
         assertEquals(Token.Id.DOUBLE, t.getId());
         assertEquals(1.23e4, t.getDoubleValue(), 0.001);
+        assertEquals("12300.0", t.toString());
 
         t = sc.next();
         assertNotNull(t);
@@ -145,6 +176,7 @@ public class ScannerTest {
         assertNotNull(t);
         assertEquals(Token.Id.STRING, t.getId());
         assertEquals("a\tb\rc\n", t.getStringValue());
+        assertEquals("\"a\tb\rc\n\"", t.toString());
 
         t = sc.next();
         assertNotNull(t);
@@ -191,6 +223,16 @@ public class ScannerTest {
             sc.next();
         } catch (ParseException pe) {
             assertEquals("Illegal hex digit: \"", pe.getMessage());
+        }
+    }
+    
+    @Test()
+    public void testBadQuoting() throws Exception {
+        Scanner sc = new Scanner("test", new StringReader("\"\\"));
+        try {
+            sc.next();
+        } catch (ParseException pe) {
+            assertEquals("Unterminated \\ at end of input", pe.getMessage());
         }
     }
     

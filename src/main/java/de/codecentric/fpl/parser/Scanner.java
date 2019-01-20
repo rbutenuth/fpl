@@ -76,6 +76,12 @@ public class Scanner {
 		} else if (ch == ']') {
 			readChar();
 			return new Token(position, Token.Id.RIGHT_SQUARE_BRACKET);
+		} else if (ch == '{') {
+			readChar();
+			return new Token(position, Token.Id.LEFT_CURLY_BRACKET);
+		} else if (ch == '}') {
+			readChar();
+			return new Token(position, Token.Id.RIGHT_CURLY_BRACKET);
 		} else if (ch == ',') {
 			readChar();
 			return new Token(position, Token.Id.COMMA);
@@ -174,7 +180,7 @@ public class Scanner {
 	private Token string(Position position) throws IOException, ParseException {
 		readChar(); // skip leading "
 		StringBuilder sb = new StringBuilder();
-		while (ch != '"' && ch != -1) {
+		while (ch != '"') {
 			if (ch == '\\') {
 				readChar();
 				if (ch == -1) {
@@ -205,9 +211,7 @@ public class Scanner {
 				throw new ParseException(position, "Unterminated string at end of input");
 			}
 		}
-		if (ch == '"') {
-			readChar();
-		}
+		readChar(); // skip "
 		return new Token(position, Token.Id.STRING, sb.toString(), Collections.emptyList());
 	}
 

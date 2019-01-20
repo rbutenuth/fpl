@@ -2,7 +2,6 @@ package de.codecentric.fpl.data;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Named;
 
 public class ParameterScope implements Scope {
 	private FplValue[] parameters;

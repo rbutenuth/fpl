@@ -20,6 +20,10 @@ public final class Token {
 		LEFT_SQUARE_BRACKET(true),
 		/** ] */
 		RIGHT_SQUARE_BRACKET(true),
+		/** { */
+		LEFT_CURLY_BRACKET(true),
+		/** } */
+		RIGHT_CURLY_BRACKET(true),
 		/** , */
 		COMMA(true),
 		/** 'x, short for (qoute x) */
@@ -219,12 +223,16 @@ public final class Token {
 			return "(";
 		case LEFT_SQUARE_BRACKET:
 			return "[";
+		case LEFT_CURLY_BRACKET:
+			return "{";
 		case QUOTE:
 			return "'";
 		case RIGHT_PAREN:
 			return ")";
 		case RIGHT_SQUARE_BRACKET:
 			return "]";
+		case RIGHT_CURLY_BRACKET:
+			return "}";
 		case STRING:
 			return '"' + stringValue + '"';
 		case SYMBOL:
