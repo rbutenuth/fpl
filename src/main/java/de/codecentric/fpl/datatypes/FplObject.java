@@ -7,9 +7,9 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 
 /**
- *
+ * 
  */
-public class FplObject extends Atom implements Named, Scope {
+public class FplObject extends EvaluatesToThisValue implements Named, Scope {
 	private Scope next;
 	private String name;
 	private boolean sealed;

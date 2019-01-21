@@ -14,7 +14,7 @@ import de.codecentric.fpl.parser.Position;
 /**
  * A Lisp function, built in or interpreted.
  */
-public abstract class Function extends Atom implements Named, PositionHolder {
+public abstract class Function extends EvaluatesToThisValue implements Named, PositionHolder {
 	/** name, not null, not empty */
 	private final String name;
 
@@ -269,7 +269,7 @@ public abstract class Function extends Atom implements Named, PositionHolder {
 		FplValue[] givenParameters = new FplValue[parameters.length];
 		for (int i = 0; i < givenParameters.length; i++) {
 			FplValue p = parameters[i];
-			if (p instanceof LazyExpression || p instanceof Atom) {
+			if (p instanceof LazyExpression || p instanceof EvaluatesToThisValue) {
 				givenParameters[i] = p;
 			} else {
 				givenParameters[i] = new LazyExpression(scope, p);

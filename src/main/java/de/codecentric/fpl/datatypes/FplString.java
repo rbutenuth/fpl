@@ -3,7 +3,7 @@ package de.codecentric.fpl.datatypes;
 /**
  * An FPL String
  */
-public class FplString extends Atom {
+public class FplString extends EvaluatesToThisValue {
     private final String content;
 
     /**

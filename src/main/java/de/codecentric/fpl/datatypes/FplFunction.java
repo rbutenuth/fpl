@@ -124,7 +124,7 @@ public class FplFunction extends Function {
 	}
 
 	private FplValue makeLazy(Scope scope, FplValue e) {
-		if (e instanceof LazyExpression || e instanceof Atom) {
+		if (e instanceof LazyExpression || e instanceof EvaluatesToThisValue) {
 			return e;
 		} else {
 			return new LazyExpression(scope, e);
