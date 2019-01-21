@@ -39,18 +39,13 @@ public class ObjectTest {
 		assertTrue(outer == object.getNext());
 	}
 	
-	@Test(expected = EvaluationException.class)
-	public void testNullName() throws EvaluationException {
+	@Test(expected = IllegalArgumentException.class)
+	public void testNullName() {
 		new FplObject(null, outer);
 	}
 	
-	@Test(expected = EvaluationException.class)
-	public void testEmptyName() throws EvaluationException {
+	@Test(expected = IllegalArgumentException.class)
+	public void testEmptyName() {
 		new FplObject("", outer);
-	}
-	
-	@Test(expected = EvaluationException.class)
-	public void testBadNesting() throws EvaluationException {
-		new FplObject("foo", null);
 	}
 }

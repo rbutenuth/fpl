@@ -11,7 +11,7 @@ import de.codecentric.fpl.datatypes.FplValue;
 /**
  * Just a little bit more than a {@link Map}, can be nested.
  */
-public class MapScope implements Scope {
+public class MapScope implements ListableScope {
     private Map<String, FplValue> map;
     private Scope next;
     private boolean sealed;
@@ -76,18 +76,10 @@ public class MapScope implements Scope {
         this.sealed = sealed;
     }
 
-    /**
-     * @return All keys from this scope and all parent scopes, ordered by natural {@link String} order.
-     */
+    @Override
     public SortedSet<String> allKeys() {
         SortedSet<String> keySet = new TreeSet<>(map.keySet());
-        Scope chain = next;
-        while (chain != null) {
-        	if (chain instanceof MapScope) {
-        		keySet.addAll(((MapScope)chain).map.keySet());
-        	}
-            chain = chain.getNext();
-        }
+        keySet.addAll(map.keySet());
         return keySet;
     }
 }

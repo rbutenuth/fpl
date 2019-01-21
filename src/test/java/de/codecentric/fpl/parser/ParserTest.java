@@ -14,6 +14,7 @@ import org.junit.Test;
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
+import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Symbol;
@@ -256,5 +257,14 @@ public class ParserTest extends AbstractFplTest {
 		assertEquals("foo", p.getMessage());
 		assertEquals(Position.UNKNOWN, p.getPosition());
 		assertEquals("bar", p.getCause().getMessage());
+	}
+	
+	@Test
+	public void testEmptyObject() throws Exception {
+		Parser p = parser("empty object", "{}");
+		assertTrue(p.hasNext());
+		FplObject object = (FplObject) p.next();
+		assertFalse(object.isSealed());
+		assertTrue(object.allKeys().isEmpty());
 	}
 }

@@ -10,6 +10,7 @@ import java.util.Set;
 
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
+import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Symbol;
@@ -76,6 +77,9 @@ public class Parser {
 			break;
 		case LEFT_SQUARE_BRACKET:
 			result = jsonList();
+			break;
+		case LEFT_CURLY_BRACKET:
+			result = object();
 			break;
 		case DOUBLE:
 			result = new FplDouble(nextToken.getDoubleValue());
@@ -167,9 +171,20 @@ public class Parser {
 		return new FplList(elements);
 	}
 
+	private FplValue object() throws ParseException, IOException {
+		fetchNextToken(); // skip LEFT_SQUARE_BRACKET
+		if (nextToken == null) {
+			throw new ParseException(lastToken.getPosition(), "Unexpected end of source in json list");
+		}
+		if (nextToken.getId() == Token.Id.RIGHT_CURLY_BRACKET) {
+			fetchNextToken();
+			return new FplObject("anonymous", null);
+		}
+		return null; // TODO
+	}
+	
 	private void fetchNextToken() throws ParseException, IOException {
 		lastToken = nextToken;
 		nextToken = scanner.next();
 	}
-
 }

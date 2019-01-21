@@ -122,9 +122,7 @@ public class MapScopeTest {
 		outer.put("a", new FplString("a"));
 		inner.put("c", new FplString("c"));
 		List<String> keys = new ArrayList<>(inner.allKeys());
-		assertEquals(3, keys.size());
-		assertEquals("a", keys.get(0));
-		assertEquals("b", keys.get(1));
-		assertEquals("c", keys.get(2));
+		assertEquals(1, keys.size());
+		assertEquals("c", keys.get(0));
 	}
 }
