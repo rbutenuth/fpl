@@ -17,8 +17,8 @@ import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
- * A simple Lisp parser.
- * (It could nearly implementing {@link Iterator}, but alas: Parse- and IOException...
+ * A simple Lisp parser. (It could nearly implementing {@link Iterator}, but
+ * alas: Parse- and IOException...
  */
 public class Parser {
 	private static Set<String> keepCommentSymbols = new HashSet<>();
@@ -31,20 +31,19 @@ public class Parser {
 	private boolean haveFetchedFirstToken;
 
 	/**
-	 * @param scanner
-	 *            Scanner, not null.
-	 * @throws ParseException
-	 *             On Syntax problems.
-	 * @throws IOException
-	 *             I/O problems.
+	 * @param scanner Scanner, not null.
+	 * @throws ParseException On Syntax problems.
+	 * @throws IOException    I/O problems.
 	 */
 	public Parser(Scanner scanner) throws IOException {
 		if (scanner == null) {
 			throw new NullPointerException("scanner");
 		}
 		this.scanner = scanner;
-		// the parser would be simpler when we parse the first value here, but on the other
-		// side (caller) code would be more complicate because we would throw ParseException here.
+		// the parser would be simpler when we parse the first value here, but on the
+		// other
+		// side (caller) code would be more complicate because we would throw
+		// ParseException here.
 	}
 
 	public boolean hasNext() throws ParseException, IOException {
@@ -54,13 +53,11 @@ public class Parser {
 		}
 		return nextToken != null;
 	}
-	
+
 	/**
 	 * @return The next object in the input, <code>null</code> for end of input.
-	 * @throws ParseException
-	 *             On Syntax problems.
-	 * @throws IOException
-	 *             I/O problems.
+	 * @throws ParseException On Syntax problems.
+	 * @throws IOException    I/O problems.
 	 */
 	public FplValue next() throws ParseException, IOException {
 		if (!hasNext()) {
@@ -127,9 +124,7 @@ public class Parser {
 
 	private FplValue list() throws ParseException, IOException {
 		fetchNextToken(); // skip LEFT_PAREN
-		if (nextToken == null) {
-			throw new ParseException(lastToken.getPosition(), "Unexpected end of source in list");
-		}
+		expectNotEof("Unexpected end of source in list");
 		if (nextToken.getId() == Token.Id.RIGHT_PAREN) {
 			fetchNextToken();
 			return FplList.EMPTY_LIST;
@@ -139,18 +134,14 @@ public class Parser {
 		while (nextToken != null && nextToken.getId() != Token.Id.RIGHT_PAREN) {
 			elements.add(value());
 		}
-		if (nextToken == null) {
-			throw new ParseException(lastToken.getPosition(), "Unexpected end of source in list");
-		}
+		expectNotEof("Unexpected end of source in list");
 		fetchNextToken(); // skip RIGHT_PAREN
 		return new FplList(elements);
 	}
 
 	private FplValue jsonList() throws ParseException, IOException {
 		fetchNextToken(); // skip LEFT_SQUARE_BRACKET
-		if (nextToken == null) {
-			throw new ParseException(lastToken.getPosition(), "Unexpected end of source in json list");
-		}
+		expectNotEof("Unexpected end of source in json list");
 		if (nextToken.getId() == Token.Id.RIGHT_SQUARE_BRACKET) {
 			fetchNextToken();
 			return FplList.EMPTY_LIST;
@@ -161,9 +152,7 @@ public class Parser {
 			fetchNextToken(); // skip COMMA
 			elements.add(value());
 		}
-		if (nextToken == null) {
-			throw new ParseException(lastToken.getPosition(), "Unexpected end of source in json list");
-		}
+		expectNotEof("Unexpected end of source in json list");
 		if (nextToken.getId() != Token.Id.RIGHT_SQUARE_BRACKET) {
 			throw new ParseException(nextToken.getPosition(), "Unexpected token in json list: " + nextToken);
 		}
@@ -171,20 +160,72 @@ public class Parser {
 		return new FplList(elements);
 	}
 
+	/*
+	 * An object is a sequence of elements, separated by commas. An element is
+	 * either a pair or a value (value can't be symbol, symbol is start of a pair) A
+	 * pair is either a symbol or a string, followed by a colon, followed by a value
+	 */
 	private FplValue object() throws ParseException, IOException {
-		fetchNextToken(); // skip LEFT_SQUARE_BRACKET
-		if (nextToken == null) {
-			throw new ParseException(lastToken.getPosition(), "Unexpected end of source in json list");
-		}
-		if (nextToken.getId() == Token.Id.RIGHT_CURLY_BRACKET) {
-			fetchNextToken();
-			return new FplObject("anonymous", null);
-		}
-		return null; // TODO
+		FplObject obj = new FplObject(nextToken.getPosition());
+		fetchNextToken(); // skip LEFT_CURLY_BRACKET
+		initCode(obj);
+		keyValuePairs(obj);
+		fetchNextToken(); // skip RIGHT_CURLY_BRACKET
+		return obj;
 	}
-	
+
+	private void initCode(FplObject obj) throws ParseException, IOException {
+		while (nextToken != null && nextToken.getId() == Token.Id.LEFT_PAREN) {
+			FplValue v = value();
+			if (v != null) {
+				obj.addValue(v);
+			}
+		}
+	}
+
+	private void keyValuePairs(FplObject obj) throws ParseException, IOException {
+		while (nextToken != null && nextToken.getId() != Token.Id.RIGHT_CURLY_BRACKET) {
+			if (nextToken.getId() == Token.Id.SYMBOL || nextToken.getId() == Token.Id.STRING) {
+				keyValuePair(obj);
+				if (nextToken.getId() == Token.Id.COMMA) {
+					fetchNextToken(); // skip COMMA
+				}
+			} else {
+				throw new ParseException(nextToken.getPosition(), "Symbol, String or } expected.");
+			}
+		}
+		expectNotEof("Unexpected end of source in object");
+	}
+
+	/*
+	 * string or symbol, comma, value
+	 */
+	private void keyValuePair(FplObject obj) throws ParseException, IOException {
+		String key = nextToken.getStringValue();
+		if (key.length() == 0) {
+			throw new ParseException(lastToken.getPosition(), "Key in map must have length > 0");
+		}
+		fetchNextToken(); // skip STRING or SYMBOL
+		expectNotEof("Unexpected end of source in object");
+		if (nextToken.getId() != Token.Id.COLON) {
+			throw new ParseException(nextToken.getPosition(), "Expect : after key");
+		}
+		fetchNextToken(); // skip COLON
+		FplValue v = value();
+		if (v == null) {
+			throw new ParseException(lastToken.getPosition(), "Null no allowed as value.");
+		}
+		obj.putUnsafe(key, v);
+	}
+
 	private void fetchNextToken() throws ParseException, IOException {
 		lastToken = nextToken;
 		nextToken = scanner.next();
+	}
+
+	private void expectNotEof(String message) throws ParseException, IOException {
+		if (nextToken == null) {
+			throw new ParseException(lastToken.getPosition(), message);
+		}
 	}
 }

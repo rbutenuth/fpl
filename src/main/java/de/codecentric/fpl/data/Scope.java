@@ -63,11 +63,14 @@ public interface Scope {
 	 * the value is not found or the Scope with the value is sealed.
 	 * 
 	 * @param key      Name of value to change, not null, not empty
-	 * @param newValue The new value
+	 * @param newValue The new value, not <code>null</code>
 	 * @return The old value.
 	 * @throws EvaluationException If scope is sealed or value is not found.
 	 */
 	public default FplValue change(String key, FplValue newValue) throws EvaluationException {
+		if (newValue == null) {
+			throw new EvaluationException("change does not allow null values");
+		}
         for (Scope chain = this; chain != null; chain = chain.getNext()) {
         	FplValue oldValue = chain.get(key);
         	if (oldValue != null) {

@@ -258,7 +258,7 @@ public class ParserTest extends AbstractFplTest {
 		assertEquals(Position.UNKNOWN, p.getPosition());
 		assertEquals("bar", p.getCause().getMessage());
 	}
-	
+
 	@Test
 	public void testEmptyObject() throws Exception {
 		Parser p = parser("empty object", "{}");
@@ -266,5 +266,52 @@ public class ParserTest extends AbstractFplTest {
 		FplObject object = (FplObject) p.next();
 		assertFalse(object.isSealed());
 		assertTrue(object.allKeys().isEmpty());
+	}
+
+	@Test
+	public void testUnterminatedObject() throws Exception {
+		Parser p = parser("unterminated object", "{");
+		try {
+			assertTrue(p.hasNext());
+			p.next();
+			fail("Exception missing");
+		} catch (ParseException e) {
+			assertEquals("Unexpected end of source in object", e.getMessage());
+			assertEquals("unterminated object", e.getPosition().getName());
+			assertEquals(1, e.getPosition().getLine());
+			assertEquals(1, e.getPosition().getColumn());
+		}
+	}
+
+	@Test
+	public void testOnePair() throws Exception {
+		Parser p = parser("one pair", "{ \"1\": 2}");
+		assertTrue(p.hasNext());
+		FplObject object = (FplObject) p.next();
+		assertFalse(object.allKeys().isEmpty());
+	}
+
+	@Test
+	public void testTwoPairs() throws Exception {
+		Parser p = parser("two pairs", "{ \"1\": 2, \"3\": 4}");
+		assertTrue(p.hasNext());
+		FplObject object = (FplObject) p.next();
+		assertFalse(object.allKeys().isEmpty());
+	}
+
+	@Test
+	public void testOnePairAndOneFunction() throws Exception {
+		Parser p = parser("one function and one pair", "{ \n" + //
+				"(defun factorial (n)\n" + //
+				"  (if (le n 1)\n" + //
+				"    1\n" + //
+				"    (* n (factorial (- n 1)))\n" + //
+				"  )\n" +//
+				")\n" + //
+				"\"1\": 2\n" + //
+				"}");
+		assertTrue(p.hasNext());
+		FplObject object = (FplObject) p.next();
+		assertFalse(object.allKeys().isEmpty());
 	}
 }

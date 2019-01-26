@@ -85,6 +85,9 @@ public class Scanner {
 		} else if (ch == ',') {
 			readChar();
 			return new Token(position, Token.Id.COMMA);
+		} else if (ch == ':') {
+			readChar();
+			return new Token(position, Token.Id.COLON);
 		} else if (ch == '\'') {
 			readChar();
 			return new Token(position, Token.Id.QUOTE);

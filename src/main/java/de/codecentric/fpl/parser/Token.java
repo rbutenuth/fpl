@@ -26,6 +26,8 @@ public final class Token {
 		RIGHT_CURLY_BRACKET(true),
 		/** , */
 		COMMA(true),
+		/** : */
+		COLON(true),
 		/** 'x, short for (qoute x) */
 		QUOTE(true),
 		/** Integral number (stored as {@link BigInteger} */
@@ -213,6 +215,8 @@ public final class Token {
 	@Override
 	public String toString() {
 		switch (id) {
+		case COLON:
+			return ":";
 		case COMMA:
 			return ",";
 		case DOUBLE:

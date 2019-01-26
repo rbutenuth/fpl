@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.MapScope;
+import de.codecentric.fpl.parser.Position;
 
 public class ObjectTest {
 	MapScope outer;
@@ -19,7 +20,7 @@ public class ObjectTest {
 	@Before
 	public void before() throws EvaluationException {
 		outer = new MapScope();
-		object = new FplObject("object", outer);
+		object = new FplObject(new Position("object-test", 2, 3));
 	}
 
 	@After
@@ -29,23 +30,19 @@ public class ObjectTest {
 	}
 	
 	@Test
-	public void testEmptyObject() {
+	public void testEmptyObject() throws EvaluationException {
 		assertTrue(outer.allKeys().isEmpty());
 		assertNull(object.get("foo"));
-		assertEquals("object", object.getName());
+		assertEquals("object-test", object.getPosition().getName());
 		assertFalse(object.isSealed());
 		object.setSealed(true);
 		assertTrue(object.isSealed());
+		object.evaluate(outer);
 		assertTrue(outer == object.getNext());
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullName() {
-		new FplObject(null, outer);
-	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void testEmptyName() {
-		new FplObject("", outer);
+		new FplObject(null);
 	}
 }
