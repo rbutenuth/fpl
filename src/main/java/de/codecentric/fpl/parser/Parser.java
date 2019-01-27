@@ -169,6 +169,9 @@ public class Parser {
 		FplObject obj = new FplObject(nextToken.getPosition());
 		fetchNextToken(); // skip LEFT_CURLY_BRACKET
 		initCode(obj);
+		if (nextToken != null && nextToken.getId() != Token.Id.RIGHT_CURLY_BRACKET) {
+			keyValuePair(obj);
+		}
 		keyValuePairs(obj);
 		fetchNextToken(); // skip RIGHT_CURLY_BRACKET
 		return obj;
@@ -178,23 +181,24 @@ public class Parser {
 		while (nextToken != null && nextToken.getId() == Token.Id.LEFT_PAREN) {
 			FplValue v = value();
 			if (v != null) {
-				obj.addValue(v);
+				obj.addInitCodeValue(v);
 			}
 		}
 	}
 
 	private void keyValuePairs(FplObject obj) throws ParseException, IOException {
-		while (nextToken != null && nextToken.getId() != Token.Id.RIGHT_CURLY_BRACKET) {
+		while (nextToken != null && nextToken.getId() == Token.Id.COMMA) {
+			fetchNextToken(); // skip COMMA
 			if (nextToken.getId() == Token.Id.SYMBOL || nextToken.getId() == Token.Id.STRING) {
 				keyValuePair(obj);
-				if (nextToken.getId() == Token.Id.COMMA) {
-					fetchNextToken(); // skip COMMA
-				}
 			} else {
 				throw new ParseException(nextToken.getPosition(), "Symbol, String or } expected.");
 			}
 		}
 		expectNotEof("Unexpected end of source in object");
+		if (nextToken.getId() != Token.Id.RIGHT_CURLY_BRACKET) {
+			throw new ParseException(nextToken.getPosition(), "} at end of map missing");
+		}
 	}
 
 	/*

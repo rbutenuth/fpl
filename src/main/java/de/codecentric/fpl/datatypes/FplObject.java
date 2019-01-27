@@ -15,16 +15,16 @@ import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.parser.Position;
 
 /**
- * The FPL version of an object: Most of the semantic comes from a combination of
- * {@link Scope} with {@link Named}. The rest are some built in functions for 
- * linking and executing methods on objects.  
+ * The FPL version of an object: Most of the semantic comes from a combination
+ * of {@link Scope} with {@link Named}. The rest are some built in functions for
+ * linking and executing methods on objects.
  */
 public class FplObject extends EvaluatesToThisValue implements PositionHolder, ListableScope {
 	private Position position;
 	private Scope next;
 	private boolean sealed;
-    private ConcurrentMap<String, FplValue> map;
-    private List<FplValue> initCode;
+	private ConcurrentMap<String, FplValue> map;
+	private List<FplValue> initCode;
 
 	/**
 	 * @param next Next outer {@link Scope}
@@ -34,39 +34,33 @@ public class FplObject extends EvaluatesToThisValue implements PositionHolder, L
 			throw new IllegalArgumentException("position is null");
 		}
 		this.position = position;
-        map = new ConcurrentHashMap<>();
+		map = new ConcurrentHashMap<>();
+		initCode = Collections.emptyList();
 	}
-	
+
 	@Override
 	public Scope getNext() {
 		return next;
 	}
-	
-	public synchronized void addValue(FplValue value) {
-		if (initCode == null) {
+
+	public synchronized void addInitCodeValue(FplValue value) {
+		// Replace unmodifiable emptyList with empty array list
+		if (initCode.isEmpty()) {
 			initCode = new ArrayList<FplValue>();
 		}
 		initCode.add(value);
 	}
 
-	public List<FplValue> getInitCode() {
-		if (initCode == null) {
-			return Collections.emptyList();
-		} else {
-			return Collections.unmodifiableList(initCode);
-		}
+	public synchronized List<FplValue> getInitCode() {
+		return Collections.unmodifiableList(initCode);
 	}
-	
+
 	@Override
 	public synchronized FplValue evaluate(Scope scope) throws EvaluationException {
 		if (next == null) {
 			next = scope;
-			if (initCode == null) {
-				initCode = Collections.emptyList();
-			} else {
-				for (FplValue v : initCode) {
-					v.equals(this);
-				}
+			for (FplValue v : initCode) {
+				v.equals(this);
 			}
 		}
 		return this;
@@ -77,44 +71,44 @@ public class FplObject extends EvaluatesToThisValue implements PositionHolder, L
 		FplValue value = map.get(key);
 		if (value != null) {
 			return value;
-    	}
-    	if (next != null) {
-    		return next.get(key);
-    	}
-    	return null;
+		}
+		if (next != null) {
+			return next.get(key);
+		}
+		return null;
 	}
 
-    @Override
-    public void put(String key, FplValue value) throws EvaluationException {
-        if (sealed) {
-            throw new EvaluationException("Scope is sealed");
-        }
-        if (key == null || key.length() == 0) {
-            throw new EvaluationException("key null or empty");
-        }
-        // ConcurrentHashMap does not support null values, so we can't put null.
-        if (value == null) {
-        	map.remove(key);
-        } else {
-        	map.put(key, value);
-        }
-    }
-    
-    public void putUnsafe(String key, FplValue value) {
-        map.put(key, value);
-    }
+	@Override
+	public void put(String key, FplValue value) throws EvaluationException {
+		if (sealed) {
+			throw new EvaluationException("Scope is sealed");
+		}
+		if (key == null || key.length() == 0) {
+			throw new EvaluationException("key null or empty");
+		}
+		// ConcurrentHashMap does not support null values, so we can't put null.
+		if (value == null) {
+			map.remove(key);
+		} else {
+			map.put(key, value);
+		}
+	}
 
-    @Override
-    public SortedSet<String> allKeys() {
-        SortedSet<String> keySet = new TreeSet<>(map.keySet());
-        keySet.addAll(map.keySet());
-        return keySet;
-    }
-    
+	public void putUnsafe(String key, FplValue value) {
+		map.put(key, value);
+	}
+
+	@Override
+	public SortedSet<String> allKeys() {
+		SortedSet<String> keySet = new TreeSet<>(map.keySet());
+		keySet.addAll(map.keySet());
+		return keySet;
+	}
+
 	public void setSealed(boolean sealed) {
 		this.sealed = sealed;
 	}
-	
+
 	@Override
 	public boolean isSealed() {
 		return sealed;
