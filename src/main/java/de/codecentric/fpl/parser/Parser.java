@@ -94,9 +94,8 @@ public class Parser {
 			fetchNextToken();
 			break;
 		case SYMBOL:
-			String name = nextToken.getStringValue();
 			Symbol s;
-			if ("nil".equals(name)) {
+			if (isNil(nextToken)) {
 				s = null;
 				scanner.clearCommentLines();
 			} else {
@@ -109,7 +108,7 @@ public class Parser {
 			result = s;
 			break;
 		default:
-			throw new ParseException(nextToken.getPosition(), "unexptected token: " + nextToken);
+			throw new ParseException(nextToken.getPosition(), "unexpected token: " + nextToken);
 		}
 		return result;
 	}
@@ -178,7 +177,7 @@ public class Parser {
 	}
 
 	private void initCode(FplObject obj) throws ParseException, IOException {
-		while (nextToken != null && nextToken.getId() == Token.Id.LEFT_PAREN) {
+		while (nextToken != null && (nextToken.getId() == Token.Id.LEFT_PAREN || isNil(nextToken))) {
 			FplValue v = value();
 			if (v != null) {
 				obj.addInitCodeValue(v);
@@ -215,6 +214,7 @@ public class Parser {
 			throw new ParseException(nextToken.getPosition(), "Expect : after key");
 		}
 		fetchNextToken(); // skip COLON
+		expectNotEof("Unexpected end of source in object");
 		FplValue v = value();
 		if (v == null) {
 			throw new ParseException(lastToken.getPosition(), "Null no allowed as value.");
@@ -227,6 +227,10 @@ public class Parser {
 		nextToken = scanner.next();
 	}
 
+	private boolean isNil(Token token) {
+		return token.getId() == Token.Id.SYMBOL && "nil".equals(token.getStringValue());
+	}
+	
 	private void expectNotEof(String message) throws ParseException, IOException {
 		if (nextToken == null) {
 			throw new ParseException(lastToken.getPosition(), message);
