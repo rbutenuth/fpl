@@ -57,10 +57,13 @@ public class FplObject extends EvaluatesToThisValue implements PositionHolder, L
 
 	@Override
 	public synchronized FplValue evaluate(Scope scope) throws EvaluationException {
+		if (scope == null) {
+			throw new IllegalArgumentException("Scope of object can't be null");
+		}
 		if (next == null) {
 			next = scope;
 			for (FplValue v : initCode) {
-				v.equals(this);
+				v.evaluate(this);
 			}
 		}
 		return this;
