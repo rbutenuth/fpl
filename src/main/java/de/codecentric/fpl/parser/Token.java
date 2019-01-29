@@ -166,6 +166,15 @@ public final class Token {
 	}
 
 	/**
+	 * Is this a Token with given id?
+	 * @param id Let's compare with this.
+	 * @return Is it?
+	 */
+	public boolean is(Id id) {
+		return id == this.id;
+	}
+	
+	/**
 	 * @return Double
 	 * @throws IllegalStateException
 	 *             If id is not {@link Id#DOUBLE}.

@@ -15,6 +15,7 @@ import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
+import de.codecentric.fpl.parser.Token.Id;
 
 /**
  * A simple Lisp parser. (It could nearly implementing {@link Iterator}, but
@@ -124,13 +125,13 @@ public class Parser {
 	private FplValue list() throws ParseException, IOException {
 		fetchNextToken(); // skip LEFT_PAREN
 		expectNotEof("Unexpected end of source in list");
-		if (nextToken.getId() == Token.Id.RIGHT_PAREN) {
+		if (nextToken.is(Id.RIGHT_PAREN)) {
 			fetchNextToken();
 			return FplList.EMPTY_LIST;
 		}
 		List<FplValue> elements = new ArrayList<>();
 		elements.add(value());
-		while (nextToken != null && nextToken.getId() != Token.Id.RIGHT_PAREN) {
+		while (nextToken != null && !nextToken.is(Id.RIGHT_PAREN)) {
 			elements.add(value());
 		}
 		expectNotEof("Unexpected end of source in list");
@@ -141,18 +142,18 @@ public class Parser {
 	private FplValue jsonList() throws ParseException, IOException {
 		fetchNextToken(); // skip LEFT_SQUARE_BRACKET
 		expectNotEof("Unexpected end of source in json list");
-		if (nextToken.getId() == Token.Id.RIGHT_SQUARE_BRACKET) {
+		if (nextToken.is(Id.RIGHT_SQUARE_BRACKET)) {
 			fetchNextToken();
 			return FplList.EMPTY_LIST;
 		}
 		List<FplValue> elements = new ArrayList<>();
 		elements.add(value());
-		while (nextToken != null && nextToken.getId() == Token.Id.COMMA) {
+		while (nextToken != null && nextToken.is(Id.COMMA)) {
 			fetchNextToken(); // skip COMMA
 			elements.add(value());
 		}
 		expectNotEof("Unexpected end of source in json list");
-		if (nextToken.getId() != Token.Id.RIGHT_SQUARE_BRACKET) {
+		if (!nextToken.is(Id.RIGHT_SQUARE_BRACKET)) {
 			throw new ParseException(nextToken.getPosition(), "Unexpected token in json list: " + nextToken);
 		}
 		fetchNextToken(); // skip RIGHT_SQUARE_BRACKET
@@ -168,7 +169,7 @@ public class Parser {
 		FplObject obj = new FplObject(nextToken.getPosition());
 		fetchNextToken(); // skip LEFT_CURLY_BRACKET
 		initCode(obj);
-		if (nextToken != null && nextToken.getId() != Token.Id.RIGHT_CURLY_BRACKET) {
+		if (nextToken != null && !nextToken.is(Id.RIGHT_CURLY_BRACKET)) {
 			keyValuePair(obj);
 		}
 		keyValuePairs(obj);
@@ -177,7 +178,7 @@ public class Parser {
 	}
 
 	private void initCode(FplObject obj) throws ParseException, IOException {
-		while (nextToken != null && (nextToken.getId() == Token.Id.LEFT_PAREN || isNil(nextToken))) {
+		while (nextToken != null && (nextToken.is(Id.LEFT_PAREN) || isNil(nextToken))) {
 			FplValue v = value();
 			if (v != null) {
 				obj.addInitCodeValue(v);
@@ -186,16 +187,16 @@ public class Parser {
 	}
 
 	private void keyValuePairs(FplObject obj) throws ParseException, IOException {
-		while (nextToken != null && nextToken.getId() == Token.Id.COMMA) {
+		while (nextToken != null && nextToken.is(Id.COMMA)) {
 			fetchNextToken(); // skip COMMA
-			if (nextToken.getId() == Token.Id.SYMBOL || nextToken.getId() == Token.Id.STRING) {
+			if (nextToken.is(Id.SYMBOL) || nextToken.is(Id.STRING)) {
 				keyValuePair(obj);
 			} else {
 				throw new ParseException(nextToken.getPosition(), "Symbol, String or } expected.");
 			}
 		}
 		expectNotEof("Unexpected end of source in object");
-		if (nextToken.getId() != Token.Id.RIGHT_CURLY_BRACKET) {
+		if (!nextToken.is(Id.RIGHT_CURLY_BRACKET)) {
 			throw new ParseException(nextToken.getPosition(), "} at end of map missing");
 		}
 	}
@@ -210,7 +211,7 @@ public class Parser {
 		}
 		fetchNextToken(); // skip STRING or SYMBOL
 		expectNotEof("Unexpected end of source in object");
-		if (nextToken.getId() != Token.Id.COLON) {
+		if (!nextToken.is(Id.COLON)) {
 			throw new ParseException(nextToken.getPosition(), "Expect : after key");
 		}
 		fetchNextToken(); // skip COLON
@@ -228,7 +229,7 @@ public class Parser {
 	}
 
 	private boolean isNil(Token token) {
-		return token.getId() == Token.Id.SYMBOL && "nil".equals(token.getStringValue());
+		return token.is(Id.SYMBOL) && "nil".equals(token.getStringValue());
 	}
 	
 	private void expectNotEof(String message) throws ParseException, IOException {
