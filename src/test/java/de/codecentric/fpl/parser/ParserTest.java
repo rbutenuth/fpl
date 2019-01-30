@@ -336,6 +336,66 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void testNoSymbolOrStringBehindComma() throws Exception {
+		Parser p = parser("pair and ,,", "{ key: 1,,");
+		assertTrue(p.hasNext());
+		try {
+			p.next();
+			fail("exception missing");
+		} catch (ParseException e) {
+			assertEquals("Symbol, String or } expected.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testTwoValuesBehindKey() throws Exception {
+		Parser p = parser("pair and two values", "{ key: 1 2");
+		assertTrue(p.hasNext());
+		try {
+			p.next();
+			fail("exception missing");
+		} catch (ParseException e) {
+			assertEquals("} at end of map missing", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testKeyOnly() throws Exception {
+		Parser p = parser("key only", "{ (a b) key nonsense");
+		assertTrue(p.hasNext());
+		try {
+			p.next();
+			fail("exception missing");
+		} catch (ParseException e) {
+			assertEquals("Expect : after key", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testNullValue() throws Exception {
+		Parser p = parser("null value", "{ key: nil }");
+		assertTrue(p.hasNext());
+		try {
+			p.next();
+			fail("exception missing");
+		} catch (ParseException e) {
+			assertEquals("Null no allowed as value.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testPairFollowedByList() throws Exception {
+		Parser p = parser("pair and ()", "{ key: 1,()");
+		assertTrue(p.hasNext());
+		try {
+			p.next();
+			fail("exception missing");
+		} catch (ParseException e) {
+			assertEquals("Symbol, String or } expected.", e.getMessage());
+		}
+	}
+
+	@Test
 	public void testOnePairStringKey() throws Exception {
 		Parser p = parser("one pair", "{ \"1\": 2}");
 		assertTrue(p.hasNext());
