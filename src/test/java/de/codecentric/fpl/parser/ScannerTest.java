@@ -2,7 +2,6 @@ package de.codecentric.fpl.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
@@ -13,6 +12,7 @@ import de.codecentric.fpl.parser.ParseException;
 import de.codecentric.fpl.parser.Position;
 import de.codecentric.fpl.parser.Scanner;
 import de.codecentric.fpl.parser.Token;
+import de.codecentric.fpl.parser.Token.Id;
 
 /**
  * Tests for {@link Scanner}
@@ -43,7 +43,7 @@ public class ScannerTest {
         Scanner sc = new Scanner("test", new StringReader(";   commentLine1\n; commentLine2\n;commentLine3\n symbol"));
         Token t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.SYMBOL, t.getId());
+        assertEquals(Id.SYMBOL, t.getId());
         assertEquals("symbol", t.toString());
         List<String> comments = t.getCommentLines();
         assertEquals(3, comments.size());
@@ -57,7 +57,7 @@ public class ScannerTest {
         Scanner sc = new Scanner("test", new StringReader("'( bla \n\r) ; sinnfrei\n\r;leer\n{[,:]}"));
         Token t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.QUOTE, t.getId());
+        assertEquals(Id.QUOTE, t.getId());
         assertEquals("'", t.toString());
         Position p = t.getPosition();
         assertEquals("test", p.getName());
@@ -66,52 +66,52 @@ public class ScannerTest {
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.LEFT_PAREN, t.getId());
+        assertEquals(Id.LEFT_PAREN, t.getId());
         assertEquals("(", t.toString());
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.SYMBOL, t.getId());
+        assertEquals(Id.SYMBOL, t.getId());
         assertEquals("bla", t.getStringValue());
         assertEquals("Position[name=\"test\", line=1, column=4]", t.getPosition().toString());
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.RIGHT_PAREN, t.getId());
+        assertEquals(Id.RIGHT_PAREN, t.getId());
         assertEquals(")", t.toString());
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.LEFT_CURLY_BRACKET, t.getId());
+        assertEquals(Id.LEFT_CURLY_BRACKET, t.getId());
         assertEquals("{", t.toString());
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.LEFT_SQUARE_BRACKET, t.getId());
+        assertEquals(Id.LEFT_SQUARE_BRACKET, t.getId());
         assertEquals("[", t.toString());
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.COMMA, t.getId());
+        assertEquals(Id.COMMA, t.getId());
         assertEquals(",", t.toString());
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.COLON, t.getId());
+        assertEquals(Id.COLON, t.getId());
         assertEquals(":", t.toString());
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.RIGHT_SQUARE_BRACKET, t.getId());
+        assertEquals(Id.RIGHT_SQUARE_BRACKET, t.getId());
         assertEquals("]", t.toString());
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.RIGHT_CURLY_BRACKET, t.getId());
+        assertEquals(Id.RIGHT_CURLY_BRACKET, t.getId());
         assertEquals("}", t.toString());
 
         t = sc.next();
-        assertEquals(Token.Id.EOF, t.getId());
+        assertEquals(Id.EOF, t.getId());
     }
 
     @Test
@@ -119,34 +119,34 @@ public class ScannerTest {
         Scanner sc = new Scanner("test", new StringReader("123\t-456 ;comment \n1.23e4\n-31.4e-1\n2.78E+0\n3.14"));
         Token t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.INTEGER, t.getId());
+        assertEquals(Id.INTEGER, t.getId());
         assertEquals(123, t.getIntegerValue());
         assertEquals("123", t.toString());
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.INTEGER, t.getId());
+        assertEquals(Id.INTEGER, t.getId());
         assertEquals(-456, t.getIntegerValue());
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.DOUBLE, t.getId());
+        assertEquals(Id.DOUBLE, t.getId());
         assertEquals(1.23e4, t.getDoubleValue(), 0.001);
         assertEquals("12300.0", t.toString());
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.DOUBLE, t.getId());
+        assertEquals(Id.DOUBLE, t.getId());
         assertEquals(-31.4e-1, t.getDoubleValue(), 0.001);
         
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.DOUBLE, t.getId());
+        assertEquals(Id.DOUBLE, t.getId());
         assertEquals(2.78, t.getDoubleValue(), 0.001);
         
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.DOUBLE, t.getId());
+        assertEquals(Id.DOUBLE, t.getId());
         assertEquals(3.14, t.getDoubleValue(), 0.001);
         
         Position p = t.getPosition();
@@ -170,24 +170,24 @@ public class ScannerTest {
         Scanner sc = new Scanner("test", new StringReader("(\"a\\\"bc\ndef\\nhij\" \r\n\"a\\tb\\rc\\n\")"));
         Token t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.LEFT_PAREN, t.getId());
+        assertEquals(Id.LEFT_PAREN, t.getId());
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.STRING, t.getId());
+        assertEquals(Id.STRING, t.getId());
         assertEquals("a\"bc\ndef\nhij", t.getStringValue());
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.STRING, t.getId());
+        assertEquals(Id.STRING, t.getId());
         assertEquals("a\tb\rc\n", t.getStringValue());
         assertEquals("\"a\tb\rc\n\"", t.toString());
 
         t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.RIGHT_PAREN, t.getId());
+        assertEquals(Id.RIGHT_PAREN, t.getId());
 
-        assertEquals(Token.Id.EOF, sc.next().getId());
+        assertEquals(Id.EOF, sc.next().getId());
     }
     
     @Test
@@ -195,7 +195,7 @@ public class ScannerTest {
         Scanner sc = new Scanner("test", new StringReader("\"\\/\\f\\b\")"));
         Token t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.STRING, t.getId());
+        assertEquals(Id.STRING, t.getId());
         assertEquals("/\f\b", t.getStringValue());
     }
     
@@ -204,7 +204,7 @@ public class ScannerTest {
         Scanner sc = new Scanner("test", new StringReader("\"\\u12ab\")"));
         Token t = sc.next();
         assertNotNull(t);
-        assertEquals(Token.Id.STRING, t.getId());
+        assertEquals(Id.STRING, t.getId());
         String s = t.getStringValue();
         assertEquals(1, s.length());
         char ch = s.charAt(0);
