@@ -4,11 +4,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -17,13 +21,13 @@ import java.util.Base64;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class SimpleHttpTest {
 	private final static String baseUrl = "http://localhost:9099/fpl";
 	private final static String user = "fred";
 	private final static String nl = System.lineSeparator();
-
 
 	private String password;
 	private boolean stopped;
@@ -77,7 +81,8 @@ public class SimpleHttpTest {
 	@Test
 	public void testNullResult() throws IOException {
 		String response = SimpleHttpClient.post(baseUrl, user, password, stream("nil"), false);
-		// nil -> null -> terminates the parsing loop, therefore "nothing" returned as result.
+		// nil -> null -> terminates the parsing loop, therefore "nothing" returned as
+		// result.
 		assertEquals("nil", response.trim());
 	}
 
@@ -89,35 +94,49 @@ public class SimpleHttpTest {
 
 	@Test
 	public void testNullResultViaMain() throws Exception {
-		File file = File.createTempFile("test", ".lisp");
-		FileWriter writer = new FileWriter(file);
-		writer.write("nil");
-		writer.close();
-		String[] args = new String[4];
-		args[0] = baseUrl;
-		args[1] = user;
-		args[2] = password;
-		args[3] = file.getAbsolutePath();
-		SimpleHttpClient.main(args);
-		// nil -> null -> terminates the parsing loop, therefore "nothing" returned as result.
-		file.delete();
+		PrintStream originalOut = System.out;
+		try (PrintStream dummyOut = new PrintStream(new ByteArrayOutputStream())) {
+			System.setOut(dummyOut);
+			File file = File.createTempFile("test", ".lisp");
+			FileWriter writer = new FileWriter(file);
+			writer.write("nil");
+			writer.close();
+			String[] args = new String[4];
+			args[0] = baseUrl;
+			args[1] = user;
+			args[2] = password;
+			args[3] = file.getAbsolutePath();
+			SimpleHttpClient.main(args);
+			// nil -> null -> terminates the parsing loop, therefore "nothing" returned as
+			// result.
+			file.delete();
+		} finally {
+			System.setOut(originalOut);
+		}
 	}
 
 	@Test
 	public void testNullResultViaMainLastBlockOnly() throws Exception {
-		File file = File.createTempFile("test", ".lisp");
-		FileWriter writer = new FileWriter(file);
-		writer.write("nil\r\nnil");
-		writer.close();
-		String[] args = new String[5];
-		args[0] = baseUrl;
-		args[1] = user;
-		args[2] = password;
-		args[3] = file.getAbsolutePath();
-		args[4] = "lastBlockOnly";
-		SimpleHttpClient.main(args);
-		// nil -> null -> terminates the parsing loop, therefore "nothing" returned as result.
-		file.delete();
+		PrintStream originalOut = System.out;
+		try (PrintStream dummyOut = new PrintStream(new ByteArrayOutputStream())) {
+			System.setOut(dummyOut);
+			File file = File.createTempFile("test", ".lisp");
+			FileWriter writer = new FileWriter(file);
+			writer.write("nil\r\nnil");
+			writer.close();
+			String[] args = new String[5];
+			args[0] = baseUrl;
+			args[1] = user;
+			args[2] = password;
+			args[3] = file.getAbsolutePath();
+			args[4] = "lastBlockOnly";
+			SimpleHttpClient.main(args);
+			// nil -> null -> terminates the parsing loop, therefore "nothing" returned as
+			// result.
+			file.delete();
+		} finally {
+			System.setOut(originalOut);
+		}
 	}
 
 	@Test
@@ -129,8 +148,7 @@ public class SimpleHttpTest {
 	@Test
 	public void testExpressionFollowedByFailure() throws IOException {
 		String response = SimpleHttpClient.post(baseUrl, user, password, stream("(+ 3 4)\n(/ 3 0)"), false);
-		assertEquals("7" + nl + nl + "/ by zero" + nl + "    at /(<unknown>:1)",
-				response.trim());
+		assertEquals("7" + nl + nl + "/ by zero" + nl + "    at /(<unknown>:1)", response.trim());
 	}
 
 	@Test
