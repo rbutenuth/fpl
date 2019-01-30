@@ -37,7 +37,9 @@ public final class Token {
 		/** Symbol */
 		SYMBOL(false),
 		/** String */
-		STRING(false);
+		STRING(false),
+		/** String */
+		EOF(true);
 		
 		private Id(boolean primitive) {
 			this.primitive = primitive;
@@ -166,12 +168,21 @@ public final class Token {
 	}
 
 	/**
-	 * Is this a Token with given id?
+	 * Is this a Token with the given id?
 	 * @param id Let's compare with this.
 	 * @return Is it?
 	 */
 	public boolean is(Id id) {
 		return id == this.id;
+	}
+	
+	/**
+	 * Is this a Token NOT with the given id?
+	 * @param id Let's compare with this.
+	 * @return Is it?
+	 */
+	public boolean isNot(Id id) {
+		return id != this.id;
 	}
 	
 	/**
@@ -250,6 +261,8 @@ public final class Token {
 			return '"' + stringValue + '"';
 		case SYMBOL:
 			return stringValue;
+		case EOF:
+			return "end of file";
 		default:
 			throw new IllegalStateException();
 		}

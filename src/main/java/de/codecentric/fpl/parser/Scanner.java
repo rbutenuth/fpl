@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.codecentric.fpl.parser.Token.Id;
+
 /**
  * A simple scanner. The reader is closed when EOF is reached.
  */
@@ -54,43 +56,42 @@ public class Scanner {
 	}
 
 	/**
-	 * @return Next token or null for end of input.
+	 * @return Next token. {@link Id.EOF} at end of file
 	 * @throws IOException    In case {@link Reader} throws.
 	 * @throws ParseException Illegal token.
 	 */
 	public Token next() throws IOException, ParseException {
 		skipComment();
-		if (eof) {
-			return null;
-		}
 		Position position = new Position(name, line, column);
-		if (ch == '(') {
+		if (eof) {
+			return new Token(position, Id.EOF);
+		} else  if (ch == '(') {
 			readChar();
-			return new Token(position, Token.Id.LEFT_PAREN);
+			return new Token(position, Id.LEFT_PAREN);
 		} else if (ch == ')') {
 			readChar();
-			return new Token(position, Token.Id.RIGHT_PAREN);
+			return new Token(position, Id.RIGHT_PAREN);
 		} else if (ch == '[') {
 			readChar();
-			return new Token(position, Token.Id.LEFT_SQUARE_BRACKET);
+			return new Token(position, Id.LEFT_SQUARE_BRACKET);
 		} else if (ch == ']') {
 			readChar();
-			return new Token(position, Token.Id.RIGHT_SQUARE_BRACKET);
+			return new Token(position, Id.RIGHT_SQUARE_BRACKET);
 		} else if (ch == '{') {
 			readChar();
-			return new Token(position, Token.Id.LEFT_CURLY_BRACKET);
+			return new Token(position, Id.LEFT_CURLY_BRACKET);
 		} else if (ch == '}') {
 			readChar();
-			return new Token(position, Token.Id.RIGHT_CURLY_BRACKET);
+			return new Token(position, Id.RIGHT_CURLY_BRACKET);
 		} else if (ch == ',') {
 			readChar();
-			return new Token(position, Token.Id.COMMA);
+			return new Token(position, Id.COMMA);
 		} else if (ch == ':') {
 			readChar();
-			return new Token(position, Token.Id.COLON);
+			return new Token(position, Id.COLON);
 		} else if (ch == '\'') {
 			readChar();
-			return new Token(position, Token.Id.QUOTE);
+			return new Token(position, Id.QUOTE);
 		} else if (ch == '-' && !Character.isWhitespace(nextCh) || ch >= '0' && ch <= '9') {
 			return number(position);
 		} else if (ch == '"') {
@@ -176,7 +177,7 @@ public class Scanner {
 			sb.append((char) ch);
 			readChar();
 		}
-		Token t = new Token(position, Token.Id.SYMBOL, sb.toString(), commentLines);
+		Token t = new Token(position, Id.SYMBOL, sb.toString(), commentLines);
 		return t;
 	}
 
@@ -215,7 +216,7 @@ public class Scanner {
 			}
 		}
 		readChar(); // skip "
-		return new Token(position, Token.Id.STRING, sb.toString(), Collections.emptyList());
+		return new Token(position, Id.STRING, sb.toString(), Collections.emptyList());
 	}
 
 	private char readHexadecimalCharacter(Position position) throws IOException, ParseException {

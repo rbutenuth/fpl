@@ -52,7 +52,7 @@ public class Parser {
 			haveFetchedFirstToken = true;
 			fetchNextToken();
 		}
-		return nextToken != null;
+		return nextToken.isNot(Id.EOF);
 	}
 
 	/**
@@ -131,7 +131,7 @@ public class Parser {
 		}
 		List<FplValue> elements = new ArrayList<>();
 		elements.add(value());
-		while (nextToken != null && !nextToken.is(Id.RIGHT_PAREN)) {
+		while (nextToken.isNot(Id.EOF) && nextToken.isNot(Id.RIGHT_PAREN)) {
 			elements.add(value());
 		}
 		expectNotEof("Unexpected end of source in list");
@@ -148,12 +148,12 @@ public class Parser {
 		}
 		List<FplValue> elements = new ArrayList<>();
 		elements.add(value());
-		while (nextToken != null && nextToken.is(Id.COMMA)) {
+		while (nextToken.is(Id.COMMA)) {
 			fetchNextToken(); // skip COMMA
 			elements.add(value());
 		}
 		expectNotEof("Unexpected end of source in json list");
-		if (!nextToken.is(Id.RIGHT_SQUARE_BRACKET)) {
+		if (nextToken.isNot(Id.RIGHT_SQUARE_BRACKET)) {
 			throw new ParseException(nextToken.getPosition(), "Unexpected token in json list: " + nextToken);
 		}
 		fetchNextToken(); // skip RIGHT_SQUARE_BRACKET
@@ -169,7 +169,7 @@ public class Parser {
 		FplObject obj = new FplObject(nextToken.getPosition());
 		fetchNextToken(); // skip LEFT_CURLY_BRACKET
 		initCode(obj);
-		if (nextToken != null && !nextToken.is(Id.RIGHT_CURLY_BRACKET)) {
+		if (nextToken.isNot(Id.EOF) && nextToken.isNot(Id.RIGHT_CURLY_BRACKET)) {
 			keyValuePair(obj);
 		}
 		keyValuePairs(obj);
@@ -178,7 +178,7 @@ public class Parser {
 	}
 
 	private void initCode(FplObject obj) throws ParseException, IOException {
-		while (nextToken != null && (nextToken.is(Id.LEFT_PAREN) || isNil(nextToken))) {
+		while (nextToken.is(Id.LEFT_PAREN) || isNil(nextToken)) {
 			FplValue v = value();
 			if (v != null) {
 				obj.addInitCodeValue(v);
@@ -187,7 +187,7 @@ public class Parser {
 	}
 
 	private void keyValuePairs(FplObject obj) throws ParseException, IOException {
-		while (nextToken != null && nextToken.is(Id.COMMA)) {
+		while (nextToken.is(Id.COMMA)) {
 			fetchNextToken(); // skip COMMA
 			if (nextToken.is(Id.SYMBOL) || nextToken.is(Id.STRING)) {
 				keyValuePair(obj);
@@ -196,7 +196,7 @@ public class Parser {
 			}
 		}
 		expectNotEof("Unexpected end of source in object");
-		if (!nextToken.is(Id.RIGHT_CURLY_BRACKET)) {
+		if (nextToken.isNot(Id.RIGHT_CURLY_BRACKET)) {
 			throw new ParseException(nextToken.getPosition(), "} at end of map missing");
 		}
 	}
@@ -211,7 +211,7 @@ public class Parser {
 		}
 		fetchNextToken(); // skip STRING or SYMBOL
 		expectNotEof("Unexpected end of source in object");
-		if (!nextToken.is(Id.COLON)) {
+		if (nextToken.isNot(Id.COLON)) {
 			throw new ParseException(nextToken.getPosition(), "Expect : after key");
 		}
 		fetchNextToken(); // skip COLON
@@ -233,7 +233,7 @@ public class Parser {
 	}
 	
 	private void expectNotEof(String message) throws ParseException, IOException {
-		if (nextToken == null) {
+		if (nextToken.is(Id.EOF)) {
 			throw new ParseException(lastToken.getPosition(), message);
 		}
 	}

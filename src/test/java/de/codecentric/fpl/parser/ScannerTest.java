@@ -111,7 +111,7 @@ public class ScannerTest {
         assertEquals("}", t.toString());
 
         t = sc.next();
-        assertNull(t);
+        assertEquals(Token.Id.EOF, t.getId());
     }
 
     @Test
@@ -187,7 +187,7 @@ public class ScannerTest {
         assertNotNull(t);
         assertEquals(Token.Id.RIGHT_PAREN, t.getId());
 
-        assertNull(sc.next());
+        assertEquals(Token.Id.EOF, sc.next().getId());
     }
     
     @Test
