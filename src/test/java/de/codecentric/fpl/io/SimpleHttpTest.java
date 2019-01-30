@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.net.HttpURLConnection;
@@ -113,6 +114,30 @@ public class SimpleHttpTest {
 	}
 
 	@Test
+	public void testNullResultViaMainWithNonsensArg() throws Exception {
+		PrintStream originalOut = System.out;
+		try (PrintStream dummyOut = new PrintStream(new ByteArrayOutputStream())) {
+			System.setOut(dummyOut);
+			File file = File.createTempFile("test", ".lisp");
+			FileWriter writer = new FileWriter(file);
+			writer.write("nil");
+			writer.close();
+			String[] args = new String[5];
+			args[0] = baseUrl;
+			args[1] = user;
+			args[2] = password;
+			args[3] = file.getAbsolutePath();
+			args[4] = "foobar";
+			SimpleHttpClient.main(args);
+			// nil -> null -> terminates the parsing loop, therefore "nothing" returned as
+			// result.
+			file.delete();
+		} finally {
+			System.setOut(originalOut);
+		}
+	}
+
+	@Test
 	public void testNullResultViaMainLastBlockOnly() throws Exception {
 		PrintStream originalOut = System.out;
 		try (PrintStream dummyOut = new PrintStream(new ByteArrayOutputStream())) {
@@ -177,6 +202,37 @@ public class SimpleHttpTest {
 		String str = "(* 6 7)\r\n\r\n(+ 3 4)";
 		String response = SimpleHttpClient.post(baseUrl + "?lastBlockOnly", user, password, stream(str), false);
 		assertEquals("7", response.trim());
+	}
+
+	@Test
+	public void testUknownUser() throws IOException {
+		String response = SimpleHttpClient.post(baseUrl, user + "foo", password, stream("(+ 3 4) (* 6 7)"), false);
+		assertEquals("Failure: 401", response.trim());
+	}
+
+	@Test
+	public void testWrongPassword() throws IOException {
+		String response = SimpleHttpClient.post(baseUrl, user, password + "foo", stream("(+ 3 4) (* 6 7)"), false);
+		assertEquals("Failure: 401", response.trim());
+	}
+	
+	@Test
+	public void testWrongMethod() throws IOException {
+		URL url = new URL(baseUrl);
+		HttpURLConnection con = (HttpURLConnection) url.openConnection();
+		byte[] bytes = (user + ":" + password).getBytes();
+		String basicAuth = "Basic " + Base64.getEncoder().encodeToString(bytes);
+		con.setRequestProperty("Authorization", basicAuth);
+		con.setRequestMethod("PUT");
+		con.setDoOutput(true);
+		try (OutputStream os = con.getOutputStream()) {
+			for (byte b: "foo".getBytes()) {
+				os.write(b);
+			}
+		}
+
+		int responseCode = con.getResponseCode();
+		assertEquals(500, responseCode);
 	}
 
 	private InputStream stream(String str) {

@@ -65,8 +65,8 @@ public class SimpleHttpServer extends Thread {
 		HttpContext context = server.createContext("/fpl");
 		context.setAuthenticator(new BasicAuthenticator("FPL Server") {
 			@Override
-			public boolean checkCredentials(String user, String password) {
-				return user.equals(user) && password.equals(password);
+			public boolean checkCredentials(String credDser, String credPassword) {
+				return user.equals(credDser) && password.equals(credPassword);
 			}
 		});
 		context.setHandler((he) -> {
