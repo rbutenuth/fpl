@@ -1,5 +1,6 @@
 package de.codecentric.fpl.parser;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,7 +22,7 @@ import de.codecentric.fpl.parser.Token.Id;
  * A simple Lisp parser. (It could nearly implementing {@link Iterator}, but
  * alas: Parse- and IOException...
  */
-public class Parser {
+public class Parser implements Closeable {
 	private static Set<String> keepCommentSymbols = new HashSet<>();
 	static {
 		keepCommentSymbols.add("defun");
@@ -236,5 +237,11 @@ public class Parser {
 		if (nextToken.is(Id.EOF)) {
 			throw new ParseException(lastToken.getPosition(), message);
 		}
+	}
+
+	@Override
+	public void close() throws IOException {
+		nextToken = new Token(nextToken.getPosition(), Token.Id.EOF);
+		scanner.close();
 	}
 }

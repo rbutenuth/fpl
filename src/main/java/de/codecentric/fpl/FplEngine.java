@@ -73,9 +73,7 @@ public class FplEngine {
 	public List<FplValue> evaluate(String sourceName, Reader rd, ResultCallback callback) throws IOException {
 		List<FplValue> results = new ArrayList<>();
 		boolean continueEvaluation = true;
-		try {
-			Parser parser = new Parser(new Scanner(sourceName, rd));
-
+		try (Parser parser = new Parser(new Scanner(sourceName, rd))) {
 			do {
 				try {
 					if (parser.hasNext()) {
@@ -91,8 +89,6 @@ public class FplEngine {
 					continueEvaluation = callback.handleException(e);
 				}
 			} while (continueEvaluation);
-		} finally {
-			rd.close();
 		}
 		return results;
 	}

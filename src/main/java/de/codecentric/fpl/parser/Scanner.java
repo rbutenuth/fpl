@@ -1,5 +1,6 @@
 package de.codecentric.fpl.parser;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import de.codecentric.fpl.parser.Token.Id;
 /**
  * A simple scanner. The reader is closed when EOF is reached.
  */
-public class Scanner {
+public class Scanner implements Closeable {
 	private Reader rd;
 	private String name;
 	private int line;
@@ -263,5 +264,12 @@ public class Scanner {
 		} else {
 			column++;
 		}
+	}
+
+	@Override
+	public void close() throws IOException {
+		eof = true;
+		ch = -1;
+		rd.close();
 	}
 }
