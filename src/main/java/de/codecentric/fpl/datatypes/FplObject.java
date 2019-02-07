@@ -83,12 +83,7 @@ public class FplObject extends EvaluatesToThisValue implements PositionHolder, L
 
 	@Override
 	public void put(String key, FplValue value) throws EvaluationException {
-		if (sealed) {
-			throw new EvaluationException("Scope is sealed");
-		}
-		if (key == null || key.length() == 0) {
-			throw new EvaluationException("key null or empty");
-		}
+        checkKeyNotEmptyAndNotSealed(key);
 		// ConcurrentHashMap does not support null values, so we can't put null.
 		if (value == null) {
 			map.remove(key);
@@ -97,6 +92,26 @@ public class FplObject extends EvaluatesToThisValue implements PositionHolder, L
 		}
 	}
 
+	@Override
+	public FplValue change(String key, FplValue newValue) throws EvaluationException {
+        checkKeyNotEmptyAndNotSealed(key);
+        FplValue oldValue = map.replace(key, newValue);
+        if (oldValue == null) {
+        	throw new EvaluationException("Scope does not contain key " + key);
+        }
+		return oldValue;
+	}
+
+	@Override
+	public void define(String key, FplValue value) throws EvaluationException {
+        checkKeyNotEmptyAndNotSealed(key);
+        FplValue old = map.putIfAbsent(key, value);
+        if (old != null) {
+        	throw new EvaluationException("Scope already contained a value for key " + key);
+        }
+	}
+	
+	// Only for the parser
 	public void putUnsafe(String key, FplValue value) {
 		map.put(key, value);
 	}
@@ -120,5 +135,14 @@ public class FplObject extends EvaluatesToThisValue implements PositionHolder, L
 	@Override
 	public Position getPosition() {
 		return position;
+	}
+	
+    private void checkKeyNotEmptyAndNotSealed(String key) throws EvaluationException {
+		if (sealed) {
+            throw new EvaluationException("Scope is sealed");
+        }
+        if (key == null || key.length() == 0) {
+            throw new EvaluationException("key null or empty");
+        }
 	}
 }

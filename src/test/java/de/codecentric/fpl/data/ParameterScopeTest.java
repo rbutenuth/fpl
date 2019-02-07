@@ -79,7 +79,7 @@ public class ParameterScopeTest {
 	@Test
 	public void testChangeInner() throws EvaluationException {
 		outer.put("key", new FplString("oldValue"));
-		FplValue old = inner.change("key", new FplString("newValue"));
+		FplValue old = inner.changeWithSearch("key", new FplString("newValue"));
 		assertEquals("\"oldValue\"", old.toString());
 		assertEquals("\"newValue\"", inner.get("key").toString());
 		assertEquals("\"newValue\"", outer.get("key").toString());

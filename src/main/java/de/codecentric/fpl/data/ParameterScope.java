@@ -43,9 +43,20 @@ public class ParameterScope implements Scope {
 		next.putGlobal(key, value);
 	}
 
+
 	@Override
 	public FplValue change(String key, FplValue newValue) throws EvaluationException {
 		return next.change(key, newValue);
+	}
+
+	@Override
+	public void define(String key, FplValue value) throws EvaluationException {
+		next.define(key, value);
+	}
+	
+	@Override
+	public FplValue changeWithSearch(String key, FplValue newValue) throws EvaluationException {
+		return next.changeWithSearch(key, newValue);
 	}
 
 	@Override

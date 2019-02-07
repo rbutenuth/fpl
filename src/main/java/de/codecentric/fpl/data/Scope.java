@@ -7,6 +7,10 @@ import de.codecentric.fpl.datatypes.Named;
 /**
  * For parameters or key value mappings.
  */
+/**
+ * @author butenuth
+ *
+ */
 public interface Scope {
 	/**
 	 * @return Next outer scope, may be null.
@@ -25,7 +29,7 @@ public interface Scope {
 	 * Put a key value mapping in the scope, may overwrite an existing mapping.
 	 * 
 	 * @param key   Name of value to lookup, not null, not empty
-	 * @param value The value of the symbol, null values are allowed.
+	 * @param value The value of the symbol, null values are allowed and will remove the mapping.
 	 * @throws EvaluationException If scope is sealed (see {@link #isSealed()}).
 	 */
 	public void put(String key, FplValue value) throws EvaluationException;
@@ -34,7 +38,7 @@ public interface Scope {
 	 * Put a key value mapping in the scope, may overwrite an existing mapping. The
 	 * name is taken from the value.
 	 * 
-	 * @param value The value of the symbol, null values are allowed.
+	 * @param value The value of the symbol, null values are allowed and will remove the mapping.
 	 * @throws EvaluationException If scope is sealed (see {@link #isSealed()}).
 	 */
 	public default void put(Named value) throws EvaluationException {
@@ -67,7 +71,7 @@ public interface Scope {
 	 * @return The old value.
 	 * @throws EvaluationException If scope is sealed or value is not found.
 	 */
-	public default FplValue change(String key, FplValue newValue) throws EvaluationException {
+	public default FplValue changeWithSearch(String key, FplValue newValue) throws EvaluationException {
 		if (newValue == null) {
 			throw new EvaluationException("change does not allow null values");
 		}
@@ -80,7 +84,25 @@ public interface Scope {
         }
 		throw new EvaluationException("No value with key " + key + " found in scope");
 	}
+	
+	/**
+	 * Change a value in this scope, do not search outer scopes. Fails if
+	 * the value is not found or the Scope with the value is sealed.
+	 * 
+	 * @param key      Name of value to change, not null, not empty
+	 * @param newValue The new value, not <code>null</code>
+	 * @return The old value.
+	 * @throws EvaluationException If scope is sealed or value is not found.
+	 */
+	public FplValue change(String key, FplValue newValue) throws EvaluationException;
 
+	/**
+	 * @param key      Name of value to change, not null, not empty
+	 * @param value The new value, not <code>null</code>
+	 * @throws EvaluationException Is scope is sealed or value did already exist.
+	 */
+	public void define(String key, FplValue value) throws EvaluationException; 
+	
 	/**
 	 * @return Is this scope read only?
 	 */

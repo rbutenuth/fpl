@@ -50,13 +50,8 @@ public class MapScope implements ListableScope {
 
     @Override
     public void put(String key, FplValue value) throws EvaluationException {
-        if (sealed) {
-            throw new EvaluationException("Scope is sealed");
-        }
-        if (key == null || key.length() == 0) {
-            throw new EvaluationException("key null or empty");
-        }
-        // ConcurrentHashMap does not support null values, so we can't put null.
+        checkKeyNotEmptyAndNotSealed(key);
+        // null means remove
         if (value == null) {
         	map.remove(key);
         } else {
@@ -64,6 +59,25 @@ public class MapScope implements ListableScope {
         }
     }
 
+	@Override
+	public FplValue change(String key, FplValue newValue) throws EvaluationException {
+        checkKeyNotEmptyAndNotSealed(key);
+        FplValue oldValue = map.replace(key, newValue);
+        if (oldValue == null) {
+        	throw new EvaluationException("Scope does not contain key " + key);
+        }
+		return oldValue;
+	}
+
+	@Override
+	public void define(String key, FplValue value) throws EvaluationException {
+        checkKeyNotEmptyAndNotSealed(key);
+        FplValue old = map.putIfAbsent(key, value);
+        if (old != null) {
+        	throw new EvaluationException("Scope already contained a value for key " + key);
+        }
+	}
+	
 	@Override
     public boolean isSealed() {
         return sealed;
@@ -82,4 +96,13 @@ public class MapScope implements ListableScope {
         keySet.addAll(map.keySet());
         return keySet;
     }
+
+    private void checkKeyNotEmptyAndNotSealed(String key) throws EvaluationException {
+		if (sealed) {
+            throw new EvaluationException("Scope is sealed");
+        }
+        if (key == null || key.length() == 0) {
+            throw new EvaluationException("key null or empty");
+        }
+	}
 }

@@ -96,7 +96,7 @@ public class MapScopeTest {
 	@Test
 	public void testChangeOuter() throws EvaluationException {
 		outer.put("key", new FplString("oldValue"));
-		FplValue old = inner.change("key", new FplString("newValue"));
+		FplValue old = inner.changeWithSearch("key", new FplString("newValue"));
 		assertEquals("\"oldValue\"", old.toString());
 		assertEquals("\"newValue\"", inner.get("key").toString());
 		assertEquals("\"newValue\"", inner.get("key").toString());
@@ -105,7 +105,7 @@ public class MapScopeTest {
 	@Test
 	public void testChangeInner() throws EvaluationException {
 		inner.put("key", new FplString("oldValue"));
-		FplValue old = inner.change("key", new FplString("newValue"));
+		FplValue old = inner.changeWithSearch("key", new FplString("newValue"));
 		assertEquals("\"oldValue\"", old.toString());
 		assertEquals("\"newValue\"", inner.get("key").toString());
 		assertNull(outer.get("key"));
@@ -113,7 +113,7 @@ public class MapScopeTest {
 
 	@Test(expected = EvaluationException.class)
 	public void testChangeNotExisting() throws EvaluationException {
-		inner.change("non-existing-key", new FplString("foo"));
+		inner.changeWithSearch("non-existing-key", new FplString("foo"));
 	}
 	
 	@Test
