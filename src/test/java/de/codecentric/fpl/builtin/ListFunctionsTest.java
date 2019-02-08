@@ -200,7 +200,7 @@ public class ListFunctionsTest extends AbstractFplTest {
     public void testMapNotAFunction() throws Exception {
         FplList input = (FplList) evaluate("input", "'(1 2 3)");
         scope.put("input", input);
-        evaluate("square", "(set square 4)");
+        evaluate("square", "(put square 4)");
         try {
         	evaluate("map-test", "(map input square)");
         	fail("should not be reached.");

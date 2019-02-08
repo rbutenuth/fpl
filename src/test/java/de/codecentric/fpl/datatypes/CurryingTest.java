@@ -22,7 +22,7 @@ public class CurryingTest extends AbstractFplTest {
 
     @Test
     public void testOneMissingArgument() throws ParseException, IOException, EvaluationException {
-        evaluate("plus", "(set plus3 ( + 3 ))");
+        evaluate("plus", "(put plus3 ( + 3 ))");
         Function f = (Function)scope.get("plus3");
         assertEquals(1, f.getMinimumNumberOfParameters());
         String[] pn = f.getParameterNames();

@@ -24,8 +24,8 @@ public class Assignment {
 	 */
 	public static void put(Scope scope) throws ScopeException {
 
-		scope.put(new AssignmentFunction("set",
-				comment("Assign symbol to evluated value in current scope."), "symbol", "value") {
+		scope.put(new AssignmentFunction("put",
+				comment("Assign symbol to evluated value in current scope, deletes if value is null"), "symbol", "value") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				String name = targetName(scope, parameters[0]);
@@ -38,8 +38,8 @@ public class Assignment {
 			}
 		});
 
-		scope.put(new AssignmentFunction("set-global",
-				comment("Assign symbol to evluated value in global scope."), "symbol", "value") {
+		scope.put(new AssignmentFunction("put-global",
+				comment("Assign symbol to evluated value in global scope, deletes if value is null"), "symbol", "value") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				String name = targetName(scope, parameters[0]);

@@ -67,7 +67,7 @@ public class LogicTest extends AbstractFplTest {
         assertNull(evaluate("is-symbol", "(is-symbol x)"));
         assertNull(evaluate("is-symbol", "(is-symbol (eval x))"));
         assertNull(evaluate("is-symbol", "(is-symbol 17)"));
-        evaluate("assign", "(set a 'x)");
+        evaluate("assign", "(put a 'x)");
         assertEquals(1, ((FplInteger)evaluate("is-symbol", "(is-symbol a)")).getValue());
     }
 
