@@ -61,7 +61,9 @@ public class Assignment {
 		}
 
 		protected String targetName(Scope scope, FplValue expression) throws EvaluationException {
-			if (expression instanceof Symbol) {
+			if (expression == null) {
+				throw new EvaluationException("nil not valid name for assignment");
+			} else if (expression instanceof Symbol) {
 				return ((Symbol) expression).getName();
 			} else {
 				FplValue value = expression.evaluate(scope);

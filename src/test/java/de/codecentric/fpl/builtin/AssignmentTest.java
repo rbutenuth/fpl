@@ -2,6 +2,7 @@ package de.codecentric.fpl.builtin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -17,6 +18,7 @@ public class AssignmentTest extends AbstractFplTest {
 
     @Test
     public void testPut() throws Exception {
+    	new Assignment(); // cover the constructor...
     	Scope local = new Scope(scope);
         assertNull(scope.get("local"));
         assertNull(local.get("local"));
@@ -28,6 +30,38 @@ public class AssignmentTest extends AbstractFplTest {
         // Clear value
         assertNull(evaluate(local, "put", "(put local nil)"));
         assertNull(local.get("local"));
+    }
+
+    @Test
+    public void testPutNullKey() throws Exception {
+    	try {
+    		evaluate(scope, "put", "(put nil 20)");
+    		fail("exception missing");
+    	} catch (EvaluationException e) {
+    		assertEquals("nil not valid name for assignment", e.getMessage());
+    	}
+    }
+
+    @Test
+    public void testPutSealed() throws Exception {
+    	try {
+    		scope.setSealed(true);
+    		evaluate(scope, "put", "(put foo 20)");
+    		fail("exception missing");
+    	} catch (EvaluationException e) {
+    		assertEquals("Scope is sealed", e.getMessage());
+    	}
+    }
+
+    @Test
+    public void testPutGlobalSealed() throws Exception {
+    	try {
+    		scope.setSealed(true);
+    		evaluate(scope, "put-global", "(put-global foo 20)");
+    		fail("exception missing");
+    	} catch (EvaluationException e) {
+    		assertEquals("Scope is sealed", e.getMessage());
+    	}
     }
 
     @Test
