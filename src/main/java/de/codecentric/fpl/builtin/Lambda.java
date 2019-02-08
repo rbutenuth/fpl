@@ -52,7 +52,7 @@ public class Lambda {
                 Symbol name = (Symbol)parameters[0];
                 FplFunction result = lambda(this, name, parameters[1], parameters[2]);
                 try {
-					scope.put(result);
+					scope.define(name.getName(), result);
 				} catch (ScopeException e) {
 					throw new EvaluationException(e);
 				}

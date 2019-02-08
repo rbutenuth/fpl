@@ -54,6 +54,12 @@ public class LambdaTest extends AbstractFplTest {
 		evaluate("duplicate", "(defun test (a a) a)");
 	}
 
+	@Test(expected = EvaluationException.class)
+	public void testDuplicateDefinition() throws Exception {
+		evaluate("duplicate", "(defun test (a b) a)");
+		evaluate("duplicate", "(defun test (a b) b)");
+	}
+
 	@Test
 	public void testNoArgs() throws Exception {
 		FplValue argList = parser("no args", "()").next();

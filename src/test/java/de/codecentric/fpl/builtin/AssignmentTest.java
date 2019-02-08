@@ -101,4 +101,37 @@ public class AssignmentTest extends AbstractFplTest {
         assertEquals(20, ((FplInteger)evaluate(local, "put", "(put 10 20)")).getValue());
     }
 
+    @Test
+    public void testSet() throws Exception {
+        assertEquals(10, ((FplInteger)evaluate("put", "(put key 10)")).getValue());
+        assertEquals(20, ((FplInteger)evaluate("set", "(set key 20)")).getValue());
+        assertEquals(20, ((FplInteger)scope.get("key")).getValue());
+    }
+    
+    @Test
+    public void testSetOnUndefinedFails() throws Exception {
+    	try {
+    		evaluate("set", "(set foo 20)");
+    		fail("exception missing");
+    	} catch (EvaluationException e) {
+    		assertEquals("No value with key foo found", e.getMessage());
+    	}
+    }
+
+    @Test
+    public void testDef() throws Exception {
+        assertEquals(10, ((FplInteger)evaluate("def", "(def key 10)")).getValue());
+        assertEquals(10, ((FplInteger)scope.get("key")).getValue());
+    }
+    
+    @Test
+    public void testDefOnDefinedFails() throws Exception {
+    	try {
+    		evaluate("def-1", "(def foo 20)");
+    		evaluate("def-2", "(def foo 30)");
+    		fail("exception missing");
+    	} catch (EvaluationException e) {
+    		assertEquals("Duplicate key: foo", e.getMessage());
+    	}
+    }
 }
