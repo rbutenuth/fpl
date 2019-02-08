@@ -134,6 +134,13 @@ public class LambdaTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void testDefunTwoCodeLists() throws Exception {
+		evaluate("last-def", "(defun last (a b) a b)");
+		FplInteger i = (FplInteger) evaluate("last-run", "(last 5 6)");
+		assertEquals(6, i.getValue());
+	}
+	
+	@Test
 	public void testDefunSquare() throws Exception {
 		FplFunction f = (FplFunction) evaluate("square", "(defun square (x) (* x x))");
 		assertEquals(1, f.getMinimumNumberOfParameters());

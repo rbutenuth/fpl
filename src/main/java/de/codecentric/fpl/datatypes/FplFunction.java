@@ -42,7 +42,7 @@ import de.codecentric.fpl.parser.Position;
  * </pre>
  */
 public class FplFunction extends Function {
-	private final FplValue code;
+	private final FplValue[] code;
 
 	/**
 	 * @param position
@@ -57,7 +57,7 @@ public class FplFunction extends Function {
 	 * @param code
 	 *            The Lisp code.
 	 */
-	public FplFunction(Position position, List<String> comment, String name, String[] paramNames, FplValue code)
+	public FplFunction(Position position, List<String> comment, String name, String[] paramNames, FplValue[] code)
 			throws EvaluationException {
 		super(name, comment, varArgs(paramNames), convertedParamNames(paramNames));
 		if (code == null) {
@@ -108,7 +108,12 @@ public class FplFunction extends Function {
 				}
 			}
 		}
-		return code.evaluate(callScope);
+		// TODO: save intermediate results, inject as symbol "$"
+		FplValue result = null;
+		for (int i = 0; i < code.length; i++) {
+			result = code[i].evaluate(callScope); 
+		}
+		return result;
 	}
 
 	private Map<String, Integer> createParameterMap() throws EvaluationException {
@@ -131,6 +136,14 @@ public class FplFunction extends Function {
 		}
 	}
 
+	private FplValue[] compile(FplValue[] code, Map<String, Integer> parameterMap) {
+		FplValue[] compiled = new FplValue[code.length];
+		for (int i = 0; i < code.length; i++) {
+			compiled[i] = compile(code[i], parameterMap);
+		}
+		return compiled;
+	}
+	
 	private FplValue compile(FplValue code, Map<String, Integer> parameterMap) {
 		if (code instanceof FplList) {
 			FplList list = (FplList) code;
@@ -170,7 +183,9 @@ public class FplFunction extends Function {
 			}
 		}
 		sb.append(") ");
-		sb.append(code.toString());
+		for (FplValue c : code) {
+			sb.append(c.toString());
+		}
 		sb.append(")");
 		return sb.toString();
 	}

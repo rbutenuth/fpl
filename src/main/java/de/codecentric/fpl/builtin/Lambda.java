@@ -24,14 +24,16 @@ public class Lambda {
      */
     public static void put(Scope scope) throws ScopeException {
     	
-    	scope.put(new Function("lambda", comment("Create an anonymous function."), false, "parameter-list", "code") {
+    	scope.put(new Function("lambda", comment("Create an anonymous function."), false, "parameter-list", "code...") {
 
             @Override
             public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
                 if (!(parameters[0] instanceof FplList)) {
                     throw new EvaluationException("First parameter must be a list of symbols.");
                 }
-                return lambda(this, new Symbol("lambda"), parameters[0], parameters[1]);
+                FplValue[] code = new FplValue[parameters.length - 1];
+                System.arraycopy(parameters, 1, code, 0, code.length);
+                return lambda(this, new Symbol("lambda"), parameters[0], code);
             }
         });
 
@@ -42,7 +44,7 @@ public class Lambda {
         //       (* n (factorial (- n 1)))
         //    )
         // )
-    	scope.put(new Function("defun", comment("Define a function."), false, "name", "parameter-list", "code") {
+    	scope.put(new Function("defun", comment("Define a function."), true, "name", "parameter-list", "code...") {
 
             @Override
             public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -50,7 +52,9 @@ public class Lambda {
                     throw new EvaluationException("Expect symbol, got: " + parameters[0]);
                 }
                 Symbol name = (Symbol)parameters[0];
-                FplFunction result = lambda(this, name, parameters[1], parameters[2]);
+                FplValue[] code = new FplValue[parameters.length - 2];
+                System.arraycopy(parameters, 2, code, 0, code.length);
+                FplFunction result = lambda(this, name, parameters[1], code);
                 try {
 					scope.define(name.getName(), result);
 				} catch (ScopeException e) {
@@ -70,7 +74,7 @@ public class Lambda {
         });
     }
     
-    private static FplFunction lambda(Function f, Symbol name, FplValue paramListValues, FplValue code) throws EvaluationException {
+    private static FplFunction lambda(Function f, Symbol name, FplValue paramListValues, FplValue[] code) throws EvaluationException {
     	FplList paramList = createParamList(f, paramListValues);
 		String[] paramNames = new String[paramList.size()];
 		String[] paramComments = new String[paramList.size()];
