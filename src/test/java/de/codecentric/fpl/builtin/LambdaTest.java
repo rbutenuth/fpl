@@ -40,6 +40,7 @@ public class LambdaTest extends AbstractFplTest {
 
 	@Test(expected = EvaluationException.class)
 	public void testEvaluateToList() throws Exception {
+		new Lambda(); // just to cover default constructor
 		evaluate("cons", "(cons 1 2)");
 	}
 
@@ -138,6 +139,13 @@ public class LambdaTest extends AbstractFplTest {
 		evaluate("last-def", "(defun last (a b) a b)");
 		FplInteger i = (FplInteger) evaluate("last-run", "(last 5 6)");
 		assertEquals(6, i.getValue());
+	}
+	
+	@Test
+	public void testDefunDollar() throws Exception {
+		evaluate("dollar-def", "(defun dollar (a b) (+ a b) (* 4 $))");
+		FplInteger i = (FplInteger) evaluate("last-run", "(dollar 1 2)");
+		assertEquals(12, i.getValue());
 	}
 	
 	@Test

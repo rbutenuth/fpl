@@ -198,7 +198,7 @@ public class Comparison extends Function {
         } else {
             return null;
         }
-        // Not reached, but compiler does not recoginzes all switch statements are completely covered
+        // Not reached, but compiler does not recognize all switch statements are completely covered
         return null;
     }
 }

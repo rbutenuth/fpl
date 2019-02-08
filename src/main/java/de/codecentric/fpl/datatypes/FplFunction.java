@@ -108,10 +108,11 @@ public class FplFunction extends Function {
 				}
 			}
 		}
-		// TODO: save intermediate results, inject as symbol "$"
 		FplValue result = null;
 		for (int i = 0; i < code.length; i++) {
-			result = code[i].evaluate(callScope); 
+			result = code[i].evaluate(callScope);
+			callScope.setDollar(result);
+			
 		}
 		return result;
 	}
