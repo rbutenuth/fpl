@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplString;
@@ -18,9 +19,9 @@ public class Comparison extends Function {
 
     /**
      * @param scope Scope to which functions should be added.
-     * @throws EvaluationException Should not happen on initialization.
+     * @throws ScopeException Should not happen on initialization.
      */
-    public static void put(Scope scope) throws EvaluationException {
+    public static void put(Scope scope) throws ScopeException {
 
     	scope.put(new Comparison("eq", comment("Compare for equal.")));
     	scope.put(new Comparison("ne", comment("Compare for not equal.")));

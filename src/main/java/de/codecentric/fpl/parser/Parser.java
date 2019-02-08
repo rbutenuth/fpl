@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplObject;
@@ -221,7 +222,11 @@ public class Parser implements Closeable {
 		if (v == null) {
 			throw new ParseException(lastToken.getPosition(), "Null no allowed as value.");
 		}
-		obj.putUnsafe(key, v);
+		try {
+			obj.define(key, v);
+		} catch (ScopeException e) {
+			throw new ParseException(lastToken.getPosition(), e.getMessage(), e);
+		}
 	}
 
 	private void fetchNextToken() throws ParseException, IOException {

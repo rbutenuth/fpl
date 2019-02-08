@@ -14,17 +14,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.parser.Position;
 
 public class SimpleObjectTest {
-	MapScope outer;
+	Scope outer;
 	FplObject object;
 	
 	@Before
 	public void before() throws EvaluationException {
-		outer = new MapScope();
+		outer = new Scope();
 		object = new FplObject(new Position("object-test", 2, 3));
 	}
 
@@ -95,24 +95,24 @@ public class SimpleObjectTest {
 		try {
 			object.put("foo", FplInteger.valueOf(1));
 			fail("exception missing");
-		} catch (EvaluationException e) {
+		} catch (ScopeException e) {
 			assertEquals("Scope is sealed", e.getMessage());
 		}
 
 	}
 	
-	@Test(expected = EvaluationException.class)
-	public void testNullKey() throws EvaluationException {
+	@Test(expected = ScopeException.class)
+	public void testNullKey() throws ScopeException {
 		object.put(null, FplInteger.valueOf(0));
 	}
 	
-	@Test(expected = EvaluationException.class)
-	public void testEmptyKey() throws EvaluationException {
+	@Test(expected = ScopeException.class)
+	public void testEmptyKey() throws ScopeException {
 		object.put("", FplInteger.valueOf(0));
 	}
 	
 	@Test
-	public void testPut() throws EvaluationException {
+	public void testPut() throws ScopeException {
 		FplInteger one = FplInteger.valueOf(1);
 		FplInteger two = FplInteger.valueOf(2);
 		object.put("one", one);

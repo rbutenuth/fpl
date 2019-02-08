@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplValue;
@@ -18,10 +19,10 @@ public class Arithmetic extends Function {
 	/**
 	 * @param scope
 	 *            Scope to which functions should be added.
-	 * @throws EvaluationException
+	 * @throws ScopeException
 	 *             Should not happen on initialization.
 	 */
-	public static void put(Scope scope) throws EvaluationException {
+	public static void put(Scope scope) throws ScopeException {
 		scope.put(new Arithmetic('+', comment("Add values.")));
 		scope.put(new Arithmetic('-', comment("Unary minus or subtract from first.")));
 		scope.put(new Arithmetic('*', comment("Multiply values.")));

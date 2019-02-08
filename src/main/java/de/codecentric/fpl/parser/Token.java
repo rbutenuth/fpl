@@ -40,13 +40,13 @@ public final class Token {
 		STRING(false),
 		/** String */
 		EOF(true);
-		
+
 		private Id(boolean primitive) {
 			this.primitive = primitive;
 		}
-		
+
 		private final boolean primitive;
-		
+
 		public boolean isPrimitive() {
 			return primitive;
 		}
@@ -62,14 +62,11 @@ public final class Token {
 	/**
 	 * Create a token without a value.
 	 * 
-	 * @param position
-	 *            Position in the source, where this token has been found (not
-	 *            null).
-	 * @param id
-	 *            Token id, not null.
-	 * @throws IllegalArgumentException
-	 *             If id is not {@link Id#LEFT_PAREN} or {@link Id#RIGHT_PAREN} or
-	 *             {@link Id#QUOTE}.
+	 * @param position Position in the source, where this token has been found (not
+	 *                 null).
+	 * @param id       Token id, not null.
+	 * @throws IllegalArgumentException If id is not {@link Id#LEFT_PAREN} or
+	 *                                  {@link Id#RIGHT_PAREN} or {@link Id#QUOTE}.
 	 */
 	public Token(Position position, Id id) {
 		if (position == null) {
@@ -89,9 +86,8 @@ public final class Token {
 	/**
 	 * Create a double Token.
 	 * 
-	 * @param position
-	 *            Position in the source, where this token has been found (not
-	 *            null).
+	 * @param position    Position in the source, where this token has been found
+	 *                    (not null).
 	 * @param doubleValue
 	 */
 	public Token(Position position, double doubleValue) {
@@ -109,11 +105,9 @@ public final class Token {
 	/**
 	 * Create an integer Token.
 	 * 
-	 * @param position
-	 *            Position in the source, where this token has been found (not
-	 *            null).
-	 * @param integerValue
-	 *            Value.
+	 * @param position     Position in the source, where this token has been found
+	 *                     (not null).
+	 * @param integerValue Value.
 	 */
 	public Token(Position position, long integerValue) {
 		if (position == null) {
@@ -130,17 +124,13 @@ public final class Token {
 	/**
 	 * Create a String or Symbol token.
 	 * 
-	 * @param position
-	 *            Position in the source, where this token has been found (not
-	 *            null).
-	 * @param id
-	 *            Token id, not null.
-	 * @param stringValue
-	 *            String, not null.
-	 * @param commentLines
-	 *            Comments preceding this symbol or string.
-	 * @throws IllegalArgumentException
-	 *             If id is not {@link Id#SYMBOL} or {@link Id#STRING}.
+	 * @param position     Position in the source, where this token has been found
+	 *                     (not null).
+	 * @param id           Token id, not null.
+	 * @param stringValue  String, not null.
+	 * @param commentLines Comments preceding this symbol or string.
+	 * @throws IllegalArgumentException If id is not {@link Id#SYMBOL} or
+	 *                                  {@link Id#STRING}.
 	 */
 	public Token(Position position, Id id, String stringValue, List<String> commentLines) {
 		if (position == null) {
@@ -169,26 +159,27 @@ public final class Token {
 
 	/**
 	 * Is this a Token with the given id?
+	 * 
 	 * @param id Let's compare with this.
 	 * @return Is it?
 	 */
 	public boolean is(Id id) {
 		return id == this.id;
 	}
-	
+
 	/**
 	 * Is this a Token NOT with the given id?
+	 * 
 	 * @param id Let's compare with this.
 	 * @return Is it?
 	 */
 	public boolean isNot(Id id) {
 		return id != this.id;
 	}
-	
+
 	/**
 	 * @return Double
-	 * @throws IllegalStateException
-	 *             If id is not {@link Id#DOUBLE}.
+	 * @throws IllegalStateException If id is not {@link Id#DOUBLE}.
 	 */
 	public double getDoubleValue() {
 		if (id != Id.DOUBLE) {
@@ -199,8 +190,7 @@ public final class Token {
 
 	/**
 	 * @return integer
-	 * @throws IllegalStateException
-	 *             If id is not {@link Id#INTEGER}.
+	 * @throws IllegalStateException If id is not {@link Id#INTEGER}.
 	 */
 	public long getIntegerValue() {
 		if (id != Id.INTEGER) {
@@ -218,8 +208,8 @@ public final class Token {
 
 	/**
 	 * @return String, not null.
-	 * @throws IllegalStateException
-	 *             If id is not {@link Id#SYMBOL} or {@link Id#STRING}.
+	 * @throws IllegalStateException If id is not {@link Id#SYMBOL} or
+	 *                               {@link Id#STRING}.
 	 */
 	public String getStringValue() {
 		if (id != Id.STRING && id != Id.SYMBOL) {
@@ -227,44 +217,58 @@ public final class Token {
 		}
 		return stringValue;
 	}
-	
+
 	public List<String> getCommentLines() {
 		return Collections.unmodifiableList(commentLines);
 	}
-	
+
 	@Override
 	public String toString() {
+		String s = null;
 		switch (id) {
 		case COLON:
-			return ":";
+			s = ":";
+			break;
 		case COMMA:
-			return ",";
+			s = ",";
+			break;
 		case DOUBLE:
-			return Double.toString(doubleValue);
+			s = Double.toString(doubleValue);
+			break;
 		case INTEGER:
-			return Long.toString(integerValue);
+			s = Long.toString(integerValue);
+			break;
 		case LEFT_PAREN:
-			return "(";
+			s = "(";
+			break;
 		case LEFT_SQUARE_BRACKET:
-			return "[";
+			s = "[";
+			break;
 		case LEFT_CURLY_BRACKET:
-			return "{";
+			s = "{";
+			break;
 		case QUOTE:
-			return "'";
+			s = "'";
+			break;
 		case RIGHT_PAREN:
-			return ")";
+			s = ")";
+			break;
 		case RIGHT_SQUARE_BRACKET:
-			return "]";
+			s = "]";
+			break;
 		case RIGHT_CURLY_BRACKET:
-			return "}";
+			s = "}";
+			break;
 		case STRING:
-			return '"' + stringValue + '"';
+			s = '"' + stringValue + '"';
+			break;
 		case SYMBOL:
-			return stringValue;
+			s = stringValue;
+			break;
 		case EOF:
-			return "end of file";
-		default:
-			throw new IllegalStateException();
+			s = "end of file";
+			break;
 		}
+		return s;
 	}
 }

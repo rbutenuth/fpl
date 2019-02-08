@@ -6,6 +6,7 @@ import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.Symbol;
@@ -18,17 +19,21 @@ public class Assignment {
 	/**
 	 * @param scope
 	 *            Scope to which functions should be added.
-	 * @throws EvaluationException
+	 * @throws ScopeException
 	 *             Should not happen on initialization.
 	 */
-	public static void put(Scope scope) throws EvaluationException {
+	public static void put(Scope scope) throws ScopeException {
 
 		scope.put(new AssignmentFunction("set",
 				comment("Assign symbol to evluated value in current scope."), "symbol", "value") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				String name = targetName(scope, parameters[0]);
-				scope.put(name, value(scope, parameters[1]));
+				try {
+					scope.put(name, value(scope, parameters[1]));
+				} catch (ScopeException e) {
+					throw new EvaluationException(e);
+				}
 				return value(scope, parameters[1]);
 			}
 		});
@@ -38,7 +43,11 @@ public class Assignment {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				String name = targetName(scope, parameters[0]);
-				scope.putGlobal(name, value(scope, parameters[1]));
+				try {
+					scope.putGlobal(name, value(scope, parameters[1]));
+				} catch (ScopeException e) {
+					throw new EvaluationException(e);
+				}
 				return value(scope, parameters[1]);
 			}
 		});

@@ -1,110 +1,189 @@
 package de.codecentric.fpl.data;
 
-import de.codecentric.fpl.EvaluationException;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Named;
 
 /**
- * For parameters or key value mappings.
+ * Just a little bit more than a {@link Map}, can be nested.
  */
-/**
- * @author butenuth
- *
- */
-public interface Scope {
+public class Scope {
+    protected ConcurrentMap<String, FplValue> map;
+    protected Scope next;
+    private boolean sealed;
+
+    /**
+     * Create a top level scope.
+     */
+    public Scope() {
+        map = new ConcurrentHashMap<>();
+    }
+
+    /**
+     * Create an inner scope.
+     * @param next Next outer scope.
+     */
+    public Scope(Scope next) {
+        this();
+        this.next = next;
+    }
+
 	/**
 	 * @return Next outer scope, may be null.
 	 */
-	public Scope getNext();
+    public Scope getNext() {
+        return next;
+    }
 
+    protected void initNext(Scope next) {
+    	this.next = next;
+    }
+    
 	/**
 	 * Lookup a symbol, if not found in this scope, walk chain of scopes.
 	 * 
 	 * @param key Name of value to lookup
 	 * @return The found expression, may be null.
 	 */
-	public FplValue get(String key);
+    public FplValue get(String key) {
+    	FplValue value = map.get(key);
+    	if (value != null) {
+    		return value;
+    	}
+    	if (next != null) {
+    		return next.get(key);
+    	}
+    	return null;
+    }
+
+	/**
+	 * Lookup a symbol, if not found in this scope, return <code>null</code>
+	 * 
+	 * @param key Name of value to lookup
+	 * @return The found expression, may be <code>null</code>.
+	 */
+    public FplValue getLocal(String key) {
+    	return map.get(key);
+    }
 
 	/**
 	 * Put a key value mapping in the scope, may overwrite an existing mapping.
 	 * 
 	 * @param key   Name of value to lookup, not null, not empty
 	 * @param value The value of the symbol, null values are allowed and will remove the mapping.
-	 * @throws EvaluationException If scope is sealed (see {@link #isSealed()}).
+	 * @throws ScopeException If scope is sealed (see {@link #isSealed()}).
 	 */
-	public void put(String key, FplValue value) throws EvaluationException;
+    public void put(String key, FplValue value) throws ScopeException {
+        checkKeyNotEmptyAndNotSealed(key);
+        // null means remove
+        if (value == null) {
+        	map.remove(key);
+        } else {
+        	map.put(key, value);
+        }
+    }
 
 	/**
 	 * Put a key value mapping in the scope, may overwrite an existing mapping. The
 	 * name is taken from the value.
 	 * 
 	 * @param value The value of the symbol, null values are allowed and will remove the mapping.
-	 * @throws EvaluationException If scope is sealed (see {@link #isSealed()}).
+	 * @throws ScopeException If scope is sealed (see {@link #isSealed()}).
 	 */
-	public default void put(Named value) throws EvaluationException {
+	public void put(Named value) throws ScopeException {
 		put(value.getName(), value);
 	}
 
-	/**
+    /**
 	 * Search scopes starting from this one via {@link #getNext()}. If a
 	 * {@link #isSealed()} scope is found, put the value in the one before (can be
 	 * this scope).
 	 * 
 	 * @param key   Name of value to lookup, not null, not empty
 	 * @param value The value of the symbol, null values are allowed.
-	 * @throws EvaluationException If this scope is sealed.
+	 * @throws ScopeException If this scope is sealed.
 	 */
-	public default void putGlobal(String key, FplValue value) throws EvaluationException {
+	public void putGlobal(String key, FplValue value) throws ScopeException {
 		Scope chain = this;
-		while (chain.getNext() != null && !chain.getNext().isSealed()) {
-			chain = chain.getNext();
+		while (chain.next != null && !chain.next.isSealed()) {
+			chain = chain.next;
 		}
 		chain.put(key, value);
 	}
-
+	
 	/**
-	 * Search a value through the chain of Scopes and change it's value. Fails if
-	 * the value is not found or the Scope with the value is sealed.
+	 * Change a value in this scope, if not there, search through scope chain until
+	 * value is found in a not sealed scope.
 	 * 
 	 * @param key      Name of value to change, not null, not empty
 	 * @param newValue The new value, not <code>null</code>
 	 * @return The old value.
-	 * @throws EvaluationException If scope is sealed or value is not found.
+	 * @throws ScopeException If scope is sealed or value is not found.
 	 */
-	public default FplValue changeWithSearch(String key, FplValue newValue) throws EvaluationException {
+	public FplValue change(String key, FplValue newValue) throws ScopeException {
+        if (key == null || key.length() == 0) {
+            throw new ScopeException("key null or empty");
+        }
 		if (newValue == null) {
-			throw new EvaluationException("change does not allow null values");
+			throw new ScopeException("Change does not allow null values");
 		}
-        for (Scope chain = this; chain != null; chain = chain.getNext()) {
-        	FplValue oldValue = chain.get(key);
+        for (Scope chain = this; chain != null; chain = chain.next) {
+        	FplValue oldValue = chain.getLocal(key);
         	if (oldValue != null) {
         		chain.put(key, newValue);
         		return oldValue;
         	}
         }
-		throw new EvaluationException("No value with key " + key + " found in scope");
+		throw new ScopeException("No value with key " + key + " found");
 	}
 	
 	/**
-	 * Change a value in this scope, do not search outer scopes. Fails if
-	 * the value is not found or the Scope with the value is sealed.
-	 * 
-	 * @param key      Name of value to change, not null, not empty
-	 * @param newValue The new value, not <code>null</code>
-	 * @return The old value.
-	 * @throws EvaluationException If scope is sealed or value is not found.
-	 */
-	public FplValue change(String key, FplValue newValue) throws EvaluationException;
-
-	/**
 	 * @param key      Name of value to change, not null, not empty
 	 * @param value The new value, not <code>null</code>
-	 * @throws EvaluationException Is scope is sealed or value did already exist.
+	 * @throws ScopeException Is scope is sealed or value did already exist.
 	 */
-	public void define(String key, FplValue value) throws EvaluationException; 
+	public void define(String key, FplValue value) throws ScopeException {
+        checkKeyNotEmptyAndNotSealed(key);
+        FplValue old = map.putIfAbsent(key, value);
+        if (old != null) {
+        	throw new ScopeException("Duplicate key: " + key);
+        }
+	}
 	
 	/**
 	 * @return Is this scope read only?
 	 */
-	public boolean isSealed();
+    public boolean isSealed() {
+        return sealed;
+    }
+
+    /**
+     * @param sealed Is this scope read only?
+     */
+    public void setSealed(boolean sealed) {
+        this.sealed = sealed;
+    }
+
+    /**
+     * @return All keys from this scope, ordered by natural {@link String} order.
+     */
+    public SortedSet<String> allKeys() {
+        SortedSet<String> keySet = new TreeSet<>(map.keySet());
+        keySet.addAll(map.keySet());
+        return keySet;
+    }
+
+    private void checkKeyNotEmptyAndNotSealed(String key) throws ScopeException {
+		if (sealed) {
+            throw new ScopeException("Scope is sealed");
+        }
+        if (key == null || key.length() == 0) {
+            throw new ScopeException("key null or empty");
+        }
+	}
 }

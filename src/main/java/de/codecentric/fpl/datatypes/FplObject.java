@@ -3,15 +3,10 @@ package de.codecentric.fpl.datatypes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.data.ListableScope;
-import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.parser.Position;
 
 /**
@@ -19,11 +14,8 @@ import de.codecentric.fpl.parser.Position;
  * of {@link Scope} with {@link Named}. The rest are some built in functions for
  * linking and executing methods on objects.
  */
-public class FplObject extends EvaluatesToThisValue implements PositionHolder, ListableScope {
+public class FplObject extends Scope implements PositionHolder, FplValue {
 	private Position position;
-	private Scope next;
-	private boolean sealed;
-	private ConcurrentMap<String, FplValue> map;
 	private List<FplValue> initCode;
 
 	/**
@@ -34,13 +26,7 @@ public class FplObject extends EvaluatesToThisValue implements PositionHolder, L
 			throw new IllegalArgumentException("position is null");
 		}
 		this.position = position;
-		map = new ConcurrentHashMap<>();
 		initCode = Collections.emptyList();
-	}
-
-	@Override
-	public Scope getNext() {
-		return next;
 	}
 
 	public synchronized void addInitCodeValue(FplValue value) {
@@ -60,8 +46,8 @@ public class FplObject extends EvaluatesToThisValue implements PositionHolder, L
 		if (scope == null) {
 			throw new IllegalArgumentException("Scope of object can't be null");
 		}
-		if (next == null) {
-			next = scope;
+		if (getNext() == null) {
+			initNext(scope);
 			for (FplValue v : initCode) {
 				v.evaluate(this);
 			}
@@ -70,79 +56,7 @@ public class FplObject extends EvaluatesToThisValue implements PositionHolder, L
 	}
 
 	@Override
-	public FplValue get(String key) {
-		FplValue value = map.get(key);
-		if (value != null) {
-			return value;
-		}
-		if (next != null) {
-			return next.get(key);
-		}
-		return null;
-	}
-
-	@Override
-	public void put(String key, FplValue value) throws EvaluationException {
-        checkKeyNotEmptyAndNotSealed(key);
-		// ConcurrentHashMap does not support null values, so we can't put null.
-		if (value == null) {
-			map.remove(key);
-		} else {
-			map.put(key, value);
-		}
-	}
-
-	@Override
-	public FplValue change(String key, FplValue newValue) throws EvaluationException {
-        checkKeyNotEmptyAndNotSealed(key);
-        FplValue oldValue = map.replace(key, newValue);
-        if (oldValue == null) {
-        	throw new EvaluationException("Scope does not contain key " + key);
-        }
-		return oldValue;
-	}
-
-	@Override
-	public void define(String key, FplValue value) throws EvaluationException {
-        checkKeyNotEmptyAndNotSealed(key);
-        FplValue old = map.putIfAbsent(key, value);
-        if (old != null) {
-        	throw new EvaluationException("Scope already contained a value for key " + key);
-        }
-	}
-	
-	// Only for the parser
-	public void putUnsafe(String key, FplValue value) {
-		map.put(key, value);
-	}
-
-	@Override
-	public SortedSet<String> allKeys() {
-		SortedSet<String> keySet = new TreeSet<>(map.keySet());
-		keySet.addAll(map.keySet());
-		return keySet;
-	}
-
-	public void setSealed(boolean sealed) {
-		this.sealed = sealed;
-	}
-
-	@Override
-	public boolean isSealed() {
-		return sealed;
-	}
-
-	@Override
 	public Position getPosition() {
 		return position;
-	}
-	
-    private void checkKeyNotEmptyAndNotSealed(String key) throws EvaluationException {
-		if (sealed) {
-            throw new EvaluationException("Scope is sealed");
-        }
-        if (key == null || key.length() == 0) {
-            throw new EvaluationException("key null or empty");
-        }
 	}
 }

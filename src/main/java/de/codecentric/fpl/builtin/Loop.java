@@ -1,7 +1,7 @@
 package de.codecentric.fpl.builtin;
 
-import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ScopeException;
 
 /**
  * Loop functions.
@@ -10,9 +10,9 @@ public class Loop {
 
     /**
      * @param scope Scope to which functions should be added.
-     * @throws EvaluationException Should not happen on initialization.
+     * @throws ScopeException Should not happen on initialization.
      */
-    public static void put(Scope scope) throws EvaluationException {
+    public static void put(Scope scope) throws ScopeException {
 
         // (while condition expression...)
 //        scope.putFunction(new Function("while", "condition", "code...") {

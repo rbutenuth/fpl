@@ -25,8 +25,8 @@ import com.sun.net.httpserver.HttpServer;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.StringResultCallback;
-import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
@@ -59,7 +59,7 @@ public class SimpleHttpServer extends Thread {
 		}
 	}
 
-	public SimpleHttpServer(int port, String user, String password) throws IOException, EvaluationException {
+	public SimpleHttpServer(int port, String user, String password) throws IOException, EvaluationException, ScopeException {
 		super("http-server-starter");
 		server = HttpServer.create(new InetSocketAddress(port), 0);
 		HttpContext context = server.createContext("/fpl");
@@ -80,7 +80,7 @@ public class SimpleHttpServer extends Thread {
 			}
 		});
 		engine = new FplEngine();
-		MapScope scope = engine.getScope();
+		Scope scope = engine.getScope();
 		scope.put(new Function("stop-server", comment("Stop HTTP server."), false) {
 
 			@Override

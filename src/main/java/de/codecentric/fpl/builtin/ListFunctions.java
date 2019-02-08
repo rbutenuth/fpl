@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplFunction;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplValue;
@@ -21,10 +22,10 @@ public class ListFunctions {
 	/**
 	 * @param scope
 	 *            Scope to which functions should be added.
-	 * @throws EvaluationException
+	 * @throws ScopeException
 	 *             Should not happen on initialization.
 	 */
-	public static void put(Scope scope) throws EvaluationException {
+	public static void put(Scope scope) throws ScopeException {
 
 		scope.put(new Function("quote", comment("Don't evaluate the argument, return it as is."), false, "expression") {
 			@Override

@@ -4,6 +4,7 @@ import static de.codecentric.fpl.datatypes.Function.comment;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
@@ -11,7 +12,7 @@ import de.codecentric.fpl.datatypes.Function;
 public class StringFunctions {
 	private static final String nl = System.lineSeparator();
 
-	public static void put(Scope scope) throws EvaluationException {
+	public static void put(Scope scope) throws ScopeException {
 		scope.put(new Function("describe", comment("Create a comment in markdown format for a function"), false,
 				"expression") {
 			@Override

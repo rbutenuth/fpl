@@ -4,6 +4,7 @@ import static de.codecentric.fpl.datatypes.Function.comment;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 
@@ -14,9 +15,9 @@ public class Conditional {
 
     /**
      * @param scope Scope to which functions should be added.
-     * @throws EvaluationException Should not happen on initialization.
+     * @throws ScopeException Should not happen on initialization.
      */
-    public static void put(Scope scope) throws EvaluationException {
+    public static void put(Scope scope) throws ScopeException {
 
     	scope.put(new Function("if", //
     			comment("Evaluate condition, if true, return evaluated if-part, otherwise evaluated else-part."),

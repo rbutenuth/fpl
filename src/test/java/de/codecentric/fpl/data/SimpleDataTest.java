@@ -98,14 +98,14 @@ public class SimpleDataTest {
 
     @Test
     public void testLazyExpression() throws EvaluationException {
-        LazyExpression e = new LazyExpression(new MapScope(), FplInteger.valueOf(42));
+        LazyExpression e = new LazyExpression(new Scope(), FplInteger.valueOf(42));
         assertEquals(42, ((FplInteger)e.getOriginalExpression()).getValue());
         assertEquals(42, ((FplInteger)e.evaluate(null)).getValue());
     }
 
     @Test
     public void testLazyEvaluationExpression() throws EvaluationException {
-        LazyExpression expr = new LazyExpression(new MapScope(), new FplList(new FplValue[] { FplInteger.valueOf(42)}));
+        LazyExpression expr = new LazyExpression(new Scope(), new FplList(new FplValue[] { FplInteger.valueOf(42)}));
         String message = null;
         try {
             expr.evaluate(null);

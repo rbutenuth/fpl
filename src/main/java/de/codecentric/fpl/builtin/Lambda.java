@@ -6,6 +6,7 @@ import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplFunction;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
@@ -19,9 +20,9 @@ public class Lambda {
 
     /**
      * @param scope Scope to which functions should be added.
-     * @throws EvaluationException Should not happen on initialization.
+     * @throws ScopeException Should not happen on initialization.
      */
-    public static void put(Scope scope) throws EvaluationException {
+    public static void put(Scope scope) throws ScopeException {
     	
     	scope.put(new Function("lambda", comment("Create an anonymous function."), false, "parameter-list", "code") {
 
@@ -50,7 +51,11 @@ public class Lambda {
                 }
                 Symbol name = (Symbol)parameters[0];
                 FplFunction result = lambda(this, name, parameters[1], parameters[2]);
-                scope.put(result);
+                try {
+					scope.put(result);
+				} catch (ScopeException e) {
+					throw new EvaluationException(e);
+				}
                 return result;
             }
         });

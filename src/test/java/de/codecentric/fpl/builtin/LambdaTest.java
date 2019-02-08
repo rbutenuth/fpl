@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplFunction;
 import de.codecentric.fpl.datatypes.FplInteger;
@@ -26,7 +27,7 @@ public class LambdaTest extends AbstractFplTest {
 	private Function lambda;
 
 	@Before
-	public void setUp() throws EvaluationException {
+	public void setUp() throws ScopeException, EvaluationException {
 		super.setUp();
 		lambda = (Function) scope.get("lambda");
 	}

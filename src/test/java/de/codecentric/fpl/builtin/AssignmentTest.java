@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.FplInteger;
 
@@ -18,7 +17,7 @@ public class AssignmentTest extends AbstractFplTest {
 
     @Test
     public void testSet() throws Exception {
-        Scope local = new MapScope(scope);
+    	Scope local = new Scope(scope);
         assertNull(scope.get("local"));
         assertNull(local.get("local"));
         assertEquals(20, ((FplInteger)evaluate(local, "set", "(set local 20)")).getValue());
@@ -33,7 +32,7 @@ public class AssignmentTest extends AbstractFplTest {
 
     @Test
     public void testSetGlobal() throws Exception {
-        Scope local = new MapScope(scope);
+    	Scope local = new Scope(scope);
         assertNull(scope.get("global"));
         assertNull(local.get("global"));
         assertEquals(20, ((FplInteger)evaluate(local, "set-global", "(set-global global 20)")).getValue());
@@ -53,7 +52,7 @@ public class AssignmentTest extends AbstractFplTest {
     
     @Test
     public void testSetWithQuotedTarget() throws Exception {
-        Scope local = new MapScope(scope);
+    	Scope local = new Scope(scope);
         assertEquals(20, ((FplInteger)evaluate(local, "set", "(set (quote local) 20)")).getValue());
         assertEquals(20, ((FplInteger)local.get("local")).getValue());
 
@@ -64,7 +63,7 @@ public class AssignmentTest extends AbstractFplTest {
 
     @Test(expected = EvaluationException.class)
     public void testSetWithTargetNotSymbolFails() throws Exception {
-        Scope local = new MapScope(scope);
+    	Scope local = new Scope(scope);
         assertEquals(20, ((FplInteger)evaluate(local, "set", "(set 10 20)")).getValue());
     }
 

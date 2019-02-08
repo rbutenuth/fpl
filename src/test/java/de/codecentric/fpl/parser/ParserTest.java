@@ -27,7 +27,9 @@ public class ParserTest extends AbstractFplTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testScannerNull() throws ParseException, IOException {
-		new Parser(null);
+		try (Parser p = new Parser(null)) {
+			// not reached
+		}
 	}
 
 	@Test
@@ -37,6 +39,7 @@ public class ParserTest extends AbstractFplTest {
 		FplList l = (FplList) p.next();
 		assertEquals(0, l.size());
 		assertFalse(p.hasNext());
+		p.close();
 	}
 
 	@Test
@@ -428,13 +431,25 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void testDuplicateKey() throws Exception {
+		Parser p = parser("duplicate-key", "{ foo: 2, foo: 4}");
+		assertTrue(p.hasNext());
+		try {
+			p.next();
+			fail("Missing Exception");
+		} catch (ParseException e) {
+			assertEquals("Duplicate key: foo", e.getMessage());
+		}
+	}
+
+	@Test
 	public void testOnePairAndOneFunction() throws Exception {
 		Parser p = parser("one function and one pair", "{ \n" + //
 				"(defun factorial (n)\n" + //
 				"  (if (le n 1)\n" + //
 				"    1\n" + //
 				"    (* n (factorial (- n 1)))\n" + //
-				"  )\n" +//
+				"  )\n" + //
 				")\n" + //
 				"\"1\": 2\n" + //
 				"}");

@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
@@ -51,7 +50,7 @@ public class FunctionTest {
 	@Test
 	public void testEvaluateNonEmptyListToBoolean() throws Exception {
 		Function f = new TestFunction(null, "foo", false, new String[0]);
-		Scope scope = new MapScope();
+		Scope scope = new Scope();
 		scope.put("x", new FplList(new FplValue[] { new FplString("baz") }));
 		assertTrue(f.evaluateToBoolean(scope, new Symbol("x")));
 	}

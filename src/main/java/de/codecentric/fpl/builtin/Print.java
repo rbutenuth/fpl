@@ -5,6 +5,7 @@ import java.util.List;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 
@@ -18,9 +19,9 @@ public class Print extends Function {
     /**
      * @param scope Scope to which functions should be added.
      * @param engine The interpreter to which we belong.
-     * @throws EvaluationException Should not happen on initialization.
+     * @throws ScopeException Should not happen on initialization.
      */
-    public static void put(Scope scope, FplEngine engine) throws EvaluationException {
+    public static void put(Scope scope, FplEngine engine) throws ScopeException {
     	scope.put(new Print(false, comment("Print parameters."), engine));
     	scope.put(new Print(true, comment("Print parameters, followed by line break."), engine));
     }

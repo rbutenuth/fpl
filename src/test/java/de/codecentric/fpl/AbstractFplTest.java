@@ -9,8 +9,8 @@ import java.io.StringReader;
 import org.junit.After;
 import org.junit.Before;
 
-import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.parser.ParseException;
 import de.codecentric.fpl.parser.Parser;
@@ -18,10 +18,10 @@ import de.codecentric.fpl.parser.Scanner;
 
 public class AbstractFplTest {
 	protected FplEngine engine;
-    protected MapScope scope;
+    protected Scope scope;
 
     @Before
-    public void setUp() throws EvaluationException {
+    public void setUp() throws EvaluationException, ScopeException {
     	engine = new FplEngine();
         scope = engine.getScope();
     }

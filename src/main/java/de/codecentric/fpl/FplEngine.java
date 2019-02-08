@@ -16,8 +16,8 @@ import de.codecentric.fpl.builtin.Logic;
 import de.codecentric.fpl.builtin.Loop;
 import de.codecentric.fpl.builtin.Print;
 import de.codecentric.fpl.builtin.StringFunctions;
-import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.parser.Parser;
 import de.codecentric.fpl.parser.Scanner;
@@ -27,20 +27,20 @@ import de.codecentric.fpl.parser.Scanner;
  */
 public class FplEngine {
 	private PrintStream systemOut;
-	private MapScope scope;
+	private Scope scope;
 
-	public FplEngine() throws EvaluationException {
+	public FplEngine() throws ScopeException {
 		systemOut = System.out;
-		scope = new MapScope(createDefaultScope());
+		scope = new Scope(createDefaultScope());
 	}
 	
 	/**
 	 * @return A new {@link Scope} with no outer scope and all built in functions.
-	 * @throws EvaluationException
+	 * @throws ScopeException
 	 *             Should not happen on initialization.
 	 */
-	public MapScope createDefaultScope() throws EvaluationException {
-		MapScope scope = new MapScope();
+	public Scope createDefaultScope() throws ScopeException {
+		Scope scope = new Scope();
 
 		Print.put(scope, this);
 		Assignment.put(scope);
@@ -66,7 +66,7 @@ public class FplEngine {
 		this.systemOut = systemOut;
 	}
 
-	public MapScope getScope() {
+	public Scope getScope() {
 		return scope;
 	}
 	

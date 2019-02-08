@@ -9,20 +9,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.data.MapScope;
-import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Symbol;
 
 public class ParameterScopeTest {
-	MapScope outer;
+	Scope outer;
 	ParameterScope inner;
 	
 	@Before
 	public void before() {
-		outer = new MapScope();
+		outer = new Scope();
 		inner = new ParameterScope(outer, 2);
 		inner.setParameter(0, new FplString("foo"));
 		inner.setParameter(1, new Symbol("bar"));
@@ -34,11 +31,6 @@ public class ParameterScopeTest {
 		inner = null;
 	}
 	
-	@Test(expected = NullPointerException.class)
-	public void testNextNull() {
-		new ParameterScope(null, 1);
-	}
-			
 	@Test
 	public void testEmptyScope() {
 		assertTrue(outer.allKeys().isEmpty());
@@ -48,38 +40,38 @@ public class ParameterScopeTest {
 	}
 
 	@Test
-	public void testNesting() throws EvaluationException {
+	public void testNesting() {
 		assertTrue(inner.getNext() == outer);
 	}
 	
 	@Test
-	public void testPut() throws EvaluationException {
+	public void testPutInner() throws ScopeException {
 		inner.put("foot", new FplString("baz"));
 		assertEquals(new FplString("baz"), inner.get("foot"));
-		assertEquals(new FplString("baz"), outer.get("foot"));
+		assertNull(outer.get("foot"));
 	}
 	
 	@Test
-	public void testPutGlobal() throws EvaluationException {
+	public void testPutGlobal() throws ScopeException {
 		inner.putGlobal("foot", new FplString("baz"));
 		assertEquals(new FplString("baz"), inner.get("foot"));
 		assertEquals(new FplString("baz"), outer.get("foot"));
 	}
 	
-	@Test(expected = EvaluationException.class)
-	public void testPutNullKey() throws EvaluationException {
+	@Test(expected = ScopeException.class)
+	public void testPutNullKey() throws ScopeException {
 		inner.put(null, new FplString("foo"));
 	}
 	
-	@Test(expected = EvaluationException.class)
-	public void testPutEmptyKey() throws EvaluationException {
+	@Test(expected = ScopeException.class)
+	public void testPutEmptyKey() throws ScopeException {
 		inner.put("", new FplString("foot"));
 	}
 	
 	@Test
-	public void testChangeInner() throws EvaluationException {
+	public void testChangeInner() throws ScopeException {
 		outer.put("key", new FplString("oldValue"));
-		FplValue old = inner.changeWithSearch("key", new FplString("newValue"));
+		FplValue old = inner.change("key", new FplString("newValue"));
 		assertEquals("\"oldValue\"", old.toString());
 		assertEquals("\"newValue\"", inner.get("key").toString());
 		assertEquals("\"newValue\"", outer.get("key").toString());

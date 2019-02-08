@@ -848,9 +848,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		return count;
 	}
 
-	/**
-	 * @see java.lang.Iterable#iterator()
-	 */
 	@Override
 	public Iterator<FplValue> iterator() {
 		if (linear == null) {
@@ -899,9 +896,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		}
 	}
 
-	/**
-	 * @see FplValue.data.LObject#evaluate(lang.data.Scope)
-	 */
 	@Override
 	public FplValue evaluate(Scope scope) throws EvaluationException {
 		if (isEmpty()) {
