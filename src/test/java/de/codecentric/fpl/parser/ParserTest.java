@@ -267,7 +267,6 @@ public class ParserTest extends AbstractFplTest {
 		Parser p = parser("empty object", "{}");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
-		assertFalse(object.isSealed());
 		assertTrue(object.allKeys().isEmpty());
 	}
 

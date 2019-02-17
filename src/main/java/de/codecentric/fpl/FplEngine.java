@@ -31,7 +31,7 @@ public class FplEngine {
 
 	public FplEngine() throws ScopeException {
 		systemOut = System.out;
-		scope = new Scope(createDefaultScope());
+		scope = createDefaultScope();
 	}
 	
 	/**
@@ -52,8 +52,6 @@ public class FplEngine {
 		Conditional.put(scope);
 		Loop.put(scope);
 		Lambda.put(scope);
-
-		scope.setSealed(true);
 
 		return scope;
 	}

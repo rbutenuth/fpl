@@ -136,8 +136,8 @@ public class LambdaTest extends AbstractFplTest {
 
 	@Test
 	public void testDefunTwoCodeLists() throws Exception {
-		evaluate("last-def", "(defun last (a b) a b)");
-		FplInteger i = (FplInteger) evaluate("last-run", "(last 5 6)");
+		evaluate("last-def", "(defun letzt (a b) a b)");
+		FplInteger i = (FplInteger) evaluate("last-run", "(letzt 5 6)");
 		assertEquals(6, i.getValue());
 	}
 	

@@ -61,27 +61,6 @@ public class ScopeTest {
 		assertEquals(new FplString("bar"), outer.get("foo"));
 	}
 	
-	@Test
-	public void testPutGlobalOuterSealed() throws ScopeException {
-		outer.setSealed(true);
-		inner.putGlobal("foo", new FplString("bar"));
-		assertEquals(new FplString("bar"), inner.get("foo"));
-		assertNull(outer.get("foo"));
-	}
-	
-	@Test(expected = ScopeException.class)
-	public void testPutSealed() throws ScopeException {
-		outer.setSealed(true);
-		assertTrue(outer.isSealed());
-		outer.put("foo", new FplString("foo"));
-	}
-	
-	@Test
-	public void testPutGlobalSealed() throws ScopeException {
-		inner.setSealed(true);
-		inner.putGlobal("foo", new FplString("bar"));
-	}
-	
 	@Test(expected = ScopeException.class)
 	public void testPutNullKey() throws ScopeException {
 		outer.put(null, new FplString("foo"));

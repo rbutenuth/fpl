@@ -15,7 +15,6 @@ import de.codecentric.fpl.datatypes.Named;
 public class Scope {
     protected ConcurrentMap<String, FplValue> map;
     protected Scope next;
-    private boolean sealed;
 
     /**
      * Create a top level scope.
@@ -76,10 +75,10 @@ public class Scope {
 	 * 
 	 * @param key   Name of value to lookup, not null, not empty
 	 * @param value The value of the symbol, null values are allowed and will remove the mapping.
-	 * @throws ScopeException If scope is sealed (see {@link #isSealed()}).
+	 * @throws ScopeException If key is empty.
 	 */
     public void put(String key, FplValue value) throws ScopeException {
-        checkKeyNotEmptyAndNotSealed(key);
+        checkKeyNotEmpty(key);
         // null means remove
         if (value == null) {
         	map.remove(key);
@@ -100,9 +99,8 @@ public class Scope {
 	}
 
     /**
-	 * Search scopes starting from this one via {@link #getNext()}. If a
-	 * {@link #isSealed()} scope is found, put the value in the one before (can be
-	 * this scope).
+	 * Search scopes starting from this one via {@link #getNext()} up to the root scope,
+	 * put there.
 	 * 
 	 * @param key   Name of value to lookup, not null, not empty
 	 * @param value The value of the symbol, null values are allowed.
@@ -110,7 +108,7 @@ public class Scope {
 	 */
 	public void putGlobal(String key, FplValue value) throws ScopeException {
 		Scope chain = this;
-		while (chain.next != null && !chain.next.isSealed()) {
+		while (chain.next != null) {
 			chain = chain.next;
 		}
 		chain.put(key, value);
@@ -148,27 +146,13 @@ public class Scope {
 	 * @throws ScopeException Is scope is sealed or value did already exist.
 	 */
 	public void define(String key, FplValue value) throws ScopeException {
-        checkKeyNotEmptyAndNotSealed(key);
+        checkKeyNotEmpty(key);
         FplValue old = map.putIfAbsent(key, value);
         if (old != null) {
         	throw new ScopeException("Duplicate key: " + key);
         }
 	}
 	
-	/**
-	 * @return Is this scope read only?
-	 */
-    public boolean isSealed() {
-        return sealed;
-    }
-
-    /**
-     * @param sealed Is this scope read only?
-     */
-    public void setSealed(boolean sealed) {
-        this.sealed = sealed;
-    }
-
     /**
      * @return All keys from this scope, ordered by natural {@link String} order.
      */
@@ -178,10 +162,7 @@ public class Scope {
         return keySet;
     }
 
-    private void checkKeyNotEmptyAndNotSealed(String key) throws ScopeException {
-		if (sealed) {
-            throw new ScopeException("Scope is sealed");
-        }
+    private void checkKeyNotEmpty(String key) throws ScopeException {
         if (key == null || key.length() == 0) {
             throw new ScopeException("key null or empty");
         }

@@ -43,28 +43,6 @@ public class AssignmentTest extends AbstractFplTest {
     }
 
     @Test
-    public void testPutSealed() throws Exception {
-    	try {
-    		scope.setSealed(true);
-    		evaluate(scope, "put", "(put foo 20)");
-    		fail("exception missing");
-    	} catch (EvaluationException e) {
-    		assertEquals("Scope is sealed", e.getMessage());
-    	}
-    }
-
-    @Test
-    public void testPutGlobalSealed() throws Exception {
-    	try {
-    		scope.setSealed(true);
-    		evaluate(scope, "put-global", "(put-global foo 20)");
-    		fail("exception missing");
-    	} catch (EvaluationException e) {
-    		assertEquals("Scope is sealed", e.getMessage());
-    	}
-    }
-
-    @Test
     public void testPutGlobal() throws Exception {
     	Scope local = new Scope(scope);
         assertNull(scope.get("global"));

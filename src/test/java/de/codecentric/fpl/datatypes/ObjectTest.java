@@ -2,6 +2,7 @@ package de.codecentric.fpl.datatypes;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -26,5 +27,6 @@ public class ObjectTest extends AbstractClasspathResourceTest {
 		FplObject v = (FplObject) values.get(0);
 		assertEquals(1, v.allKeys().size());
 		assertEquals("value", ((FplString)v.get("key")).getContent());
+		assertTrue(v == result.getEngine().getScope().get("obj"));
 	}
 }

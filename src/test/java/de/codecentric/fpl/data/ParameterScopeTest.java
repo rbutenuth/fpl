@@ -1,7 +1,6 @@
 package de.codecentric.fpl.data;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -36,7 +35,6 @@ public class ParameterScopeTest {
 		assertTrue(outer.allKeys().isEmpty());
 		assertEquals(new FplString("foo"), inner.getParameter(0));
 		assertNull(outer.get("foo"));
-		assertFalse(inner.isSealed());
 	}
 
 	@Test
