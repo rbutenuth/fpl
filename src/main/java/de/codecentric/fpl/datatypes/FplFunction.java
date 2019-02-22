@@ -86,25 +86,26 @@ public class FplFunction extends Function {
 	 */
 	@Override
 	public FplValue callInternal(final Scope scope, final FplValue[] parameters) throws EvaluationException {
-		ParameterScope callScope = new ParameterScope(scope, getNumberOfParameterNames());
+		FplValue[] scopeParameters = new FplValue[getNumberOfParameterNames()];
 		if (parameters.length > 0) {
 			int lastNamedIndex = getNumberOfParameterNames() - 1;
 			if (isVarArg()) {
 				for (int i = 0; i < getMinimumNumberOfParameters(); i++) {
-					callScope.setParameter(i, makeLazy(scope, parameters[i]));
+					scopeParameters[i] = makeLazy(scope, parameters[i]);
 				}
 				int count = parameters.length - getMinimumNumberOfParameters();
 				FplValue[] varArgs = new FplValue[count];
 				for (int i = 0, j = lastNamedIndex; i < count; i++, j++) {
 					varArgs[i] = makeLazy(scope, parameters[j]);
 				}
-				callScope.setParameter(lastNamedIndex, new FplList(varArgs));
+				scopeParameters[lastNamedIndex] = new FplList(varArgs);
 			} else {
 				for (int i = 0; i < parameters.length; i++) {
-					callScope.setParameter(i, makeLazy(scope, parameters[i]));
+					scopeParameters[i] = makeLazy(scope, parameters[i]);
 				}
 			}
 		}
+		ParameterScope callScope = new ParameterScope(scope, scopeParameters);
 		FplValue result = null;
 		for (int i = 0; i < code.length; i++) {
 			result = code[i].evaluate(callScope);

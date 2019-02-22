@@ -1,0 +1,10 @@
+(def object {
+
+	(defun make-instance (a b)
+		(instance a a b b)
+	)
+	
+	"key": "value"
+})
+
+(object make-instance 6 7)

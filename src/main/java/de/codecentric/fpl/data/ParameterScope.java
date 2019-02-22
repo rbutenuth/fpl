@@ -6,13 +6,14 @@ public class ParameterScope extends Scope {
 	private FplValue[] parameters;
 	private FplValue dollar;
 	
-	public ParameterScope(Scope next, int count) {
+	public ParameterScope(Scope next, FplValue[] parameters) {
 		super(next);
-		parameters = new FplValue[count];
+		this.parameters = parameters;
 	}
 
-	public void setParameter(int index, FplValue value) {
-		parameters[index] = value;
+	public ParameterScope(Scope next, ParameterScope scope) {
+		super(next);
+		this.parameters = scope.parameters;
 	}
 
 	public FplValue getParameter(int index) {

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplValue;
@@ -45,8 +46,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	/**
 	 * Create a list from one value
 	 * 
-	 * @param value
-	 *            The value
+	 * @param value The value
 	 */
 	public FplList(FplValue value) {
 		linear = bucket(value);
@@ -56,9 +56,8 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	/**
 	 * Create a list.
 	 * 
-	 * @param values
-	 *            Array with values, the values will NOT be copied, so don't modify
-	 *            the array after calling this method!
+	 * @param values Array with values, the values will NOT be copied, so don't
+	 *               modify the array after calling this method!
 	 */
 	public FplList(FplValue[] values) {
 		if (values.length <= BASE_SIZE) {
@@ -86,13 +85,11 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	/**
 	 * Create a list.
 	 * 
-	 * @param values
-	 *            Array with values, the values will NOT be copied, so don't modify
-	 *            the array after calling this method!
+	 * @param values      Array with values, the values will NOT be copied, so don't
+	 *                    modify the array after calling this method!
 	 * 
-	 * @param bucketSizes
-	 *            The size of the used buckets. The of the sizes must match the
-	 *            length of <code>values</code>
+	 * @param bucketSizes The size of the used buckets. The of the sizes must match
+	 *                    the length of <code>values</code>
 	 */
 	public FplList(FplValue[] values, int[] bucketSizes) {
 		int sum = 0;
@@ -116,8 +113,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	/**
 	 * @return First element of the list.
-	 * @throws EvaluationException
-	 *             If list is empty.
+	 * @throws EvaluationException If list is empty.
 	 */
 	public FplValue first() throws EvaluationException {
 		checkNotEmpty();
@@ -130,8 +126,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	/**
 	 * @return Last element of the list.
-	 * @throws EvaluationException
-	 *             If list is empty.
+	 * @throws EvaluationException If list is empty.
 	 */
 	public FplValue last() throws EvaluationException {
 		checkNotEmpty();
@@ -145,8 +140,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	/**
 	 * @return Sublist without the first element.
-	 * @throws EvaluationException
-	 *             If list is empty.
+	 * @throws EvaluationException If list is empty.
 	 */
 	public FplList removeFirst() throws EvaluationException {
 		checkNotEmpty();
@@ -218,8 +212,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	/**
 	 * @return Sublist without the last element.
-	 * @throws EvaluationException
-	 *             If list is empty.
+	 * @throws EvaluationException If list is empty.
 	 */
 	public FplList removeLast() throws EvaluationException {
 		checkNotEmpty();
@@ -291,12 +284,10 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	/**
-	 * @param position
-	 *            Position, starting with 0.
+	 * @param position Position, starting with 0.
 	 * @return Element at position.
-	 * @throws EvaluationException
-	 *             If list is empty or if <code>position</code> &lt; 0 or &gt;=
-	 *             {@link #size()}.
+	 * @throws EvaluationException If list is empty or if <code>position</code> &lt;
+	 *                             0 or &gt;= {@link #size()}.
 	 */
 	public FplValue get(int position) throws EvaluationException {
 		checkNotEmpty();
@@ -325,8 +316,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	/**
 	 * Add one value as new first element of the list. (The "cons" of Lisp)
 	 * 
-	 * @param value
-	 *            Element to insert at front.
+	 * @param value Element to insert at front.
 	 * @return New List: This list plus one new element at front.
 	 */
 	public FplList addAtStart(FplValue value) {
@@ -403,8 +393,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	/**
 	 * Append one value at the end of the list.
 	 * 
-	 * @param value
-	 *            Element to be appended
+	 * @param value Element to be appended
 	 * @return New List: This list plus the new element at the end.
 	 */
 	public FplList addAtEnd(FplValue value) {
@@ -482,8 +471,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	/**
 	 * Append a second list to this list.
 	 * 
-	 * @param list
-	 *            List to append, <code>null</code> is the same as an empty list.
+	 * @param list List to append, <code>null</code> is the same as an empty list.
 	 * @return This list with appended list.
 	 */
 	public FplList append(FplList list) {
@@ -631,8 +619,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 * Create an empty shape starting at both ends with size 3/4 * BASE_SIZE and
 	 * increasing by FACTOR to the middle.
 	 * 
-	 * @param size
-	 *            It place for this number of values.
+	 * @param size It place for this number of values.
 	 * @return Array of arrays, all values <code>null</code>
 	 */
 	private FplValue[][] createEmptyShape(int size) {
@@ -908,11 +895,15 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			unevaluated = get(startParameterIndex++);
 			element = unevaluated.evaluate(evalScope);
 			if (element instanceof FplObject) {
-				FplObject object = (FplObject)element;
-				evalScope = object;
+				FplObject object = (FplObject) element;
+				if (evalScope instanceof ParameterScope) {
+					evalScope = new ParameterScope(object, (ParameterScope)evalScope);
+				} else {
+					evalScope = object;
+				}
 			}
 		} while (element instanceof FplObject);
-		
+
 		if (element instanceof Function) {
 			return ((Function) element).call(evalScope, createParameterArray(startParameterIndex));
 		} else {
@@ -924,7 +915,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		FplValue[] params;
 		if (linear == null) {
 			params = new FplValue[size(shape) - startParameterIndex];
-			
+
 			// find start indexes
 			int bucketIdx = 0;
 			int inBucketIdx = 0;
@@ -935,7 +926,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 					bucketIdx++;
 				}
 			}
-			
+
 			// copy values
 			for (int i = 0; i < params.length; i++) {
 				params[i] = shape[bucketIdx][inBucketIdx];
@@ -951,7 +942,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		}
 		return params;
 	}
-	
+
 	public boolean isEmpty() {
 		if (linear == null) {
 			return shape.length == 0 || shape[0].length == 0;

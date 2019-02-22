@@ -9,6 +9,7 @@ import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.Parameter;
 import de.codecentric.fpl.datatypes.Symbol;
 
 /**
@@ -73,26 +74,28 @@ public class Assignment {
 			}
 			return value(scope, parameters[1]);
 		}
-		
-		protected String targetName(Scope scope, FplValue expression) throws EvaluationException {
-			if (expression == null) {
-				throw new EvaluationException("nil not valid name for assignment");
-			} else if (expression instanceof Symbol) {
-				return ((Symbol) expression).getName();
+			
+		protected abstract void scopeAction(Scope scope, String name, FplValue value) throws ScopeException;
+	}
+	
+	static String targetName(Scope scope, FplValue expression) throws EvaluationException {
+		if (expression == null) {
+			throw new EvaluationException("nil not valid name for assignment");
+		} else if (expression instanceof Symbol) {
+			return ((Symbol) expression).getName();
+		} else if (expression instanceof Parameter) {
+			return ((Parameter) expression).getName();
+		} else {
+			FplValue value = expression.evaluate(scope);
+			if (value instanceof Symbol) {
+				return ((Symbol) value).getName();
 			} else {
-				FplValue value = expression.evaluate(scope);
-				if (value instanceof Symbol) {
-					return ((Symbol) value).getName();
-				} else {
-					throw new EvaluationException("Not a symbol: " + value);
-				}
+				throw new EvaluationException("Not a symbol: " + value);
 			}
 		}
-
-		protected FplValue value(Scope scope, FplValue expression) throws EvaluationException {
-			return expression == null ? null : expression.evaluate(scope);
-		}
-		
-		protected abstract void scopeAction(Scope scope, String name, FplValue value) throws ScopeException;
+	}
+	
+	static FplValue value(Scope scope, FplValue expression) throws EvaluationException {
+		return expression == null ? null : expression.evaluate(scope);
 	}
 }

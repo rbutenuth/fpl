@@ -76,8 +76,13 @@ public class SimpleObjectTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testNullName() {
+	public void testNullPositionOne() {
 		new FplObject(null);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testNullPositionTwo() {
+		new FplObject(null, new Scope());
 	}
 	
 	@Test(expected = IllegalArgumentException.class)

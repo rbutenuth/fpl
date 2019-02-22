@@ -110,7 +110,7 @@ public class Logic extends Function {
     }
 
     private boolean booleanValue(Scope scope, FplValue expression) throws EvaluationException {
-        FplValue value = expression.evaluate(scope);
+        FplValue value = expression == null ? null : expression.evaluate(scope);
         if (value == null) {
             return false;
         }

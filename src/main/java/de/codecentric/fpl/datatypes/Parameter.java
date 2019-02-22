@@ -28,6 +28,10 @@ public class Parameter implements FplValue {
         return paramScope.getParameter(index);
 	}
 
+	public String getName() {
+		return name;
+	}
+	
 	@Override
 	public String toString() {
 		return name;

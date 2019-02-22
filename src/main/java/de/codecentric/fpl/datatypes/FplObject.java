@@ -21,7 +21,7 @@ public class FplObject extends Scope implements PositionHolder, FplValue {
 	private List<FplValue> initCode;
 
 	/**
-	 * @param next Next outer {@link Scope}
+	 * @param position Where it is defined in the source
 	 */
 	public FplObject(Position position) throws IllegalArgumentException {
 		if (position == null) {
@@ -29,6 +29,19 @@ public class FplObject extends Scope implements PositionHolder, FplValue {
 		}
 		this.position = position;
 		initCode = Collections.emptyList();
+	}
+
+	/**
+	 * @param position Where it is defined in the source
+	 * @param next Next outer {@link Scope}
+	 */
+	public FplObject(Position position, Scope next) throws IllegalArgumentException {
+		if (position == null) {
+			throw new IllegalArgumentException("position is null");
+		}
+		this.position = position;
+		initCode = Collections.emptyList();
+		initNext(next);
 	}
 
 	public synchronized void addInitCodeValue(FplValue value) {
@@ -53,6 +66,7 @@ public class FplObject extends Scope implements PositionHolder, FplValue {
 			for (FplValue v : initCode) {
 				v.evaluate(this);
 			}
+			// TODO: Initialize child objects!
 		}
 		return this;
 	}

@@ -5,7 +5,6 @@ import static de.codecentric.fpl.datatypes.Function.comment;
 import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplFunction;
@@ -85,17 +84,30 @@ public class Lambda {
 			}
 		});
 
-		scope.put(new Function("instance", comment("Create an instce of an object."), false) {
+		scope.put(new Function("instance", comment("Create an instce of an object."), true, "key-value-pair...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				Position position;
-				if (scope instanceof PositionHolder) {
-					position = ((PositionHolder) scope).getPosition();
-				} else {
-					position = Position.UNKNOWN;
+				if (parameters.length % 2 != 0) {
+					throw new EvaluationException("Number of parameters must be even");
 				}
-				return new FplObject(position);
+				int keyValueCount = parameters.length / 2;
+				String[] keys = new String[keyValueCount];
+				FplValue[] values = new FplValue[keyValueCount];
+				for (int i = 0; i < keyValueCount; i++) {
+					keys[i] = Assignment.targetName(scope, parameters[i * 2]);
+					values[i] = Assignment.value(scope, parameters[i * 2 + 1]);
+				}
+				
+				FplObject object = new FplObject(Position.UNKNOWN, scope);
+				for (int i = 0; i < keyValueCount; i++) {
+					try {
+						object.put(keys[i], values[i]);
+					} catch (ScopeException e) {
+						throw new EvaluationException(e.getMessage());
+					}
+				}
+				return object;
 			}
 		});
 	}

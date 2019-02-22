@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 
 import org.junit.After;
@@ -12,13 +13,26 @@ import org.junit.Before;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.io.BomAwareReader;
 import de.codecentric.fpl.parser.ParseException;
 import de.codecentric.fpl.parser.Parser;
 import de.codecentric.fpl.parser.Scanner;
 
 public class AbstractFplTest {
+	private Class<?> clazz;
 	protected FplEngine engine;
     protected Scope scope;
+
+	public AbstractFplTest() {
+		this(null);
+	}
+	
+	/**
+	 * @param clazz Class as base for package relative resource loading.
+	 */
+	public AbstractFplTest(Class<?> clazz) {
+		this.clazz = clazz == null ? this.getClass() : clazz;
+	}
 
     @Before
     public void setUp() throws EvaluationException, ScopeException {
@@ -46,5 +60,17 @@ public class AbstractFplTest {
 
 	protected Parser parser(String name, String input) throws ParseException, IOException {
 		return new Parser(new Scanner(name, new StringReader(input)));
+	}
+	
+	protected ListResultCallback evaluate(String resource) throws Exception {
+		ListResultCallback callback = new ListResultCallback();
+
+		try (Reader rd = new BomAwareReader(clazz.getResourceAsStream(resource))) {
+			engine.evaluate(resource, rd, callback);
+		}
+		if (callback.hasException()) {
+			throw callback.getException();
+		}
+		return callback;
 	}
 }
