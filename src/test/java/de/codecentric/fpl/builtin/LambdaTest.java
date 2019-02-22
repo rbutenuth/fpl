@@ -218,6 +218,12 @@ public class LambdaTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void testGet() throws Exception {
+		// It is intended to be used in the context of objects, but can be used this way, too...
+		assertEquals(42, ((FplInteger) evaluate("get", "(get '(* 6 7))")).getValue());
+	}
+
+	@Test
 	public void testException() throws Exception {
 		evaluate("fun1.fpl", "(defun fun1 (a) (fun2 a))");
 		evaluate("fun2.fpl", "(defun fun2 (a) (fun3 a))");

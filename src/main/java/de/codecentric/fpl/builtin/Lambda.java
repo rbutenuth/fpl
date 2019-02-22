@@ -72,6 +72,15 @@ public class Lambda {
                 return value == null ? value : value.evaluate(scope);
             }
         });
+    	
+    	scope.put(new Function("get", comment("Get value."), false, "symbol") {
+
+            @Override
+            public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+                FplValue value = parameters[0].evaluate(scope);
+                return value == null ? value : value.evaluate(scope);
+            }
+        });
     }
     
     private static FplFunction lambda(Function f, Symbol name, FplValue paramListValues, FplValue[] code) throws EvaluationException {
