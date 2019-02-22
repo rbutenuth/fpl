@@ -14,10 +14,10 @@ import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplFunction;
 import de.codecentric.fpl.datatypes.FplInteger;
+import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.list.FplList;
-import de.codecentric.fpl.parser.Position;
 
 /**
  * Tests for the function interpreter.
@@ -128,10 +128,6 @@ public class LambdaTest extends AbstractFplTest {
 		assertTrue(f.isVararg());
 		assertEquals("lambda", f.getName());
 		assertEquals("(lambda (a b c...) 42)", f.toString());
-		Position p = f.getPosition();
-		assertEquals("lambda", p.getName());
-		assertEquals(1, p.getLine());
-		assertEquals(2, p.getColumn());
 	}
 
 	@Test
@@ -241,4 +237,9 @@ public class LambdaTest extends AbstractFplTest {
 		}
 	}
 
+	@Test
+	public void testCreateEmptyObjectInstance() throws Exception {
+		FplValue value = evaluate("instance", "(instance)");
+		assertTrue(value instanceof FplObject);
+	}
 }

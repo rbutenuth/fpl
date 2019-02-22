@@ -59,7 +59,7 @@ public class FplFunction extends Function {
 	 */
 	public FplFunction(Position position, List<String> comment, String name, String[] paramNames, FplValue[] code)
 			throws EvaluationException {
-		super(name, comment, varArgs(paramNames), convertedParamNames(paramNames));
+		super(position, name, comment, varArgs(paramNames), convertedParamNames(paramNames));
 		Map<String, Integer> parameterMap = createParameterMap();
 		this.code = compile(code, parameterMap);
 	}

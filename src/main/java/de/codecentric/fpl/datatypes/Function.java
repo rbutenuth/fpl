@@ -40,7 +40,7 @@ public abstract class Function extends EvaluatesToThisValue implements Named, Po
 	 * @param position
 	 *            Position in source code.
 	 * @param comment
-	 *            A list of lines with comment in markdown syntax
+	 *            A list of lines with comments in markdown syntax
 	 * @param name
 	 *            Not null, not empty.
 	 * @param parameterNames
@@ -59,6 +59,21 @@ public abstract class Function extends EvaluatesToThisValue implements Named, Po
 		Arrays.fill(parameterComments, "");
 		this.varArg = varArg;
 		minimumNumberOfParameters = varArg ? parameterNames.length - 1 : parameterNames.length;
+	}
+
+	/**
+	 * @param position
+	 *            Position in source code.
+	 * @param name
+	 *            Not null, not empty.
+	 * @param varArg
+	 *            Is this a function with variable argument list?
+	 * @param parameterNames
+	 *            Names of the parameters. If last ends with "...", function is
+	 *            variable argument function.
+	 */
+	protected Function(Position position, String name, List<String> comment, boolean varArg, String... parameterNames) {
+		this(position, comment, name, varArg, parameterNames);
 	}
 
 	/**

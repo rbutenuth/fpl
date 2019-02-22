@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
-import de.codecentric.fpl.datatypes.FplFunction;
 import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
@@ -915,16 +913,8 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			}
 		} while (element instanceof FplObject);
 		
-		
 		if (element instanceof Function) {
-			Function f = (Function) element;
-			FplValue result = f.call(evalScope, createParameterArray(startParameterIndex));
-			
-			// When we have create a function, try to copy the position information (for better error messages)
-			if (result instanceof FplFunction && f instanceof PositionHolder) {
-				((FplFunction) result).setPosition(((PositionHolder) unevaluated).getPosition());
-			}
-			return result;
+			return ((Function) element).call(evalScope, createParameterArray(startParameterIndex));
 		} else {
 			return element;
 		}
