@@ -179,7 +179,7 @@ public class SimpleHttpServer extends Thread {
 		return text.substring(newLinePos + 1);
 	}
 
-	public Map<String, List<String>> splitQuery(String query) throws UnsupportedEncodingException {
+	public static Map<String, List<String>> splitQuery(String query) throws UnsupportedEncodingException {
 		if (query == null || query.length() == 0) {
 			return new HashMap<>();
 		}

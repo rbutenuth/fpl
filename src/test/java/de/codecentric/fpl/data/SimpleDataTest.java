@@ -3,7 +3,6 @@ package de.codecentric.fpl.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.Collections;
 
@@ -105,20 +104,10 @@ public class SimpleDataTest {
 
     @Test
     public void testLazyEvaluationExpression() throws EvaluationException {
-        LazyExpression expr = new LazyExpression(new Scope(), new FplList(new FplValue[] { FplInteger.valueOf(42)}));
-        String message = null;
-        try {
-            expr.evaluate(null);
-            fail("should not be reached");
-        } catch (EvaluationException e) {
-            message = e.getMessage();
-        }
-        try {
-            expr.evaluate(null);
-            fail("should not be reached");
-        } catch (EvaluationException e) {
-            assertEquals(message, e.getMessage());
-        }
+        FplInteger value = FplInteger.valueOf(42);
+		LazyExpression expr = new LazyExpression(new Scope(), new FplList(new FplValue[] { value}));
+        FplValue result = expr.evaluate(null);
+        assertEquals(value, result);
     }
 
 }

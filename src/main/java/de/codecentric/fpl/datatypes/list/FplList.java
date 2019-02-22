@@ -11,6 +11,7 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.FplFunction;
+import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 
@@ -901,36 +902,66 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		if (isEmpty()) {
 			return this; // empty list evaluates to empty list
 		}
-		FplValue firstElemUnevaluated = first();
-		FplValue firstElem = firstElemUnevaluated.evaluate(scope);
-		if (!(firstElem instanceof Function)) {
-			throw new EvaluationException("Not a function: " + firstElem);
+		FplValue element;
+		FplValue unevaluated;
+		int startParameterIndex = 0;
+		Scope evalScope = scope;
+		do {
+			unevaluated = get(startParameterIndex++);
+			element = unevaluated.evaluate(evalScope);
+			if (element instanceof FplObject) {
+				FplObject object = (FplObject)element;
+				evalScope = object;
+			}
+		} while (element instanceof FplObject);
+		
+		
+		if (element instanceof Function) {
+			Function f = (Function) element;
+			FplValue result = f.call(evalScope, createParameterArray(startParameterIndex));
+			
+			// When we have create a function, try to copy the position information (for better error messages)
+			if (result instanceof FplFunction && f instanceof PositionHolder) {
+				((FplFunction) result).setPosition(((PositionHolder) unevaluated).getPosition());
+			}
+			return result;
+		} else {
+			return element;
 		}
-		Function f = (Function) firstElem;
+	}
+
+	private FplValue[] createParameterArray(int startParameterIndex) {
 		FplValue[] params;
 		if (linear == null) {
-			params = new FplValue[size() - 1];
+			params = new FplValue[size(shape) - startParameterIndex];
+			
+			// find start indexes
 			int bucketIdx = 0;
 			int inBucketIdx = 0;
-			for (int i = 0; i < params.length; i++) {
+			for (int i = 0; i < startParameterIndex; i++) {
 				inBucketIdx++;
 				if (inBucketIdx == shape[bucketIdx].length) {
 					inBucketIdx = 0;
 					bucketIdx++;
 				}
+			}
+			
+			// copy values
+			for (int i = 0; i < params.length; i++) {
 				params[i] = shape[bucketIdx][inBucketIdx];
+				inBucketIdx++;
+				if (inBucketIdx == shape[bucketIdx].length) {
+					inBucketIdx = 0;
+					bucketIdx++;
+				}
 			}
 		} else {
-			params = new FplValue[linear.length - 1];
-			arraycopy(linear, 1, params, 0, params.length);
+			params = new FplValue[linear.length - startParameterIndex];
+			arraycopy(linear, startParameterIndex, params, 0, params.length);
 		}
-		FplValue result = f.call(scope, params);
-		if (result instanceof FplFunction && firstElem instanceof PositionHolder) {
-			((FplFunction) result).setPosition(((PositionHolder) firstElemUnevaluated).getPosition());
-		}
-		return result;
+		return params;
 	}
-
+	
 	public boolean isEmpty() {
 		if (linear == null) {
 			return shape.length == 0 || shape[0].length == 0;

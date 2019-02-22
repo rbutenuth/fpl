@@ -60,9 +60,6 @@ public class FplFunction extends Function {
 	public FplFunction(Position position, List<String> comment, String name, String[] paramNames, FplValue[] code)
 			throws EvaluationException {
 		super(name, comment, varArgs(paramNames), convertedParamNames(paramNames));
-		if (code == null) {
-			throw new NullPointerException("code");
-		}
 		Map<String, Integer> parameterMap = createParameterMap();
 		this.code = compile(code, parameterMap);
 	}

@@ -74,4 +74,27 @@ public class ParameterScopeTest {
 		assertEquals("\"newValue\"", inner.get("key").toString());
 		assertEquals("\"newValue\"", outer.get("key").toString());
 	}
+	
+	@Test
+	public void testDollar() throws ScopeException {
+		FplString euro = new FplString("€");
+		FplString rubel = new FplString("rubel");
+		inner.setDollar(euro);
+		outer.put("rubel", rubel);
+		assertEquals(euro, inner.get("$"));
+		assertEquals(euro, inner.getLocal("$"));
+		assertEquals(rubel, inner.get("rubel"));
+	}
+	
+	@Test
+	public void testDefine() throws ScopeException {
+		FplString euro = new FplString("€");
+		inner.define("euro", euro);
+		assertEquals(euro, inner.get("euro"));
+	}
+	
+	@Test(expected = ScopeException.class)
+	public void testPutDollar() throws ScopeException {
+		inner.put("$", null);
+	}
 }

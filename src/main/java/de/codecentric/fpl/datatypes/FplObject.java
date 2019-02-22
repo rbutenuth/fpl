@@ -3,6 +3,7 @@ package de.codecentric.fpl.datatypes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
@@ -15,6 +16,7 @@ import de.codecentric.fpl.parser.Position;
  * linking and executing methods on objects.
  */
 public class FplObject extends Scope implements PositionHolder, FplValue {
+	private static String NL = System.lineSeparator();
 	private Position position;
 	private List<FplValue> initCode;
 
@@ -58,5 +60,31 @@ public class FplObject extends Scope implements PositionHolder, FplValue {
 	@Override
 	public Position getPosition() {
 		return position;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		if (!initCode.isEmpty()) {
+			sb.append(NL);
+		}
+		for (FplValue element : initCode) {
+			sb.append(element.toString());
+			sb.append(NL).append(NL);
+		}
+		boolean first = true;
+		for (Entry<String, FplValue> entry : map.entrySet()) {
+			if (first) {
+				first = false;
+			} else {
+				sb.append(",").append(NL);
+			}
+			sb.append("    ");
+			sb.append(entry.getKey()).append(": ").append(entry.getValue().toString());
+		}
+		sb.append(NL).append("}").append(NL);
+
+		return sb.toString();
 	}
 }

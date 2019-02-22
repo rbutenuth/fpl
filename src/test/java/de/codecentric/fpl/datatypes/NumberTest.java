@@ -19,6 +19,11 @@ public class NumberTest {
     }
 
     @Test
+    public void testNotEqualInteger() {
+    	assertFalse(FplInteger.valueOf(1).equals(FplInteger.valueOf(2)));
+    }
+
+    @Test
     public void testEqualSameInteger() {
     	FplInteger one = FplInteger.valueOf(1);
 		assertTrue(one.equals(one));
@@ -42,6 +47,11 @@ public class NumberTest {
     @Test
     public void testEqualDouble() {
     	assertTrue(new FplDouble(1).equals(new FplDouble(1)));
+    }
+
+    @Test
+    public void testNotEqualDouble() {
+    	assertFalse(new FplDouble(1).equals(new FplDouble(2)));
     }
 
     @Test

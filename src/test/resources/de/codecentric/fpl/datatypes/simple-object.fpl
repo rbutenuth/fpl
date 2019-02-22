@@ -1,4 +1,10 @@
 (def obj {
+
+	(def another-key "another-value")
+	
 	"key": "value"
 })
+
+(def foo (obj key))
+
 

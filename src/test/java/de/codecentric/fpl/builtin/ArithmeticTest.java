@@ -50,7 +50,7 @@ public class ArithmeticTest extends AbstractFplTest {
 
     @Test
     public void testPlusWithLongListFromTwoParts() throws Exception {
-        FplInteger i = (FplInteger)evaluate("plus", "(eval (append '(+ 3 4 3 4 3 4 3 4 3 4 3 4 3 4) '(3 4)))");
+        FplInteger i = (FplInteger)evaluate("plus", "(eval (append '(+) '(3 4 3 4 3 4 3 4 3 4 3 4 3 4 3 4)))");
         assertEquals(56, i.getValue());
     }
 

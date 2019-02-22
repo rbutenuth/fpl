@@ -2,6 +2,7 @@ package de.codecentric.fpl.io;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,11 +13,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -233,6 +237,35 @@ public class SimpleHttpTest {
 
 		int responseCode = con.getResponseCode();
 		assertEquals(500, responseCode);
+	}
+	
+	@Test
+	public void testSplitEmptyQuery() throws UnsupportedEncodingException {
+		Map<String, List<String>> query = SimpleHttpServer.splitQuery("");
+		assertEquals(0, query.size());
+		query = SimpleHttpServer.splitQuery(null);
+		assertEquals(0, query.size());
+	}
+	
+	@Test
+	public void testSplitQuery() throws UnsupportedEncodingException {
+		Map<String, List<String>> query = SimpleHttpServer.splitQuery("foo=bar&foo=baz&key1=&key2");
+		assertEquals(3, query.size());
+		List<String> foo = query.get("foo");
+		assertEquals(2, foo.size());
+		assertEquals("bar", foo.get(0));
+		assertEquals("baz", foo.get(1));
+		List<String> values1 = query.get("key1");
+		assertEquals(1, values1.size());
+		assertNull(values1.get(0));
+		List<String> values2 = query.get("key2");
+		assertEquals(1, values2.size());
+		assertNull(values2.get(0));
+	}
+	
+	@Test
+	public void testInstantiateClient() {
+		new SimpleHttpClient();
 	}
 
 	private InputStream stream(String str) {
