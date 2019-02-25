@@ -54,13 +54,6 @@ public class ScopeTest {
 		assertNull(outer.get("foo"));
 	}
 	
-	@Test
-	public void testPutGlobal() throws ScopeException {
-		inner.putGlobal("foo", new FplString("bar"));
-		assertEquals(new FplString("bar"), inner.get("foo"));
-		assertEquals(new FplString("bar"), outer.get("foo"));
-	}
-	
 	@Test(expected = ScopeException.class)
 	public void testPutNullKey() throws ScopeException {
 		outer.put(null, new FplString("foo"));
@@ -88,7 +81,7 @@ public class ScopeTest {
 	
 	private void changeWithException(String key, FplValue value, String expected) {
 		try {
-			inner.change(key, value);
+			inner.replace(key, value);
 			fail("missing exception");
 		} catch (ScopeException e) {
 			assertEquals(expected, e.getMessage());
@@ -98,7 +91,7 @@ public class ScopeTest {
 	@Test
 	public void testChangeOuter() throws ScopeException {
 		outer.put("key", new FplString("oldValue"));
-		FplValue old = inner.change("key", new FplString("newValue"));
+		FplValue old = inner.replace("key", new FplString("newValue"));
 		assertEquals("\"oldValue\"", old.toString());
 		assertEquals("\"newValue\"", inner.get("key").toString());
 		assertEquals("\"newValue\"", inner.get("key").toString());
@@ -107,7 +100,7 @@ public class ScopeTest {
 	@Test
 	public void testChangeInner() throws ScopeException {
 		inner.put("key", new FplString("oldValue"));
-		FplValue old = inner.change("key", new FplString("newValue"));
+		FplValue old = inner.replace("key", new FplString("newValue"));
 		assertEquals("\"oldValue\"", old.toString());
 		assertEquals("\"newValue\"", inner.get("key").toString());
 		assertNull(outer.get("key"));
@@ -115,7 +108,7 @@ public class ScopeTest {
 
 	@Test(expected = ScopeException.class)
 	public void testChangeNotExisting() throws ScopeException {
-		inner.change("non-existing-key", new FplString("foo"));
+		inner.replace("non-existing-key", new FplString("foo"));
 	}
 	
 	@Test

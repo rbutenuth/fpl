@@ -8,12 +8,10 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplFunction;
-import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
-import de.codecentric.fpl.parser.Position;
 
 /**
  * Lisp "lambda".
@@ -81,33 +79,6 @@ public class Lambda {
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplValue value = parameters[0].evaluate(scope);
 				return value == null ? value : value.evaluate(scope);
-			}
-		});
-
-		scope.put(new Function("instance", comment("Create an instce of an object."), true, "key-value-pair...") {
-
-			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				if (parameters.length % 2 != 0) {
-					throw new EvaluationException("Number of parameters must be even");
-				}
-				int keyValueCount = parameters.length / 2;
-				String[] keys = new String[keyValueCount];
-				FplValue[] values = new FplValue[keyValueCount];
-				for (int i = 0; i < keyValueCount; i++) {
-					keys[i] = Assignment.targetName(scope, parameters[i * 2]);
-					values[i] = Assignment.value(scope, parameters[i * 2 + 1]);
-				}
-				
-				FplObject object = new FplObject(Position.UNKNOWN, scope);
-				for (int i = 0; i < keyValueCount; i++) {
-					try {
-						object.put(keys[i], values[i]);
-					} catch (ScopeException e) {
-						throw new EvaluationException(e.getMessage());
-					}
-				}
-				return object;
 			}
 		});
 	}

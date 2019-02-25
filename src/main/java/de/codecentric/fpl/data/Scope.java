@@ -61,29 +61,19 @@ public class Scope {
     }
 
 	/**
-	 * Lookup a symbol, if not found in this scope, return <code>null</code>
-	 * 
-	 * @param key Name of value to lookup
-	 * @return The found expression, may be <code>null</code>.
-	 */
-    public FplValue getLocal(String key) {
-    	return map.get(key);
-    }
-
-	/**
 	 * Put a key value mapping in the scope, may overwrite an existing mapping.
 	 * 
 	 * @param key   Name of value to lookup, not null, not empty
 	 * @param value The value of the symbol, null values are allowed and will remove the mapping.
 	 * @throws ScopeException If key is empty.
 	 */
-    public void put(String key, FplValue value) throws ScopeException {
+    public FplValue put(String key, FplValue value) throws ScopeException {
         checkKeyNotEmpty(key);
         // null means remove
         if (value == null) {
-        	map.remove(key);
+        	return map.remove(key);
         } else {
-        	map.put(key, value);
+        	return map.put(key, value);
         }
     }
 
@@ -98,59 +88,46 @@ public class Scope {
 		put(value.getName(), value);
 	}
 
-    /**
-	 * Search scopes starting from this one via {@link #getNext()} up to the root scope,
-	 * put there.
-	 * 
-	 * @param key   Name of value to lookup, not null, not empty
-	 * @param value The value of the symbol, null values are allowed.
-	 * @throws ScopeException If this scope is sealed.
-	 */
-	public void putGlobal(String key, FplValue value) throws ScopeException {
-		Scope chain = this;
-		while (chain.next != null) {
-			chain = chain.next;
-		}
-		chain.put(key, value);
-	}
-	
 	/**
-	 * Change a value in this scope, if not there, search through scope chain until
+	 * Replace a value in this scope, if not there, search through scope chain until
 	 * value is found in a not sealed scope.
 	 * 
 	 * @param key      Name of value to change, not null, not empty
 	 * @param newValue The new value, not <code>null</code>
 	 * @return The old value.
-	 * @throws ScopeException If scope is sealed or value is not found.
+	 * @throws ScopeException If value is not found in this scope or in the scope chain.
 	 */
-	public FplValue change(String key, FplValue newValue) throws ScopeException {
+	public FplValue replace(String key, FplValue newValue) throws ScopeException {
         if (key == null || key.length() == 0) {
             throw new ScopeException("key null or empty");
         }
 		if (newValue == null) {
 			throw new ScopeException("Change does not allow null values");
 		}
-        for (Scope chain = this; chain != null; chain = chain.next) {
-        	FplValue oldValue = chain.getLocal(key);
-        	if (oldValue != null) {
-        		chain.put(key, newValue);
-        		return oldValue;
-        	}
-        }
-		throw new ScopeException("No value with key " + key + " found");
+		FplValue oldValue;
+		Scope scope = this;
+		do {
+			oldValue = scope.map.replace(key, newValue);
+		} while (oldValue == null && (scope = scope.getNext()) != null);
+		if (oldValue == null) {
+			throw new ScopeException("No value with key " + key + " found");
+		}
+		return oldValue;
 	}
 	
 	/**
 	 * @param key      Name of value to change, not null, not empty
 	 * @param value The new value, not <code>null</code>
+	 * @return value
 	 * @throws ScopeException Is scope is sealed or value did already exist.
 	 */
-	public void define(String key, FplValue value) throws ScopeException {
+	public FplValue define(String key, FplValue value) throws ScopeException {
         checkKeyNotEmpty(key);
         FplValue old = map.putIfAbsent(key, value);
         if (old != null) {
         	throw new ScopeException("Duplicate key: " + key);
         }
+        return value;
 	}
 	
     /**

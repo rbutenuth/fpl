@@ -31,32 +31,21 @@ public class ParameterScope extends Scope {
 	}
 
 	@Override
-	public FplValue getLocal(String key) {
-		return "$".equals(key) ? dollar : super.getLocal(key);
+	public FplValue put(String key, FplValue value) throws ScopeException {
+		checkNotDollar(key);
+		return super.put(key, value);
 	}
 
 	@Override
-	public void put(String key, FplValue value) throws ScopeException {
+	public FplValue replace(String key, FplValue newValue) throws ScopeException {
 		checkNotDollar(key);
-		super.put(key, value);
+		return super.replace(key, newValue);
 	}
 
 	@Override
-	public void putGlobal(String key, FplValue value) throws ScopeException {
+	public FplValue define(String key, FplValue value) throws ScopeException {
 		checkNotDollar(key);
-		super.putGlobal(key, value);
-	}
-
-	@Override
-	public FplValue change(String key, FplValue newValue) throws ScopeException {
-		checkNotDollar(key);
-		return super.change(key, newValue);
-	}
-
-	@Override
-	public void define(String key, FplValue value) throws ScopeException {
-		checkNotDollar(key);
-		super.define(key, value);
+		return super.define(key, value);
 	}
 
 	private void checkNotDollar(String key) throws ScopeException {

@@ -22,13 +22,13 @@ public class AssignmentTest extends AbstractFplTest {
     	Scope local = new Scope(scope);
         assertNull(scope.get("local"));
         assertNull(local.get("local"));
-        assertEquals(20, ((FplInteger)evaluate(local, "put", "(put local 20)")).getValue());
+        assertNull(evaluate(local, "put", "(put local 20)"));
         // Value should be visible in local scope, but not in global scope
-        assertEquals(20, ((FplInteger)local.get("local")).getValue());
+        assertEquals(FplInteger.valueOf(20), ((FplInteger)local.get("local")));
         assertNull(scope.get("local"));
 
         // Clear value
-        assertNull(evaluate(local, "put", "(put local nil)"));
+        assertEquals(FplInteger.valueOf(20), evaluate(local, "put", "(put local nil)"));
         assertNull(local.get("local"));
     }
 
@@ -47,29 +47,29 @@ public class AssignmentTest extends AbstractFplTest {
     	Scope local = new Scope(scope);
         assertNull(scope.get("global"));
         assertNull(local.get("global"));
-        assertEquals(20, ((FplInteger)evaluate(local, "put-global", "(put-global global 20)")).getValue());
+        assertNull(evaluate(local, "put-global", "(put-global global 20)"));
 
         // Value should be visible in local scope (via recursive get), and in global scope
-        assertEquals(20, ((FplInteger)local.get("global")).getValue());
-        assertEquals(20, ((FplInteger)scope.get("global")).getValue());
+        assertEquals(FplInteger.valueOf(20), local.get("global"));
+        assertEquals(FplInteger.valueOf(20), scope.get("global"));
 
         // Changing it in local should only affect the local scope
-        assertEquals(30, ((FplInteger)evaluate(local, "set", "(put global 30)")).getValue());
-        assertEquals(30, ((FplInteger)local.get("global")).getValue());
-        assertEquals(20, ((FplInteger)scope.get("global")).getValue());
+        assertEquals(FplInteger.valueOf(20), evaluate(local, "set", "(set global 30)"));
+        assertEquals(FplInteger.valueOf(30), local.get("global"));
+        assertEquals(FplInteger.valueOf(30), scope.get("global"));
 
-        assertEquals(30, ((FplInteger)evaluate(local, "get", "global")).getValue());
-        assertEquals(20, ((FplInteger)evaluate(scope, "get", "global")).getValue());
+        assertEquals(FplInteger.valueOf(30), evaluate(local, "get", "global"));
+        assertEquals(FplInteger.valueOf(30), evaluate(scope, "get", "global"));
     }
     
     @Test
     public void testPutWithQuotedTarget() throws Exception {
     	Scope local = new Scope(scope);
-        assertEquals(20, ((FplInteger)evaluate(local, "put", "(put (quote local) 20)")).getValue());
-        assertEquals(20, ((FplInteger)local.get("local")).getValue());
+        assertNull(evaluate(local, "put", "(put (quote local) 20)"));
+        assertEquals(FplInteger.valueOf(20), ((FplInteger)local.get("local")));
 
         // Clear value
-        assertNull(evaluate(local, "put", "(put local nil)"));
+        assertEquals(FplInteger.valueOf(20), evaluate(local, "put", "(put local nil)"));
         assertNull(local.get("local"));
     }
 
@@ -81,9 +81,9 @@ public class AssignmentTest extends AbstractFplTest {
 
     @Test
     public void testSet() throws Exception {
-        assertEquals(10, ((FplInteger)evaluate("put", "(put key 10)")).getValue());
-        assertEquals(20, ((FplInteger)evaluate("set", "(set key 20)")).getValue());
-        assertEquals(20, ((FplInteger)scope.get("key")).getValue());
+        assertNull(evaluate("put", "(put key 10)"));
+        assertEquals(FplInteger.valueOf(10), evaluate("set", "(set key 20)"));
+        assertEquals(FplInteger.valueOf(20), scope.get("key"));
     }
     
     @Test

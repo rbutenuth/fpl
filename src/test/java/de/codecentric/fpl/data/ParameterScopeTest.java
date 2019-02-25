@@ -48,13 +48,6 @@ public class ParameterScopeTest {
 		assertNull(outer.get("foot"));
 	}
 
-	@Test
-	public void testPutGlobal() throws ScopeException {
-		inner.putGlobal("foot", new FplString("baz"));
-		assertEquals(new FplString("baz"), inner.get("foot"));
-		assertEquals(new FplString("baz"), outer.get("foot"));
-	}
-
 	@Test(expected = ScopeException.class)
 	public void testPutNullKey() throws ScopeException {
 		inner.put(null, new FplString("foo"));
@@ -68,7 +61,7 @@ public class ParameterScopeTest {
 	@Test
 	public void testChangeInner() throws ScopeException {
 		outer.put("key", new FplString("oldValue"));
-		FplValue old = inner.change("key", new FplString("newValue"));
+		FplValue old = inner.replace("key", new FplString("newValue"));
 		assertEquals("\"oldValue\"", old.toString());
 		assertEquals("\"newValue\"", inner.get("key").toString());
 		assertEquals("\"newValue\"", outer.get("key").toString());
@@ -81,7 +74,6 @@ public class ParameterScopeTest {
 		inner.setDollar(euro);
 		outer.put("rubel", rubel);
 		assertEquals(euro, inner.get("$"));
-		assertEquals(euro, inner.getLocal("$"));
 		assertEquals(rubel, inner.get("rubel"));
 	}
 
