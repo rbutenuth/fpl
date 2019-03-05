@@ -4,12 +4,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
+import java.util.List;
+
 import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.ListResultCallback;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.FplInteger;
+import de.codecentric.fpl.datatypes.FplObject;
+import de.codecentric.fpl.datatypes.FplString;
+import de.codecentric.fpl.datatypes.FplValue;
 
 /**
  * Tests for the functions "set", "set-global", "let" etc.
@@ -38,7 +44,7 @@ public class AssignmentTest extends AbstractFplTest {
     		evaluate(scope, "put", "(put nil 20)");
     		fail("exception missing");
     	} catch (EvaluationException e) {
-    		assertEquals("nil not valid name for assignment", e.getMessage());
+    		assertEquals("nil is not a valid name", e.getMessage());
     	}
     }
 
@@ -62,6 +68,16 @@ public class AssignmentTest extends AbstractFplTest {
         assertEquals(FplInteger.valueOf(30), evaluate(scope, "get", "global"));
     }
     
+    @Test
+    public void testPutGlobalNullKey() throws Exception {
+    	try {
+    		evaluate(scope, "put-global", "(put-global nil 20)");
+    		fail("exception missing");
+    	} catch (EvaluationException e) {
+    		assertEquals("nil is not a valid name", e.getMessage());
+    	}
+    }
+
     @Test
     public void testPutWithQuotedTarget() throws Exception {
     	Scope local = new Scope(scope);
@@ -102,6 +118,37 @@ public class AssignmentTest extends AbstractFplTest {
         assertEquals(10, ((FplInteger)scope.get("key")).getValue());
     }
     
+	@Test
+	public void testDefField() throws Exception {
+		ListResultCallback callback = evaluate("def-field.fpl");
+		List<FplValue> values = callback.getResults();
+		FplObject object = (FplObject) values.get(0);
+		assertEquals(new FplString("bar"), object.get("foo"));
+		assertEquals(new FplString("value"), object.get("key"));
+	}
+	
+    @Test
+    public void testDefFieldNoObject() throws Exception {
+    	try {
+    		evaluate("def-field", "(def-field key 10)");
+    		fail("missing exception");
+    	} catch (EvaluationException e) {
+    		assertEquals("No object found", e.getMessage());
+    	}
+    }
+    
+    @Test
+    public void testDefFieldNil() throws Exception {
+    	try {
+    		evaluate("def-field", "(def object {\n" + 
+    				"	(def-field foo nil)\n" + 
+    				"})");
+    		fail("missing exception");
+    	} catch (EvaluationException e) {
+    		assertEquals("value is nil", e.getMessage());
+    	}
+    }
+    
     @Test
     public void testDefOnDefinedFails() throws Exception {
     	try {
@@ -112,4 +159,14 @@ public class AssignmentTest extends AbstractFplTest {
     		assertEquals("Duplicate key: foo", e.getMessage());
     	}
     }
+    
+    @Test
+    public void testInstanceNilKey() throws Exception {
+    	try {
+    		evaluate("instance", "(instance nil 42)");
+    		fail("missing exception");
+    	} catch (EvaluationException e) {
+    		assertEquals("nil is not a valid name", e.getMessage());
+    	}
+    }   
 }

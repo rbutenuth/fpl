@@ -53,6 +53,7 @@ public class ObjectTest extends AbstractFplTest {
 			assertEquals("Number of parameters must be even", e.getMessage());
 		}
 	}
+
 	@Test
 	public void testGetAndSet() throws Exception {
 		ListResultCallback callback = evaluate("get-and-set.fpl");
@@ -64,5 +65,4 @@ public class ObjectTest extends AbstractFplTest {
 		assertEquals(FplInteger.valueOf(6), instance.get("a"));
 		assertEquals(FplInteger.valueOf(7), instance.get("b"));
 	}
-	
 }

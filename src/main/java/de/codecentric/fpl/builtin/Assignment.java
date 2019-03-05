@@ -78,6 +78,26 @@ public class Assignment {
 			}
 		});
 
+		scope.put(new Function("def-field",
+				comment("Assign value in the next object scope, it must be unassigned before. nil as value not allowed"), false,
+				"symbol", "value") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				try {
+					Scope s = scope;
+					while (!(s instanceof FplObject) && s != null) {
+						s = s.getNext();
+					}
+					if (s == null) {
+						throw new EvaluationException("No object found");
+					}
+					return s.define(targetName(scope, parameters[0]), value(scope, parameters[1]));
+				} catch (ScopeException e) {
+					throw new EvaluationException(e.getMessage());
+				}
+			}
+		});
+
 		scope.put(new Function("instance", comment("Create an instce of an object."), true, "key-value-pair...") {
 
 			@Override
@@ -108,7 +128,7 @@ public class Assignment {
 
 	static private String targetName(Scope scope, FplValue expression) throws EvaluationException {
 		if (expression == null) {
-			throw new EvaluationException("nil not valid name for assignment");
+			return null;
 		} else if (expression instanceof Symbol) {
 			return ((Symbol) expression).getName();
 		} else if (expression instanceof Parameter) {

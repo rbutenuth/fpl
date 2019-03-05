@@ -12,6 +12,9 @@ public class StringFunctionsTest extends AbstractFplTest {
 
 	@Test
 	public void testNoDescription() throws Exception {
+		// cover constructor
+		new StringFunctions();
+		
 		FplString fplMarkdown = (FplString) evaluate("describe", "(describe 42)");
 		String markdown = fplMarkdown.getContent();
 		assertEquals("There is no documentation for 42", markdown);

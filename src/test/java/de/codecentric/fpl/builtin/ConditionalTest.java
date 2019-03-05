@@ -11,8 +11,14 @@ public class ConditionalTest extends AbstractFplTest {
 
     @Test
     public void testIfElse() throws Exception {
-        assertEquals(2, ((FplInteger)evaluate("if1", "(if 1 2 3)")).getValue());
-        assertEquals(3, ((FplInteger)evaluate("if1", "(if 0 2 3)")).getValue());
-        assertEquals(3, ((FplInteger)evaluate("if1", "(if nil 2 3)")).getValue());
+    	// cover constructor
+    	new Conditional();
+    	
+        assertEquals(FplInteger.valueOf(2), evaluate("if", "(if 1 2 3)"));
+        assertEquals(FplInteger.valueOf(3), evaluate("else-0", "(if 0 2 3)"));
+        assertEquals(FplInteger.valueOf(3), evaluate("else-nil", "(if nil 2 3)"));
+        
+        assertEquals(null, evaluate("if", "(if 1 nil 3)"));
+        assertEquals(null, evaluate("if", "(if nil 3 nil)"));
     }
 }

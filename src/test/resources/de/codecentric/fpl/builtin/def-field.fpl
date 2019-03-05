@@ -1,0 +1,7 @@
+(def object {
+
+	(def-field foo "bar")
+	
+	"key": "value"
+})
+

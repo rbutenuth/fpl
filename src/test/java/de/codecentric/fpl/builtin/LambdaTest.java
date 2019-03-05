@@ -4,17 +4,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.ListResultCallback;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplFunction;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplObject;
+import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.list.FplList;
@@ -215,10 +219,12 @@ public class LambdaTest extends AbstractFplTest {
 
 	@Test
 	public void testGet() throws Exception {
-		// It is intended to be used in the context of objects, but can be used this way, too...
-		assertEquals(42, ((FplInteger) evaluate("get", "(get '(* 6 7))")).getValue());
+		ListResultCallback callback = evaluate("get.fpl");
+		List<FplValue> values = callback.getResults();
+		FplValue value = values.get(1);
+		assertEquals(new FplString("value"), value);
 	}
-
+	
 	@Test
 	public void testException() throws Exception {
 		evaluate("fun1.fpl", "(defun fun1 (a) (fun2 a))");

@@ -77,8 +77,7 @@ public class Lambda {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				FplValue value = parameters[0].evaluate(scope);
-				return value == null ? value : value.evaluate(scope);
+				return parameters[0].evaluate(scope);
 			}
 		});
 	}

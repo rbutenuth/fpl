@@ -123,6 +123,9 @@ public class Scope {
 	 */
 	public FplValue define(String key, FplValue value) throws ScopeException {
         checkKeyNotEmpty(key);
+        if (value == null) {
+        	throw new ScopeException("value is nil");
+        }
         FplValue old = map.putIfAbsent(key, value);
         if (old != null) {
         	throw new ScopeException("Duplicate key: " + key);
@@ -141,7 +144,7 @@ public class Scope {
 
     private void checkKeyNotEmpty(String key) throws ScopeException {
         if (key == null || key.length() == 0) {
-            throw new ScopeException("key null or empty");
+            throw new ScopeException("nil is not a valid name");
         }
 	}
 }

@@ -23,6 +23,9 @@ public class ListFunctionsTest extends AbstractFplTest {
 
     @Test
     public void testQuote() throws Exception {
+    	// cover constructor
+    	new ListFunctions();
+    	
         FplList l = (FplList) evaluate("quote", "'(1 2 3)");
         assertEquals(3, l.size());
 
