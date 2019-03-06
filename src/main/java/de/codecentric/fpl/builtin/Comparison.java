@@ -17,22 +17,159 @@ import de.codecentric.fpl.datatypes.Function;
 public class Comparison extends Function {
     private static FplInteger TRUE = FplInteger.valueOf(1);
 
+    private enum CompareOperator {
+    	EQ {
+			@Override
+			FplValue compare(long left, long right) {
+				return left == right ? TRUE : null;
+			}
+
+			@Override
+			FplValue compare(double left, double right) {
+				return left == right ? TRUE : null;
+			}
+
+			@Override
+			FplValue compare(String left, String right) {
+				return left.equals(right) ? TRUE : null;
+			}
+
+			@Override
+			String symbol() {
+				return "eq";
+			}
+		},
+    	NE {
+			@Override
+			FplValue compare(long left, long right) {
+				return left != right ? TRUE : null;
+			}
+
+			@Override
+			FplValue compare(double left, double right) {
+				return left != right ? TRUE : null;
+			}
+
+			@Override
+			FplValue compare(String left, String right) {
+				return left.equals(right) ? null : TRUE;
+			}
+
+			@Override
+			String symbol() {
+				return "ne";
+			}
+		},
+    	LT {
+			@Override
+			FplValue compare(long left, long right) {
+				return left < right ? TRUE : null;
+			}
+
+			@Override
+			FplValue compare(double left, double right) {
+				return left < right ? TRUE : null;
+			}
+
+			@Override
+			FplValue compare(String left, String right) {
+				return left.compareTo(right) < 0 ? TRUE : null;
+			}
+
+			@Override
+			String symbol() {
+				return "lt";
+			}
+		},
+    	LE {
+			@Override
+			FplValue compare(long left, long right) {
+				return left <= right ? TRUE : null;
+			}
+
+			@Override
+			FplValue compare(double left, double right) {
+				return left <= right ? TRUE : null;
+			}
+
+			@Override
+			FplValue compare(String left, String right) {
+				return left.compareTo(right) <= 0 ? TRUE : null;
+			}
+
+			@Override
+			String symbol() {
+				return "le";
+			}
+		},
+    	GT {
+			@Override
+			FplValue compare(long left, long right) {
+				return left > right ? TRUE : null;
+			}
+
+			@Override
+			FplValue compare(double left, double right) {
+				return left > right ? TRUE : null;
+			}
+
+			@Override
+			FplValue compare(String left, String right) {
+				return left.compareTo(right) > 0 ? TRUE : null;
+			}
+
+			@Override
+			String symbol() {
+				return "gt";
+			}
+		},
+    	GE {
+			@Override
+			FplValue compare(long left, long right) {
+				return left >= right ? TRUE : null;
+			}
+
+			@Override
+			FplValue compare(double left, double right) {
+				return left >= right ? TRUE : null;
+			}
+
+			@Override
+			FplValue compare(String left, String right) {
+				return left.compareTo(right) >= 0 ? TRUE : null;
+			}
+
+			@Override
+			String symbol() {
+				return "ge";
+			}
+		};
+    	
+    	abstract FplValue compare(long left, long right);
+    	abstract FplValue compare(double left, double right);
+    	abstract FplValue compare(String left, String right);
+    	abstract String symbol();
+    }
+    
     /**
      * @param scope Scope to which functions should be added.
      * @throws ScopeException Should not happen on initialization.
      */
     public static void put(Scope scope) throws ScopeException {
 
-    	scope.put(new Comparison("eq", comment("Compare for equal.")));
-    	scope.put(new Comparison("ne", comment("Compare for not equal.")));
-    	scope.put(new Comparison("lt", comment("Compare left less than right.")));
-    	scope.put(new Comparison("le", comment("Compare lest less or equal than right.")));
-    	scope.put(new Comparison("gt", comment("Compare left greater than right.")));
-    	scope.put(new Comparison("ge", comment("Compare left greater or equal than right.")));
+    	scope.put(new Comparison(CompareOperator.EQ, comment("Compare for equal.")));
+    	scope.put(new Comparison(CompareOperator.NE, comment("Compare for not equal.")));
+    	scope.put(new Comparison(CompareOperator.LT, comment("Compare left less than right.")));
+    	scope.put(new Comparison(CompareOperator.LE, comment("Compare lest less or equal than right.")));
+    	scope.put(new Comparison(CompareOperator.GT, comment("Compare left greater than right.")));
+    	scope.put(new Comparison(CompareOperator.GE, comment("Compare left greater or equal than right.")));
     }
 
-    private Comparison(String name, List<String> comment) {
-        super(name, comment, false, "left", "right");
+	private CompareOperator operator;
+
+    private Comparison(CompareOperator operator, List<String> comment) {
+        super(operator.symbol(), comment, false, "left", "right");
+        this.operator = operator;
     }
 
     /**
@@ -45,19 +182,19 @@ public class Comparison extends Function {
 
         if (left == null) {
             if (right == null) {
-                switch (getName()) {
-                case "eq":
+                switch (operator) {
+                case EQ:
                     return TRUE;
-                case "ne":
+                case NE:
                     return null;
                 default:
                     throw new EvaluationException("Comparison with null");
                 }
             } else { // left == null, right != null
-                switch (getName()) {
-                case "eq":
+                switch (operator) {
+                case EQ:
                     return null;
-                case "ne":
+                case NE:
                     return TRUE;
                 default:
                     throw new EvaluationException("Comparison with null");
@@ -65,10 +202,10 @@ public class Comparison extends Function {
             }
         } else { // left != null
             if (right == null) {
-                switch (getName()) {
-                case "eq":
+                switch (operator) {
+                case EQ:
                     return null;
-                case "ne":
+                case NE:
                     return TRUE;
                 default:
                     throw new EvaluationException("Comparison with null");
@@ -83,40 +220,14 @@ public class Comparison extends Function {
         // Precondition: left != null && right != null
         if (left instanceof FplInteger) {
             if (right instanceof FplInteger) {
-                switch (getName()) {
-                case "eq":
-                    return ((FplInteger) left).getValue() == ((FplInteger) right).getValue() ? TRUE : null;
-                case "ne":
-                    return ((FplInteger) left).getValue() != ((FplInteger) right).getValue() ? TRUE : null;
-                case "lt":
-                    return ((FplInteger) left).getValue() < ((FplInteger) right).getValue() ? TRUE : null;
-                case "le":
-                    return ((FplInteger) left).getValue() <= ((FplInteger) right).getValue() ? TRUE : null;
-                case "gt":
-                    return ((FplInteger) left).getValue() > ((FplInteger) right).getValue() ? TRUE : null;
-                case "ge":
-                    return ((FplInteger) left).getValue() >= ((FplInteger) right).getValue() ? TRUE : null;
-                }
+            	return operator.compare(((FplInteger) left).getValue(), ((FplInteger) right).getValue());
             } else if (right instanceof FplDouble) {
-                switch (getName()) {
-                case "eq":
-                    return ((FplInteger) left).getValue() == ((FplDouble) right).getValue() ? TRUE : null;
-                case "ne":
-                    return ((FplInteger) left).getValue() != ((FplDouble) right).getValue() ? TRUE : null;
-                case "lt":
-                    return ((FplInteger) left).getValue() < ((FplDouble) right).getValue() ? TRUE : null;
-                case "le":
-                    return ((FplInteger) left).getValue() <= ((FplDouble) right).getValue() ? TRUE : null;
-                case "gt":
-                    return ((FplInteger) left).getValue() > ((FplDouble) right).getValue() ? TRUE : null;
-                case "ge":
-                    return ((FplInteger) left).getValue() >= ((FplDouble) right).getValue() ? TRUE : null;
-                }
+            	return operator.compare((double)((FplInteger) left).getValue(), ((FplDouble) right).getValue());
             } else if (right instanceof FplString) {
-                switch (getName()) {
-                case "eq":
+                switch (operator) {
+                case EQ:
                     return null;
-                case "ne":
+                case NE:
                     return TRUE;
                 default:
                     return null;
@@ -126,40 +237,14 @@ public class Comparison extends Function {
             }
         } else if (left instanceof FplDouble) {
             if (right instanceof FplInteger) {
-                switch (getName()) {
-                case "eq":
-                    return ((FplDouble) left).getValue() == ((FplInteger) right).getValue() ? TRUE : null;
-                case "ne":
-                    return ((FplDouble) left).getValue() != ((FplInteger) right).getValue() ? TRUE : null;
-                case "lt":
-                    return ((FplDouble) left).getValue() < ((FplInteger) right).getValue() ? TRUE : null;
-                case "le":
-                    return ((FplDouble) left).getValue() <= ((FplInteger) right).getValue() ? TRUE : null;
-                case "gt":
-                    return ((FplDouble) left).getValue() > ((FplInteger) right).getValue() ? TRUE : null;
-                case "ge":
-                    return ((FplDouble) left).getValue() >= ((FplInteger) right).getValue() ? TRUE : null;
-                }
+            	return operator.compare(((FplDouble) left).getValue(), (double)((FplInteger) right).getValue());
             } else if (right instanceof FplDouble) {
-                switch (getName()) {
-                case "eq":
-                    return ((FplDouble) left).getValue() == ((FplDouble) right).getValue() ? TRUE : null;
-                case "ne":
-                    return ((FplDouble) left).getValue() != ((FplDouble) right).getValue() ? TRUE : null;
-                case "lt":
-                    return ((FplDouble) left).getValue() < ((FplDouble) right).getValue() ? TRUE : null;
-                case "le":
-                    return ((FplDouble) left).getValue() <= ((FplDouble) right).getValue() ? TRUE : null;
-                case "gt":
-                    return ((FplDouble) left).getValue() > ((FplDouble) right).getValue() ? TRUE : null;
-                case "ge":
-                    return ((FplDouble) left).getValue() >= ((FplDouble) right).getValue() ? TRUE : null;
-                }
+            	return operator.compare(((FplDouble) left).getValue(), ((FplDouble) right).getValue());
             } else if (right instanceof FplString) {
-                switch (getName()) {
-                case "eq":
+                switch (operator) {
+                case EQ:
                     return null;
-                case "ne":
+                case NE:
                     return TRUE;
                 default:
                     return null;
@@ -169,36 +254,21 @@ public class Comparison extends Function {
             }
         } else if (left instanceof FplString) {
             if (right instanceof FplInteger || right instanceof FplDouble) {
-                switch (getName()) {
-                case "eq":
+                switch (operator) {
+                case EQ:
                     return null;
-                case "ne":
+                case NE:
                     return TRUE;
                 default:
                     return null;
                 }
             } else if (right instanceof FplString) {
-                switch (getName()) {
-                case "eq":
-                    return ((FplString) left).getContent().equals(((FplString) right).getContent()) ? TRUE : null;
-                case "ne":
-                    return ((FplString) left).getContent().equals(((FplString) right).getContent()) ? null : TRUE;
-                case "lt":
-                    return ((FplString) left).getContent().compareTo(((FplString) right).getContent()) < 0 ? TRUE : null;
-                case "le":
-                    return ((FplString) left).getContent().compareTo(((FplString) right).getContent()) <= 0 ? TRUE : null;
-                case "gt":
-                    return ((FplString) left).getContent().compareTo(((FplString) right).getContent()) > 0 ? TRUE : null;
-                case "ge":
-                    return ((FplString) left).getContent().compareTo(((FplString) right).getContent()) >= 0 ? TRUE : null;
-                }
+            	return operator.compare(((FplString) left).getContent(), ((FplString) right).getContent());
             } else {
                 return null;
             }
         } else {
             return null;
         }
-        // Not reached, but compiler does not recognize all switch statements are completely covered
-        return null;
     }
 }

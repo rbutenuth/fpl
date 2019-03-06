@@ -148,6 +148,7 @@ public class ComparisonTest extends AbstractFplTest {
         assertFalse(evaluateToBoolean("eq", "(eq \"a\" 1)"));
         assertFalse(evaluateToBoolean("eq", "(eq 1 \"a\")"));
         assertFalse(evaluateToBoolean("eq", "(eq \"a\" 1.0)"));
+        assertFalse(evaluateToBoolean("eq", "(eq 1.0 \"a\")"));
     }
 
     @Test
