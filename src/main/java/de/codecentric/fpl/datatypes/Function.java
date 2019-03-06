@@ -267,7 +267,10 @@ public abstract class Function extends EvaluatesToThisValue implements Named, Po
 	}
 
 	public void setParameterComment(int index, String comment) {
-		parameterComments[index] = comment == null ? "" : comment;
+		if (comment == null) {
+			throw new IllegalArgumentException("null comment not allowed");
+		}
+		parameterComments[index] = comment;
 	}
 
 	/**
