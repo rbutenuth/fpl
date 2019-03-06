@@ -36,30 +36,35 @@ import de.codecentric.fpl.datatypes.Function;
  * ready, but enough for testing and does not need any additional libraries.
  */
 public class SimpleHttpServer extends Thread {
-	private static boolean running;
+	private static SimpleHttpServer instance;
 	private boolean terminate;
 	private HttpServer server;
 	private FplEngine engine;
 
 	/**
 	 * @param args
-	 *            <ul>
-	 *            <li>[0]: HTTP server port</li>
-	 *            <li>[1]: user</li>
-	 *            <li>[2]: password</li>
-	 *            </ul>
-	 * @throws IOException
-	 *             On socket failures etc.
+	 *             <ul>
+	 *             <li>[0]: HTTP server port</li>
+	 *             <li>[1]: user</li>
+	 *             <li>[2]: password</li>
+	 *             </ul>
+	 * @throws IOException On socket failures etc.
 	 */
-	public static void main(String[] args) throws Exception {
-		SimpleHttpServer s = new SimpleHttpServer(Integer.parseInt(args[0]), args[1], args[2]);
-		s.start();
-		synchronized (SimpleHttpServer.class) {
-			running = true;
-		}
+	public static synchronized void main(String[] args) throws Exception {
+		instance = new SimpleHttpServer(Integer.parseInt(args[0]), args[1], args[2]);
+		instance.start();
 	}
 
-	public SimpleHttpServer(int port, String user, String password) throws IOException, EvaluationException, ScopeException {
+	public static synchronized SimpleHttpServer getInstance() {
+		return instance;
+	}
+
+	public static synchronized boolean isRunning() {
+		return instance != null;
+	}
+
+	private SimpleHttpServer(int port, String user, String password)
+			throws IOException, EvaluationException, ScopeException {
 		super("http-server-starter");
 		server = HttpServer.create(new InetSocketAddress(port), 0);
 		HttpContext context = server.createContext("/fpl");
@@ -105,13 +110,9 @@ public class SimpleHttpServer extends Thread {
 		}
 		server.stop(2); // delay in seconds
 		synchronized (SimpleHttpServer.class) {
-			running = false;
+			instance = null;
 			SimpleHttpServer.class.notifyAll();
 		}
-	}
-	
-	public static synchronized boolean isRunning() {
-		return running;
 	}
 
 	private synchronized void terminateServer() {
@@ -172,11 +173,11 @@ public class SimpleHttpServer extends Thread {
 				i--;
 			}
 			int prevNewLinePos = i--;
-			if (text.substring(prevNewLinePos, newLinePos).trim().length() == 0) {
+			if (prevNewLinePos < 0 || text.substring(prevNewLinePos, newLinePos).trim().length() == 0) {
 				break;
 			}
 		}
-		return text.substring(newLinePos + 1);
+		return text.substring(newLinePos);
 	}
 
 	public static Map<String, List<String>> splitQuery(String query) throws UnsupportedEncodingException {

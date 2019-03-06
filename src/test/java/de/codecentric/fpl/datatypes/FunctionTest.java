@@ -32,6 +32,12 @@ public class FunctionTest {
 		assertEquals(Position.UNKNOWN, f.getPosition());
 	}
 	
+	@Test(expected = IllegalArgumentException.class)
+	public void testNullComment() throws Exception {
+		Function f = new TestFunction("foo", false);
+		f.setParameterComment(0, null);
+	}
+	
 	@Test
 	public void testPositionNull() throws Exception {
 		Function f = new TestFunction(null, "foo", false, new String[0]);

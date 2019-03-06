@@ -3,6 +3,7 @@ package de.codecentric.fpl.io;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -88,12 +89,6 @@ public class SimpleHttpTest {
 		assertEquals("nil", response.trim());
 	}
 
-//	boolean lastBlockOnly = args.length == 4 && "lastBlockOnly".equals(args[4]);
-//
-//	try (InputStream is = new FileInputStream(args[3])) {
-//		System.out.println(post(args[0], args[1], args[2], is, lastBlockOnly));
-//	}
-
 	@Test
 	public void testNullResultViaMain() throws Exception {
 		PrintStream originalOut = System.out;
@@ -159,6 +154,28 @@ public class SimpleHttpTest {
 			SimpleHttpClient.main(args);
 			// nil -> null -> terminates the parsing loop, therefore "nothing" returned as
 			// result.
+			file.delete();
+		} finally {
+			System.setOut(originalOut);
+		}
+	}
+
+	@Test
+	public void testEmptyFileBlockOnly() throws Exception {
+		PrintStream originalOut = System.out;
+		try (PrintStream dummyOut = new PrintStream(new ByteArrayOutputStream())) {
+			System.setOut(dummyOut);
+			File file = File.createTempFile("test", ".lisp");
+			FileWriter writer = new FileWriter(file);
+			writer.write("\nnil");
+			writer.close();
+			String[] args = new String[5];
+			args[0] = baseUrl;
+			args[1] = user;
+			args[2] = password;
+			args[3] = file.getAbsolutePath();
+			args[4] = "lastBlockOnly";
+			SimpleHttpClient.main(args);
 			file.delete();
 		} finally {
 			System.setOut(originalOut);
@@ -268,6 +285,13 @@ public class SimpleHttpTest {
 		new SimpleHttpClient();
 	}
 
+	@Test
+	public void testInterrupt() throws Exception {
+		assertTrue(SimpleHttpServer.isRunning());
+		SimpleHttpServer.getInstance().interrupt();
+		assertTrue(SimpleHttpServer.isRunning());
+	}
+	
 	private InputStream stream(String str) {
 		return new ByteArrayInputStream(str.getBytes(StandardCharsets.UTF_8));
 	}

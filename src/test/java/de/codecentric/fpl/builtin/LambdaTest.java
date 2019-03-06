@@ -105,6 +105,12 @@ public class LambdaTest extends AbstractFplTest {
 		assertEquals("(lambda (a b c...) 42)", f.toString());
 	}
 
+	@Test
+	public void testParameterWithComment() throws Exception {
+		FplFunction test = (FplFunction) evaluate("duplicate", "(defun test (\n; nonsense comment\n a b) a)");
+		assertEquals("nonsense comment", test.getParameterComment(0));
+	}
+
 	@Test(expected = EvaluationException.class)
 	public void testLambdaStringInsteadArgumentList() throws Exception {
 		evaluate("no args", "(lambda \"foo\" 42)");
