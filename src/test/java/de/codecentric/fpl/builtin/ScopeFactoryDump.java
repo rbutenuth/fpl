@@ -1,6 +1,8 @@
 package de.codecentric.fpl.builtin;
 
-import java.util.SortedSet;
+import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.FplEngine;
@@ -11,26 +13,29 @@ import de.codecentric.fpl.datatypes.Function;
 
 public class ScopeFactoryDump {
 
-    /**
-     * @param args Unused
-     * @throws EvaluationException Should not happen
-     * @throws ScopeException Should not happen
-     */
-    public static void main(String[] args) throws EvaluationException, ScopeException {
-        Scope scope = new FplEngine().getScope();
-        SortedSet<String> keys = scope.allKeys();
-        for (String key : keys) {
-            FplValue value = scope.get(key);
-            if (value instanceof Function) {
-                Function f = (Function)value;
-                System.out.print("(" + f.getName());
-                String[] pns = f.getParameterNames();
-                for (String pn : pns) {
-                    System.out.print(" " + pn);
-                }
-                System.out.println(")");
-            }
-        }
-    }
+	/**
+	 * @param args Unused
+	 * @throws EvaluationException Should not happen
+	 * @throws ScopeException      Should not happen
+	 */
+	public static void main(String[] args) throws EvaluationException, ScopeException {
+		Scope scope = new FplEngine().getScope();
+		SortedMap<String, FplValue> map = new TreeMap<>();
+		for (Entry<String, FplValue> scopeEntry : scope) {
+			map.put(scopeEntry.getKey(), scopeEntry.getValue());
+		}
+		for (Entry<String, FplValue> entry : map.entrySet()) {
+			FplValue value = entry.getValue();
+			if (value instanceof Function) {
+				Function f = (Function) value;
+				System.out.print("(" + f.getName());
+				String[] pns = f.getParameterNames();
+				for (String pn : pns) {
+					System.out.print(" " + pn);
+				}
+				System.out.println(")");
+			}
+		}
+	}
 
 }

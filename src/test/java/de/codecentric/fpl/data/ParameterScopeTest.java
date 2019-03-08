@@ -31,7 +31,7 @@ public class ParameterScopeTest {
 
 	@Test
 	public void testEmptyScope() {
-		assertTrue(outer.allKeys().isEmpty());
+		assertTrue(outer.isEmpty());
 		assertEquals(new FplString("foo"), inner.getParameter(0));
 		assertNull(outer.get("foo"));
 	}

@@ -1,7 +1,7 @@
 package de.codecentric.fpl.builtin;
 
 import java.util.List;
-import java.util.SortedSet;
+import java.util.Map.Entry;
 
 import org.junit.Test;
 
@@ -14,9 +14,8 @@ public class FplEngineTest extends AbstractFplTest {
 
 	@Test
 	public void testCommentsInBuiltinFunctions() throws EvaluationException {
-        SortedSet<String> keys = scope.allKeys();
-        for (String key : keys) {
-            FplValue value = scope.get(key);
+		for (Entry<String, FplValue> entry : scope) {
+			FplValue value = entry.getValue();
             if (value instanceof Function) {
                 Function f = (Function)value;
                 checkForComments(f);

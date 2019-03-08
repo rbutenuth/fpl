@@ -5,9 +5,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +30,7 @@ public class ScopeTest {
 	
 	@Test
 	public void testEmptyScope() {
-		assertTrue(outer.allKeys().isEmpty());
+		assertTrue(outer.isEmpty());
 		assertNull(inner.get("foo"));
 		assertNull(outer.get("foo"));
 	}
@@ -109,16 +106,6 @@ public class ScopeTest {
 	@Test(expected = ScopeException.class)
 	public void testChangeNotExisting() throws ScopeException {
 		inner.replace("non-existing-key", new FplString("foo"));
-	}
-	
-	@Test
-	public void testAllKeys() throws ScopeException {
-		outer.put("b", new FplString("b"));
-		outer.put("a", new FplString("a"));
-		inner.put("c", new FplString("c"));
-		List<String> keys = new ArrayList<>(inner.allKeys());
-		assertEquals(1, keys.size());
-		assertEquals("c", keys.get(0));
 	}
 	
 	@Test

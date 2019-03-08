@@ -267,7 +267,7 @@ public class ParserTest extends AbstractFplTest {
 		Parser p = parser("empty object", "{}");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
-		assertTrue(object.allKeys().isEmpty());
+		assertTrue(object.isEmpty());
 	}
 
 	@Test
@@ -290,7 +290,7 @@ public class ParserTest extends AbstractFplTest {
 		Parser p = parser("init code with nil", "{ nil }");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
-		assertTrue(object.allKeys().isEmpty());
+		assertTrue(object.isEmpty());
 	}
 
 	@Test
@@ -298,7 +298,7 @@ public class ParserTest extends AbstractFplTest {
 		Parser p = parser("init code with nil", "{ () }");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
-		assertTrue(object.allKeys().isEmpty());
+		assertTrue(object.isEmpty());
 	}
 
 	@Test
@@ -402,7 +402,7 @@ public class ParserTest extends AbstractFplTest {
 		Parser p = parser("one pair", "{ \"1\": 2}");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
-		assertFalse(object.allKeys().isEmpty());
+		assertFalse(object.isEmpty());
 	}
 
 	@Test
@@ -410,7 +410,7 @@ public class ParserTest extends AbstractFplTest {
 		Parser p = parser("one pair", "{ foo: 2}");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
-		assertFalse(object.allKeys().isEmpty());
+		assertFalse(object.isEmpty());
 	}
 
 	@Test
@@ -418,7 +418,7 @@ public class ParserTest extends AbstractFplTest {
 		Parser p = parser("two pairs", "{ \"1\": 2, \"3\": 4}");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
-		assertFalse(object.allKeys().isEmpty());
+		assertFalse(object.isEmpty());
 	}
 
 	@Test
@@ -426,7 +426,7 @@ public class ParserTest extends AbstractFplTest {
 		Parser p = parser("two pairs", "{ foo: 2, bar: 4}");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
-		assertFalse(object.allKeys().isEmpty());
+		assertFalse(object.isEmpty());
 	}
 
 	@Test
@@ -454,6 +454,6 @@ public class ParserTest extends AbstractFplTest {
 				"}");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
-		assertFalse(object.allKeys().isEmpty());
+		assertFalse(object.isEmpty());
 	}
 }

@@ -41,7 +41,7 @@ public class FplObject extends Scope implements PositionHolder, FplValue {
 		}
 		this.position = position;
 		initCode = Collections.emptyList();
-		initNext(next);
+		setNext(next);
 	}
 
 	public synchronized void addInitCodeValue(FplValue value) {
@@ -62,11 +62,15 @@ public class FplObject extends Scope implements PositionHolder, FplValue {
 			throw new IllegalArgumentException("Scope of object can't be null");
 		}
 		if (getNext() == null) {
-			initNext(scope);
+			setNext(scope);
 			for (FplValue v : initCode) {
 				v.evaluate(this);
 			}
-			// TODO: Initialize child objects!
+			for (FplValue value : map.values()) {
+				if (value instanceof FplObject) {
+					value.evaluate(this);
+				}
+			}
 		}
 		return this;
 	}

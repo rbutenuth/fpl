@@ -12,6 +12,7 @@ import org.junit.Test;
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ListResultCallback;
+import de.codecentric.fpl.data.Scope;
 
 public class ObjectTest extends AbstractFplTest {
 	private static String NL = System.lineSeparator();
@@ -34,7 +35,7 @@ public class ObjectTest extends AbstractFplTest {
 		List<FplValue> values = callback.getResults();
 		assertEquals(2, values.size());
 		FplObject v = (FplObject) values.get(0);
-		assertEquals(2, v.allKeys().size());
+		assertEquals(2, v.size());
 		assertEquals("value", ((FplString)v.get("key")).getContent());
 		assertEquals("another-value", ((FplString)v.get("another-key")).getContent());
 
@@ -85,5 +86,15 @@ public class ObjectTest extends AbstractFplTest {
 		assertTrue(values.get(0) instanceof FplObject);
 		FplObject instance = (FplObject) values.get(2);
 		assertEquals("Wert", ((FplString)instance.get("key")).getContent());
+	}
+	
+	@Test
+	public void testObjectWithNestedObject() throws Exception {
+		ListResultCallback callback = evaluate("object-with-nested-object.fpl");
+		List<FplValue> values = callback.getResults();
+		assertEquals(1, values.size());
+		Scope global = engine.getScope();
+		assertEquals("inner-value", ((FplString)global.get("by-inner")).getContent());
+		assertEquals("outer-value", ((FplString)global.get("by-outer")).getContent());
 	}	
 }

@@ -34,7 +34,7 @@ public class SimpleObjectTest {
 	
 	@Test
 	public void testEmptyObject() throws EvaluationException {
-		assertTrue(outer.allKeys().isEmpty());
+		assertTrue(outer.isEmpty());
 		assertNull(object.get("foo"));
 		assertEquals("object-test", object.getPosition().getName());
 		object.evaluate(outer);

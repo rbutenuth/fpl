@@ -1,0 +1,11 @@
+(def outer-obj {
+
+	(put-global by-outer "outer-value")
+	
+	inner-object: {
+		(put-global by-inner "inner-value")
+	}	
+})
+
+
+
