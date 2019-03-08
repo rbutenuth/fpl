@@ -1,0 +1,11 @@
+(def obj {
+
+	(defun make (value) (instance key value))
+	
+})
+
+(defun call-constructor (value) (obj make value)) 
+
+(call-constructor "Wert")
+
+

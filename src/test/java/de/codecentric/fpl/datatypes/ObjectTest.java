@@ -65,4 +65,25 @@ public class ObjectTest extends AbstractFplTest {
 		assertEquals(FplInteger.valueOf(6), instance.get("a"));
 		assertEquals(FplInteger.valueOf(7), instance.get("b"));
 	}
+	
+	@Test
+	public void testConstructor() throws Exception {
+		ListResultCallback callback = evaluate("constructor.fpl");
+		List<FplValue> values = callback.getResults();
+		assertEquals(2, values.size());
+		assertTrue(values.get(0) instanceof FplObject);
+		FplObject instance = (FplObject) values.get(1);
+		assertEquals("Wert", ((FplString)instance.get("key")).getContent());
+		assertEquals("anders", ((FplString)instance.get("other")).getContent());
+	}
+	
+	@Test
+	public void testCallMethodFromFunction() throws Exception {
+		ListResultCallback callback = evaluate("method-called-from-function.fpl");
+		List<FplValue> values = callback.getResults();
+		assertEquals(3, values.size());
+		assertTrue(values.get(0) instanceof FplObject);
+		FplObject instance = (FplObject) values.get(2);
+		assertEquals("Wert", ((FplString)instance.get("key")).getContent());
+	}	
 }

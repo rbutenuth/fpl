@@ -1,0 +1,10 @@
+(def obj {
+
+	(defun make (key other) (instance key key other other))
+	
+	"key": "value"
+})
+
+(obj make "Wert" "anders")
+
+
