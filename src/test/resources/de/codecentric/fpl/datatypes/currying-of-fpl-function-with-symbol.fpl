@@ -1,0 +1,10 @@
+(defun sum (a b) (+ a b))
+
+(defun return-adder (c) (sum c))
+
+(defun make-adder (d) (return-adder d))
+
+(def adder (make-adder 4))
+
+(adder 3)
+

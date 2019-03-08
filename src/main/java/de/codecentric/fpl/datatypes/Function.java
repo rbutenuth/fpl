@@ -287,7 +287,7 @@ public abstract class Function extends EvaluatesToThisValue implements Named, Po
 		FplValue[] givenParameters = new FplValue[parameters.length];
 		for (int i = 0; i < givenParameters.length; i++) {
 			FplValue p = parameters[i];
-			if (p instanceof LazyExpression || p instanceof EvaluatesToThisValue) {
+			if (p instanceof EvaluatesToThisValue) {
 				givenParameters[i] = p;
 			} else {
 				givenParameters[i] = new LazyExpression(scope, p);

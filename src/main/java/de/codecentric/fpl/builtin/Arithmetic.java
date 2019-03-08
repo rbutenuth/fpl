@@ -1,7 +1,5 @@
 package de.codecentric.fpl.builtin;
 
-import java.util.List;
-
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
@@ -14,7 +12,88 @@ import de.codecentric.fpl.datatypes.Function;
  * Basic arithmetic functions.
  */
 public class Arithmetic extends Function {
-	private final char op;
+	private enum ArithmeticOperator {
+		PLUS("+", "Add values.") {
+			@Override
+			double execute(double left, double right) {
+				return left + right;
+			}
+
+			@Override
+			long execute(long left, long right) {
+				return left + right;
+			}
+		},
+		MINUS("-", "Unary minus or subtract from first.") {
+			@Override
+			double execute(double left, double right) {
+				return left - right;
+			}
+
+			@Override
+			long execute(long left, long right) {
+				return left - right;
+			}
+		},
+		TIMES("*", "Multiply values.") {
+			@Override
+			double execute(double left, double right) {
+				return left * right;
+			}
+
+			@Override
+			long execute(long left, long right) {
+				return left * right;
+			}
+		},
+		DIVIDE("/", "Divide first value by following values.") {
+			@Override
+			double execute(double left, double right) {
+				return left / right;
+			}
+
+			@Override
+			long execute(long left, long right) {
+				return left / right;
+			}
+		},
+		MODULO("%", "Modulo of first value by following values.") {
+			@Override
+			double execute(double left, double right) {
+				return left % right;
+			}
+
+			@Override
+			long execute(long left, long right) {
+				return left % right;
+			}
+		},
+		EXP("^", "Exponentiation of first value by following values.") {
+			@Override
+			double execute(double left, double right) {
+				return Math.pow(left, right);
+			}
+
+			@Override
+			long execute(long left, long right) {
+				// TODO: Use more effient implementation?
+				return Math.round(Math.pow(left, right));
+			}
+		};
+		
+		private String name;
+		private String comment;
+
+		ArithmeticOperator(String name, String comment) {
+			this.name = name;
+			this.comment = comment;
+		}
+		
+		abstract double execute(double left, double right);
+		abstract long execute(long left, long right);
+	}
+	
+	private final ArithmeticOperator op;
 
 	/**
 	 * @param scope
@@ -23,20 +102,20 @@ public class Arithmetic extends Function {
 	 *             Should not happen on initialization.
 	 */
 	public static void put(Scope scope) throws ScopeException {
-		scope.put(new Arithmetic('+', comment("Add values.")));
-		scope.put(new Arithmetic('-', comment("Unary minus or subtract from first.")));
-		scope.put(new Arithmetic('*', comment("Multiply values.")));
-		scope.put(new Arithmetic('/', comment("Divide first value by following values.")));
-		scope.put(new Arithmetic('%', comment("Modulo of first value by following values.")));
-		scope.put(new Arithmetic('^', comment("Exponentiation of first value by following values.")));
+		scope.put(new Arithmetic(ArithmeticOperator.PLUS));
+		scope.put(new Arithmetic(ArithmeticOperator.MINUS));
+		scope.put(new Arithmetic(ArithmeticOperator.TIMES));
+		scope.put(new Arithmetic(ArithmeticOperator.DIVIDE));
+		scope.put(new Arithmetic(ArithmeticOperator.MODULO));
+		scope.put(new Arithmetic(ArithmeticOperator.EXP));
 	}
 
 	/**
 	 * @param op
 	 *            Operator: +, -, *, /, %, ^
 	 */
-	private Arithmetic(char op, List<String> comment) {
-		super("" + op, comment, true, op == '-' ? new String[] { "op" } : new String[] { "op1", "op2", "ops" });
+	private Arithmetic(ArithmeticOperator op) {
+		super(op.name, comment(op.comment), true, op == ArithmeticOperator.MINUS ? new String[] { "op" } : new String[] { "op1", "op2", "ops" });
 		this.op = op;
 	}
 
@@ -60,7 +139,7 @@ public class Arithmetic extends Function {
 			} else {
 				throw new EvaluationException(op + " does not work on " + value.getClass().getSimpleName());
 			}
-			if (op == '-' && parameters.length == 1) {
+			if (op == ArithmeticOperator.MINUS && parameters.length == 1) {
 				// unary minus
 				if (isDouble) {
 					return new FplDouble(-doubleAccumulator);
@@ -90,47 +169,9 @@ public class Arithmetic extends Function {
 				}
 
 				if (isDouble) {
-					switch (op) {
-					case '+':
-						doubleAccumulator += doubleNext;
-						break;
-					case '-':
-						doubleAccumulator -= doubleNext;
-						break;
-					case '*':
-						doubleAccumulator *= doubleNext;
-						break;
-					case '/':
-						doubleAccumulator /= doubleNext;
-						break;
-					case '%':
-						doubleAccumulator %= doubleNext;
-						break;
-					case '^':
-						doubleAccumulator = Math.round(Math.pow(doubleAccumulator, doubleNext));
-						break;
-					}
-				} else { // BigInteger
-					switch (op) {
-					case '+':
-						intAccumulator = intAccumulator + intNext;
-						break;
-					case '-':
-						intAccumulator = intAccumulator - intNext;
-						break;
-					case '*':
-						intAccumulator = intAccumulator * intNext;
-						break;
-					case '/':
-						intAccumulator = intAccumulator / intNext;
-						break;
-					case '%':
-						intAccumulator = intAccumulator % intNext;
-						break;
-					case '^':
-						intAccumulator = intAccumulator ^ intNext;
-						break;
-					}
+					doubleAccumulator = op.execute(doubleAccumulator, doubleNext);
+				} else { // long
+					intAccumulator = op.execute(intAccumulator, intNext);
 				}
 			}
 			return isDouble ? new FplDouble(doubleAccumulator) : FplInteger.valueOf(intAccumulator);

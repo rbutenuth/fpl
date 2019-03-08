@@ -1,0 +1,8 @@
+
+(defun second (a b) b)
+
+(def second-curried (second "unfug"))
+
+(second-curried 1)
+
+ 

@@ -944,11 +944,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	public boolean isEmpty() {
-		if (linear == null) {
-			return shape.length == 0 || shape[0].length == 0;
-		} else {
-			return linear.length == 0;
-		}
+		return linear != null&&  linear.length == 0;
 	}
 
 	/**

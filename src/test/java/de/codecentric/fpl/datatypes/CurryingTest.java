@@ -4,11 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.ListResultCallback;
 import de.codecentric.fpl.parser.ParseException;
 
 public class CurryingTest extends AbstractFplTest {
@@ -33,6 +35,21 @@ public class CurryingTest extends AbstractFplTest {
         assertEquals(7, i.getValue());
     }
 
-    // TODO: test recursive currying, currying of a lisp function
+	@Test
+	public void testCurryingOfFplFunction() throws Exception {
+		ListResultCallback callback = evaluate("currying-of-fpl-function.fpl");
+		List<FplValue> values = callback.getResults();
+		assertEquals(3, values.size());
+		FplInteger number = (FplInteger) values.get(2);
+		assertEquals(FplInteger.valueOf(1), number);
+	}
 
+	@Test
+	public void testCurryingOfFplFunctionWithSymbol() throws Exception {
+		ListResultCallback callback = evaluate("currying-of-fpl-function-with-symbol.fpl");
+		List<FplValue> values = callback.getResults();
+		assertEquals(5, values.size());
+		FplInteger number = (FplInteger) values.get(4);
+		assertEquals(FplInteger.valueOf(7), number);
+	}
 }

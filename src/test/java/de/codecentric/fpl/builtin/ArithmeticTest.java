@@ -56,8 +56,20 @@ public class ArithmeticTest extends AbstractFplTest {
 
     @Test
     public void testIntegerModulusInteger() throws Exception {
-        FplInteger i = (FplInteger)evaluate("plus", "(% 13 4)");
+        FplInteger i = (FplInteger)evaluate("mod", "(% 13 4)");
         assertEquals(1, i.getValue());
+    }
+
+    @Test
+    public void testIntegerDivideByInteger() throws Exception {
+    	FplInteger i = (FplInteger)evaluate("divide", "(/ 6 3)");
+        assertEquals(2, i.getValue());
+    }
+
+    @Test
+    public void testIntegerPowInteger() throws Exception {
+    	FplInteger i = (FplInteger)evaluate("pow", "(^ 2 8)");
+        assertEquals(256, i.getValue());
     }
 
     @Test
@@ -76,6 +88,24 @@ public class ArithmeticTest extends AbstractFplTest {
     public void testDoublePlusDouble() throws Exception {
         FplDouble d = (FplDouble)evaluate("plus", "(+ 3.0 4.0)");
         assertEquals(7.0, d.getValue(), 0.0000001);
+    }
+
+    @Test
+    public void testDoubleMinusDouble() throws Exception {
+        FplDouble d = (FplDouble)evaluate("minus", "(- 4.0 3.0)");
+        assertEquals(1.0, d.getValue(), 0.0000001);
+    }
+
+    @Test
+    public void testDoubleDivideByDouble() throws Exception {
+        FplDouble d = (FplDouble)evaluate("divide", "(/ 6.0 3.0)");
+        assertEquals(2.0, d.getValue(), 0.0000001);
+    }
+
+    @Test
+    public void testDoubleModulusDouble() throws Exception {
+        FplDouble d = (FplDouble)evaluate("mod", "(% 13.0 4.0)");
+        assertEquals(1, d.getValue(), 0.0000001);
     }
 
     @Test
