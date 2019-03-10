@@ -98,6 +98,23 @@ public class Assignment {
 			}
 		});
 
+		scope.put(new Function("def-global",
+				comment("Assign value in global scope, it must be unassigned before. nil as value not allowed"), false,
+				"symbol", "value") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				try {
+					Scope s = scope;
+					while (s.getNext() != null) {
+						s = s.getNext();
+					}
+					return s.define(targetName(scope, parameters[0]), value(scope, parameters[1]));
+				} catch (ScopeException e) {
+					throw new EvaluationException(e.getMessage());
+				}
+			}
+		});
+
 		scope.put(new Function("instance", comment("Create an instce of an object."), true, "key-value-pair...") {
 
 			@Override

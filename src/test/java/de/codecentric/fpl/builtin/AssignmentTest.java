@@ -127,6 +127,18 @@ public class AssignmentTest extends AbstractFplTest {
 		assertEquals(new FplString("value"), object.get("key"));
 	}
 	
+	@Test
+	public void testDefGlobal() throws Exception {
+		evaluate("def-global.fpl");
+		assertEquals(new FplString("bar"), scope.get("foo"));
+	}
+	
+	@Test(expected = EvaluationException.class)
+	public void testDefGlobalFail() throws Exception {
+		scope.put("foo", FplInteger.valueOf(1));
+		evaluate("def-global-fail", "(def-global foo \"baz\")\n");
+	}
+	
     @Test
     public void testDefFieldNoObject() throws Exception {
     	try {
