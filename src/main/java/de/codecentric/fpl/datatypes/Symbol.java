@@ -53,7 +53,7 @@ public class Symbol implements Named, PositionHolder {
     }
     
     /**
-     * @see FplValue.data.LObject#evaluate(lang.data.Scope)
+     * @see FplValue.data.LObject#evaluateResource(lang.data.Scope)
      */
     @Override
     public FplValue evaluate(Scope scope) throws EvaluationException {

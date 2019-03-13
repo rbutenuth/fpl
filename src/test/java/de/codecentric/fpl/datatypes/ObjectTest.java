@@ -23,7 +23,7 @@ public class ObjectTest extends AbstractFplTest {
 
 	@Test
 	public void testEmpty() throws Exception {
-		ListResultCallback callback = evaluate("empty-object.fpl");
+		ListResultCallback callback = evaluateResource("empty-object.fpl");
 		List<FplValue> values = callback.getResults();
 		FplObject object = (FplObject) values.get(0);
 		assertEquals("{" + NL + "}" + NL, object.toString());
@@ -31,7 +31,7 @@ public class ObjectTest extends AbstractFplTest {
 	
 	@Test
 	public void testSimple() throws Exception {
-		ListResultCallback callback = evaluate("simple-object.fpl");
+		ListResultCallback callback = evaluateResource("simple-object.fpl");
 		List<FplValue> values = callback.getResults();
 		assertEquals(2, values.size());
 		FplObject v = (FplObject) values.get(0);
@@ -57,7 +57,7 @@ public class ObjectTest extends AbstractFplTest {
 
 	@Test
 	public void testGetAndSet() throws Exception {
-		ListResultCallback callback = evaluate("get-and-set.fpl");
+		ListResultCallback callback = evaluateResource("get-and-set.fpl");
 		List<FplValue> values = callback.getResults();
 		FplObject object = (FplObject) values.get(0);
 		FplObject instance = (FplObject) values.get(1);
@@ -69,7 +69,7 @@ public class ObjectTest extends AbstractFplTest {
 	
 	@Test
 	public void testConstructor() throws Exception {
-		ListResultCallback callback = evaluate("constructor.fpl");
+		ListResultCallback callback = evaluateResource("constructor.fpl");
 		List<FplValue> values = callback.getResults();
 		assertEquals(2, values.size());
 		assertTrue(values.get(0) instanceof FplObject);
@@ -80,7 +80,7 @@ public class ObjectTest extends AbstractFplTest {
 	
 	@Test
 	public void testCallMethodFromFunction() throws Exception {
-		ListResultCallback callback = evaluate("method-called-from-function.fpl");
+		ListResultCallback callback = evaluateResource("method-called-from-function.fpl");
 		List<FplValue> values = callback.getResults();
 		assertEquals(3, values.size());
 		assertTrue(values.get(0) instanceof FplObject);
@@ -90,7 +90,7 @@ public class ObjectTest extends AbstractFplTest {
 	
 	@Test
 	public void testObjectWithNestedObject() throws Exception {
-		ListResultCallback callback = evaluate("object-with-nested-object.fpl");
+		ListResultCallback callback = evaluateResource("object-with-nested-object.fpl");
 		List<FplValue> values = callback.getResults();
 		assertEquals(1, values.size());
 		Scope global = engine.getScope();

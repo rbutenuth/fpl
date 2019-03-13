@@ -225,7 +225,7 @@ public class LambdaTest extends AbstractFplTest {
 
 	@Test
 	public void testGet() throws Exception {
-		ListResultCallback callback = evaluate("get.fpl");
+		ListResultCallback callback = evaluateResource("get.fpl");
 		List<FplValue> values = callback.getResults();
 		FplValue value = values.get(1);
 		assertEquals(new FplString("value"), value);

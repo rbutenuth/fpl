@@ -37,7 +37,7 @@ public class CurryingTest extends AbstractFplTest {
 
 	@Test
 	public void testCurryingOfFplFunction() throws Exception {
-		ListResultCallback callback = evaluate("currying-of-fpl-function.fpl");
+		ListResultCallback callback = evaluateResource("currying-of-fpl-function.fpl");
 		List<FplValue> values = callback.getResults();
 		assertEquals(3, values.size());
 		FplInteger number = (FplInteger) values.get(2);
@@ -46,7 +46,7 @@ public class CurryingTest extends AbstractFplTest {
 
 	@Test
 	public void testCurryingOfFplFunctionWithSymbol() throws Exception {
-		ListResultCallback callback = evaluate("currying-of-fpl-function-with-symbol.fpl");
+		ListResultCallback callback = evaluateResource("currying-of-fpl-function-with-symbol.fpl");
 		List<FplValue> values = callback.getResults();
 		assertEquals(5, values.size());
 		FplInteger number = (FplInteger) values.get(4);

@@ -62,7 +62,7 @@ public class AbstractFplTest {
 		return new Parser(new Scanner(name, new StringReader(input)));
 	}
 	
-	protected ListResultCallback evaluate(String resource) throws Exception {
+	protected ListResultCallback evaluateResource(String resource) throws Exception {
 		ListResultCallback callback = new ListResultCallback();
 
 		try (Reader rd = new BomAwareReader(clazz.getResourceAsStream(resource))) {

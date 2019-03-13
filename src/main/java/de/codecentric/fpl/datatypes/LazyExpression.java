@@ -23,7 +23,7 @@ public class LazyExpression implements FplValue {
     }
 
     /**
-     * @see FplValue.data.LObject#evaluate(lang.data.Scope)
+     * @see FplValue.data.LObject#evaluateResource(lang.data.Scope)
      */
     @Override
     public FplValue evaluate(Scope unusedScope) throws EvaluationException {

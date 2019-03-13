@@ -12,6 +12,7 @@ import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.FplWrapper;
 import de.codecentric.fpl.datatypes.Function;
 
 // TODO: More operations:
@@ -906,6 +907,8 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 		if (element instanceof Function) {
 			return ((Function) element).call(evalScope, createParameterArray(startParameterIndex));
+		} if (element instanceof FplWrapper) {
+			return null;
 		} else {
 			return element;
 		}

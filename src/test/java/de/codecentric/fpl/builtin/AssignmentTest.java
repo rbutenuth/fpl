@@ -120,7 +120,7 @@ public class AssignmentTest extends AbstractFplTest {
     
 	@Test
 	public void testDefField() throws Exception {
-		ListResultCallback callback = evaluate("def-field.fpl");
+		ListResultCallback callback = evaluateResource("def-field.fpl");
 		List<FplValue> values = callback.getResults();
 		FplObject object = (FplObject) values.get(0);
 		assertEquals(new FplString("bar"), object.get("foo"));
@@ -129,7 +129,7 @@ public class AssignmentTest extends AbstractFplTest {
 	
 	@Test
 	public void testDefGlobal() throws Exception {
-		evaluate("def-global.fpl");
+		evaluateResource("def-global.fpl");
 		assertEquals(new FplString("bar"), scope.get("foo"));
 	}
 	
