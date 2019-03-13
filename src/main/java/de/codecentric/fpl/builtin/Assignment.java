@@ -6,7 +6,9 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplObject;
+import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.FplWrapper;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.Parameter;
 import de.codecentric.fpl.datatypes.Symbol;
@@ -139,6 +141,19 @@ public class Assignment {
 					}
 				}
 				return object;
+			}
+		});
+
+		scope.put(new Function("java-instance", comment("Create an instce of a Java wrapper object."), false, "class") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				FplValue fplClass = parameters[0].evaluate(scope);
+				if (fplClass instanceof FplString) {
+					return new FplWrapper(((FplString)fplClass).getContent());
+				} else {
+					throw new EvaluationException("Expect string, but got " + fplClass.typeName());
+				}
 			}
 		});
 	}

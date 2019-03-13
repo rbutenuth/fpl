@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.Parameter;
 import de.codecentric.fpl.datatypes.Symbol;
 
 public class ParameterScopeTest {
@@ -87,5 +88,11 @@ public class ParameterScopeTest {
 	@Test(expected = ScopeException.class)
 	public void testPutDollar() throws ScopeException {
 		inner.put("$", null);
+	}
+	
+	@Test
+	public void testParameterTypeName() {
+		Parameter p = new Parameter("foo", 0);
+		assertEquals("parameter", p.typeName());
 	}
 }

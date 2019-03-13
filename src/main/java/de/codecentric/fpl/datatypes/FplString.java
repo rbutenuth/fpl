@@ -49,7 +49,12 @@ public class FplString extends EvaluatesToThisValue {
         return content.equals(other.content);
     }
 
-    /**
+	@Override
+	public String typeName() {
+		return "string";
+	}
+
+	/**
      * @see java.lang.Object#toString()
      */
     @Override

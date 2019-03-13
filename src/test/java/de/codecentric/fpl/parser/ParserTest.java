@@ -242,7 +242,8 @@ public class ParserTest extends AbstractFplTest {
 	public void testTooMuchNext() throws Exception {
 		Parser p = parser("symbol", "symbol");
 		assertTrue(p.hasNext());
-		p.next();
+		FplValue symbol = p.next();
+		assertEquals("symbol", symbol.typeName());
 		p.next();
 		fail("Exception missing");
 	}

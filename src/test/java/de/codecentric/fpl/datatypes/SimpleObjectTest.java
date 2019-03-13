@@ -66,6 +66,12 @@ public class SimpleObjectTest {
 				assertTrue(object == scope);
 				return this;
 			}
+
+			
+			@Override
+			public String typeName() {
+				return "mock";
+			}
 		});
 		assertTrue(object == object.evaluate(outer));
 		assertEquals(1, count.get());

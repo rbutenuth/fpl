@@ -40,6 +40,7 @@ public class ListFunctionsTest extends AbstractFplTest {
     public void testIndirectQuote() throws Exception {
     	evaluate("my-qoute", "(defun myquote (x) (quote x))");
     	LazyExpression lazy = (LazyExpression) evaluate("call", "(myquote (+ 3 4))");
+    	assertEquals("list", lazy.typeName());
     	FplInteger result = (FplInteger) lazy.evaluate(null);
     	assertEquals(FplInteger.valueOf(7), result);
     }

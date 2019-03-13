@@ -29,6 +29,11 @@ public class LazyExpression implements FplValue {
     public FplValue evaluate(Scope unusedScope) throws EvaluationException {
         return originalExpression.evaluate(scope);
     }
+    
+    @Override
+    public String typeName() {
+    	return originalExpression.typeName();
+    }
 
     /**
      * @return The expression provided in the constructor.

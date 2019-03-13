@@ -14,4 +14,9 @@ public interface FplValue {
      * @throws EvaluationException If evaluation fails.
      */
     public FplValue evaluate(Scope scope) throws EvaluationException;
+    
+    /**
+     * @return Readable type, e.g. "string".
+     */
+    public String typeName();
 }

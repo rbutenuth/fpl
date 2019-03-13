@@ -1,0 +1,3 @@
+(def inner (java-instance "de.codecentric.fpl.datatypes.FplWrapperTest$Inner"))
+
+(inner returnNull)

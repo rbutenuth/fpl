@@ -35,6 +35,7 @@ public class ObjectTest extends AbstractFplTest {
 		List<FplValue> values = callback.getResults();
 		assertEquals(2, values.size());
 		FplObject v = (FplObject) values.get(0);
+		assertEquals("object", v.typeName());
 		assertEquals(2, v.size());
 		assertEquals("value", ((FplString)v.get("key")).getContent());
 		assertEquals("another-value", ((FplString)v.get("another-key")).getContent());

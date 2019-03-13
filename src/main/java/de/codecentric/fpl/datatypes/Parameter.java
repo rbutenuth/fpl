@@ -36,4 +36,9 @@ public class Parameter implements FplValue {
 	public String toString() {
 		return name;
 	}
+	
+	@Override
+	public String typeName() {
+		return "parameter";
+	}
 }

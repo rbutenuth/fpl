@@ -215,6 +215,11 @@ public abstract class Function extends EvaluatesToThisValue implements Named, Po
 	public Position getPosition() {
 		return position;
 	}
+	
+	@Override
+	public String typeName() {
+		return "function";
+	}
 
 	public List<String> getComment() {
 		return Collections.unmodifiableList(comment);

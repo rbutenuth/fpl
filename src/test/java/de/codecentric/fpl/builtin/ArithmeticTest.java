@@ -24,6 +24,7 @@ public class ArithmeticTest extends AbstractFplTest {
     public void testUnaryMinusDouble() throws Exception {
         FplDouble d = (FplDouble)evaluate("minus", "( - 3.14)");
         assertEquals(-3.14, d.getValue(), 0.00001);
+        assertEquals("double", d.typeName());
     }
 
     @Test(expected = EvaluationException.class)

@@ -34,6 +34,11 @@ public class FplInteger extends EvaluatesToThisValue {
         return (int)(value ^ (value >>> 32));
     }
 
+	@Override
+	public String typeName() {
+		return "integer";
+	}
+    
     /**
      * @see java.lang.Object#equals(java.lang.Object)
      */

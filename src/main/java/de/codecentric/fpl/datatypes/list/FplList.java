@@ -908,10 +908,15 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		if (element instanceof Function) {
 			return ((Function) element).call(evalScope, createParameterArray(startParameterIndex));
 		} if (element instanceof FplWrapper) {
-			return null;
+			return ((FplWrapper)element).evaluate(evalScope, createParameterArray(startParameterIndex));
 		} else {
 			return element;
 		}
+	}
+
+	@Override
+	public String typeName() {
+		return "list";
 	}
 
 	private FplValue[] createParameterArray(int startParameterIndex) {

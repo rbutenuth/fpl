@@ -136,6 +136,7 @@ public class LambdaTest extends AbstractFplTest {
 		FplFunction f = (FplFunction) evaluate("lambda", "(lambda (a b c...) 42)");
 		assertEquals(2, f.getMinimumNumberOfParameters());
 		assertTrue(f.isVararg());
+		assertEquals("function", f.typeName());
 		assertEquals("lambda", f.getName());
 		assertEquals("(lambda (a b c...) 42)", f.toString());
 	}

@@ -96,4 +96,9 @@ public class Symbol implements Named, PositionHolder {
     public String toString() {
         return name;
     }
+
+	@Override
+	public String typeName() {
+		return "symbol";
+	}
 }

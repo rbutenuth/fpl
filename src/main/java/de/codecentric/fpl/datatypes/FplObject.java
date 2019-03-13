@@ -81,6 +81,11 @@ public class FplObject extends Scope implements PositionHolder, FplValue {
 	}
 
 	@Override
+	public String typeName() {
+		return "object";
+	}
+	
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");

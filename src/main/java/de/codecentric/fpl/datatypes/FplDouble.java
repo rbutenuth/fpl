@@ -47,7 +47,12 @@ public class FplDouble extends EvaluatesToThisValue {
         return value == other.value;
     }
 
-    /**
+	@Override
+	public String typeName() {
+		return "double";
+	}
+
+	/**
      * @see java.lang.Object#toString()
      */
     @Override
