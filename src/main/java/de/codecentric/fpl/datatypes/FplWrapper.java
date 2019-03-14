@@ -41,6 +41,8 @@ public class FplWrapper extends EvaluatesToThisValue {
 		String methodName = null;
 		if (first instanceof Symbol) {
 			methodName = ((Symbol)first).getName();
+		} else {
+			methodName = ((FplString)first.evaluate(scope)).getContent();
 		}
 		try {
 			Method method = instance.getClass().getMethod(methodName, new Class<?>[0]);
@@ -55,8 +57,19 @@ public class FplWrapper extends EvaluatesToThisValue {
 		FplValue value;
 		if (result == null) {
 			value = null;
-		} else if (result instanceof Number) {
+		} else if (result instanceof FplValue) {
+			value = (FplValue)result;
+		} else if (result instanceof Byte || result instanceof Short || result instanceof Integer || result instanceof Long) {
 			value = FplInteger.valueOf(((Number)result).longValue());
+		} else if (result instanceof Float || result instanceof Double) {
+			value = new FplDouble(((Number)result).doubleValue());
+		} else if (result instanceof Character) {
+			value = new FplString("" + result);
+		} else if (result instanceof String) {
+			value = new FplString((String)result);
+		} else if (result instanceof Boolean) {
+			boolean b = ((Boolean)result).booleanValue();
+			value = b ? FplInteger.valueOf(1) : null;
 		} else {
 			value = new FplWrapper(result);
 		}
