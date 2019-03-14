@@ -1,5 +1,7 @@
 package de.codecentric.fpl.builtin;
 
+import java.math.BigInteger;
+
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
@@ -68,7 +70,7 @@ public class Arithmetic extends Function {
 				return left % right;
 			}
 		},
-		EXP("^", "Exponentiation of first value by following values.") {
+		EXP("**", "Exponentiation of first value by following values.") {
 			@Override
 			double execute(double left, double right) {
 				return Math.pow(left, right);
@@ -76,8 +78,7 @@ public class Arithmetic extends Function {
 
 			@Override
 			long execute(long left, long right) {
-				// TODO: Use more effient implementation?
-				return Math.round(Math.pow(left, right));
+				return new BigInteger(Long.toString(left)).pow((int)right).longValue();
 			}
 		};
 		
@@ -112,7 +113,7 @@ public class Arithmetic extends Function {
 
 	/**
 	 * @param op
-	 *            Operator: +, -, *, /, %, ^
+	 *            Operator: +, -, *, /, %, **
 	 */
 	private Arithmetic(ArithmeticOperator op) {
 		super(op.name, comment(op.comment), true, op == ArithmeticOperator.MINUS ? new String[] { "op" } : new String[] { "op1", "op2", "ops" });

@@ -69,7 +69,7 @@ public class ArithmeticTest extends AbstractFplTest {
 
     @Test
     public void testIntegerPowInteger() throws Exception {
-    	FplInteger i = (FplInteger)evaluate("pow", "(^ 2 8)");
+    	FplInteger i = (FplInteger)evaluate("pow", "(** 2 8)");
         assertEquals(256, i.getValue());
     }
 
@@ -117,7 +117,7 @@ public class ArithmeticTest extends AbstractFplTest {
 
     @Test
     public void testDoublePowerDouble() throws Exception {
-        FplDouble d = (FplDouble)evaluate("plus", "(^ 3.0 4.0)");
+        FplDouble d = (FplDouble)evaluate("plus", "(** 3.0 4.0)");
         assertEquals(81.0, d.getValue(), 0.0000001);
     }
 }
