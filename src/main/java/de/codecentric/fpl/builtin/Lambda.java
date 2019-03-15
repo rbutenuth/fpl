@@ -8,6 +8,7 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplFunction;
+import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.Symbol;
@@ -80,6 +81,16 @@ public class Lambda {
 				return parameters[0].evaluate(scope);
 			}
 		});
+
+		scope.put(new Function("type-of", comment("Return type of argument as string"), false, "value") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				FplValue value = parameters[0] == null ? null : parameters[0].evaluate(scope);
+				return value == null ? null : new FplString(value.typeName());
+			}
+		});
+
 	}
 
 	private static FplFunction lambda(Symbol name, FplValue paramListValues, FplValue[] code)

@@ -2,6 +2,7 @@ package de.codecentric.fpl.builtin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -248,6 +249,13 @@ public class LambdaTest extends AbstractFplTest {
 			assertEquals("fun4.fpl", st[0].getFileName());
 			assertEquals(1, st[0].getLineNumber());
 		}
+	}
+
+	@Test
+	public void testTypeOf() throws Exception {
+		FplString f = (FplString) evaluate("type-of", "(type-of (defun fun1 (a) (fun2 a)))");
+		assertEquals("function", f.getContent());
+		assertNull(evaluate("nil", "(type-of nil)"));
 	}
 
 	@Test
