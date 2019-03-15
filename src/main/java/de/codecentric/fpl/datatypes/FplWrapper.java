@@ -93,7 +93,9 @@ public class FplWrapper extends EvaluatesToThisValue {
 			coerceParameters(executables[0], params);
 			return (T) executables[0]; // line needing the "unchecked"
 		} else {
-			throw new EvaluationException("sorting not implemented so far...");
+			int e = bestMatch(executables, params);
+			coerceParameters(executables[e], params);
+			return (T) executables[e]; // line needing the "unchecked"
 		}
 	}
 
@@ -114,6 +116,8 @@ public class FplWrapper extends EvaluatesToThisValue {
 					values[i] = ((Number) values[i]).floatValue();
 				} else if (paramClass.equals(Double.class) || paramClass.equals(double.class)) {
 					values[i] = ((Number) values[i]).doubleValue();
+				} else if (paramClass.equals(Boolean.class) || paramClass.equals(boolean.class)) {
+					values[i] = ((Number) values[i]).intValue() != 0;
 				}
 			}
 		}
@@ -154,11 +158,66 @@ public class FplWrapper extends EvaluatesToThisValue {
 		// number like primitives are: Byte, Short, Integer, Long, Float, Double,
 		// Boolean (1, 0)
 		// non number like primitives are: Void, Character
+		if (Boolean.class.equals(clazz)) {
+			return true;
+		}
 		if (!clazz.isPrimitive()) {
 			return false;
 		}
 		// now clazz is primitive
 		return !(clazz.equals(void.class) || clazz.equals(char.class));
+	}
+
+	private int bestMatch(Executable[] executables, Object[] params) {
+		int bestValue = 0;
+		int bestIndex = 0;
+		for (int i = 0; i < executables.length && executables[i] != null; i++) {
+			int value = computeMatchValue(executables[i], params);
+			if (value > bestValue) {
+				bestValue = value;
+				bestIndex = i;
+			}
+		}
+		return bestIndex;
+	}
+
+	private int computeMatchValue(Executable executable, Object[] values) {
+		Parameter[] parameters = executable.getParameters();
+		int match = 0;
+		for (int i = 0; i < parameters.length; i++) {
+			match += computeMatchValue(parameters[i], values[i]);
+		}
+		return match;
+	}
+
+	private int computeMatchValue(Parameter parameter, Object value) {
+		Class<?> pType = parameter.getType();
+		Class<?> vType = value == null ? null : value.getClass();
+		if (pType.equals(vType)) {
+			return 100;
+		}
+		if (isIntegralNumber(pType) == isIntegralNumber(vType)) {
+			return 60;
+		}
+		if (isFractionalNumber(pType) == isFractionalNumber(vType)) {
+			return 60;
+		}
+		if (pType.isAssignableFrom(vType)) {
+			return 50;
+		}
+
+		return 0;
+	}
+
+	private boolean isIntegralNumber(Class<?> clazz) {
+		return byte.class.equals(clazz) || Byte.class.equals(clazz) //
+				|| short.class.equals(clazz) || Short.class.equals(clazz) //
+				|| int.class.equals(clazz) || Integer.class.equals(clazz) //
+				|| long.class.equals(clazz) || Long.class.equals(clazz);
+	}
+
+	private boolean isFractionalNumber(Class<?> clazz) {
+		return float.class.equals(clazz) || Float.class.equals(clazz) || double.class.equals(clazz) || Double.class.equals(clazz);
 	}
 
 	private FplValue wrapResult(Object result) {
