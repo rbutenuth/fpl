@@ -39,13 +39,13 @@ public class Lambda {
 		});
 
 		// Example:
-		// (defun factorial (n)
+		// (def-function factorial (n)
 		// (if (le n 1)
 		// 1
 		// (* n (factorial (- n 1)))
 		// )
 		// )
-		scope.put(new Function("defun", comment("Define a function."), true, "name", "parameter-list", "code...") {
+		scope.put(new Function("def-function", comment("Define a function."), true, "name", "parameter-list", "code...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {

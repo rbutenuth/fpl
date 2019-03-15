@@ -1,10 +1,10 @@
 (def obj {
 
-	(defun make (value) (instance key value))
+	(def-function make (value) (instance key value))
 	
 })
 
-(defun call-constructor (value) (obj make value)) 
+(def-function call-constructor (value) (obj make value)) 
 
 (call-constructor "Wert")
 

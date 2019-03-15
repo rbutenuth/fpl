@@ -26,7 +26,7 @@ public class StringFunctionsTest extends AbstractFplTest {
 		evaluate("function", "" + //
 				"; Multiply three parameters." + nl + //
 				"; A second line without sense." + nl + //
-				"(defun multiply (" + nl + "; comment for a" + nl + //
+				"(def-function multiply (" + nl + "; comment for a" + nl + //
 				"a" + nl + //
 				"; comment for b" + nl + //
 				"; with a second line" + nl + //

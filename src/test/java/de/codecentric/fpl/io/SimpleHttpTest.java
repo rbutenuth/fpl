@@ -196,9 +196,9 @@ public class SimpleHttpTest {
 
 	@Test
 	public void testStacktrace() throws IOException {
-		String input = "(defun function-a (a) (function-b a))" + nl + //
-				"(defun function-b (a) (function-c a))" + nl + //
-				"(defun function-c (a) (/ 1 a))" + nl + //
+		String input = "(def-function function-a (a) (function-b a))" + nl + //
+				"(def-function function-b (a) (function-c a))" + nl + //
+				"(def-function function-c (a) (/ 1 a))" + nl + //
 				"(function-a 0)";
 		String response = SimpleHttpClient.post(baseUrl, user, password, stream(input), false);
 		assertEquals("(lambda (a) (function-b a))" + nl + nl + //

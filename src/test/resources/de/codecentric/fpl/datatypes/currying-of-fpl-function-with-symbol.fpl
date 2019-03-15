@@ -1,8 +1,8 @@
-(defun sum (a b) (+ a b))
+(def-function sum (a b) (+ a b))
 
-(defun return-adder (c) (sum c))
+(def-function return-adder (c) (sum c))
 
-(defun make-adder (d) (return-adder d))
+(def-function make-adder (d) (return-adder d))
 
 (def adder (make-adder 4))
 

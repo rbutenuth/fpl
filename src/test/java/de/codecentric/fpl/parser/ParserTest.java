@@ -445,7 +445,7 @@ public class ParserTest extends AbstractFplTest {
 	@Test
 	public void testOnePairAndOneFunction() throws Exception {
 		Parser p = parser("one function and one pair", "{ \n" + //
-				"(defun factorial (n)\n" + //
+				"(def-function factorial (n)\n" + //
 				"  (if (le n 1)\n" + //
 				"    1\n" + //
 				"    (* n (factorial (- n 1)))\n" + //

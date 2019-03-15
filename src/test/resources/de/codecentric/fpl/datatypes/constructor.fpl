@@ -1,6 +1,6 @@
 (def obj {
 
-	(defun make (key other) (instance key key other other))
+	(def-function make (key other) (instance key key other other))
 	
 	"key": "value"
 })

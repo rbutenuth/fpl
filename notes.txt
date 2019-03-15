@@ -6,7 +6,7 @@ evaluates to:
 (3 4 "bar")
 
 
-(defun factorial (n)
+(def-function factorial (n)
    (if (le n 1)
       1
       (* n (factorial (- n 1)))
@@ -37,11 +37,11 @@ a: Akkumulator
 b: Zähler
 c: Obergrenze
 
-(defun factorial (n)
+(def-function factorial (n)
   (rrfac 1 1 n)
 )
 
-(defun rrfac (a b c)
+(def-function rrfac (a b c)
    (if (lt b c)
       (rrfac (* a (+ b 1)) (+ b 1) c)
       a

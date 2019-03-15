@@ -38,7 +38,7 @@ public class ListFunctionsTest extends AbstractFplTest {
 
     @Test
     public void testIndirectQuote() throws Exception {
-    	evaluate("my-qoute", "(defun myquote (x) (quote x))");
+    	evaluate("my-qoute", "(def-function myquote (x) (quote x))");
     	LazyExpression lazy = (LazyExpression) evaluate("call", "(myquote (+ 3 4))");
     	assertEquals("list", lazy.typeName());
     	FplInteger result = (FplInteger) lazy.evaluate(null);
@@ -192,7 +192,7 @@ public class ListFunctionsTest extends AbstractFplTest {
     public void testMap() throws Exception {
         FplList input = (FplList) evaluate("input", "'(1 2 3)");
         scope.put("input", input);
-        evaluate("square", "(defun square (x) (* x x))");
+        evaluate("square", "(def-function square (x) (* x x))");
         FplList result = (FplList) evaluate("map-test", "(map input square)");
         for (int i = 1; i <= 3; i++) {
         	FplInteger r = (FplInteger) result.get(i - 1);
@@ -215,7 +215,7 @@ public class ListFunctionsTest extends AbstractFplTest {
     
     @Test(expected = EvaluationException.class)
     public void testTooManyParameters() throws Exception {
-    	evaluate("pair", "(defun pair (a b) (list a b))");
+    	evaluate("pair", "(def-function pair (a b) (list a b))");
     	FplList list = (FplList) evaluate("incorrect call", "(pair 1 2 3)");
     	assertEquals(2, list.size());
     }

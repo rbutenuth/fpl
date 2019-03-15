@@ -26,7 +26,7 @@ import de.codecentric.fpl.parser.Token.Id;
 public class Parser implements Closeable {
 	private static Set<String> keepCommentSymbols = new HashSet<>();
 	static {
-		keepCommentSymbols.add("defun");
+		keepCommentSymbols.add("def-function");
 	}
 	private Scanner scanner;
 	private Token lastToken;

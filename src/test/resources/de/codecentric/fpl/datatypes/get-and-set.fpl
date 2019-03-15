@@ -1,6 +1,6 @@
 (def object {
 
-	(defun make-instance (a b)
+	(def-function make-instance (a b)
 		(instance a a b b)
 	)
 	

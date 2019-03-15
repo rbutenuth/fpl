@@ -28,12 +28,12 @@ import de.codecentric.fpl.parser.Position;
  * </pre>
  *
  * <pre>
- * (defun should-be-constant ()
+ * (def-function should-be-constant ()
  *  '(one two three))
  * </pre>
  *
  * <pre>
- * (defun factorial (n)
+ * (def-function factorial (n)
  *    (if (le n 1)
  *       1
  *       (* n (factorial (- n 1)))
