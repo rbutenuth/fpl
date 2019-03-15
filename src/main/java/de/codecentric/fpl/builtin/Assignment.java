@@ -144,13 +144,17 @@ public class Assignment {
 			}
 		});
 
-		scope.put(new Function("java-instance", comment("Create an instce of a Java wrapper object."), false, "class") {
+		scope.put(new Function("java-instance", comment("Create an instce of a Java wrapper object."), true, "class...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplValue fplClass = parameters[0].evaluate(scope);
+				Object[] methodParams = new Object[parameters.length - 1];
+				for (int i = 0; i < methodParams.length; i++) {
+					methodParams[i] = value(scope, parameters[i + 1]);
+				}
 				if (fplClass instanceof FplString) {
-					return new FplWrapper(((FplString)fplClass).getContent());
+					return new FplWrapper(((FplString)fplClass).getContent(), methodParams);
 				} else {
 					throw new EvaluationException("Expect string, but got " + fplClass.typeName());
 				}

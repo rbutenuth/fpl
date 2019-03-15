@@ -93,7 +93,7 @@ public class FplWrapperTest extends AbstractFplTest {
 	}
 	
 	@Test
-	public void testArrayListWrapper() throws Exception {
+	public void testNoArgArrayListWrapper() throws Exception {
 		ListResultCallback callback = evaluateResource("java-list-wrapper.fpl");
 		List<FplValue> values = callback.getResults();
 		assertEquals(2, values.size());
@@ -105,6 +105,14 @@ public class FplWrapperTest extends AbstractFplTest {
 		assertEquals(0, size.getValue());
 	}
 
+	@Test
+	public void testIntegerArgArrayListWrapper() throws Exception {
+		FplWrapper wrapper = (FplWrapper) evaluate("array-list", "(java-instance \"java.util.ArrayList\" 10)");
+		assertEquals("wrapper(java.util.ArrayList)", wrapper.typeName());
+		ArrayList<?> list = (ArrayList<?>) wrapper.getInstance();
+		assertEquals(0, list.size());
+	}
+	
 	@Test
 	public void testWrapValues() throws Exception {
 		ListResultCallback callback = evaluateResource("java-wrap-values.fpl");
