@@ -1,10 +1,8 @@
 (def obj {
 
-	(def another-key "another-value")
+	(def constant 3)
 	
-	"key": "value"
+	(def-function plus3 (x) (+ constant x))  
 })
 
-(def foo (obj key))
-
-
+(obj plus3 4)

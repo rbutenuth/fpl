@@ -1,15 +1,13 @@
 package de.codecentric.fpl.builtin;
 
-import static de.codecentric.fpl.datatypes.Function.comment;
+import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplObject;
-import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.FplWrapper;
-import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.Parameter;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.parser.Position;
@@ -25,7 +23,7 @@ public class Assignment {
 	 */
 	public static void put(Scope scope) throws ScopeException {
 
-		scope.put(new Function("put",
+		scope.put(new AbstractFunction("put",
 				comment("Assign symbol to evluated value in current scope, deletes if value is null"), false, "symbol",
 				"value") {
 			@Override
@@ -38,7 +36,7 @@ public class Assignment {
 			}
 		});
 
-		scope.put(new Function("put-global",
+		scope.put(new AbstractFunction("put-global",
 				comment("Assign symbol to evluated value in global scope, deletes if value is null"), false, "symbol",
 				"value") {
 			@Override
@@ -55,7 +53,7 @@ public class Assignment {
 			}
 		});
 
-		scope.put(new Function("set", comment("Reassign value in scope chain. nil as value not allowed"), false,
+		scope.put(new AbstractFunction("set", comment("Reassign value in scope chain. nil as value not allowed"), false,
 				"symbol", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -67,7 +65,7 @@ public class Assignment {
 			}
 		});
 
-		scope.put(new Function("def",
+		scope.put(new AbstractFunction("def",
 				comment("Assign value in local scope, it must be unassigned before. nil as value not allowed"), false,
 				"symbol", "value") {
 			@Override
@@ -80,7 +78,7 @@ public class Assignment {
 			}
 		});
 
-		scope.put(new Function("def-field",
+		scope.put(new AbstractFunction("def-field",
 				comment("Assign value in the next object scope, it must be unassigned before. nil as value not allowed"), false,
 				"symbol", "value") {
 			@Override
@@ -100,7 +98,7 @@ public class Assignment {
 			}
 		});
 
-		scope.put(new Function("def-global",
+		scope.put(new AbstractFunction("def-global",
 				comment("Assign value in global scope, it must be unassigned before. nil as value not allowed"), false,
 				"symbol", "value") {
 			@Override
@@ -117,7 +115,7 @@ public class Assignment {
 			}
 		});
 
-		scope.put(new Function("instance", comment("Create an instce of an object."), true, "key-value-pair...") {
+		scope.put(new AbstractFunction("instance", comment("Create an instce of an object."), true, "key-value-pair...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -141,23 +139,6 @@ public class Assignment {
 					}
 				}
 				return object;
-			}
-		});
-
-		scope.put(new Function("java-instance", comment("Create an instce of a Java wrapper object."), true, "class...") {
-
-			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				FplValue fplClass = parameters[0].evaluate(scope);
-				Object[] methodParams = new Object[parameters.length - 1];
-				for (int i = 0; i < methodParams.length; i++) {
-					methodParams[i] = value(scope, parameters[i + 1]);
-				}
-				if (fplClass instanceof FplString) {
-					return new FplWrapper(((FplString)fplClass).getContent(), methodParams);
-				} else {
-					throw new EvaluationException("Expect string, but got " + fplClass.typeName());
-				}
 			}
 		});
 	}

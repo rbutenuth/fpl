@@ -9,7 +9,7 @@ import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 
 public class ScopeFactoryDump {
 
@@ -26,8 +26,8 @@ public class ScopeFactoryDump {
 		}
 		for (Entry<String, FplValue> entry : map.entrySet()) {
 			FplValue value = entry.getValue();
-			if (value instanceof Function) {
-				Function f = (Function) value;
+			if (value instanceof AbstractFunction) {
+				AbstractFunction f = (AbstractFunction) value;
 				System.out.print("(" + f.getName());
 				String[] pns = f.getParameterNames();
 				for (String pn : pns) {

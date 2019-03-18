@@ -17,7 +17,7 @@ public class CurryingTest extends AbstractFplTest {
     @Test
     public void testNoArguments() throws ParseException, IOException, EvaluationException {
         // Result should be the function itself
-        Function f = (Function) evaluate("plus", "( + )");
+        AbstractFunction f = (AbstractFunction) evaluate("plus", "( + )");
         assertEquals(2, f.getMinimumNumberOfParameters());
         assertTrue(scope.get("+") == f);
     }
@@ -25,7 +25,7 @@ public class CurryingTest extends AbstractFplTest {
     @Test
     public void testOneMissingArgument() throws ParseException, IOException, EvaluationException {
         evaluate("plus", "(put plus3 ( + 3 ))");
-        Function f = (Function)scope.get("plus3");
+        AbstractFunction f = (AbstractFunction)scope.get("plus3");
         assertEquals(1, f.getMinimumNumberOfParameters());
         String[] pn = f.getParameterNames();
         assertEquals(2, pn.length);

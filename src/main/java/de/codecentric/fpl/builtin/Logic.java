@@ -8,14 +8,14 @@ import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
  * Basic logic functions. <code>LInteger(0)</code> and <code>null</code> are false, everything else is true.
  */
-public class Logic extends Function {
+public class Logic extends AbstractFunction {
     private final static FplInteger L_TRUE = FplInteger.valueOf(1);
 
     /**
@@ -29,7 +29,7 @@ public class Logic extends Function {
     	scope.put(new Logic("xor", comment("Logic xor of parameters.")));
     	scope.put(new Logic("not", comment("Logic not of parameter.")));
 
-        scope.put(new Function("is-symbol", comment("Is expression a symbol?"), false, "expression") {
+        scope.put(new AbstractFunction("is-symbol", comment("Is expression a symbol?"), false, "expression") {
 
             @Override
             public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -37,7 +37,7 @@ public class Logic extends Function {
             }
         });
 
-        scope.put(new Function("is-integer", comment("Is expression an integer?"), false, "expression") {
+        scope.put(new AbstractFunction("is-integer", comment("Is expression an integer?"), false, "expression") {
 
             @Override
             public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -45,7 +45,7 @@ public class Logic extends Function {
             }
         });
 
-        scope.put(new Function("is-double", comment("Is expression a double?"), false, "expression") {
+        scope.put(new AbstractFunction("is-double", comment("Is expression a double?"), false, "expression") {
 
             @Override
             public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -53,7 +53,7 @@ public class Logic extends Function {
             }
         });
 
-        scope.put(new Function("is-list", comment("Is expression a list?"), false, "expression") {
+        scope.put(new AbstractFunction("is-list", comment("Is expression a list?"), false, "expression") {
 
             @Override
             public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -61,11 +61,11 @@ public class Logic extends Function {
             }
         });
 
-        scope.put(new Function("is-function", comment("Is expression a function?"), false, "expression") {
+        scope.put(new AbstractFunction("is-function", comment("Is expression a function?"), false, "expression") {
 
             @Override
             public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-                return parameters[0].evaluate(scope) instanceof Function ? L_TRUE : null;
+                return parameters[0].evaluate(scope) instanceof AbstractFunction ? L_TRUE : null;
             }
         });
     }
@@ -78,7 +78,7 @@ public class Logic extends Function {
     }
 
     /**
-     * @see lang.data.Function#callInternal(lang.data.Scope, FplValue.data.LObject[])
+     * @see AbstractFunction.data.Function#callInternal(lang.data.Scope, FplValue.data.LObject[])
      */
     @Override
     public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {

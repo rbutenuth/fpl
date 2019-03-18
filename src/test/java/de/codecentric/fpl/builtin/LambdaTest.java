@@ -16,12 +16,12 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ListResultCallback;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplDouble;
-import de.codecentric.fpl.datatypes.FplFunction;
+import de.codecentric.fpl.datatypes.FplLambda;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
@@ -29,12 +29,12 @@ import de.codecentric.fpl.datatypes.list.FplList;
  */
 public class LambdaTest extends AbstractFplTest {
 
-	private Function lambda;
+	private AbstractFunction lambda;
 
 	@Before
 	public void setUp() throws ScopeException, EvaluationException {
 		super.setUp();
-		lambda = (Function) scope.get("lambda");
+		lambda = (AbstractFunction) scope.get("lambda");
 	}
 
 	@After
@@ -70,7 +70,7 @@ public class LambdaTest extends AbstractFplTest {
 	public void testNoArgs() throws Exception {
 		FplValue argList = parser("no args", "()").next();
 		FplValue body = parser("body", "42").next();
-		Function f = (Function) lambda.call(scope, new FplValue[] { argList, body });
+		AbstractFunction f = (AbstractFunction) lambda.call(scope, new FplValue[] { argList, body });
 		assertEquals(0, f.getMinimumNumberOfParameters());
 		assertFalse(f.isVararg());
 		assertEquals("(lambda () 42)", f.toString());
@@ -80,7 +80,7 @@ public class LambdaTest extends AbstractFplTest {
 
 	@Test
 	public void testEvalNoArgs() throws Exception {
-		Function f = (Function) evaluate("no args", "(lambda () 42)");
+		AbstractFunction f = (AbstractFunction) evaluate("no args", "(lambda () 42)");
 		assertEquals(0, f.getMinimumNumberOfParameters());
 		assertFalse(f.isVararg());
 		assertEquals("(lambda () 42)", f.toString());
@@ -90,7 +90,7 @@ public class LambdaTest extends AbstractFplTest {
 	public void testTwoArgs() throws Exception {
 		FplValue argList = parser("two args", "(a b)").next();
 		FplValue body = parser("body", "42").next();
-		Function f = (Function) lambda.call(scope, new FplValue[] { argList, body });
+		AbstractFunction f = (AbstractFunction) lambda.call(scope, new FplValue[] { argList, body });
 		assertEquals(2, f.getMinimumNumberOfParameters());
 		assertFalse(f.isVararg());
 		assertEquals("(lambda (a b) 42)", f.toString());
@@ -100,7 +100,7 @@ public class LambdaTest extends AbstractFplTest {
 	public void testTwoPlusVarArgs() throws Exception {
 		FplValue argList = parser("two args", "(a b c...)").next();
 		FplValue body = parser("body", "42").next();
-		Function f = (Function) lambda.call(scope, new FplValue[] { argList, body });
+		AbstractFunction f = (AbstractFunction) lambda.call(scope, new FplValue[] { argList, body });
 		assertEquals(2, f.getMinimumNumberOfParameters());
 		assertTrue(f.isVararg());
 		assertEquals("(lambda (a b c...) 42)", f.toString());
@@ -108,7 +108,7 @@ public class LambdaTest extends AbstractFplTest {
 
 	@Test
 	public void testParameterWithComment() throws Exception {
-		FplFunction test = (FplFunction) evaluate("duplicate", "(def-function test (\n; nonsense comment\n a b) a)");
+		FplLambda test = (FplLambda) evaluate("duplicate", "(def-function test (\n; nonsense comment\n a b) a)");
 		assertEquals("nonsense comment", test.getParameterComment(0));
 	}
 
@@ -134,7 +134,7 @@ public class LambdaTest extends AbstractFplTest {
 
 	@Test
 	public void testLambdaString() throws Exception {
-		FplFunction f = (FplFunction) evaluate("lambda", "(lambda (a b c...) 42)");
+		FplLambda f = (FplLambda) evaluate("lambda", "(lambda (a b c...) 42)");
 		assertEquals(2, f.getMinimumNumberOfParameters());
 		assertTrue(f.isVararg());
 		assertEquals("function", f.typeName());
@@ -158,7 +158,7 @@ public class LambdaTest extends AbstractFplTest {
 	
 	@Test
 	public void testDefFunctionSquare() throws Exception {
-		FplFunction f = (FplFunction) evaluate("square", "(def-function square (x) (* x x))");
+		FplLambda f = (FplLambda) evaluate("square", "(def-function square (x) (* x x))");
 		assertEquals(1, f.getMinimumNumberOfParameters());
 		assertFalse(f.isVararg());
 		assertEquals("square", f.getName());
@@ -172,7 +172,7 @@ public class LambdaTest extends AbstractFplTest {
 
 	@Test
 	public void testDeFunctionFactorial() throws Exception {
-		FplFunction f = (FplFunction) evaluate("factorial", //
+		FplLambda f = (FplLambda) evaluate("factorial", //
 				"; compute n!\n" + //
 						"(def-function factorial (; input\n n)\n" + //
 						"   (if (le n 1)\n" + //
@@ -192,7 +192,7 @@ public class LambdaTest extends AbstractFplTest {
 
 	@Test
 	public void testVarArgsFirst() throws Exception {
-		FplFunction f = (FplFunction) evaluate("factorial", //
+		FplLambda f = (FplLambda) evaluate("factorial", //
 				"(def-function firstparam (a b...)\n" + //
 						"   a\n" + //
 						")\n");
@@ -206,7 +206,7 @@ public class LambdaTest extends AbstractFplTest {
 
 	@Test
 	public void testVarArgsLast() throws Exception {
-		FplFunction f = (FplFunction) evaluate("factorial", //
+		FplLambda f = (FplLambda) evaluate("factorial", //
 				"(def-function lastparam (a b...)\n" + //
 						"   b\n" + //
 						")\n");

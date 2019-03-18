@@ -37,13 +37,8 @@ public class ObjectTest extends AbstractFplTest {
 		FplObject v = (FplObject) values.get(0);
 		assertEquals("object", v.typeName());
 		assertEquals(2, v.size());
-		assertEquals("value", ((FplString)v.get("key")).getContent());
-		assertEquals("another-value", ((FplString)v.get("another-key")).getContent());
-
-		FplObject object = (FplObject) scope.get("obj");
-		assertTrue(v == object);
-		assertTrue(object.toString().contains("(def another-key \"another-value\")"));
-		assertTrue(object.toString().contains("key: \"value\""));
+		FplInteger sum = (FplInteger) values.get(1);
+		assertEquals(FplInteger.valueOf(7), sum);
 	}
 	
 	@Test
@@ -97,5 +92,20 @@ public class ObjectTest extends AbstractFplTest {
 		Scope global = engine.getScope();
 		assertEquals("inner-value", ((FplString)global.get("by-inner")).getContent());
 		assertEquals("outer-value", ((FplString)global.get("by-outer")).getContent());
-	}	
+	}
+	
+	@Test
+	public void testEvaluateFailsWhenNotAFunction() throws Exception {
+		try {
+			evaluate("not-a-function", "((instance method 1) method non-sence-parameter)");
+			fail("missing exception");
+		} catch (EvaluationException e) {
+			assertEquals("Not a function: 1", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testNullEvaluatesToNull() throws Exception {
+		assertNull(evaluate("not-a-function", "((instance method 1) foo)"));
+	}
 }

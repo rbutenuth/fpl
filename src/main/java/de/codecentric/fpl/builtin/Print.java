@@ -7,12 +7,12 @@ import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 
 /**
  * Lisp "print".
  */
-public class Print extends Function {
+public class Print extends AbstractFunction {
     private boolean newline;
 	private FplEngine engine;
 

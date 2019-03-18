@@ -9,12 +9,12 @@ import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 
 /**
  * Basic comparison functions.
  */
-public class Comparison extends Function {
+public class Comparison extends AbstractFunction {
     private static FplInteger TRUE = FplInteger.valueOf(1);
 
     private enum CompareOperator {
@@ -173,7 +173,7 @@ public class Comparison extends Function {
     }
 
     /**
-     * @see lang.data.Function#callInternal(lang.data.Scope, FplValue.data.LObject[])
+     * @see AbstractFunction.data.Function#callInternal(lang.data.Scope, FplValue.data.LObject[])
      */
     @Override
     public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {

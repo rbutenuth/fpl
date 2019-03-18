@@ -1,12 +1,12 @@
 package de.codecentric.fpl.builtin;
 
-import static de.codecentric.fpl.datatypes.Function.comment;
+import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 
 /**
  * Basic logic functions. <code>LInteger(0)</code> and <code>null</code> are false, everything else is true.
@@ -19,7 +19,7 @@ public class Conditional {
      */
     public static void put(Scope scope) throws ScopeException {
 
-    	scope.put(new Function("if", //
+    	scope.put(new AbstractFunction("if", //
     			comment("Evaluate condition, if true, return evaluated if-part, otherwise evaluated else-part."),
     			false, "condition", "if-part", "else-part") {
             @Override

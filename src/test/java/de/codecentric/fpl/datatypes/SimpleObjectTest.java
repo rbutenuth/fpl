@@ -17,9 +17,10 @@ import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.parser.Position;
 
 public class SimpleObjectTest {
+	private static String NL = System.lineSeparator();
 	Scope outer;
 	FplObject object;
-	
+
 	@Before
 	public void before() throws EvaluationException {
 		outer = new Scope();
@@ -31,7 +32,7 @@ public class SimpleObjectTest {
 		outer = null;
 		object = null;
 	}
-	
+
 	@Test
 	public void testEmptyObject() throws EvaluationException {
 		assertTrue(outer.isEmpty());
@@ -42,7 +43,7 @@ public class SimpleObjectTest {
 		assertTrue(object.getInitCode().isEmpty());
 		assertNull(object.get("foo"));
 	}
-	
+
 	@Test
 	public void testAddInitcode() throws EvaluationException {
 		object.addInitCodeValue(FplInteger.valueOf(1));
@@ -50,16 +51,24 @@ public class SimpleObjectTest {
 		object.addInitCodeValue(FplInteger.valueOf(3));
 		List<FplValue> initCode = object.getInitCode();
 		assertEquals(3, initCode.size());
-		assertEquals(1, ((FplInteger)initCode.get(0)).getValue());
-		assertEquals(2, ((FplInteger)initCode.get(1)).getValue());
-		assertEquals(3, ((FplInteger)initCode.get(2)).getValue());
+		assertEquals(1, ((FplInteger) initCode.get(0)).getValue());
+		assertEquals(2, ((FplInteger) initCode.get(1)).getValue());
+		assertEquals(3, ((FplInteger) initCode.get(2)).getValue());
+		assertEquals("{" + NL + "1" + NL + NL + "2" + NL + NL + "3" + NL + NL + NL + "}" + NL, object.toString());
+	}
+
+	@Test
+	public void testEntriesToString() throws Exception {
+		object.put("foo", new FplString("bar"));
+		object.put("one", FplInteger.valueOf(1));
+		assertEquals("{    foo: \"bar\"," + NL + "    one: 1" + NL + "}" + NL, object.toString());
 	}
 
 	@Test
 	public void testEvaluate() throws EvaluationException {
 		AtomicInteger count = new AtomicInteger(0);
 		object.addInitCodeValue(new FplValue() {
-			
+
 			@Override
 			public FplValue evaluate(Scope scope) throws EvaluationException {
 				count.incrementAndGet();
@@ -67,7 +76,6 @@ public class SimpleObjectTest {
 				return this;
 			}
 
-			
 			@Override
 			public String typeName() {
 				return "mock";
@@ -85,27 +93,27 @@ public class SimpleObjectTest {
 	public void testNullPositionOne() {
 		new FplObject(null);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullPositionTwo() {
 		new FplObject(null, new Scope());
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullScope() throws EvaluationException {
 		object.evaluate(null);
 	}
-	
+
 	@Test(expected = ScopeException.class)
 	public void testNullKey() throws ScopeException {
 		object.put(null, FplInteger.valueOf(0));
 	}
-	
+
 	@Test(expected = ScopeException.class)
 	public void testEmptyKey() throws ScopeException {
 		object.put("", FplInteger.valueOf(0));
 	}
-	
+
 	@Test
 	public void testPut() throws ScopeException {
 		FplInteger one = FplInteger.valueOf(1);

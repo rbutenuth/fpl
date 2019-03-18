@@ -8,12 +8,12 @@ import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 
 /**
  * Basic arithmetic functions.
  */
-public class Arithmetic extends Function {
+public class Arithmetic extends AbstractFunction {
 	private enum ArithmeticOperator {
 		PLUS("+", "Add values.") {
 			@Override
@@ -121,7 +121,7 @@ public class Arithmetic extends Function {
 	}
 
 	/**
-	 * @see lang.data.Function#callInternal(lang.data.Scope,
+	 * @see AbstractFunction.data.Function#callInternal(lang.data.Scope,
 	 *      FplValue.data.LObject[])
 	 */
 	@Override

@@ -5,24 +5,27 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Collections;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 
-public class FplWrapper extends EvaluatesToThisValue {
+public class FplWrapper extends AbstractFunction {
+	private Class<?> clazz;
 	private Object instance;
 
+	// String name, List<String> comment, boolean varArg, String... parameterNames) {
 	public FplWrapper(Object value) {
-		if (value == null) {
-			throw new IllegalArgumentException("can't wrap null");
-		}
+		super(value.getClass().getName(), Collections.emptyList(), true, "args...");
+		clazz = value.getClass();
 		instance = value;
 	}
 
 	public FplWrapper(String className, Object[] methodParams) throws EvaluationException {
+		super(className, Collections.emptyList(), true, "args...");
 		unwrap(methodParams);
 		try {
-			Class<?> clazz = Class.forName(className);
+			clazz = Class.forName(className);
 			if (methodParams.length == 0) {
 				instance = clazz.newInstance();
 			} else {
@@ -40,14 +43,11 @@ public class FplWrapper extends EvaluatesToThisValue {
 
 	@Override
 	public String typeName() {
-		return "wrapper(" + instance.getClass().getName() + ")";
+		return "wrapper(" + clazz.getName() + ")";
 	}
 
-	public Object getInstance() {
-		return instance;
-	}
-
-	public FplValue evaluate(Scope scope, FplValue[] parameters) throws EvaluationException {
+	@Override
+	protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 		FplValue first = parameters[0];
 		String methodName = null;
 		if (first instanceof Symbol) {
@@ -56,7 +56,7 @@ public class FplWrapper extends EvaluatesToThisValue {
 			methodName = ((FplString) first.evaluate(scope)).getContent();
 		}
 		try {
-			Method method = instance.getClass().getMethod(methodName, new Class<?>[0]);
+			Method method = clazz.getMethod(methodName, new Class<?>[0]);
 			Object result = method.invoke(instance, null);
 			return wrapResult(result);
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
@@ -65,6 +65,10 @@ public class FplWrapper extends EvaluatesToThisValue {
 		}
 	}
 
+	public Object getInstance() {
+		return instance;
+	}
+	
 	/**
 	 * Find the best matching method (or constructor) for the given arguments. The
 	 * array may be partially filled, so stop after the first <code>null</code>

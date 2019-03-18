@@ -1,12 +1,14 @@
 package de.codecentric.fpl.datatypes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.parser.Position;
 
@@ -15,7 +17,7 @@ import de.codecentric.fpl.parser.Position;
  * of {@link Scope} with {@link Named}. The rest are some built in functions for
  * linking and executing methods on objects.
  */
-public class FplObject extends Scope implements PositionHolder, FplValue {
+public class FplObject extends Scope implements PositionHolder, FplValue, Function {
 	private static String NL = System.lineSeparator();
 	private Position position;
 	private List<FplValue> initCode;
@@ -33,7 +35,7 @@ public class FplObject extends Scope implements PositionHolder, FplValue {
 
 	/**
 	 * @param position Where it is defined in the source
-	 * @param next Next outer {@link Scope}
+	 * @param next     Next outer {@link Scope}
 	 */
 	public FplObject(Position position, Scope next) throws IllegalArgumentException {
 		if (position == null) {
@@ -55,6 +57,27 @@ public class FplObject extends Scope implements PositionHolder, FplValue {
 	public synchronized List<FplValue> getInitCode() {
 		return Collections.unmodifiableList(initCode);
 	}
+
+	@Override
+	public FplValue call(Scope scope, FplValue[] parameters) throws EvaluationException {
+		FplValue firstElement = parameters[0].evaluate(this);
+
+		if (firstElement == null) {
+			return null;
+		} else if (firstElement instanceof Function) {
+			Scope callScope;
+			if (scope instanceof ParameterScope) {
+				callScope = new ParameterScope(this, (ParameterScope) scope);
+			} else {
+				callScope = this;
+			}
+			FplValue[] shiftedParameters = Arrays.copyOfRange(parameters, 1, parameters.length);
+			return ((Function) firstElement).call(callScope, shiftedParameters);
+		} else {
+			throw new EvaluationException("Not a function: " + firstElement);
+		}
+	}
+
 
 	@Override
 	public synchronized FplValue evaluate(Scope scope) throws EvaluationException {
@@ -84,7 +107,7 @@ public class FplObject extends Scope implements PositionHolder, FplValue {
 	public String typeName() {
 		return "object";
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

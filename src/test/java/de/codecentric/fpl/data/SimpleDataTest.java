@@ -10,10 +10,8 @@ import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
-import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.LazyExpression;
 import de.codecentric.fpl.datatypes.Symbol;
-import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
 
 /**
@@ -101,13 +99,4 @@ public class SimpleDataTest {
         assertEquals(42, ((FplInteger)e.getOriginalExpression()).getValue());
         assertEquals(42, ((FplInteger)e.evaluate(null)).getValue());
     }
-
-    @Test
-    public void testLazyEvaluationExpression() throws EvaluationException {
-        FplInteger value = FplInteger.valueOf(42);
-		LazyExpression expr = new LazyExpression(new Scope(), new FplList(new FplValue[] { value}));
-        FplValue result = expr.evaluate(null);
-        assertEquals(value, result);
-    }
-
 }

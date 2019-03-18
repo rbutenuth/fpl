@@ -87,7 +87,7 @@ public class FplWrapperTest extends AbstractFplTest {
 		super(FplWrapperTest.class);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test(expected = NullPointerException.class)
 	public void testNull() {
 		new FplWrapper((Object)null);
 	}

@@ -1,26 +1,26 @@
 package de.codecentric.fpl.builtin;
 
-import static de.codecentric.fpl.datatypes.Function.comment;
+import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 
 public class StringFunctions {
 	private static final String nl = System.lineSeparator();
 
 	public static void put(Scope scope) throws ScopeException {
-		scope.put(new Function("describe", comment("Create a comment in markdown format for a function"), false,
+		scope.put(new AbstractFunction("describe", comment("Create a comment in markdown format for a function"), false,
 				"expression") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplValue value = parameters[0].evaluate(scope);
-				if (value instanceof Function) {
+				if (value instanceof AbstractFunction) {
 					StringBuilder sb = new StringBuilder();
-					Function f = (Function) value;
+					AbstractFunction f = (AbstractFunction) value;
 					sb.append("Function ").append(f.getName()).append(nl);
 					for (String line : f.getComment()) {
 						sb.append(line).append(nl);

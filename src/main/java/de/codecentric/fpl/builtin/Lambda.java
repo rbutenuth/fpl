@@ -1,16 +1,17 @@
 package de.codecentric.fpl.builtin;
 
-import static de.codecentric.fpl.datatypes.Function.comment;
+import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
 
 import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
-import de.codecentric.fpl.datatypes.FplFunction;
+import de.codecentric.fpl.datatypes.FplLambda;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.FplWrapper;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 
@@ -25,7 +26,7 @@ public class Lambda {
 	 */
 	public static void put(Scope scope) throws ScopeException {
 
-		scope.put(new Function("lambda", comment("Create an anonymous function."), false, "parameter-list", "code...") {
+		scope.put(new AbstractFunction("lambda", comment("Create an anonymous function."), false, "parameter-list", "code...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -45,7 +46,7 @@ public class Lambda {
 		// (* n (factorial (- n 1)))
 		// )
 		// )
-		scope.put(new Function("def-function", comment("Define a function."), true, "name", "parameter-list", "code...") {
+		scope.put(new AbstractFunction("def-function", comment("Define a function."), true, "name", "parameter-list", "code...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -55,7 +56,7 @@ public class Lambda {
 				Symbol name = (Symbol) parameters[0];
 				FplValue[] code = new FplValue[parameters.length - 2];
 				System.arraycopy(parameters, 2, code, 0, code.length);
-				FplFunction result = lambda(name, parameters[1], code);
+				FplLambda result = lambda(name, parameters[1], code);
 				try {
 					scope.define(name.getName(), result);
 				} catch (ScopeException e) {
@@ -65,16 +66,16 @@ public class Lambda {
 			}
 		});
 
-		scope.put(new Function("eval", comment("Evaluate expression."), false, "expression") {
+		scope.put(new AbstractFunction("eval", comment("Evaluate expression."), false, "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				FplValue value = parameters[0].evaluate(scope);
-				return value == null ? value : value.evaluate(scope);
+				FplValue expression = parameters[0].evaluate(scope);
+				return value(scope, expression);
 			}
 		});
 
-		scope.put(new Function("get", comment("Get value."), false, "symbol") {
+		scope.put(new AbstractFunction("get", comment("Get value."), false, "symbol") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -82,18 +83,34 @@ public class Lambda {
 			}
 		});
 
-		scope.put(new Function("type-of", comment("Return type of argument as string"), false, "value") {
+		scope.put(new AbstractFunction("type-of", comment("Return type of argument as string"), false, "value") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				FplValue value = parameters[0] == null ? null : parameters[0].evaluate(scope);
-				return value == null ? null : new FplString(value.typeName());
+				FplValue expression = value(scope, parameters[0]);
+				return expression == null ? null : new FplString(expression.typeName());
 			}
 		});
 
+		scope.put(new AbstractFunction("java-instance", comment("Create an instce of a Java wrapper object."), true, "class...") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				FplValue fplClass = parameters[0].evaluate(scope);
+				if (fplClass instanceof FplString) {
+					Object[] methodParams = new Object[parameters.length - 1];
+					for (int i = 0; i < methodParams.length; i++) {
+						methodParams[i] = value(scope, parameters[i + 1]);
+					}
+					return new FplWrapper(((FplString)fplClass).getContent(), methodParams);
+				} else {
+					throw new EvaluationException("Expect string, but got " + fplClass.typeName());
+				}
+			}
+		});
 	}
 
-	private static FplFunction lambda(Symbol name, FplValue paramListValues, FplValue[] code)
+	private static FplLambda lambda(Symbol name, FplValue paramListValues, FplValue[] code)
 			throws EvaluationException {
 		FplList paramList = createParamList(paramListValues);
 		String[] paramNames = new String[paramList.size()];
@@ -105,7 +122,7 @@ public class Lambda {
 			paramComments[i] = joinLines(s.getCommentLines());
 			i++;
 		}
-		FplFunction result = new FplFunction(name.getPosition(), name.getCommentLines(), name.getName(), paramNames,
+		FplLambda result = new FplLambda(name.getPosition(), name.getCommentLines(), name.getName(), paramNames,
 				code);
 		for (i = 0; i < paramComments.length; i++) {
 			result.setParameterComment(i, paramComments[i]);
@@ -126,6 +143,10 @@ public class Lambda {
 		return paramList;
 	}
 
+	static private FplValue value(Scope scope, FplValue expression) throws EvaluationException {
+		return expression == null ? null : expression.evaluate(scope);
+	}
+	
 	private static String joinLines(List<String> commentLines) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < commentLines.size(); i++) {

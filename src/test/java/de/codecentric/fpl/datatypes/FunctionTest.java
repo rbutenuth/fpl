@@ -9,7 +9,7 @@ import org.junit.Test;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
@@ -28,19 +28,19 @@ public class FunctionTest {
 	
 	@Test
 	public void testPositionUnknown() throws Exception {
-		Function f = new TestFunction("foo", false);
+		AbstractFunction f = new TestFunction("foo", false);
 		assertEquals(Position.UNKNOWN, f.getPosition());
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testNullComment() throws Exception {
-		Function f = new TestFunction("foo", false);
+		AbstractFunction f = new TestFunction("foo", false);
 		f.setParameterComment(0, null);
 	}
 	
 	@Test
 	public void testPositionNull() throws Exception {
-		Function f = new TestFunction(null, "foo", false, new String[0]);
+		AbstractFunction f = new TestFunction(null, "foo", false, new String[0]);
 		assertEquals(Position.UNKNOWN, f.getPosition());
 		assertEquals("foo", f.getName());
 		assertEquals(0, f.getMinimumNumberOfParameters());
@@ -49,13 +49,13 @@ public class FunctionTest {
 	
 	@Test
 	public void testEvaluateEmptyListToBoolean() throws Exception {
-		Function f = new TestFunction(null, "foo", false, new String[0]);
+		AbstractFunction f = new TestFunction(null, "foo", false, new String[0]);
 		assertFalse(f.evaluateToBoolean(null, new FplList(new FplValue[0])));
 	}
 	
 	@Test
 	public void testEvaluateNonEmptyListToBoolean() throws Exception {
-		Function f = new TestFunction(null, "foo", false, new String[0]);
+		AbstractFunction f = new TestFunction(null, "foo", false, new String[0]);
 		Scope scope = new Scope();
 		scope.put("x", new FplList(new FplValue[] { new FplString("baz") }));
 		assertTrue(f.evaluateToBoolean(scope, new Symbol("x")));
@@ -63,7 +63,7 @@ public class FunctionTest {
 	
 	@Test
 	public void testPositionKnown() throws Exception {
-		Function f = new TestFunction(new Position("foo.fpl", 1, 42), "foo", false);
+		AbstractFunction f = new TestFunction(new Position("foo.fpl", 1, 42), "foo", false);
 		assertEquals(new Position("foo.fpl", 1, 42), f.getPosition());
 	}
 }

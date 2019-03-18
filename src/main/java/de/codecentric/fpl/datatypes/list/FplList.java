@@ -8,11 +8,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.data.Scope;
-import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.FplWrapper;
 import de.codecentric.fpl.datatypes.Function;
 
 // TODO: More operations:
@@ -888,29 +885,14 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		if (isEmpty()) {
 			return this; // empty list evaluates to empty list
 		}
-		FplValue element;
-		FplValue unevaluated;
-		int startParameterIndex = 0;
-		Scope evalScope = scope;
-		do {
-			unevaluated = get(startParameterIndex++);
-			element = unevaluated.evaluate(evalScope);
-			if (element instanceof FplObject) {
-				FplObject object = (FplObject) element;
-				if (evalScope instanceof ParameterScope) {
-					evalScope = new ParameterScope(object, (ParameterScope)evalScope);
-				} else {
-					evalScope = object;
-				}
-			}
-		} while (element instanceof FplObject);
+		FplValue firstElement = first().evaluate(scope);
 
-		if (element instanceof Function) {
-			return ((Function) element).call(evalScope, createParameterArray(startParameterIndex));
-		} if (element instanceof FplWrapper) {
-			return ((FplWrapper)element).evaluate(evalScope, createParameterArray(startParameterIndex));
+		if (firstElement == null) {
+			return null;
+		} else if (firstElement instanceof Function) {
+			return ((Function) firstElement).call(scope, createParameterArray());
 		} else {
-			return element;
+			throw new EvaluationException("Not a function: " + firstElement);
 		}
 	}
 
@@ -919,20 +901,17 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		return "list";
 	}
 
-	private FplValue[] createParameterArray(int startParameterIndex) {
+	private FplValue[] createParameterArray() {
 		FplValue[] params;
 		if (linear == null) {
-			params = new FplValue[size(shape) - startParameterIndex];
+			params = new FplValue[size(shape) - 1];
 
 			// find start indexes
 			int bucketIdx = 0;
-			int inBucketIdx = 0;
-			for (int i = 0; i < startParameterIndex; i++) {
-				inBucketIdx++;
-				if (inBucketIdx == shape[bucketIdx].length) {
-					inBucketIdx = 0;
-					bucketIdx++;
-				}
+			int inBucketIdx = 1;
+			if (inBucketIdx == shape[bucketIdx].length) {
+				inBucketIdx = 0;
+				bucketIdx++;
 			}
 
 			// copy values
@@ -945,14 +924,14 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				}
 			}
 		} else {
-			params = new FplValue[linear.length - startParameterIndex];
-			arraycopy(linear, startParameterIndex, params, 0, params.length);
+			params = new FplValue[linear.length - 1];
+			arraycopy(linear, 1, params, 0, params.length);
 		}
 		return params;
 	}
 
 	public boolean isEmpty() {
-		return linear != null&&  linear.length == 0;
+		return linear != null && linear.length == 0;
 	}
 
 	/**

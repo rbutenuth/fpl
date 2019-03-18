@@ -41,7 +41,7 @@ import de.codecentric.fpl.parser.Position;
  * )
  * </pre>
  */
-public class FplFunction extends Function {
+public class FplLambda extends AbstractFunction {
 	private final FplValue[] code;
 
 	/**
@@ -57,7 +57,7 @@ public class FplFunction extends Function {
 	 * @param code
 	 *            The Lisp code.
 	 */
-	public FplFunction(Position position, List<String> comment, String name, String[] paramNames, FplValue[] code)
+	public FplLambda(Position position, List<String> comment, String name, String[] paramNames, FplValue[] code)
 			throws EvaluationException {
 		super(position, name, comment, varArgs(paramNames), convertedParamNames(paramNames));
 		Map<String, Integer> parameterMap = createParameterMap();
@@ -81,7 +81,7 @@ public class FplFunction extends Function {
 	}
 
 	/**
-	 * @see lang.data.Function#callInternal(lang.data.Scope,
+	 * @see AbstractFunction.data.Function#callInternal(lang.data.Scope,
 	 *      FplValue.data.LObject[])
 	 */
 	@Override

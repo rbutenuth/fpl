@@ -1,6 +1,6 @@
 package de.codecentric.fpl.io;
 
-import static de.codecentric.fpl.datatypes.Function.comment;
+import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,7 +29,7 @@ import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 
 /**
  * A really simple HTTP server implementation. This is not really production
@@ -86,7 +86,7 @@ public class SimpleHttpServer extends Thread {
 		});
 		engine = new FplEngine();
 		Scope scope = engine.getScope();
-		scope.put(new Function("stop-server", comment("Stop HTTP server."), false) {
+		scope.put(new AbstractFunction("stop-server", comment("Stop HTTP server."), false) {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
