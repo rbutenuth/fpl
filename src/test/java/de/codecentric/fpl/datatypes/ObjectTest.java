@@ -104,8 +104,8 @@ public class ObjectTest extends AbstractFplTest {
 		}
 	}
 	
-	@Test
-	public void testNullEvaluatesToNull() throws Exception {
+	@Test(expected = EvaluationException.class)
+	public void testNullMethodThrowsException() throws Exception {
 		assertNull(evaluate("not-a-function", "((instance method 1) foo)"));
 	}
 }

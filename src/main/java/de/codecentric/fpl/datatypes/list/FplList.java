@@ -887,9 +887,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		}
 		FplValue firstElement = first().evaluate(scope);
 
-		if (firstElement == null) {
-			return null;
-		} else if (firstElement instanceof Function) {
+		if (firstElement instanceof Function) {
 			return ((Function) firstElement).call(scope, createParameterArray());
 		} else {
 			throw new EvaluationException("Not a function: " + firstElement);

@@ -62,9 +62,7 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 	public FplValue call(Scope scope, FplValue[] parameters) throws EvaluationException {
 		FplValue firstElement = parameters[0].evaluate(this);
 
-		if (firstElement == null) {
-			return null;
-		} else if (firstElement instanceof Function) {
+		if (firstElement instanceof Function) {
 			Scope callScope;
 			if (scope instanceof ParameterScope) {
 				callScope = new ParameterScope(this, (ParameterScope) scope);
