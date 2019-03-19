@@ -45,9 +45,24 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 			args= "List<?> list";
 		}
 		
+		public ConstructorTestClass() {
+			args= "";
+		}
+		
 		public String getArgs() {
 			return args;
 		}
+		
+		public String testMethod(String arg) {
+			return "String arg";
+		}
+	}
+	
+	@Test
+	public void testNoArgs() throws Exception {
+		FplString args = (FplString) evaluate("noarg-cons", //
+				"((java-instance\"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\") getArgs)");
+		assertEquals("", args.getContent());
 	}
 	
 	@Test
@@ -92,5 +107,12 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 				"((java-instance\"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\" " 
 				+"1 2 3 4 5.0 6.0) getArgs)");
 		assertEquals("byte b, short s, int i, long l, float f, double d", args.getContent());
+	}
+	
+	@Test
+	public void testCallTestMethodWithStringArg() throws Exception {
+		FplString tm = (FplString) evaluate("primitive-cons", //
+				"((java-instance\"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\") testMethod \"foo\")");
+		assertEquals("String arg", tm.getContent());
 	}
 }

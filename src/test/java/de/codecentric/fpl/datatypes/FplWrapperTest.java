@@ -183,7 +183,7 @@ public class FplWrapperTest extends AbstractFplTest {
 			evaluate("bad-method", "((java-instance \"de.codecentric.fpl.datatypes.FplWrapperTest$Inner\") iDontKnowThisMethod)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("de.codecentric.fpl.datatypes.FplWrapperTest$Inner.iDontKnowThisMethod()", e.getMessage());
+			assertEquals("No matching method with name iDontKnowThisMethod found", e.getMessage());
 		}
 	}
 

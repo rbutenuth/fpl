@@ -30,7 +30,7 @@ public class FplWrapper extends AbstractFunction {
 				instance = clazz.newInstance();
 			} else {
 				Constructor<?>[] constructors = clazz.getConstructors();
-				Constructor<?> constructor = findBestMatch(constructors, methodParams);
+				Constructor<?> constructor = findBestMatch(className, constructors, methodParams);
 				instance = constructor.newInstance(methodParams);
 			}
 		} catch (ClassNotFoundException e) {
@@ -49,18 +49,19 @@ public class FplWrapper extends AbstractFunction {
 	@Override
 	protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 		FplValue first = parameters[0];
-		String methodName = null;
+		String name = null;
 		if (first instanceof Symbol) {
-			methodName = ((Symbol) first).getName();
+			name = ((Symbol) first).getName();
 		} else {
-			methodName = ((FplString) first.evaluate(scope)).getContent();
+			name = ((FplString) first.evaluate(scope)).getContent();
 		}
 		try {
-			Method method = clazz.getMethod(methodName, new Class<?>[0]);
-			Object result = method.invoke(instance, null);
+			Object[] javaParams = evaluatedParams(parameters);
+			Method[] executables = clazz.getMethods();
+			Method method = findBestMatch(name, executables, javaParams);
+			Object result = method.invoke(instance, javaParams);
 			return wrapResult(result);
-		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
+		} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			throw new EvaluationException(e.getMessage());
 		}
 	}
@@ -70,21 +71,20 @@ public class FplWrapper extends AbstractFunction {
 	}
 	
 	/**
-	 * Find the best matching method (or constructor) for the given arguments. The
-	 * array may be partially filled, so stop after the first <code>null</code>
-	 * entry.
+	 * Find the best matching method (or constructor) for the given arguments.
 	 * 
+	 * @param name Name of method (or class name when searching constructors
 	 * @param executables methods / constructors
 	 * @param params      parameters for the method / constructor
 	 * @return Best match, <code>null</code> when no match is found.
 	 * @throws EvaluationException If no matching method is found.
 	 */
 	@SuppressWarnings("unchecked")
-	private <T extends Executable> T findBestMatch(Executable[] executables, Object[] params)
+	private <T extends Executable> T findBestMatch(String name, Executable[] executables, Object[] params)
 			throws EvaluationException {
 		int targetIndex = 0;
-		for (int sourceIndex = 0; sourceIndex < executables.length && executables[sourceIndex] != null; sourceIndex++) {
-			if (isMatch(executables[sourceIndex], params)) {
+		for (int sourceIndex = 0; sourceIndex < executables.length; sourceIndex++) {
+			if (isMatch(name, executables[sourceIndex], params)) {
 				executables[targetIndex++] = executables[sourceIndex];
 			}
 		}
@@ -92,7 +92,7 @@ public class FplWrapper extends AbstractFunction {
 			executables[targetIndex] = null;
 		}
 		if (targetIndex == 0) {
-			throw new EvaluationException("No matching method/constructor found");
+			throw new EvaluationException("No matching method with name " + name + " found");
 		} else if (targetIndex == 1) {
 			coerceParameters(executables[0], params);
 			return (T) executables[0]; // line needing the "unchecked"
@@ -127,8 +127,11 @@ public class FplWrapper extends AbstractFunction {
 		}
 	}
 
-	private boolean isMatch(Executable executable, Object[] values) {
+	private boolean isMatch(String name, Executable executable, Object[] values) {
 		if (executable.getParameterCount() != values.length) {
+			return false;
+		}
+		if (!name.equals(executable.getName())) {
 			return false;
 		}
 		Parameter[] parameters = executable.getParameters();
@@ -248,6 +251,15 @@ public class FplWrapper extends AbstractFunction {
 		return value;
 	}
 
+	private Object[] evaluatedParams(FplValue[] params) throws EvaluationException {
+		Object[] javaParams = new Object[params.length - 1];
+		for (int i = 0; i < javaParams.length; i++) {
+			javaParams[i] = params[i + 1];
+		}
+		unwrap(javaParams);
+		return javaParams;
+	}
+	
 	private void unwrap(Object[] params) {
 		for (int i = 0; i < params.length; i++) {
 			Object p = params[i];
