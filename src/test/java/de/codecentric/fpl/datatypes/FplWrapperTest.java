@@ -162,7 +162,7 @@ public class FplWrapperTest extends AbstractFplTest {
 			evaluate("wrong-cons", "(java-instance\"de.codecentric.fpl.datatypes.FplWrapperTest$MissingNoArgConstructor\")");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("de.codecentric.fpl.datatypes.FplWrapperTest$MissingNoArgConstructor", e.getMessage());
+			assertEquals("No matching method with name de.codecentric.fpl.datatypes.FplWrapperTest$MissingNoArgConstructor found", e.getMessage());
 		}
 	}
 
@@ -172,8 +172,7 @@ public class FplWrapperTest extends AbstractFplTest {
 			evaluate("wrong-cons", "(java-instance\"de.codecentric.fpl.datatypes.FplWrapperTest$PrivateConstructor\")");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("Class de.codecentric.fpl.datatypes.FplWrapper can not access a member of class "
-					+ "de.codecentric.fpl.datatypes.FplWrapperTest$PrivateConstructor with modifiers \"private\"", e.getMessage());
+			assertEquals("No matching method with name de.codecentric.fpl.datatypes.FplWrapperTest$PrivateConstructor found", e.getMessage());
 		}
 	}
 
@@ -186,5 +185,4 @@ public class FplWrapperTest extends AbstractFplTest {
 			assertEquals("No matching method with name iDontKnowThisMethod found", e.getMessage());
 		}
 	}
-
 }

@@ -14,7 +14,6 @@ public class FplWrapper extends AbstractFunction {
 	private Class<?> clazz;
 	private Object instance;
 
-	// String name, List<String> comment, boolean varArg, String... parameterNames) {
 	public FplWrapper(Object value) {
 		super(value.getClass().getName(), Collections.emptyList(), true, "args...");
 		clazz = value.getClass();
@@ -23,20 +22,17 @@ public class FplWrapper extends AbstractFunction {
 
 	public FplWrapper(String className, Object[] methodParams) throws EvaluationException {
 		super(className, Collections.emptyList(), true, "args...");
-		unwrap(methodParams);
+		UnWrapper.unwrap(methodParams);
 		try {
 			clazz = Class.forName(className);
-			if (methodParams.length == 0) {
-				instance = clazz.newInstance();
-			} else {
-				Constructor<?>[] constructors = clazz.getConstructors();
-				Constructor<?> constructor = findBestMatch(className, constructors, methodParams);
-				instance = constructor.newInstance(methodParams);
-			}
+			Constructor<?>[] constructors = clazz.getConstructors();
+			Constructor<?> constructor = findBestMatch(className, constructors, methodParams);
+			instance = constructor.newInstance(methodParams);
 		} catch (ClassNotFoundException e) {
 			throw new EvaluationException("unknown class: " + className);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException e) {
+		} catch (InvocationTargetException e) {
+			throw new EvaluationException(e.getMessage(), e.getTargetException());
+		} catch (InstantiationException | IllegalAccessException e) {
 			throw new EvaluationException(e.getMessage(), e);
 		}
 	}
@@ -60,8 +56,10 @@ public class FplWrapper extends AbstractFunction {
 			Method[] executables = clazz.getMethods();
 			Method method = findBestMatch(name, executables, javaParams);
 			Object result = method.invoke(instance, javaParams);
-			return wrapResult(result);
-		} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			return UnWrapper.wrapResult(result);
+		} catch (InvocationTargetException e) {
+			throw new EvaluationException(e.getMessage(), e.getTargetException());
+		} catch (IllegalAccessException e) {
 			throw new EvaluationException(e.getMessage());
 		}
 	}
@@ -69,11 +67,11 @@ public class FplWrapper extends AbstractFunction {
 	public Object getInstance() {
 		return instance;
 	}
-	
+
 	/**
 	 * Find the best matching method (or constructor) for the given arguments.
 	 * 
-	 * @param name Name of method (or class name when searching constructors
+	 * @param name        Name of method (or class name when searching constructors
 	 * @param executables methods / constructors
 	 * @param params      parameters for the method / constructor
 	 * @return Best match, <code>null</code> when no match is found.
@@ -224,31 +222,8 @@ public class FplWrapper extends AbstractFunction {
 	}
 
 	private boolean isFractionalNumber(Class<?> clazz) {
-		return float.class.equals(clazz) || Float.class.equals(clazz) || double.class.equals(clazz) || Double.class.equals(clazz);
-	}
-
-	private FplValue wrapResult(Object result) {
-		FplValue value;
-		if (result == null) {
-			value = null;
-		} else if (result instanceof FplValue) {
-			value = (FplValue) result;
-		} else if (result instanceof Byte || result instanceof Short || result instanceof Integer
-				|| result instanceof Long) {
-			value = FplInteger.valueOf(((Number) result).longValue());
-		} else if (result instanceof Float || result instanceof Double) {
-			value = new FplDouble(((Number) result).doubleValue());
-		} else if (result instanceof Character) {
-			value = new FplString("" + result);
-		} else if (result instanceof String) {
-			value = new FplString((String) result);
-		} else if (result instanceof Boolean) {
-			boolean b = ((Boolean) result).booleanValue();
-			value = b ? FplInteger.valueOf(1) : null;
-		} else {
-			value = new FplWrapper(result);
-		}
-		return value;
+		return float.class.equals(clazz) || Float.class.equals(clazz) || double.class.equals(clazz)
+				|| Double.class.equals(clazz);
 	}
 
 	private Object[] evaluatedParams(FplValue[] params) throws EvaluationException {
@@ -256,22 +231,7 @@ public class FplWrapper extends AbstractFunction {
 		for (int i = 0; i < javaParams.length; i++) {
 			javaParams[i] = params[i + 1];
 		}
-		unwrap(javaParams);
+		UnWrapper.unwrap(javaParams);
 		return javaParams;
-	}
-	
-	private void unwrap(Object[] params) {
-		for (int i = 0; i < params.length; i++) {
-			Object p = params[i];
-			if (p instanceof FplWrapper) {
-				params[i] = ((FplWrapper) p).getInstance();
-			} else if (p instanceof FplString) {
-				params[i] = ((FplString) p).getContent();
-			} else if (p instanceof FplDouble) {
-				params[i] = Double.valueOf(((FplDouble) p).getValue());
-			} else if (p instanceof FplInteger) {
-				params[i] = Long.valueOf(((FplInteger) p).getValue());
-			}
-		}
 	}
 }
