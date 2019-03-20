@@ -2,6 +2,8 @@ package de.codecentric.fpl.datatypes;
 
 public class UnWrapper {
 
+	// TODO: FplObject <-> HashMap, FplList <-> List
+	
 	public static FplValue wrapResult(Object result) {
 		FplValue value;
 		if (result == null) {

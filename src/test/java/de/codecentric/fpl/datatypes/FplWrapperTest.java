@@ -69,6 +69,10 @@ public class FplWrapperTest extends AbstractFplTest {
 		public HashMap<Object, Object> returnHashMap() {
 			return new HashMap<>();
 		}
+		
+		public void methodWithException() {
+			throw new NullPointerException("nil");
+		}
 	}
 
 	public static class MissingNoArgConstructor {
@@ -80,6 +84,16 @@ public class FplWrapperTest extends AbstractFplTest {
 	public static class PrivateConstructor {
 		private PrivateConstructor() {
 			// nothing to do
+		}
+	}
+	
+	public static abstract class AbstractClass {
+		// nothing needed
+	}
+	
+	public static class ConstructorException {
+		public ConstructorException() {
+			throw new IllegalArgumentException("bumm");
 		}
 	}
 	
@@ -177,12 +191,42 @@ public class FplWrapperTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void testAbstractClass() throws Exception {
+		try {
+			evaluate("abstract-class", "(java-instance\"de.codecentric.fpl.datatypes.FplWrapperTest$AbstractClass\")");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("java.lang.InstantiationException", e.getMessage());
+		}
+	}
+
+	@Test
+	public void testConstructorWithException() throws Exception {
+		try {
+			evaluate("cons-exception", "(java-instance\"de.codecentric.fpl.datatypes.FplWrapperTest$ConstructorException\")");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("java.lang.IllegalArgumentException: bumm", e.getMessage());
+		}
+	}
+
+	@Test
 	public void testBadMethod() throws Exception {
 		try {
 			evaluate("bad-method", "((java-instance \"de.codecentric.fpl.datatypes.FplWrapperTest$Inner\") iDontKnowThisMethod)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("No matching method with name iDontKnowThisMethod found", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testMethodWithException() throws Exception {
+		try {
+			evaluate("method-with-exception", "((java-instance \"de.codecentric.fpl.datatypes.FplWrapperTest$Inner\") methodWithException)");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("java.lang.NullPointerException: nil", e.getMessage());
 		}
 	}
 }

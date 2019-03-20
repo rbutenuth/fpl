@@ -57,10 +57,8 @@ public class FplWrapper extends AbstractFunction {
 			Method method = findBestMatch(name, executables, javaParams);
 			Object result = method.invoke(instance, javaParams);
 			return UnWrapper.wrapResult(result);
-		} catch (InvocationTargetException e) {
-			throw new EvaluationException(e.getMessage(), e.getTargetException());
-		} catch (IllegalAccessException e) {
-			throw new EvaluationException(e.getMessage());
+		} catch (InvocationTargetException | IllegalAccessException e) {
+			throw new EvaluationException(e.getMessage(), e.getCause());
 		}
 	}
 
