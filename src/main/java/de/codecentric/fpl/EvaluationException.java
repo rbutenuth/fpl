@@ -19,7 +19,7 @@ public class EvaluationException extends Exception {
      * @param cause Root cause for this exception.
      */
     public EvaluationException(String message, Throwable cause) {
-        this(message);
+        this(message == null || message.length() == 0 ? cause.toString() : message);
         initCause(cause);
     }
 
