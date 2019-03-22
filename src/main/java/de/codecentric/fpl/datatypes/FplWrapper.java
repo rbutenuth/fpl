@@ -146,6 +146,7 @@ public class FplWrapper extends AbstractFunction {
 			return true;
 		}
 		Class<?> valueType = value.getClass();
+		// true - false fehlt
 		if (isNumberLike(parameterType) && isNumberLike(valueType)) {
 			return true;
 		}
@@ -165,8 +166,10 @@ public class FplWrapper extends AbstractFunction {
 		if (!clazz.isPrimitive()) {
 			return false;
 		}
-		// now clazz is primitive
-		return !(clazz.equals(void.class) || clazz.equals(char.class));
+		// now clazz is primitive (due to "if" line above),
+		// void and char are the only primitives which are not a number.
+		// void can't be a parameter or given value, so we just have to exclude char:
+		return !clazz.equals(char.class);
 	}
 
 	private int bestMatch(Executable[] executables, Object[] params) {

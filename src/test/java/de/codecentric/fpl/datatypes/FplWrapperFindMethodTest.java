@@ -1,12 +1,14 @@
 package de.codecentric.fpl.datatypes;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
 import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
+import de.codecentric.fpl.EvaluationException;
 
 public class FplWrapperFindMethodTest extends AbstractFplTest {
 
@@ -33,6 +35,10 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 			args = "byte b, short s, int i, long l, float f, double d";
 		}
 		
+		public ConstructorTestClass(int i) {
+			args= "int i";
+		}
+		
 		public ConstructorTestClass(boolean bool) {
 			args= "boolean bool";
 		}
@@ -55,6 +61,20 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 		
 		public String testMethod(String arg) {
 			return "String arg";
+		}
+		
+		public String testMethod(char arg) {
+			return "char arg";
+		}
+	}
+	
+	@Test
+	public void testConstructorNotFound() throws Exception {
+		try {
+			evaluate("noarg-cons", "(java-instance \"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\" \"foo\")");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("No matching method with name de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass found", e.getMessage());
 		}
 	}
 	
@@ -114,5 +134,9 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 		FplString tm = (FplString) evaluate("primitive-cons", //
 				"((java-instance\"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\") testMethod \"foo\")");
 		assertEquals("String arg", tm.getContent());
+	}
+	
+	private static class MethodTestClass {
+		
 	}
 }

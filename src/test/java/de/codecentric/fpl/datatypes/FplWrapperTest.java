@@ -157,7 +157,7 @@ public class FplWrapperTest extends AbstractFplTest {
 			evaluate("not-list", "(java-instance 42)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("Expect string, but got integer", e.getMessage());
+			assertEquals("Expect string or symbol, but got integer", e.getMessage());
 		}
 	}
 
@@ -224,7 +224,7 @@ public class FplWrapperTest extends AbstractFplTest {
 	@Test
 	public void testMethodWithException() throws Exception {
 		try {
-			evaluate("method-with-exception", "((java-instance \"de.codecentric.fpl.datatypes.FplWrapperTest$Inner\") methodWithException)");
+			evaluate("method-with-exception", "((java-instance de.codecentric.fpl.datatypes.FplWrapperTest$Inner) methodWithException)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("nil", e.getMessage());
