@@ -22,7 +22,7 @@ public class FplWrapper extends AbstractFunction {
 
 	public FplWrapper(String className, Object[] methodParams) throws EvaluationException {
 		super(className, Collections.emptyList(), true, "args...");
-		UnWrapper.unwrap(methodParams);
+		unwrap(methodParams);
 		try {
 			clazz = Class.forName(className);
 			Constructor<?>[] constructors = clazz.getConstructors();
@@ -30,9 +30,7 @@ public class FplWrapper extends AbstractFunction {
 			instance = constructor.newInstance(methodParams);
 		} catch (ClassNotFoundException e) {
 			throw new EvaluationException("unknown class: " + className);
-		} catch (InvocationTargetException e) {
-			throw new EvaluationException(e.getMessage(), e.getTargetException());
-		} catch (InstantiationException | IllegalAccessException e) {
+		} catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
 			throw new EvaluationException(e.getMessage(), e);
 		}
 	}
@@ -56,9 +54,9 @@ public class FplWrapper extends AbstractFunction {
 			Method[] executables = clazz.getMethods();
 			Method method = findBestMatch(name, executables, javaParams);
 			Object result = method.invoke(instance, javaParams);
-			return UnWrapper.wrapResult(result);
+			return UnWrapper.wrap(result);
 		} catch (InvocationTargetException | IllegalAccessException e) {
-			throw new EvaluationException(e.getMessage(), e.getCause());
+			throw new EvaluationException(e.getMessage(), e);
 		}
 	}
 
@@ -229,7 +227,14 @@ public class FplWrapper extends AbstractFunction {
 		for (int i = 0; i < javaParams.length; i++) {
 			javaParams[i] = params[i + 1];
 		}
-		UnWrapper.unwrap(javaParams);
+		unwrap(javaParams);
 		return javaParams;
 	}
+
+	private void unwrap(Object[] params) {
+		for (int i = 0; i < params.length; i++) {
+			params[i] = UnWrapper.unwrap((FplValue) params[i]);
+		}
+	}
+
 }

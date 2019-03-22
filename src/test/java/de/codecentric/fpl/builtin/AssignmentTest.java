@@ -44,7 +44,7 @@ public class AssignmentTest extends AbstractFplTest {
     		evaluate(scope, "put", "(put nil 20)");
     		fail("exception missing");
     	} catch (EvaluationException e) {
-    		assertEquals("nil is not a valid name", e.getMessage());
+    		assertEquals("nil or \"\" is not a valid name", e.getMessage());
     	}
     }
 
@@ -74,7 +74,7 @@ public class AssignmentTest extends AbstractFplTest {
     		evaluate(scope, "put-global", "(put-global nil 20)");
     		fail("exception missing");
     	} catch (EvaluationException e) {
-    		assertEquals("nil is not a valid name", e.getMessage());
+    		assertEquals("nil or \"\" is not a valid name", e.getMessage());
     	}
     }
 
@@ -178,7 +178,7 @@ public class AssignmentTest extends AbstractFplTest {
     		evaluate("instance", "(instance nil 42)");
     		fail("missing exception");
     	} catch (EvaluationException e) {
-    		assertEquals("nil is not a valid name", e.getMessage());
+    		assertEquals("nil or \"\" is not a valid name", e.getMessage());
     	}
     }   
 }

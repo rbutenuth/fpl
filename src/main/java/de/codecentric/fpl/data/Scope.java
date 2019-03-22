@@ -85,7 +85,6 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	 * 
 	 * @param value The value of the symbol, null values are allowed and will remove
 	 *              the mapping.
-	 * @throws ScopeException If scope is sealed (see {@link #isSealed()}).
 	 */
 	public void put(Named value) throws ScopeException {
 		put(value.getName(), value);
@@ -93,7 +92,7 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 
 	/**
 	 * Replace a value in this scope, if not there, search through scope chain until
-	 * value is found in a not sealed scope.
+	 * value is found.
 	 * 
 	 * @param key      Name of value to change, not null, not empty
 	 * @param newValue The new value, not <code>null</code>
@@ -123,7 +122,7 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	 * @param key   Name of value to change, not null, not empty
 	 * @param value The new value, not <code>null</code>
 	 * @return value
-	 * @throws ScopeException Is scope is sealed or value did already exist.
+	 * @throws ScopeException If value did already exist.
 	 */
 	public FplValue define(String key, FplValue value) throws ScopeException {
 		checkKeyNotEmpty(key);
@@ -152,7 +151,7 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	
 	private void checkKeyNotEmpty(String key) throws ScopeException {
 		if (key == null || key.length() == 0) {
-			throw new ScopeException("nil is not a valid name");
+			throw new ScopeException("nil or \"\" is not a valid name");
 		}
 	}
 }

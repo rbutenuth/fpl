@@ -8,6 +8,7 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -66,8 +67,10 @@ public class FplWrapperTest extends AbstractFplTest {
 			return 2.78;
 		}
 
-		public HashMap<Object, Object> returnHashMap() {
-			return new HashMap<>();
+		public Map<String, String> returnHashMap() {
+			Map<String, String> map = new HashMap<>();
+			map.put("foo", "bar");
+			return map;
 		}
 		
 		public void methodWithException() {
@@ -144,10 +147,8 @@ public class FplWrapperTest extends AbstractFplTest {
 		assertEquals(1, ((FplInteger)values.get(10)).getValue());
 		assertEquals(3.14, ((FplDouble)values.get(11)).getValue(), 0.00001);
 		assertEquals(2.78, ((FplDouble)values.get(12)).getValue(), 0.00001);
-		FplWrapper w = (FplWrapper) values.get(13);
-		@SuppressWarnings("unchecked")
-		HashMap<Object, Object> map = (HashMap<Object, Object>) w.getInstance();
-		assertTrue(map.isEmpty());
+		FplObject w = (FplObject) values.get(13);
+		assertEquals("bar", ((FplString)w.get("foo")).getContent());
 	}
 
 	@Test
@@ -206,7 +207,7 @@ public class FplWrapperTest extends AbstractFplTest {
 			evaluate("cons-exception", "(java-instance\"de.codecentric.fpl.datatypes.FplWrapperTest$ConstructorException\")");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("java.lang.IllegalArgumentException: bumm", e.getMessage());
+			assertEquals("bumm", e.getMessage());
 		}
 	}
 
@@ -226,7 +227,7 @@ public class FplWrapperTest extends AbstractFplTest {
 			evaluate("method-with-exception", "((java-instance \"de.codecentric.fpl.datatypes.FplWrapperTest$Inner\") methodWithException)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("java.lang.NullPointerException: nil", e.getMessage());
+			assertEquals("nil", e.getMessage());
 		}
 	}
 }

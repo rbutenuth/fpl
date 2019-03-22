@@ -1,5 +1,7 @@
 package de.codecentric.fpl;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Problems during evaluation.
  */
@@ -19,18 +21,38 @@ public class EvaluationException extends Exception {
      * @param cause Root cause for this exception.
      */
     public EvaluationException(String message, Throwable cause) {
-        this(message == null || message.length() == 0 ? cause.toString() : message);
+    	this(determineMessage(message, cause));
         initCause(cause);
     }
 
+    private static String determineMessage(String message, Throwable cause) {
+    	if (cause instanceof InvocationTargetException) {
+    		return cause.getCause().getMessage();
+    	} else {
+    		if (message == null || message.length() == 0) {
+    			return cause.toString();
+    		} else {
+    			return message;
+    		}
+    	}
+    }
+    
     /**
      * @param cause Root cause for this exception.
      */
     public EvaluationException(Throwable cause) {
-        this(cause.getMessage());
+        this(determineMessage(null, cause));
         initCause(cause);
     }
 
+    @Override
+    public Throwable initCause(Throwable cause) {
+    	if (cause instanceof InvocationTargetException) {
+    		cause = cause.getCause();
+    	}
+    	return super.initCause(cause);
+    }
+    
 	public void add(StackTraceElement stackTraceElement) {
 		StackTraceElement[] st = getStackTrace();
 		StackTraceElement[] newSt = new StackTraceElement[st.length + 1];

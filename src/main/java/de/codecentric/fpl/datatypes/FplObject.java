@@ -22,6 +22,10 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 	private Position position;
 	private List<FplValue> initCode;
 
+	public FplObject() {
+		position = Position.UNKNOWN;
+	}
+	
 	/**
 	 * @param position Where it is defined in the source
 	 */
@@ -38,11 +42,7 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 	 * @param next     Next outer {@link Scope}
 	 */
 	public FplObject(Position position, Scope next) throws IllegalArgumentException {
-		if (position == null) {
-			throw new IllegalArgumentException("position is null");
-		}
-		this.position = position;
-		initCode = Collections.emptyList();
+		this(position);
 		setNext(next);
 	}
 

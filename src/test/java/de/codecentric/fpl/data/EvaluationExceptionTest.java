@@ -19,7 +19,7 @@ public class EvaluationExceptionTest {
 	@Test
 	public void testWithCause() {
 		EvaluationException ee = new EvaluationException(new NullPointerException("baz"));
-		assertEquals("baz", ee.getMessage());
+		assertEquals("java.lang.NullPointerException: baz", ee.getMessage());
 		assertEquals("baz", ee.getCause().getMessage());
 	}
 

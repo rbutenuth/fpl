@@ -191,7 +191,7 @@ public class SimpleHttpTest {
 	@Test
 	public void testExpressionFollowedByFailure() throws IOException {
 		String response = SimpleHttpClient.post(baseUrl, user, password, stream("(+ 3 4)\n(/ 3 0)"), false);
-		assertEquals("7" + nl + nl + "/ by zero" + nl + "    at /(<unknown>:1)", response.trim());
+		assertEquals("7" + nl + nl + "java.lang.ArithmeticException: / by zero" + nl + "    at /(<unknown>:1)", response.trim());
 	}
 
 	@Test
@@ -204,7 +204,7 @@ public class SimpleHttpTest {
 		assertEquals("(lambda (a) (function-b a))" + nl + nl + //
 				"(lambda (a) (function-c a))" + nl + nl + //
 				"(lambda (a) (/ 1 a))" + nl + nl + //
-				"/ by zero" + nl + //
+				"java.lang.ArithmeticException: / by zero" + nl + //
 				"    at /(<unknown>:1)" + nl + //
 				"    at function-c(http-post:3)" + nl + //
 				"    at function-b(http-post:2)" + nl + //
