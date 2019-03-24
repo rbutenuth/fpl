@@ -11,13 +11,23 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 
 public class FplWrapper extends AbstractFunction {
-	private Class<?> clazz;
-	private Object instance;
+	private final Class<?> clazz;
+	private final Object instance;
 
 	public FplWrapper(Object value) {
 		super(value.getClass().getName(), Collections.emptyList(), true, "args...");
 		clazz = value.getClass();
 		instance = value;
+	}
+
+	public FplWrapper(String className) throws EvaluationException {
+		super(className, Collections.emptyList(), true, "args...");
+		try {
+			clazz = Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			throw new EvaluationException("unknown class: " + className);
+		}
+		instance = null;
 	}
 
 	public FplWrapper(String className, Object[] methodParams) throws EvaluationException {
@@ -91,7 +101,7 @@ public class FplWrapper extends AbstractFunction {
 			coerceParameters(executables[0], params);
 			return (T) executables[0]; // line needing the "unchecked"
 		} else {
-			int e = bestMatch(executables, params);
+			int e = bestMatch(executables, targetIndex, params);
 			coerceParameters(executables[e], params);
 			return (T) executables[e]; // line needing the "unchecked"
 		}
@@ -172,10 +182,10 @@ public class FplWrapper extends AbstractFunction {
 		return !clazz.equals(char.class);
 	}
 
-	private int bestMatch(Executable[] executables, Object[] params) {
+	private int bestMatch(Executable[] executables, int to, Object[] params) {
 		int bestValue = 0;
 		int bestIndex = 0;
-		for (int i = 0; i < executables.length && executables[i] != null; i++) {
+		for (int i = 0; i < to; i++) {
 			int value = computeMatchValue(executables[i], params);
 			if (value > bestValue) {
 				bestValue = value;

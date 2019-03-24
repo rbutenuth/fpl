@@ -94,8 +94,8 @@ public class Lambda {
 			}
 		});
 
-		scope.put(new AbstractFunction("java-instance", comment("Create an instce of a Java wrapper object."), true,
-				"class...") {
+		scope.put(new AbstractFunction("java-instance", comment("Create an instce of a Java wrapper object."), //
+				true, "class...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -115,6 +115,26 @@ public class Lambda {
 					methodParams[i] = value(scope, parameters[i + 1]);
 				}
 				return new FplWrapper(name, methodParams);
+			}
+		});
+
+		scope.put(new AbstractFunction("java-class", comment("Create an instce of a Java wrapper object."), //
+				false, "class") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				String name;
+				if (parameters[0] instanceof Symbol) {
+					name = ((Symbol) parameters[0]).getName();
+				} else {
+					FplValue fplClass = parameters[0].evaluate(scope);
+					if (fplClass instanceof FplString) {
+						name = ((FplString) fplClass).getContent();
+					} else {
+						throw new EvaluationException("Expect string or symbol, but got " + fplClass.typeName());
+					}
+				}
+				return new FplWrapper(name);
 			}
 		});
 	}

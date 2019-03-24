@@ -230,4 +230,36 @@ public class FplWrapperTest extends AbstractFplTest {
 			assertEquals("nil", e.getMessage());
 		}
 	}
+	
+	@Test
+	public void testStaticCallString() throws Exception {
+		FplInteger i = (FplInteger) evaluate("static", "((java-class \"java.lang.Integer\") valueOf 10)");
+		assertEquals(FplInteger.valueOf(10), i);
+	}
+	
+	@Test
+	public void testStaticCallSymbol() throws Exception {
+		FplInteger i = (FplInteger) evaluate("static", "((java-class java.lang.Integer) valueOf 10)");
+		assertEquals(FplInteger.valueOf(10), i);
+	}
+	
+	@Test
+	public void testStaticNeitherStringNotSymbol() throws Exception {
+		try {
+			evaluate("static-with-exception", "(java-class 42)");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("Expect string or symbol, but got integer", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testStaticClassNotFound() throws Exception {
+		try {
+			evaluate("static-with-exception", "(java-class foo.bar.UknownClass)");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("unknown class: foo.bar.UknownClass", e.getMessage());
+		}
+	}
 }
