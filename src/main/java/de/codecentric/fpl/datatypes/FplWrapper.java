@@ -6,11 +6,26 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 
 public class FplWrapper extends AbstractFunction {
+	private static final Map<Class<?>, Class<?>> primitive2Wrapper = new HashMap<>();
+	static {
+		primitive2Wrapper.put(Boolean.TYPE, Boolean.class);
+		primitive2Wrapper.put(Byte.TYPE, Byte.class);
+		primitive2Wrapper.put(Character.TYPE, Character.class);
+		primitive2Wrapper.put(Short.TYPE, Short.class);
+		primitive2Wrapper.put(Integer.TYPE, Integer.class);
+		primitive2Wrapper.put(Long.TYPE, Long.class);
+		primitive2Wrapper.put(Double.TYPE, Double.class);
+		primitive2Wrapper.put(Float.TYPE, Float.class);
+		primitive2Wrapper.put(Void.TYPE, Void.TYPE);
+	}
+	
 	private final Class<?> clazz;
 	private final Object instance;
 
@@ -110,24 +125,37 @@ public class FplWrapper extends AbstractFunction {
 	private void coerceParameters(Executable executable, Object[] values) {
 		Parameter[] parameters = executable.getParameters();
 		for (int i = 0; i < values.length; i++) {
+			Object value = values[0];
 			if (values[i] != null) {
 				Class<?> paramClass = parameters[i].getType();
-				if (paramClass.equals(Integer.class) || paramClass.equals(int.class)) {
-					values[i] = ((Number) values[i]).intValue();
+				if (paramClass.equals(Boolean.class) || paramClass.equals(boolean.class)) {
+					if (value instanceof Boolean) {
+						values[i] = (Boolean) value;
+					} else {
+						values[i] = ((Number) value).intValue() != 0;
+					}
+				} else if (paramClass.equals(Integer.class) || paramClass.equals(int.class)) {
+					values[i] = convertToNumber(value).intValue();
 				} else if (paramClass.equals(Short.class) || paramClass.equals(short.class)) {
-					values[i] = ((Number) values[i]).shortValue();
+					values[i] = convertToNumber(value).shortValue();
 				} else if (paramClass.equals(Byte.class) || paramClass.equals(byte.class)) {
-					values[i] = ((Number) values[i]).byteValue();
+					values[i] = convertToNumber(value).byteValue();
 				} else if (paramClass.equals(Long.class) || paramClass.equals(long.class)) {
-					values[i] = ((Number) values[i]).longValue();
+					values[i] = convertToNumber(value).longValue();
 				} else if (paramClass.equals(Float.class) || paramClass.equals(float.class)) {
-					values[i] = ((Number) values[i]).floatValue();
+					values[i] = convertToNumber(value).floatValue();
 				} else if (paramClass.equals(Double.class) || paramClass.equals(double.class)) {
-					values[i] = ((Number) values[i]).doubleValue();
-				} else if (paramClass.equals(Boolean.class) || paramClass.equals(boolean.class)) {
-					values[i] = ((Number) values[i]).intValue() != 0;
+					values[i] = convertToNumber(value).doubleValue();
 				}
 			}
+		}
+	}
+
+	private Number convertToNumber(Object value) {
+		if (value instanceof Boolean) {
+			return ((boolean) value) ? Integer.valueOf(1) : Integer.valueOf(0);
+		} else {
+			return ((Number) value);
 		}
 	}
 
@@ -156,7 +184,6 @@ public class FplWrapper extends AbstractFunction {
 			return true;
 		}
 		Class<?> valueType = value.getClass();
-		// true - false fehlt
 		if (isNumberLike(parameterType) && isNumberLike(valueType)) {
 			return true;
 		}
@@ -210,19 +237,39 @@ public class FplWrapper extends AbstractFunction {
 		if (pType.equals(vType)) {
 			return 100;
 		}
-		if (isIntegralNumber(pType) == isIntegralNumber(vType)) {
+		pType = primitive2wrapperClass(pType);
+		vType = primitive2wrapperClass(vType);
+		if (pType.equals(vType)) {
+			return 80;
+		}
+		if (isIntegralNumber(pType) && isIntegralNumber(vType)) {
 			return 60;
 		}
-		if (isFractionalNumber(pType) == isFractionalNumber(vType)) {
-			return 60;
+		if (isDouble(pType) && isDouble(vType)) {
+			return 40;
 		}
-		if (pType.isAssignableFrom(vType)) {
-			return 50;
+		if (isFloat(pType) && isFloat(vType)) {
+			return 40;
+		}
+		if (vType != null && pType.isAssignableFrom(vType)) {
+			return 30;
 		}
 
 		return 0;
 	}
 
+	private Class<?> primitive2wrapperClass(Class<?> clazz) {
+		if (clazz == null) {
+			return null;
+		}
+		Class<?> match = primitive2Wrapper.get(clazz);
+		if (match == null) {
+			return clazz;
+		} else {
+			return match;
+		}
+	}
+	
 	private boolean isIntegralNumber(Class<?> clazz) {
 		return byte.class.equals(clazz) || Byte.class.equals(clazz) //
 				|| short.class.equals(clazz) || Short.class.equals(clazz) //
@@ -230,9 +277,12 @@ public class FplWrapper extends AbstractFunction {
 				|| long.class.equals(clazz) || Long.class.equals(clazz);
 	}
 
-	private boolean isFractionalNumber(Class<?> clazz) {
-		return float.class.equals(clazz) || Float.class.equals(clazz) || double.class.equals(clazz)
-				|| Double.class.equals(clazz);
+	private boolean isDouble(Class<?> clazz) {
+		return double.class.equals(clazz) || Double.class.equals(clazz);
+	}
+
+	private boolean isFloat(Class<?> clazz) {
+		return float.class.equals(clazz) || Float.class.equals(clazz);
 	}
 
 	private Object[] evaluatedParams(FplValue[] params) throws EvaluationException {
