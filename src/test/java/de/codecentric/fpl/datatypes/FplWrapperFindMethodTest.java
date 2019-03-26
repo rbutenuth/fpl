@@ -86,6 +86,18 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 		public String testMethod(Double d, String arg) {
 			return "Double d, String arg";
 		}
+		
+		public String booleanMethod(boolean arg) {
+			return "booleanMethod(boolean arg)->" + arg;
+		}
+		
+		public String fractionalMethod(Double d) {
+			return "Double d";
+		}
+		
+		public String fractionalMethod(Float t) {
+			return "Float t";
+		}
 	}
 	
 	@Test
@@ -181,5 +193,45 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 		parameters[1] = new FplWrapper(Boolean.TRUE);
 		FplValue result = w.callInternal(null, parameters);
 		assertEquals("boolean arg", ((FplString)result).getContent());
+	}
+	
+	@Test
+	public void testCallBooleanMethodWithIntArg() throws Exception {
+		FplString tm = (FplString) evaluate("primitive-cons", //
+				"((java-instance de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass) booleanMethod 1)");
+		assertEquals("booleanMethod(boolean arg)->true", tm.getContent());
+		tm = (FplString) evaluate("primitive-cons", //
+				"((java-instance de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass) booleanMethod 0)");
+		assertEquals("booleanMethod(boolean arg)->false", tm.getContent());
+	}
+	
+	@Test
+	public void testFractionalFloatCall() throws Exception {
+		FplWrapper w = new FplWrapper(ConstructorTestClass.class.getName(), new FplValue[0]);
+		FplValue[] parameters = new FplValue[2];
+		parameters[0] = new FplString("fractionalMethod"); 
+		parameters[1] = new FplWrapper(Float.valueOf(3.14f));
+		FplValue result = w.callInternal(null, parameters);
+		assertEquals("Float t", ((FplString)result).getContent());
+	}
+
+	@Test
+	public void testFractionalDoubleCall() throws Exception {
+		FplWrapper w = new FplWrapper(ConstructorTestClass.class.getName(), new FplValue[0]);
+		FplValue[] parameters = new FplValue[2];
+		parameters[0] = new FplString("fractionalMethod"); 
+		parameters[1] = new FplWrapper(Double.valueOf(2.78));
+		FplValue result = w.callInternal(null, parameters);
+		assertEquals("Double d", ((FplString)result).getContent());
+	}
+	
+	@Test
+	public void testParentChild() throws Exception {
+		FplWrapper w = new FplWrapper(ConstructorTestClass.class.getName(), new FplValue[0]);
+		FplValue[] parameters = new FplValue[2];
+		parameters[0] = new FplString("fractionalMethod"); 
+		parameters[1] = new FplWrapper(Double.valueOf(2.78));
+		FplValue result = w.callInternal(null, parameters);
+		assertEquals("Double d", ((FplString)result).getContent());
 	}
 }

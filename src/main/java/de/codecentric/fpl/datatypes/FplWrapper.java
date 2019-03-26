@@ -135,27 +135,19 @@ public class FplWrapper extends AbstractFunction {
 						values[i] = ((Number) value).intValue() != 0;
 					}
 				} else if (paramClass.equals(Integer.class) || paramClass.equals(int.class)) {
-					values[i] = convertToNumber(value).intValue();
+					values[i] = ((Number) value).intValue();
 				} else if (paramClass.equals(Short.class) || paramClass.equals(short.class)) {
-					values[i] = convertToNumber(value).shortValue();
+					values[i] = ((Number) value).shortValue();
 				} else if (paramClass.equals(Byte.class) || paramClass.equals(byte.class)) {
-					values[i] = convertToNumber(value).byteValue();
+					values[i] = ((Number) value).byteValue();
 				} else if (paramClass.equals(Long.class) || paramClass.equals(long.class)) {
-					values[i] = convertToNumber(value).longValue();
+					values[i] = ((Number) value).longValue();
 				} else if (paramClass.equals(Float.class) || paramClass.equals(float.class)) {
-					values[i] = convertToNumber(value).floatValue();
+					values[i] = ((Number) value).floatValue();
 				} else if (paramClass.equals(Double.class) || paramClass.equals(double.class)) {
-					values[i] = convertToNumber(value).doubleValue();
+					values[i] = ((Number) value).doubleValue();
 				}
 			}
-		}
-	}
-
-	private Number convertToNumber(Object value) {
-		if (value instanceof Boolean) {
-			return ((boolean) value) ? Integer.valueOf(1) : Integer.valueOf(0);
-		} else {
-			return ((Number) value);
 		}
 	}
 
@@ -245,14 +237,8 @@ public class FplWrapper extends AbstractFunction {
 		if (isIntegralNumber(pType) && isIntegralNumber(vType)) {
 			return 60;
 		}
-		if (isDouble(pType) && isDouble(vType)) {
-			return 40;
-		}
-		if (isFloat(pType) && isFloat(vType)) {
-			return 40;
-		}
-		if (vType != null && pType.isAssignableFrom(vType)) {
-			return 30;
+		if (isFractionalNumber(pType) && isFractionalNumber(vType)) {
+			return 60;
 		}
 
 		return 0;
@@ -271,18 +257,12 @@ public class FplWrapper extends AbstractFunction {
 	}
 	
 	private boolean isIntegralNumber(Class<?> clazz) {
-		return byte.class.equals(clazz) || Byte.class.equals(clazz) //
-				|| short.class.equals(clazz) || Short.class.equals(clazz) //
-				|| int.class.equals(clazz) || Integer.class.equals(clazz) //
-				|| long.class.equals(clazz) || Long.class.equals(clazz);
+		return Byte.class.equals(clazz) || Short.class.equals(clazz) //
+				|| Integer.class.equals(clazz) || Long.class.equals(clazz);
 	}
 
-	private boolean isDouble(Class<?> clazz) {
-		return double.class.equals(clazz) || Double.class.equals(clazz);
-	}
-
-	private boolean isFloat(Class<?> clazz) {
-		return float.class.equals(clazz) || Float.class.equals(clazz);
+	private boolean isFractionalNumber(Class<?> clazz) {
+		return Double.class.equals(clazz) || Float.class.equals(clazz);
 	}
 
 	private Object[] evaluatedParams(FplValue[] params) throws EvaluationException {
