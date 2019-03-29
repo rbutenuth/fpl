@@ -12,21 +12,21 @@ import de.codecentric.fpl.datatypes.list.FplList;
 public class AbstractListTest {
 
 	/**
-	 * @param start First element (including)
-	 * @param end   Last element in list (including)
+	 * @param from First element (including)
+	 * @param to   Last element in list (excluding)
 	 * @param list  List to check, must contain elements from <code>start</code> and
 	 *              <code>end</code>
 	 */
-	protected void check(int start, int end, FplList list) throws EvaluationException {
-		assertEquals("List size", end - start + 1, list.size());
+	protected void check(int from, int to, FplList list) throws EvaluationException {
+		assertEquals("List size", to - from, list.size());
 		Iterator<FplValue> iter = list.iterator();
-		int value = start;
+		int value = from;
 		while (iter.hasNext()) {
 			FplInteger next = (FplInteger) iter.next();
 			assertEquals(value, next.getValue());
 			value++;
 		}
-		assertEquals(end + 1, value);
+		assertEquals(to, value);
 	}
 
 	protected FplList create(int from, int to, int... bucketSizes) {

@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.list.FplList;
 
 public class Constructors extends AbstractListTest {
 	@Test
@@ -42,7 +41,7 @@ public class Constructors extends AbstractListTest {
 			values[i] = value(i);
 		}
 		FplList list = new FplList(values);
-		check(0, values.length - 1, list);
+		check(0, values.length, list);
 		assertEquals(1, list.numberOfBuckets());
 	}
 
@@ -55,7 +54,7 @@ public class Constructors extends AbstractListTest {
 			values[j] = value(i);
 		}
 		FplList list = new FplList(Arrays.asList(values));
-		check(start, end, list);
+		check(start, end + 1, list);
 	}
 
 	@Test
@@ -65,7 +64,7 @@ public class Constructors extends AbstractListTest {
 			values[i] = value(i);
 		}
 		FplList list = new FplList(Arrays.asList(values));
-		check(0, values.length - 1, list);
+		check(0, values.length, list);
 		assertEquals(1, list.numberOfBuckets());
 	}
 

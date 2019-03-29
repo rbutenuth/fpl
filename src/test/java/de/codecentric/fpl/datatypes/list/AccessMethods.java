@@ -17,7 +17,7 @@ public class AccessMethods extends AbstractListTest {
 	public void createAndCheck() throws EvaluationException {
 		FplList list = create(0, 10);
 		assertEquals(10, list.size());
-		check(0, 9, list);
+		check(0, 10, list);
 	}
 	
 	@Test(expected = NoSuchElementException.class)
@@ -95,19 +95,19 @@ public class AccessMethods extends AbstractListTest {
 	@Test
 	public void removeFirstSmall() throws EvaluationException {
 		FplList list = create(0, 6).removeFirst();
-		check(1, 5, list);
+		check(1, 6, list);
 	}
 	
 	@Test
 	public void removeFirstWhenFirstBucketIsOfSizeOne() throws EvaluationException {
 		FplList list = create(0, 10, 1, 9).removeFirst();
-		check(1, 9, list);
+		check(1, 10, list);
 	}
 	
 	@Test
 	public void removeFirstWhenFirstBucketIsOfSizeTwo() throws EvaluationException {
 		FplList list = create(0, 11, 2, 9).removeFirst();
-		check(1, 10, list);
+		check(1, 11, list);
 	}
 	
 	@Test(expected = EvaluationException.class)
@@ -119,13 +119,13 @@ public class AccessMethods extends AbstractListTest {
 	@Test
 	public void removeLastWhenLastBucketIsOfSizeOne() throws EvaluationException {
 		FplList list = create(0, 10, 9, 1).removeLast();
-		check(0, 8, list);
+		check(0, 9, list);
 	}
 	
 	@Test
 	public void removeLastWhenLastBucketIsOfSizeTwo() throws EvaluationException {
 		FplList list = create(0, 11, 9, 2).removeLast();
-		check(0, 9, list);
+		check(0, 10, list);
 	}
 	
 	@Test(expected = EvaluationException.class)

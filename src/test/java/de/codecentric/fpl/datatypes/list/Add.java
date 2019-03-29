@@ -25,21 +25,21 @@ public class Add extends AbstractListTest {
 	public void testAddAtEndBigCarry() throws EvaluationException {
 		FplList list = create(0, 100).append(create(100, 200));
 		list = list.addAtEnd(value(200));
-		check(0, 200, list);
+		check(0, 201, list);
 	}
 
 	@Test
 	public void testAddOnLongArray() throws EvaluationException {
 		FplList list = create(0, 100);
 		list = list.addAtEnd(value(100));
-		check(0, 100, list);
+		check(0, 101, list);
 	}
 
 	@Test
 	public void testAddOverflowInBigBucket() throws EvaluationException {
 		FplList list = create(0, 100).append(create(100, 108));
 		list = list.addAtEnd(value(108));
-		check(0, 108, list);
+		check(0, 109, list);
 	}
 
 	@Test
@@ -59,27 +59,27 @@ public class Add extends AbstractListTest {
 	public void testAddAtFrontBigCarry() throws EvaluationException {
 		FplList list = create(1, 101).append(create(101, 201));
 		list = list.addAtStart(value(0));
-		check(0, 200, list);
+		check(0, 201, list);
 	}
 
 	@Test
 	public void testAddAtFrontOnLongArray() throws EvaluationException {
 		FplList list = create(1, 101);
 		list = list.addAtStart(value(0));
-		check(0, 100, list);
+		check(0, 101, list);
 	}
 
 	@Test
 	public void testAddAtFrontOverflowInBigBucket() throws EvaluationException {
 		FplList list = create(1, 9).append(create(9, 109));
 		list = list.addAtStart(value(0));
-		check(0, 108, list);
+		check(0, 109, list);
 	}
 	
 	@Test
 	public void testAddAtFrontOverflowInSmallBucket() throws EvaluationException {
 		FplList list = create(1, 9).append(create(9, 17));
 		list = list.addAtStart(value(0));
-		check(0, 16, list);
+		check(0, 17, list);
 	}
 }

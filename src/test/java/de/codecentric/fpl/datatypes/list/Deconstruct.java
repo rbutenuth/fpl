@@ -28,14 +28,14 @@ public class Deconstruct extends AbstractListTest {
 	public void testRemoveFirstSizeHundred() throws EvaluationException {
 		FplList list = create(0, 100);
 		FplList rest = list.removeFirst();
-		check(1, 99, rest);
+		check(1, 100, rest);
 	}
 
 	@Test
 	public void testRemoveFirstSizeFiftyAppendFifty() throws EvaluationException {
 		FplList list = create(0, 50).append(create(50, 100));
 		FplList rest = list.removeFirst();
-		check(1, 99, rest);
+		check(1, 100, rest);
 	}
 
 	@Test
@@ -65,14 +65,14 @@ public class Deconstruct extends AbstractListTest {
 	public void testRemoveLastSizeHundred() throws EvaluationException {
 		FplList list = create(0, 100);
 		FplList rest = list.removeLast();
-		check(0, 98, rest);
+		check(0, 99, rest);
 	}
 
 	@Test
 	public void testRemoveLastSizeFiftyAppendFifty() throws EvaluationException {
 		FplList list = create(0, 50).append(create(50, 100));
 		FplList rest = list.removeLast();
-		check(0, 98, rest);
+		check(0, 99, rest);
 	}
 
 	@Test
