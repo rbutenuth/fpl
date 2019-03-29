@@ -76,4 +76,27 @@ public class Constructors extends AbstractListTest {
 		bucketSizes[0] = 1;
 		new FplList(values, bucketSizes);
 	}
+	
+	private SizedIterator<FplValue> createIterator(int from, int to) {
+		return new SizedIterator<FplValue>() {
+			
+			@Override
+			public FplValue next() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public boolean hasNext() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public int size() {
+				// TODO Auto-generated method stub
+				return 0;
+			}
+		};
+	}
 }

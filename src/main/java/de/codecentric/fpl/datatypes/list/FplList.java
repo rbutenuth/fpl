@@ -3,6 +3,7 @@ package de.codecentric.fpl.datatypes.list;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.copyOf;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -79,12 +80,40 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			shape[0] = values;
 		}
 	}
-
+	
+	public static FplList fromIterator(Iterator<FplValue> iter) {
+		if (iter instanceof SizedIterator) {
+			SizedIterator<FplValue> sIter = (SizedIterator<FplValue>) iter;
+			int size = sIter.size();
+			if (size <= BASE_SIZE) {
+				FplValue[] linear = new FplValue[size];
+				for (int i = 0; i < size; i++) {
+					linear[i] = sIter.next();
+				}
+				return new FplList(linear);
+			} else {
+				FplValue[][] shape = createEmptyShape(size);
+				for (int bucketsIdx = 0; bucketsIdx < shape.length; bucketsIdx++) {
+					FplValue[] bucket = shape[bucketsIdx];
+					for (int inBucketIdx = 0; inBucketIdx < bucket.length; inBucketIdx++) {
+							bucket[inBucketIdx] = sIter.next();
+					}
+				}
+				return new FplList(shape);
+			}
+		} else {
+			List<FplValue> values = new ArrayList<>();
+			while (iter.hasNext()) {
+				values.add(iter.next());
+			}
+			return new FplList(values);
+		}
+	}
+	
 	/**
 	 * Create a list.
 	 * 
-	 * @param values      Array with values, the values will NOT be copied, so don't
-	 *                    modify the array after calling this method!
+	 * @param values      Array with values, the values be copied.
 	 * 
 	 * @param bucketSizes The size of the used buckets. The of the sizes must match
 	 *                    the length of <code>values</code>
@@ -620,7 +649,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 * @param size It place for this number of values.
 	 * @return Array of arrays, all values <code>null</code>
 	 */
-	private FplValue[][] createEmptyShape(int size) {
+	private static FplValue[][] createEmptyShape(int size) {
 		int numBuckets = 2;
 		int bucketSize = 3 * BASE_SIZE / 4;
 		int sizeInBuckets = 2 * bucketSize;
@@ -835,10 +864,11 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	@Override
 	public Iterator<FplValue> iterator() {
 		if (linear == null) {
-			return new Iterator<FplValue>() {
+			return new SizedIterator<FplValue>() {
 				private int bucketsIdx = 0;
 				private int inBucketIdx = 0;
 				private boolean atEnd = isEmpty();
+				private int cachedSize = 0;
 
 				@Override
 				public boolean hasNext() {
@@ -859,9 +889,17 @@ public class FplList implements FplValue, Iterable<FplValue> {
 					}
 					return result;
 				}
+
+				@Override
+				public int size() {
+					if (cachedSize == 0) {
+						cachedSize = FplList.this.size();
+					}
+					return cachedSize;
+				}
 			};
 		} else {
-			return new Iterator<FplValue>() {
+			return new SizedIterator<FplValue>() {
 				private int pos = 0;
 
 				@Override
@@ -875,6 +913,11 @@ public class FplList implements FplValue, Iterable<FplValue> {
 						throw new NoSuchElementException();
 					}
 					return linear[pos++];
+				}
+
+				@Override
+				public int size() {
+					return linear.length;
 				}
 			};
 		}

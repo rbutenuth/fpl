@@ -26,21 +26,21 @@ public class Deconstruct extends AbstractListTest {
 
 	@Test
 	public void testRemoveFirstSizeHundred() throws EvaluationException {
-		FplList list = create(0, 99);
+		FplList list = create(0, 100);
 		FplList rest = list.removeFirst();
 		check(1, 99, rest);
 	}
 
 	@Test
 	public void testRemoveFirstSizeFiftyAppendFifty() throws EvaluationException {
-		FplList list = create(0, 49).append(create(50, 99));
+		FplList list = create(0, 50).append(create(50, 100));
 		FplList rest = list.removeFirst();
 		check(1, 99, rest);
 	}
 
 	@Test
 	public void testRemoveFirstSizeTwoFromAppend() throws EvaluationException {
-		FplList list = create(1, 1).append(create(2, 2));
+		FplList list = create(1, 2).append(create(2, 3));
 		FplList rest = list.removeFirst();
 		assertEquals(1, rest.size());
 		assertEquals(value(2), rest.get(0));
@@ -63,21 +63,21 @@ public class Deconstruct extends AbstractListTest {
 
 	@Test
 	public void testRemoveLastSizeHundred() throws EvaluationException {
-		FplList list = create(0, 99);
+		FplList list = create(0, 100);
 		FplList rest = list.removeLast();
 		check(0, 98, rest);
 	}
 
 	@Test
 	public void testRemoveLastSizeFiftyAppendFifty() throws EvaluationException {
-		FplList list = create(0, 49).append(create(50, 99));
+		FplList list = create(0, 50).append(create(50, 100));
 		FplList rest = list.removeLast();
 		check(0, 98, rest);
 	}
 
 	@Test
 	public void testRemoveLastSizeTwoFromAppend() throws EvaluationException {
-		FplList list = create(1, 1).append(create(2, 2));
+		FplList list = create(1, 2).append(create(2, 3));
 		FplList rest = list.removeLast();
 		assertEquals(1, rest.size());
 		assertEquals(value(1), rest.get(0));

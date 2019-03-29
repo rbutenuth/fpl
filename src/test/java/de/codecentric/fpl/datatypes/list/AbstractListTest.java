@@ -29,23 +29,23 @@ public class AbstractListTest {
 		assertEquals(end + 1, value);
 	}
 
-	protected FplList create(int start, int end, int... bucketSizes) {
-		return new FplList(createValues(start, end), bucketSizes);
+	protected FplList create(int from, int to, int... bucketSizes) {
+		return new FplList(createValues(from, to), bucketSizes);
 	}
 
 	/**
-	 * @param start first element of generated list (including)
-	 * @param end   last element of generated list (including)
+	 * @param from first element of generated list (including)
+	 * @param to   last element of generated list (excluding)
 	 * @return List of {@link FplInteger}, including <code>start</code> and
 	 *         <code>end</code>
 	 */
-	protected FplList create(int start, int end) {
-		return new FplList(createValues(start, end));
+	protected FplList create(int from, int to) {
+		return new FplList(createValues(from, to));
 	}
 
-	private FplValue[] createValues(int start, int end) {
-		FplValue[] values = new FplValue[end - start + 1];
-		for (int i = start, j = 0; i <= end; i++, j++) {
+	private FplValue[] createValues(int from, int to) {
+		FplValue[] values = new FplValue[to - from];
+		for (int i = from, j = 0; i < to; i++, j++) {
 			values[j] = value(i);
 		}
 		return values;
