@@ -109,8 +109,6 @@ public class FplLambda extends AbstractFunction {
 		FplValue result = null;
 		for (int i = 0; i < code.length; i++) {
 			result = code[i].evaluate(callScope);
-			callScope.setDollar(result);
-			
 		}
 		return result;
 	}

@@ -150,13 +150,6 @@ public class LambdaTest extends AbstractFplTest {
 	}
 	
 	@Test
-	public void testDeFunctionDollar() throws Exception {
-		evaluate("dollar-def", "(def-function dollar (a b) (+ a b) (* 4 $))");
-		FplInteger i = (FplInteger) evaluate("last-run", "(dollar 1 2)");
-		assertEquals(12, i.getValue());
-	}
-	
-	@Test
 	public void testDefFunctionSquare() throws Exception {
 		FplLambda f = (FplLambda) evaluate("square", "(def-function square (x) (* x x))");
 		assertEquals(1, f.getMinimumNumberOfParameters());

@@ -26,19 +26,18 @@ public class Loop {
 	 */
 	public static void put(Scope scope) throws ScopeException {
 
-		// (while condition expression...)
-//        scope.putFunction(new Function("while", "condition", "code...") {
-//            @Override
-//            public FplObject call(Scope scope, FplObject[] parameters) throws EvaluationException {
-//                FplObject result = null;
-//                while (evaluateToBoolean(scope, parameters[0])) {
-//                    for (int i = 1; i < parameters.length; i++) {
-//                        result = parameters[i].evaluate(scope);
-//                    }
-//                }
-//                return result;
-//            }
-//        });
+        scope.put(new AbstractFunction("while", comment("Execute code while condition returns true."), true, "condition", "code...") {
+            @Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+                FplValue result = null;
+                while (evaluateToBoolean(scope, parameters[0])) {
+                    for (int i = 1; i < parameters.length; i++) {
+                        result = parameters[i].evaluate(scope);
+                    }
+                }
+                return result;
+            }
+        });
 
 		scope.put(new AbstractFunction("map", comment("Apply a lambda to all list elements."), false, "func", "list") {
 			@Override

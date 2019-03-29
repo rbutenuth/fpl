@@ -55,7 +55,7 @@ public class LoopTest extends AbstractFplTest {
 	}
 
     @Test
-    public void testMapNotAList() throws Exception {
+    public void mapNotAList() throws Exception {
         evaluate("input", "(def input 4)");
 		evaluate("square", "(def-function square (x) (* x x))");;
         try {
@@ -100,5 +100,15 @@ public class LoopTest extends AbstractFplTest {
 		}
 		assertFalse(iter.hasNext());
 	}
-	
+
+	@Test
+	public void whileLoop() throws Exception {
+		evaluate("empty", "(def li '())");
+		evaluate("count", "(def count 0)");
+		evaluate("while", "(while (lt count 10) (set li (cons count li)) (set count (+ count 1)))");
+		FplValue count = scope.get("count");
+		assertEquals(FplInteger.valueOf(10), count);
+		FplList list = (FplList) scope.get("li");
+		assertEquals(10, list.size());
+	}
 }
