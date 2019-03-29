@@ -110,5 +110,8 @@ public class LoopTest extends AbstractFplTest {
 		assertEquals(FplInteger.valueOf(10), count);
 		FplList list = (FplList) scope.get("li");
 		assertEquals(10, list.size());
+		for (int i = 0; i < 9; i++) {
+			assertEquals(FplInteger.valueOf(i), list.get(9 - i));
+		}
 	}
 }
