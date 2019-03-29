@@ -25,10 +25,18 @@ public class LoopTest extends AbstractFplTest {
 	}
 	
 	@Test
+	public void filterOfList() throws Exception {
+		evaluate("filter", "(def-function my-filter (x) (lt x 3))");;
+		FplList filtered = (FplList) evaluate("filter", "(filter my-filter '(1 2 3 4))");
+		assertEquals(2, filtered.size());
+		for (int i = 1; i <= 2; i++) {
+			assertEquals(FplInteger.valueOf(i), filtered.get(i - 1));
+		}
+	}
+
+	@Test
 	public void mapOfSmallList() throws Exception {
 		evaluate("square", "(def-function square (x) (* x x))");;
-		FplInteger square = (FplInteger) evaluate("call", "(square 4)");
-		assertEquals(FplInteger.valueOf(16), square);
 		FplList squares = (FplList) evaluate("map", "(map square '(1 2 3 4))");
 		assertEquals(4, squares.size());
 		for (int i = 1; i <= 4; i++) {
@@ -39,8 +47,6 @@ public class LoopTest extends AbstractFplTest {
 	@Test
 	public void mapOfLargeList() throws Exception {
 		evaluate("square", "(def-function square (x) (* x x))");;
-		FplInteger square = (FplInteger) evaluate("call", "(square 4)");
-		assertEquals(FplInteger.valueOf(16), square);
 		FplList squares = (FplList) evaluate("map", "(map square '(1 2 3 4 5 6 7 8 9 10))");
 		assertEquals(10, squares.size());
 		for (int i = 1; i <= 10; i++) {

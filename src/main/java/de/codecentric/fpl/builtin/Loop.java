@@ -2,7 +2,9 @@ package de.codecentric.fpl.builtin;
 
 import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.TunnelException;
@@ -66,6 +68,23 @@ public class Loop {
 				} catch (TunnelException e) {
 					throw e.getTunnelledException();
 				}
+			}
+		});
+
+		scope.put(new AbstractFunction("filter", comment("Filter a list elements."), false, "func", "list") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				FplList list = evaluateToList(scope, parameters[1]);
+				FplLambda function = evaluateToLambda(scope, parameters[0]);
+				Iterator<FplValue> iter = list.iterator();
+				List<FplValue> results = new ArrayList<>();
+				while (iter.hasNext()) {
+					FplValue value = iter.next();
+					if (evaluateToBoolean(scope, function.call(scope, new FplValue[] { value }))) {
+						results.add(value);
+					}
+				}
+				return new FplList(results);
 			}
 		});
 	}
