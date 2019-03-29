@@ -17,7 +17,7 @@ public class AbstractListTest {
 	 * @param list  List to check, must contain elements from <code>start</code> and
 	 *              <code>end</code>
 	 */
-	protected void check(int from, int to, FplList list) throws EvaluationException {
+	public static void check(int from, int to, FplList list) throws EvaluationException {
 		assertEquals("List size", to - from, list.size());
 		Iterator<FplValue> iter = list.iterator();
 		int value = from;
@@ -29,7 +29,7 @@ public class AbstractListTest {
 		assertEquals(to, value);
 	}
 
-	protected FplList create(int from, int to, int... bucketSizes) {
+	public static FplList create(int from, int to, int... bucketSizes) {
 		return new FplList(createValues(from, to), bucketSizes);
 	}
 
@@ -39,11 +39,11 @@ public class AbstractListTest {
 	 * @return List of {@link FplInteger}, including <code>start</code> and
 	 *         <code>end</code>
 	 */
-	protected FplList create(int from, int to) {
+	public static FplList create(int from, int to) {
 		return new FplList(createValues(from, to));
 	}
 
-	private FplValue[] createValues(int from, int to) {
+	public static  FplValue[] createValues(int from, int to) {
 		FplValue[] values = new FplValue[to - from];
 		for (int i = from, j = 0; i < to; i++, j++) {
 			values[j] = value(i);
@@ -51,7 +51,7 @@ public class AbstractListTest {
 		return values;
 	}
 
-	protected FplInteger value(int i) {
+	public static FplInteger value(int i) {
 		return FplInteger.valueOf(i);
 	}
 }

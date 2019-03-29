@@ -115,8 +115,8 @@ public class Constructors extends AbstractListTest {
 		check(0, 100, list);
 	}
 	
-	private SizedIterator<FplValue> createIterator(int from, int to) {
-		return new SizedIterator<FplValue>() {
+	private Iterator<FplValue> createIterator(int from, int to) {
+		return new Iterator<FplValue>() {
 			int nextValue = from;
 			
 			@Override
@@ -131,11 +131,6 @@ public class Constructors extends AbstractListTest {
 			@Override
 			public boolean hasNext() {
 				return nextValue < to;
-			}
-			
-			@Override
-			public int size() {
-				return to - from;
 			}
 		};
 	}

@@ -2,7 +2,6 @@ package de.codecentric.fpl.builtin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
 import java.util.Iterator;
 
@@ -188,31 +187,6 @@ public class ListFunctionsTest extends AbstractFplTest {
         }
     }
 
-    @Test
-    public void testMap() throws Exception {
-        FplList input = (FplList) evaluate("input", "'(1 2 3)");
-        scope.put("input", input);
-        evaluate("square", "(def-function square (x) (* x x))");
-        FplList result = (FplList) evaluate("map-test", "(map input square)");
-        for (int i = 1; i <= 3; i++) {
-        	FplInteger r = (FplInteger) result.get(i - 1);
-        	assertEquals(i * i, r.getValue());
-        }
-    }
-    
-    @Test
-    public void testMapNotAFunction() throws Exception {
-        FplList input = (FplList) evaluate("input", "'(1 2 3)");
-        scope.put("input", input);
-        evaluate("square", "(put square 4)");
-        try {
-        	evaluate("map-test", "(map input square)");
-        	fail("should not be reached.");
-        } catch (EvaluationException expected) {
-        	assertEquals("Second parameter of map must be function.", expected.getMessage());
-        }
-    }
-    
     @Test(expected = EvaluationException.class)
     public void testTooManyParameters() throws Exception {
     	evaluate("pair", "(def-function pair (a b) (list a b))");

@@ -173,6 +173,26 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	}
 
 	/**
+	 * Evaluate an expression and cast the result to a {@link FplLambda}.
+	 * 
+	 * @param scope
+	 *            Scope used for evaluation.
+	 * @param expression
+	 *            Expression to evaluate.
+	 * @return A FplLambda.
+	 * @throws EvaluationException
+	 *             If <code>expression</code> does not evaluate to a FplLambda.
+	 */
+	protected FplLambda evaluateToLambda(Scope scope, FplValue expression) throws EvaluationException {
+		FplValue value = expression.evaluate(scope);
+		if (value instanceof FplLambda) {
+			return (FplLambda) value;
+		} else {
+			throw new EvaluationException("Not a lambda: " + value);
+		}
+	}
+
+	/**
 	 * Evaluate an expression, check for boolean value. <code>null</code> (nil), the
 	 * integer value 0, and an empty list are <code>false</code>, everything else is
 	 * <code>true</code>

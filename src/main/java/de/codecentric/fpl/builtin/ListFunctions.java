@@ -2,15 +2,12 @@ package de.codecentric.fpl.builtin;
 
 import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
 
-import java.util.Iterator;
-
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
-import de.codecentric.fpl.datatypes.FplLambda;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.Parameter;
 import de.codecentric.fpl.datatypes.list.FplList;
 
@@ -97,27 +94,6 @@ public class ListFunctions {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				return evaluateToList(scope, parameters[0]).append(evaluateToList(scope, parameters[1]));
-			}
-		});
-
-		scope.put(new AbstractFunction("map", comment("Apply a lambda to all list elements."), false, "list", "func") {
-			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				FplList list = evaluateToList(scope, parameters[0]);
-				FplValue val = parameters[1].evaluate(scope);
-				if (!(val instanceof FplLambda)) {
-					throw new EvaluationException("Second parameter of map must be function.");
-				}
-				FplLambda func = (FplLambda) val;
-				FplValue[] results = new FplValue[list.size()];
-				int i = 0;
-				Iterator<FplValue> iter = list.iterator();
-				while (iter.hasNext()) {
-					FplValue input = iter.next();
-					FplValue output = func.call(scope, new FplValue[] { input });
-					results[i++] = output;
-				}
-				return new FplList(results);
 			}
 		});
 	}

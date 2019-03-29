@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.datatypes.FplLambda;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 
@@ -81,33 +83,31 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		}
 	}
 
-	public static FplList fromIterator(Iterator<FplValue> iter) {
-		if (iter instanceof SizedIterator) {
-			SizedIterator<FplValue> sIter = (SizedIterator<FplValue>) iter;
-			int size = sIter.size();
-			if (size <= BASE_SIZE) {
-				FplValue[] linear = new FplValue[size];
-				for (int i = 0; i < size; i++) {
-					linear[i] = sIter.next();
-				}
-				return new FplList(linear);
-			} else {
-				FplValue[][] shape = createEmptyShape(size);
-				for (int bucketsIdx = 0; bucketsIdx < shape.length; bucketsIdx++) {
-					FplValue[] bucket = shape[bucketsIdx];
-					for (int inBucketIdx = 0; inBucketIdx < bucket.length; inBucketIdx++) {
-						bucket[inBucketIdx] = sIter.next();
-					}
-				}
-				return new FplList(shape);
+	public static FplList fromIterator(Iterator<FplValue> iter, int size) {
+		if (size <= BASE_SIZE) {
+			FplValue[] linear = new FplValue[size];
+			for (int i = 0; i < size; i++) {
+				linear[i] = iter.next();
 			}
+			return new FplList(linear);
 		} else {
-			List<FplValue> values = new ArrayList<>();
-			while (iter.hasNext()) {
-				values.add(iter.next());
+			FplValue[][] shape = createEmptyShape(size);
+			for (int bucketsIdx = 0; bucketsIdx < shape.length; bucketsIdx++) {
+				FplValue[] bucket = shape[bucketsIdx];
+				for (int inBucketIdx = 0; inBucketIdx < bucket.length; inBucketIdx++) {
+					bucket[inBucketIdx] = iter.next();
+				}
 			}
-			return new FplList(values);
+			return new FplList(shape);
 		}
+	}
+
+	public static FplList fromIterator(Iterator<FplValue> iter) {
+		List<FplValue> values = new ArrayList<>();
+		while (iter.hasNext()) {
+			values.add(iter.next());
+		}
+		return new FplList(values);
 	}
 
 	/**
@@ -469,7 +469,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int maxSize = BASE_SIZE * FACTOR;
 		while (firstCarryIdx >= 0 // we are still within the array
 				&& shape[firstCarryIdx].length + carrySize <= maxSize // carry fits in bucket
-				&& shape[firstCarryIdx].length <= maxSize * FACTOR // next bucket is not too big
 		// TODO: stop when buckets are getting smaller
 		) {
 			carrySize += shape[firstCarryIdx--].length;
@@ -861,14 +860,42 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		return count;
 	}
 
+	/**
+	 * Return an {@link Iterator} over this list, where each element is processed by
+	 * a function before it is returned.
+	 * @param scope Scope for evaluation of function
+	 * @param function Lambda to apply.
+	 * @return processed elements
+	 * @throws TunnelException With a wrapped {@link EvaluationException} when function
+	 * apply fails.
+	 */
+	public Iterator<FplValue> lambdaIterator(Scope scope, FplLambda function) {
+		return new Iterator<FplValue>() {
+			Iterator<FplValue> iter = iterator();
+
+			@Override
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+
+			@Override
+			public FplValue next() {
+				try {
+					return function.call(scope, new FplValue[] { iter.next() });
+				} catch (EvaluationException e) {
+					throw new TunnelException(e);
+				}
+			}
+		};
+	}
+	
 	@Override
 	public Iterator<FplValue> iterator() {
 		if (linear == null) {
-			return new SizedIterator<FplValue>() {
+			return new Iterator<FplValue>() {
 				private int bucketsIdx = 0;
 				private int inBucketIdx = 0;
 				private boolean atEnd = isEmpty();
-				private int cachedSize = 0;
 
 				@Override
 				public boolean hasNext() {
@@ -889,17 +916,9 @@ public class FplList implements FplValue, Iterable<FplValue> {
 					}
 					return result;
 				}
-
-				@Override
-				public int size() {
-					if (cachedSize == 0) {
-						cachedSize = FplList.this.size();
-					}
-					return cachedSize;
-				}
 			};
 		} else {
-			return new SizedIterator<FplValue>() {
+			return new Iterator<FplValue>() {
 				private int pos = 0;
 
 				@Override
@@ -913,11 +932,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 						throw new NoSuchElementException();
 					}
 					return linear[pos++];
-				}
-
-				@Override
-				public int size() {
-					return linear.length;
 				}
 			};
 		}

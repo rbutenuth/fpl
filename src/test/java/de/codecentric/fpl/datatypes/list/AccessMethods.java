@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.junit.Test;
@@ -22,8 +23,7 @@ public class AccessMethods extends AbstractListTest {
 	
 	@Test(expected = NoSuchElementException.class)
 	public void testIterateTooMuchSmallList() {
-		SizedIterator<FplValue> iter = (SizedIterator<FplValue>) new FplList(value(1)).iterator();
-		assertEquals(1, iter.size());
+		Iterator<FplValue> iter = new FplList(value(1)).iterator();
 		assertTrue(iter.hasNext());
 		assertEquals(value(1), iter.next());
 		assertFalse(iter.hasNext());
@@ -32,10 +32,7 @@ public class AccessMethods extends AbstractListTest {
 
 	@Test(expected = NoSuchElementException.class)
 	public void testIterateTooMuchLargeList() {
-		SizedIterator<FplValue> iter = (SizedIterator<FplValue>) create(0, 100).iterator();
-		// check twice (cache)
-		assertEquals(100, iter.size());
-		assertEquals(100, iter.size());
+		Iterator<FplValue> iter = create(0, 100).iterator();
 		for (int i = 0; i <= 99; i++) {
 			assertTrue(iter.hasNext());
 			assertEquals(value(i), iter.next());
