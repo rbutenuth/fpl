@@ -19,7 +19,7 @@ public class Conditional {
      */
     public static void put(Scope scope) throws ScopeException {
 
-    	scope.put(new AbstractFunction("if", //
+    	scope.put(new AbstractFunction("if-else", //
     			comment("Evaluate condition, if true, return evaluated if-part, otherwise evaluated else-part."),
     			false, "condition", "if-part", "else-part") {
             @Override
@@ -33,6 +33,19 @@ public class Conditional {
             }
         });
 
+    	scope.put(new AbstractFunction("if", //
+    			comment("Evaluate condition, if true, return evaluated if-part, otherwise nil."),
+    			false, "condition", "if-part") {
+            @Override
+            public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+                if (evaluateToBoolean(scope, parameters[0])) {
+                    // The "if" clause
+                    return parameters[1] == null ? null : parameters[1].evaluate(scope);
+                } else {
+                	return null;
+                }
+            }
+        });
         // TODO: some sort of switch/case
     }
 }

@@ -175,7 +175,7 @@ public class LambdaTest extends AbstractFplTest {
 		FplLambda f = (FplLambda) evaluate("factorial", //
 				"; compute n!\n" + //
 						"(def-function factorial (; input\n n)\n" + //
-						"   (if (le n 1)\n" + //
+						"   (if-else (le n 1)\n" + //
 						"       1\n" + //
 						"       (* n (factorial (- n 1)))\n" + //
 						"   )\n" + //

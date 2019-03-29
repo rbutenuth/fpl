@@ -1,6 +1,7 @@
 package de.codecentric.fpl.builtin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -9,16 +10,26 @@ import de.codecentric.fpl.datatypes.FplInteger;
 
 public class ConditionalTest extends AbstractFplTest {
 
-    @Test
-    public void testIfElse() throws Exception {
-    	// cover constructor
-    	new Conditional();
-    	
-        assertEquals(FplInteger.valueOf(2), evaluate("if", "(if 1 2 3)"));
-        assertEquals(FplInteger.valueOf(3), evaluate("else-0", "(if 0 2 3)"));
-        assertEquals(FplInteger.valueOf(3), evaluate("else-nil", "(if nil 2 3)"));
+	@Test
+	public void coverConstructor() {
+		new Conditional();
+	}
+
+	@Test
+    public void ifElse() throws Exception {
+        assertEquals(FplInteger.valueOf(2), evaluate("if", "(if-else 1 2 3)"));
+        assertEquals(FplInteger.valueOf(3), evaluate("else-0", "(if-else 0 2 3)"));
+        assertEquals(FplInteger.valueOf(3), evaluate("else-nil", "(if-else nil 2 3)"));
         
-        assertEquals(null, evaluate("if", "(if 1 nil 3)"));
-        assertEquals(null, evaluate("if", "(if nil 3 nil)"));
+        assertEquals(null, evaluate("if", "(if-else 1 nil 3)"));
+        assertEquals(null, evaluate("if", "(if-else nil 3 nil)"));
     }
+
+	@Test
+    public void ifOnly() throws Exception {
+        assertEquals(FplInteger.valueOf(2), evaluate("if", "(if 1 2)"));
+        assertNull(evaluate("if", "(if 1 nil)"));
+        assertNull(evaluate("else-0", "(if 0 2)"));
+        assertNull(evaluate("else-nil", "(if nil 2)"));
+	}
 }
