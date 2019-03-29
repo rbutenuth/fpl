@@ -80,7 +80,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			shape[0] = values;
 		}
 	}
-	
+
 	public static FplList fromIterator(Iterator<FplValue> iter) {
 		if (iter instanceof SizedIterator) {
 			SizedIterator<FplValue> sIter = (SizedIterator<FplValue>) iter;
@@ -96,7 +96,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				for (int bucketsIdx = 0; bucketsIdx < shape.length; bucketsIdx++) {
 					FplValue[] bucket = shape[bucketsIdx];
 					for (int inBucketIdx = 0; inBucketIdx < bucket.length; inBucketIdx++) {
-							bucket[inBucketIdx] = sIter.next();
+						bucket[inBucketIdx] = sIter.next();
 					}
 				}
 				return new FplList(shape);
@@ -109,7 +109,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			return new FplList(values);
 		}
 	}
-	
+
 	/**
 	 * Create a list.
 	 * 
@@ -389,9 +389,9 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int lastCarryIdx = 1;
 		int carrySize = shape[0].length;
 		int maxSize = BASE_SIZE * FACTOR;
+		// true true false fehlt
 		while (lastCarryIdx < shape.length // we are still within the array
 				&& shape[lastCarryIdx].length + carrySize <= maxSize // carry fits in bucket
-				&& shape[lastCarryIdx].length <= maxSize * FACTOR// next bucket is not too big
 		// TODO: stop when buckets are getting smaller
 		) {
 			carrySize += shape[lastCarryIdx++].length;
