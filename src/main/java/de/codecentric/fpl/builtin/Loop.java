@@ -39,7 +39,28 @@ public class Loop {
             }
         });
 
-		scope.put(new AbstractFunction("map", comment("Apply a lambda to all list elements."), false, "func", "list") {
+		scope.put(new AbstractFunction("for-each", comment("Apply a lambda to all list elements, return last result"),
+				false, "function", "list") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				FplList list = evaluateToList(scope, parameters[1]);
+				FplLambda function = evaluateToLambda(scope, parameters[0]);
+				try {
+					FplValue result = null;
+					Iterator<FplValue> iter = list.lambdaIterator(scope, function);
+					while (iter.hasNext()) {
+						result = iter.next();
+					}
+					return result;
+				} catch (TunnelException e) {
+					throw e.getTunnelledException();
+				}
+			}
+		});
+
+		scope.put(new AbstractFunction("map",
+				comment("Apply a lambda to all list elements and return list with applied elements"), false, "function",
+				"list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplList list = evaluateToList(scope, parameters[1]);
@@ -68,5 +89,10 @@ public class Loop {
 				return new FplList(results);
 			}
 		});
+		
+		// flatten
+		// reduce
+		// map-object
+		// not here: sequential, parallel
 	}
 }

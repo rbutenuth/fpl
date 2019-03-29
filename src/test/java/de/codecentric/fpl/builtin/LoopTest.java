@@ -25,6 +25,23 @@ public class LoopTest extends AbstractFplTest {
 	}
 	
 	@Test
+	public void forEachOfList() throws Exception {
+		evaluate("for-each", "(def-function fun (x) (+ x x))");;
+		FplInteger result = (FplInteger) evaluate("for-each", "(for-each fun '(1 2 3 4))");
+		assertEquals(FplInteger.valueOf(8), result);
+	}
+	
+    @Test
+    public void forEachThrowsException() throws Exception {
+    	evaluate("fail", "(def-function fail (x) (/ 1 0))");;
+        try {
+    		evaluate("for-each", "(for-each fail '(1 2 3 4))");
+        	fail("should not be reached.");
+        } catch (EvaluationException expected) {
+        	assertEquals("java.lang.ArithmeticException: / by zero", expected.getMessage());
+        }
+    }
+	@Test
 	public void filterOfList() throws Exception {
 		evaluate("filter", "(def-function my-filter (x) (lt x 3))");;
 		FplList filtered = (FplList) evaluate("filter", "(filter my-filter '(1 2 3 4))");
