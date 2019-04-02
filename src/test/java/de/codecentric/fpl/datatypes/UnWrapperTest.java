@@ -96,7 +96,7 @@ public class UnWrapperTest {
 		for (int i = 0; i < values.length; i++) {
 			values[i] = FplInteger.valueOf(i);
 		}
-		List<?> list = (List<?>) UnWrapper.unwrap(new FplList(values));
+		List<?> list = (List<?>) UnWrapper.unwrap(FplList.fromValues(values));
 		assertEquals(values.length, list.size());
 		for (int i = 0; i < values.length; i++) {
 			assertEquals(Long.valueOf(i), list.get(i));

@@ -49,7 +49,7 @@ public class ListFunctions {
 				for (int i = 0; i < parameters.length; i++) {
 					values[i] = parameters[i].evaluate(scope);
 				}
-				return new FplList(values);
+				return FplList.fromValues(values);
 			}
 		});
 

@@ -11,14 +11,14 @@ import de.codecentric.fpl.datatypes.list.FplList;
 public class Deconstruct extends AbstractListTest {
 	@Test
 	public void testRemoveFirstSizeOne() throws EvaluationException {
-		FplList list = new FplList(new FplValue[1]);
+		FplList list = FplList.fromValues(new FplValue[1]);
 		FplList rest = list.removeFirst();
 		assertEquals(0, rest.size());
 	}
 
 	@Test
 	public void testRemoveFirstSizeTwo() throws EvaluationException {
-		FplList list = new FplList(value(1)).addAtEnd(value(2));
+		FplList list = FplList.fromValue(value(1)).addAtEnd(value(2));
 		FplList rest = list.removeFirst();
 		assertEquals(1, rest.size());
 		assertEquals(value(2), rest.get(0));
@@ -48,14 +48,14 @@ public class Deconstruct extends AbstractListTest {
 
 	@Test
 	public void testRemoveLastSizeOne() throws EvaluationException {
-		FplList list = new FplList(new FplValue[1]);
+		FplList list = FplList.fromValues(new FplValue[1]);
 		FplList rest = list.removeLast();
 		assertEquals(0, rest.size());
 	}
 
 	@Test
 	public void testRemoveLastSizeTwo() throws EvaluationException {
-		FplList list = new FplList(value(1)).addAtEnd(value(2));
+		FplList list = FplList.fromValue(value(1)).addAtEnd(value(2));
 		FplList rest = list.removeLast();
 		assertEquals(1, rest.size());
 		assertEquals(value(1), rest.get(0));

@@ -121,7 +121,7 @@ public class Parser implements Closeable {
 		elements.add(new Symbol("quote", nextToken.getPosition(), nextToken.getCommentLines()));
 		fetchNextToken(); // skip '
 		elements.add(value());
-		return new FplList(elements);
+		return FplList.fromValues(elements);
 	}
 
 	private FplValue list() throws ParseException, IOException {
@@ -138,7 +138,7 @@ public class Parser implements Closeable {
 		}
 		expectNotEof("Unexpected end of source in list");
 		fetchNextToken(); // skip RIGHT_PAREN
-		return new FplList(elements);
+		return FplList.fromValues(elements);
 	}
 
 	private FplValue jsonList() throws ParseException, IOException {
@@ -159,7 +159,7 @@ public class Parser implements Closeable {
 			throw new ParseException(nextToken.getPosition(), "Unexpected token in json list: " + nextToken);
 		}
 		fetchNextToken(); // skip RIGHT_SQUARE_BRACKET
-		return new FplList(elements);
+		return FplList.fromValues(elements);
 	}
 
 	/*

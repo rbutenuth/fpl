@@ -23,7 +23,7 @@ public class AccessMethods extends AbstractListTest {
 	
 	@Test(expected = NoSuchElementException.class)
 	public void testIterateTooMuchSmallList() {
-		Iterator<FplValue> iter = new FplList(value(1)).iterator();
+		Iterator<FplValue> iter = FplList.fromValue(value(1)).iterator();
 		assertTrue(iter.hasNext());
 		assertEquals(value(1), iter.next());
 		assertFalse(iter.hasNext());
@@ -48,7 +48,7 @@ public class AccessMethods extends AbstractListTest {
 
 	@Test
 	public void firstSizeOne() throws EvaluationException {
-		FplList list = new FplList(value(1));
+		FplList list = FplList.fromValue(value(1));
 		assertEquals(value(1), list.first());
 	}
 
@@ -66,13 +66,13 @@ public class AccessMethods extends AbstractListTest {
 
 	@Test(expected = EvaluationException.class)
 	public void firstEmptyFails() throws EvaluationException {
-		FplList list = new FplList(new FplValue[0]);
+		FplList list = FplList.fromValues(new FplValue[0]);
 		list.first();
 	}
 
 	@Test
 	public void lastSizeOne() throws EvaluationException {
-		FplList list = new FplList(value(1));
+		FplList list = FplList.fromValue(value(1));
 		assertEquals(value(1), list.last());
 	}
 
@@ -85,7 +85,7 @@ public class AccessMethods extends AbstractListTest {
 	
 	@Test(expected = EvaluationException.class)
 	public void removeFirstEmptyFails() throws EvaluationException {
-		FplList list = new FplList(new FplValue[0]);
+		FplList list = FplList.fromValues(new FplValue[0]);
 		list.removeFirst();
 	}
 
@@ -109,7 +109,7 @@ public class AccessMethods extends AbstractListTest {
 	
 	@Test(expected = EvaluationException.class)
 	public void lastEmptyFails() throws EvaluationException {
-		FplList list = new FplList(new FplValue[0]);
+		FplList list = FplList.fromValues(new FplValue[0]);
 		list.removeFirst();
 	}
 

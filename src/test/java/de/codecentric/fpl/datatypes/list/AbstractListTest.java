@@ -40,7 +40,7 @@ public class AbstractListTest {
 	 *         <code>end</code>
 	 */
 	public static FplList create(int from, int to) {
-		return new FplList(createValues(from, to));
+		return FplList.fromValues(createValues(from, to));
 	}
 
 	public static  FplValue[] createValues(int from, int to) {

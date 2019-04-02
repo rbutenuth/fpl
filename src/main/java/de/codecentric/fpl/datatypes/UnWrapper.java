@@ -48,7 +48,7 @@ public class UnWrapper {
 		for (Object o : list) {
 			values[i++] = wrap(o);
 		}
-		return new FplList(values);
+		return FplList.fromValues(values);
 	}
 	
 	private static FplList wrap(Object[] a) throws EvaluationException {
@@ -56,7 +56,7 @@ public class UnWrapper {
 		for (int i = 0; i < a.length; i++) {
 			values[i] = wrap(a[i]);
 		}
-		return new FplList(values);
+		return FplList.fromValues(values);
 	}
 	
 	private static FplObject wrap(Map<?, ?> map) throws EvaluationException {

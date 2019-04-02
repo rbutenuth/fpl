@@ -86,7 +86,7 @@ public class Loop {
 						results.add(value);
 					}
 				}
-				return new FplList(results);
+				return FplList.fromValues(results);
 			}
 		});
 		
