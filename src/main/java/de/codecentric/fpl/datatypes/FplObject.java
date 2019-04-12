@@ -76,7 +76,9 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 		}
 	}
 
-
+	// TODO: remove the "synchronized", don't change the Scope, instead create a copy (recursive).
+	// When referenced lists contain objects (test it), then copy them, too. This makes it save
+	// to cache parsed code and use it several times.
 	@Override
 	public synchronized FplValue evaluate(Scope scope) throws EvaluationException {
 		if (scope == null) {

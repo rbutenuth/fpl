@@ -20,7 +20,7 @@ public class Constructors extends AbstractListTest {
 		FplList list = FplList.fromValues(new FplValue[0]);
 		assertEquals(0, list.size());
 		assertFalse(list.iterator().hasNext());
-		assertEquals(0, list.numberOfBuckets());
+		assertEquals(0, list.bucketSizes().length);
 	}
 
 	@Test
@@ -28,7 +28,7 @@ public class Constructors extends AbstractListTest {
 		FplList list = FplList.fromValue(value(42));
 		assertEquals(1, list.size());
 		assertEquals(value(42), list.get(0));
-		assertEquals(1, list.numberOfBuckets());
+		assertEquals(1, list.bucketSizes().length);
 	}
 
 	@Test
@@ -44,8 +44,8 @@ public class Constructors extends AbstractListTest {
 			values[i] = value(i);
 		}
 		FplList list = FplList.fromValues(values);
-		check(0, values.length, list);
-		assertEquals(1, list.numberOfBuckets());
+		check(list, 0, values.length);
+		assertEquals(1, list.bucketSizes().length);
 	}
 
 	@Test
@@ -55,8 +55,8 @@ public class Constructors extends AbstractListTest {
 			values[i] = value(i);
 		}
 		FplList list = FplList.fromValues(Arrays.asList(values));
-		check(0, values.length, list);
-		assertEquals(1, list.numberOfBuckets());
+		check(list, 0, values.length);
+		assertEquals(1, list.bucketSizes().length);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -64,7 +64,7 @@ public class Constructors extends AbstractListTest {
 		FplValue[] values = new FplValue[0];
 		int[] bucketSizes = new int[1];
 		bucketSizes[0] = 1;
-		new FplList(values, bucketSizes);
+		FplList.fromValuesWithShape(values, bucketSizes);
 	}
 	
 	@Test
@@ -88,19 +88,19 @@ public class Constructors extends AbstractListTest {
 				return nextValue < to;
 			}
 		});
-		check(0, 8, list);
+		check(list, 0, 8);
 	}
 	
 	@Test
 	public void smallFromIterator() throws Exception {
 		FplList list = FplList.fromIterator(createIterator(0, 8));
-		check(0, 8, list);
+		check(list, 0, 8);
 	}
 	
 	@Test
 	public void largeFromIterator() throws Exception {
 		FplList list = FplList.fromIterator(createIterator(0, 100));
-		check(0, 100, list);
+		check(list, 0, 100);
 	}
 	
 	private Iterator<FplValue> createIterator(int from, int to) {

@@ -12,12 +12,12 @@ import de.codecentric.fpl.datatypes.list.FplList;
 public class AbstractListTest {
 
 	/**
-	 * @param from First element (including)
-	 * @param to   Last element in list (excluding)
 	 * @param list  List to check, must contain elements from <code>start</code> and
 	 *              <code>end</code>
+	 * @param from First element (including)
+	 * @param to   Last element in list (excluding)
 	 */
-	public static void check(int from, int to, FplList list) throws EvaluationException {
+	public static void check(FplList list, int from, int to) throws EvaluationException {
 		assertEquals("List size", to - from, list.size());
 		Iterator<FplValue> iter = list.iterator();
 		int value = from;
@@ -29,8 +29,16 @@ public class AbstractListTest {
 		assertEquals(to, value);
 	}
 
+	public static void checkSizes(FplList list, int... sizes) throws EvaluationException {
+		int[] listSizes = list.bucketSizes();
+		assertEquals("Wrong number of buckets", sizes.length, listSizes.length);
+		for (int i = 0; i < listSizes.length; i++) {
+			assertEquals("Size of bucket " + i, sizes[i], listSizes[i]);
+		}
+	}
+	
 	public static FplList create(int from, int to, int... bucketSizes) {
-		return new FplList(createValues(from, to), bucketSizes);
+		return FplList.fromValuesWithShape(createValues(from, to), bucketSizes);
 	}
 
 	/**

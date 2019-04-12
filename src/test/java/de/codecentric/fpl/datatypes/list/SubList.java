@@ -50,70 +50,70 @@ public class SubList extends AbstractListTest {
 	public void subListOfShortList() throws EvaluationException {
 		FplList list = create(1, 11);
 		list = list.subList(3, 5);
-		check(4, 6, list);
+		check(list, 4, 6);
 	}
 
 	@Test
 	public void subListStartOfShortList() throws EvaluationException {
 		FplList list = create(0, 7);
 		list = list.subList(0, 6);
-		check(0, 6, list);
+		check(list, 0, 6);
 	}
 
 	@Test
 	public void subListEndOfShortList() throws EvaluationException {
 		FplList list = create(0, 7);
 		list = list.subList(1, 7);
-		check(1, 7, list);
+		check(list, 1, 7);
 	}
 
 	@Test
 	public void subListFromOneSmallBucket() throws EvaluationException {
 		FplList list = create(0, 16, 4, 8, 4);
-		check(5, 7, list.subList(5, 7));
+		check(list.subList(5, 7), 5, 7);
 	}
 
 	@Test(expected = EvaluationException.class)
 	public void subListStartBeyondEndOfList() throws EvaluationException {
 		FplList list = create(0, 16, 4, 8, 4);
-		check(5, 7, list.subList(16, 17));
+		check(list.subList(16, 17), 5, 7);
 	}
 
 	@Test
 	public void subListBucketsStart() throws EvaluationException {
 		FplList list = create(0, 16, 4, 8, 4);
-		check(0, 8, list.subList(0, 7));
+		check(list.subList(0, 7), 0, 8);
 	}
 
 	@Test
 	public void subListBucketsWithin() throws EvaluationException {
 		FplList list = create(0, 16, 4, 8, 4);
-		check(2, 8, list.subList(2, 7));
+		check(list.subList(2, 7), 2, 8);
 	}
 
 	@Test
 	public void subListBucketsStartWithPartFromLastBucket() throws EvaluationException {
 		FplList list = create(0, 16, 4, 8, 4);
-		check(0, 14, list.subList(0, 13));
+		check(list.subList(0, 13), 0, 14);
 	}
 
 	@Test
 	public void subListBucketsEnd() throws EvaluationException {
 		FplList list = create(0, 16, 4, 8, 4);
-		check(3, 16, list.subList(3, 16));
+		check(list.subList(3, 16), 3, 16);
 	}
 
 	@Test
 	public void subListFromOneLargeBucket() throws EvaluationException {
 		FplList list = create(0, 40, 4, 32, 4);
-		check(5, 17, list.subList(5, 17));
+		check(list.subList(5, 17), 5, 17);
 	}
 
 	@Test
 	public void subListFromSeveralLargeBuckets() throws EvaluationException {
 		FplList list = create(0, 100, 20, 20, 20, 20, 20);
-		check(0, 100, list);
-		check(5, 96, list.subList(5, 95));
+		check(list, 0, 100);
+		check(list.subList(5, 95), 5, 96);
 	}
 
 	@Test
