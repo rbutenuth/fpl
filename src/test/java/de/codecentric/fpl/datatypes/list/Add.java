@@ -51,6 +51,14 @@ public class Add extends AbstractListTest {
 	}
 
 	@Test
+	public void testAddOnListWithBigFirstBucket() throws EvaluationException {
+		FplList list = create(1, 100);
+		list = list.addAtStart(value(0));
+		check(list, 0, 100);
+		checkSizes(list, 1, 99);
+	}
+
+	@Test
 	public void testAddAtStart() throws EvaluationException {
 		FplList list = FplList.EMPTY_LIST;
 		final int size = 1000;
@@ -114,10 +122,11 @@ public class Add extends AbstractListTest {
 	}
 
 	@Test
-	public void testAddOnLongArray() throws EvaluationException {
+	public void testAddAtEndOnLongArray() throws EvaluationException {
 		FplList list = create(0, 100);
 		list = list.addAtEnd(value(100));
 		check(list, 0, 101);
+		checkSizes(list, 100, 1);
 	}
 
 	@Test
