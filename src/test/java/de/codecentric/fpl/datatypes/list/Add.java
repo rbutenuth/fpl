@@ -5,13 +5,12 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.datatypes.list.FplList;
 
 public class Add extends AbstractListTest {
 	// addAtStart
 	
 	@Test
-	public void testAddOnEmptyList() throws EvaluationException {
+	public void addAtStartOnEmptyList() throws EvaluationException {
 		FplList list = FplList.EMPTY_LIST;
 		list = list.addAtStart(value(0));
 		check(list, 0, 1);
@@ -19,7 +18,7 @@ public class Add extends AbstractListTest {
 	}
 
 	@Test
-	public void testAddOnListWithSpaceInFirstBucket() throws EvaluationException {
+	public void addAtStartOnListWithSpaceInFirstBucket() throws EvaluationException {
 		FplList list = create(1, 7);
 		list = list.addAtStart(value(0));
 		check(list, 0, 7);
@@ -27,7 +26,7 @@ public class Add extends AbstractListTest {
 	}
 
 	@Test
-	public void testAddOnListWithNearlyFullFirstBucket() throws EvaluationException {
+	public void addAtStartOnListWithNearlyFullFirstBucket() throws EvaluationException {
 		FplList list = create(1, 8);
 		list = list.addAtStart(value(0));
 		check(list, 0, 8);
@@ -35,7 +34,7 @@ public class Add extends AbstractListTest {
 	}
 
 	@Test
-	public void testAddOnListWithFullFirstBucket() throws EvaluationException {
+	public void addAtStartOnListWithFullFirstBucket() throws EvaluationException {
 		FplList list = create(1, 9);
 		list = list.addAtStart(value(0));
 		check(list, 0, 9);
@@ -43,15 +42,15 @@ public class Add extends AbstractListTest {
 	}
 
 	@Test
-	public void testAddOnListWithTwo8Buckets() throws EvaluationException {
-		FplList list = create(1, 17, 8, 8);
+	public void addAtStartOnList_7_8_16() throws EvaluationException {
+		FplList list = create(1, 32, 7, 8, 16);
 		list = list.addAtStart(value(0));
-		check(list, 0, 17);
-		checkSizes(list, 1, 8, 8);
+		check(list, 0, 32);
+		checkSizes(list, 16, 16);
 	}
 
 	@Test
-	public void testAddOnListWithBigFirstBucket() throws EvaluationException {
+	public void addAtStartOnListWithBigFirstBucket() throws EvaluationException {
 		FplList list = create(1, 100);
 		list = list.addAtStart(value(0));
 		check(list, 0, 100);
@@ -59,41 +58,36 @@ public class Add extends AbstractListTest {
 	}
 
 	@Test
-	public void testAddAtStart() throws EvaluationException {
-		FplList list = FplList.EMPTY_LIST;
-		final int size = 1000;
-		for (int i = size - 1; i >= 0; i--) {
-			list = list.addAtStart(value(i));
-			assertEquals(size - i, list.size());
-			for (int j = i; j < size; j++) {
-				assertEquals(value(j), list.get(j - i));
-			}
-		}
+	public void addAtStartOnListWithSmallerBucketsAtEnd() throws EvaluationException {
+		FplList list = create(1, 40, 7, 24, 8);
+		list = list.addAtStart(value(0));
+		check(list, 0, 40);
+		checkSizes(list, 32, 8);
 	}
 
 	@Test
-	public void testAddAtFrontBigCarry() throws EvaluationException {
+	public void addAtStartWithBigCarry() throws EvaluationException {
 		FplList list = create(1, 101).append(create(101, 201));
 		list = list.addAtStart(value(0));
 		check(list, 0, 201);
 	}
 
 	@Test
-	public void testAddAtFrontOnLongArray() throws EvaluationException {
+	public void addAtStartOnLongArray() throws EvaluationException {
 		FplList list = create(1, 101);
 		list = list.addAtStart(value(0));
 		check(list, 0, 101);
 	}
 
 	@Test
-	public void testAddAtFrontOverflowInBigBucket() throws EvaluationException {
+	public void addAtStartWithStartOverflowInBigBucket() throws EvaluationException {
 		FplList list = create(1, 9).append(create(9, 109));
 		list = list.addAtStart(value(0));
 		check(list, 0, 109);
 	}
 	
 	@Test
-	public void testAddAtFrontOverflowInSmallBucket() throws EvaluationException {
+	public void addAtStartWithStartOverflowInSmallBucket() throws EvaluationException {
 		FplList list = create(1, 9).append(create(9, 17));
 		list = list.addAtStart(value(0));
 		check(list, 0, 17);

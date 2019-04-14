@@ -294,21 +294,33 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		if (isEmpty()) {
 			return fromValue(value);
 		}
-		int bucketIdx;
-		int carrySize;
+		int bucketIdx = 0;
+		int carrySize = 1;
 		int maxSize = BASE_SIZE;
-		if (shape[0].length + 1 < maxSize) {
-			// just add to first bucket
-			bucketIdx = 1;
-			carrySize = shape[0].length + 1;
-		} else {
-			bucketIdx = 0;
-			carrySize = 1;
-			// TODO: Stop when buckets are getting smaller
-			while (bucketIdx < shape.length && carrySize + shape[bucketIdx].length >= maxSize && shape[bucketIdx].length < maxSize) {
-				carrySize += shape[bucketIdx++].length;
-				maxSize *= FACTOR;
+		int lastSize = 0;
+		while (bucketIdx < shape.length) {
+			int bucketSize = shape[bucketIdx].length;
+			
+			if (bucketSize < lastSize) {
+				// Buckets are getting smaller, insert carry before
+				break;
 			}
+			if (carrySize + bucketSize < maxSize) {
+				// There is enough space in the current bucket,
+				// use it by pointing bucketIdx just behind it.
+				bucketIdx++;
+				carrySize += bucketSize;
+				break;
+			}
+			if (bucketSize >= maxSize) {
+				// The current bucket is too big, insert carry before
+				break;
+			}
+			
+			lastSize = bucketSize;
+			bucketIdx++;
+			carrySize += bucketSize;
+			maxSize *= FACTOR;
 		}
 		// buckedIdx points to the first bucket which is NOT part of the carry
 		FplValue[][] bucketsDst = new FplValue[shape.length - bucketIdx + 1][];
@@ -348,7 +360,8 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			bucketIdx = shape.length - 1;
 			carrySize = 1;
 			// TODO: Stop when buckets are getting smaller
-			while (bucketIdx >= 0 && carrySize + shape[bucketIdx].length >= maxSize && shape[bucketIdx].length < maxSize) {
+			while (bucketIdx >= 0 && carrySize + shape[bucketIdx].length >= maxSize
+					&& shape[bucketIdx].length < maxSize) {
 				carrySize += shape[bucketIdx--].length;
 				maxSize *= FACTOR;
 			}
@@ -366,7 +379,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		}
 		// Copy buckets (before carry)
 		arraycopy(shape, 0, bucketsDst, 0, bucketsDst.length - 1);
-		
+
 		return new FplList(bucketsDst);
 	}
 
