@@ -291,9 +291,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 * @return New List: This list plus one new element at front.
 	 */
 	public FplList addAtStart(FplValue value) {
-		if (isEmpty()) {
-			return fromValue(value);
-		}
 		int bucketIdx = 0;
 		int carrySize = 1;
 		int maxSize = BASE_SIZE;
@@ -346,25 +343,33 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 * @return New List: This list plus the new element at the end.
 	 */
 	public FplList addAtEnd(FplValue value) {
-		if (isEmpty()) {
-			return fromValue(value);
-		}
-		int bucketIdx;
-		int carrySize;
+		int bucketIdx = shape.length - 1;
+		int carrySize = 1;
 		int maxSize = BASE_SIZE;
-		if (shape[shape.length - 1].length + 1 < maxSize) {
-			// just add to last bucket
-			bucketIdx = shape.length - 2;
-			carrySize = shape[shape.length - 1].length + 1;
-		} else {
-			bucketIdx = shape.length - 1;
-			carrySize = 1;
-			// TODO: Stop when buckets are getting smaller
-			while (bucketIdx >= 0 && carrySize + shape[bucketIdx].length >= maxSize
-					&& shape[bucketIdx].length < maxSize) {
-				carrySize += shape[bucketIdx--].length;
-				maxSize *= FACTOR;
+		int lastSize = 0;
+		while (bucketIdx >= 0) {
+			int bucketSize = shape[bucketIdx].length;
+			
+			if (bucketSize < lastSize) {
+				// Buckets are getting smaller, insert carry behind
+				break;
 			}
+			if (carrySize + bucketSize < maxSize) {
+				// There is enough space in the current bucket,
+				// use it by pointing bucketIdx just before it.
+				bucketIdx--;
+				carrySize += bucketSize;
+				break;
+			}
+			if (bucketSize >= maxSize) {
+				// The current bucket is too big, insert carry before
+				break;
+			}
+			
+			lastSize = bucketSize;
+			bucketIdx--;
+			carrySize += bucketSize;
+			maxSize *= FACTOR;
 		}
 		// buckedIdx points to the first bucket which is NOT part of the carry
 		FplValue[][] bucketsDst = new FplValue[bucketIdx + 2][];
