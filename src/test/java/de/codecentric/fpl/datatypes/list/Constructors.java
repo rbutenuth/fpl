@@ -68,39 +68,37 @@ public class Constructors extends AbstractListTest {
 	}
 	
 	@Test
-	public void smallFromStandardIterator() throws Exception {
-		int from = 0;
-		int to = 8;
-		FplList list = FplList.fromIterator(new Iterator<FplValue>() {
-			int nextValue = from;
-			
-			@Override
-			public FplValue next() {
-				if (hasNext()) {
-					return FplInteger.valueOf(nextValue++);
-				} else {
-					throw new NoSuchElementException();
-				}
-			}
-			
-			@Override
-			public boolean hasNext() {
-				return nextValue < to;
-			}
-		});
-		check(list, 0, 8);
+	public void emptyFromIterator() throws Exception {
+		FplList list = FplList.fromIterator(createIterator(0, 0));
+		check(list, 0, 0);
 	}
 	
 	@Test
-	public void smallFromIterator() throws Exception {
-		FplList list = FplList.fromIterator(createIterator(0, 8));
-		check(list, 0, 8);
+	public void fromIteratorOneBucket() throws Exception {
+		FplList list = FplList.fromIterator(createIterator(0, 5));
+		check(list, 0, 5);
+		checkSizes(list, 5);
 	}
 	
 	@Test
-	public void largeFromIterator() throws Exception {
-		FplList list = FplList.fromIterator(createIterator(0, 100));
-		check(list, 0, 100);
+	public void fromIteratorTwoBuckets() throws Exception {
+		FplList list = FplList.fromIterator(createIterator(0, 10));
+		check(list, 0, 10);
+		checkSizes(list, 8, 2);
+	}
+	
+	@Test
+	public void fromIteratorThreeBuckets() throws Exception {
+		FplList list = FplList.fromIterator(createIterator(0, 163));
+		check(list, 0, 163);
+		checkSizes(list, 128, 32, 3);
+	}
+	
+	@Test
+	public void fromIteratorThreeBucketsWithLastFull() throws Exception {
+		FplList list = FplList.fromIterator(createIterator(0, 167));
+		check(list, 0, 167);
+		checkSizes(list, 128, 32, 7);
 	}
 	
 	private Iterator<FplValue> createIterator(int from, int to) {

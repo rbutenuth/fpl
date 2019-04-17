@@ -3,7 +3,6 @@ package de.codecentric.fpl.datatypes.list;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.copyOf;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -92,17 +91,73 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	public static FplList fromIterator(Iterator<FplValue> iter) {
-		// TODO: Liste wie bei addAtEnd aufbauen, aber mit einem mutable shape.
-		// (Letzter bucket nicht komplett gefüllt)
-		// Erst nachdem der Iterator durchlaufen ist, den letzten bucket
-		// auf die passende Länge kürzen.
-		// Eventuell den letzten nicht bis 8 sondern bis 4*8=32 füllen
-		// (seltener umkopieren).
-		List<FplValue> values = new ArrayList<>();
+		FplValue[][] data = new FplValue[1][];
+		FplValue[] currentBucket = new FplValue[BASE_SIZE - 1];
+		data[0] = currentBucket;
+		int currentBucketUsed = 0;
+
 		while (iter.hasNext()) {
-			values.add(iter.next());
+			FplValue value = iter.next();
+
+			if (currentBucketUsed < currentBucket.length) {
+				// Room in last bucket, use it
+				currentBucket[currentBucketUsed++] = value;
+			} else {
+				// Last bucket is full, create a new one
+				int bucketIdx = data.length - 1;
+				int carrySize = 1;
+				int maxSize = BASE_SIZE;
+
+				while (bucketIdx >= 0) {
+					int bucketSize = data[bucketIdx].length;
+
+					if (carrySize + bucketSize < maxSize) {
+						// There is enough space in the current bucket,
+						// use it by pointing bucketIdx just before it.
+						bucketIdx--;
+						carrySize += bucketSize;
+						break;
+					}
+					if (bucketSize >= maxSize) {
+						// The current bucket is too big, insert carry before
+						break;
+					}
+
+					bucketIdx--;
+					carrySize += bucketSize;
+					maxSize *= FACTOR;
+				}
+				// buckedIdx points to the first bucket which is NOT part of the carry
+				FplValue[][] dataNew = new FplValue[bucketIdx + 3][];
+
+				// Collect carry
+				FplValue[] carry = new FplValue[carrySize];
+				carry[carry.length - 1] = value;
+				dataNew[dataNew.length - 2] = carry;
+				for (int i = bucketIdx + 1, dst = 0; i < data.length; i++) {
+					arraycopy(data[i], 0, carry, dst, data[i].length);
+					dst += data[i].length;
+				}
+				// Copy buckets (before carry)
+				arraycopy(data, 0, dataNew, 0, dataNew.length - 2);
+				data = dataNew;
+				// Create a new bucket to collect values
+				data[data.length - 1] = currentBucket = new FplValue[BASE_SIZE - 1];
+				currentBucketUsed = 0;
+			}
 		}
-		return FplList.fromValues(values);
+
+		if (currentBucketUsed == 0) {
+			FplValue[][] dataNew = new FplValue[data.length - 1][];
+			arraycopy(data, 0, dataNew, 0, dataNew.length);
+			data = dataNew;
+		} else if (currentBucket.length > currentBucketUsed) {
+			FplValue[] shrinked = new FplValue[currentBucketUsed];
+			arraycopy(currentBucket, 0, shrinked, 0, currentBucketUsed);
+			data[data.length - 1] = shrinked;
+		}
+
+		return new FplList(data);
 	}
 
 	/**
@@ -297,7 +352,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int lastSize = 0;
 		while (bucketIdx < shape.length) {
 			int bucketSize = shape[bucketIdx].length;
-			
+
 			if (bucketSize < lastSize) {
 				// Buckets are getting smaller, insert carry before
 				break;
@@ -313,7 +368,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				// The current bucket is too big, insert carry before
 				break;
 			}
-			
+
 			lastSize = bucketSize;
 			bucketIdx++;
 			carrySize += bucketSize;
@@ -349,7 +404,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int lastSize = 0;
 		while (bucketIdx >= 0) {
 			int bucketSize = shape[bucketIdx].length;
-			
+
 			if (bucketSize < lastSize) {
 				// Buckets are getting smaller, insert carry behind
 				break;
@@ -365,7 +420,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				// The current bucket is too big, insert carry before
 				break;
 			}
-			
+
 			lastSize = bucketSize;
 			bucketIdx--;
 			carrySize += bucketSize;

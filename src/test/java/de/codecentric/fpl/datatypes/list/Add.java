@@ -1,7 +1,5 @@
 package de.codecentric.fpl.datatypes.list;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
