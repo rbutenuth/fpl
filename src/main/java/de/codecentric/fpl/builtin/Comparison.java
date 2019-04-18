@@ -5,20 +5,20 @@ import java.util.List;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.AbstractFunction;
 
 /**
  * Basic comparison functions.
  */
 public class Comparison extends AbstractFunction {
-    private static FplInteger TRUE = FplInteger.valueOf(1);
+	private static FplInteger TRUE = FplInteger.valueOf(1);
 
-    private enum CompareOperator {
-    	EQ {
+	private enum CompareOperator {
+		EQ {
 			@Override
 			FplValue compare(long left, long right) {
 				return left == right ? TRUE : null;
@@ -39,7 +39,7 @@ public class Comparison extends AbstractFunction {
 				return "eq";
 			}
 		},
-    	NE {
+		NE {
 			@Override
 			FplValue compare(long left, long right) {
 				return left != right ? TRUE : null;
@@ -60,7 +60,7 @@ public class Comparison extends AbstractFunction {
 				return "ne";
 			}
 		},
-    	LT {
+		LT {
 			@Override
 			FplValue compare(long left, long right) {
 				return left < right ? TRUE : null;
@@ -81,7 +81,7 @@ public class Comparison extends AbstractFunction {
 				return "lt";
 			}
 		},
-    	LE {
+		LE {
 			@Override
 			FplValue compare(long left, long right) {
 				return left <= right ? TRUE : null;
@@ -102,7 +102,7 @@ public class Comparison extends AbstractFunction {
 				return "le";
 			}
 		},
-    	GT {
+		GT {
 			@Override
 			FplValue compare(long left, long right) {
 				return left > right ? TRUE : null;
@@ -123,7 +123,7 @@ public class Comparison extends AbstractFunction {
 				return "gt";
 			}
 		},
-    	GE {
+		GE {
 			@Override
 			FplValue compare(long left, long right) {
 				return left >= right ? TRUE : null;
@@ -144,131 +144,134 @@ public class Comparison extends AbstractFunction {
 				return "ge";
 			}
 		};
-    	
-    	abstract FplValue compare(long left, long right);
-    	abstract FplValue compare(double left, double right);
-    	abstract FplValue compare(String left, String right);
-    	abstract String symbol();
-    }
-    
-    /**
-     * @param scope Scope to which functions should be added.
-     * @throws ScopeException Should not happen on initialization.
-     */
-    public static void put(Scope scope) throws ScopeException {
 
-    	scope.put(new Comparison(CompareOperator.EQ, comment("Compare for equal.")));
-    	scope.put(new Comparison(CompareOperator.NE, comment("Compare for not equal.")));
-    	scope.put(new Comparison(CompareOperator.LT, comment("Compare left less than right.")));
-    	scope.put(new Comparison(CompareOperator.LE, comment("Compare lest less or equal than right.")));
-    	scope.put(new Comparison(CompareOperator.GT, comment("Compare left greater than right.")));
-    	scope.put(new Comparison(CompareOperator.GE, comment("Compare left greater or equal than right.")));
-    }
+		abstract FplValue compare(long left, long right);
+
+		abstract FplValue compare(double left, double right);
+
+		abstract FplValue compare(String left, String right);
+
+		abstract String symbol();
+	}
+
+	/**
+	 * @param scope Scope to which functions should be added.
+	 * @throws ScopeException Should not happen on initialization.
+	 */
+	public static void put(Scope scope) throws ScopeException {
+
+		scope.put(new Comparison(CompareOperator.EQ, comment("Compare for equal.")));
+		scope.put(new Comparison(CompareOperator.NE, comment("Compare for not equal.")));
+		scope.put(new Comparison(CompareOperator.LT, comment("Compare left less than right.")));
+		scope.put(new Comparison(CompareOperator.LE, comment("Compare lest less or equal than right.")));
+		scope.put(new Comparison(CompareOperator.GT, comment("Compare left greater than right.")));
+		scope.put(new Comparison(CompareOperator.GE, comment("Compare left greater or equal than right.")));
+	}
 
 	private CompareOperator operator;
 
-    private Comparison(CompareOperator operator, List<String> comment) {
-        super(operator.symbol(), comment, false, "left", "right");
-        this.operator = operator;
-    }
+	private Comparison(CompareOperator operator, List<String> comment) {
+		super(operator.symbol(), comment, false, "left", "right");
+		this.operator = operator;
+	}
 
-    /**
-     * @see AbstractFunction.data.Function#callInternal(lang.data.Scope, FplValue.data.LObject[])
-     */
-    @Override
-    public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-        FplValue left = parameters[0] == null ? null : parameters[0].evaluate(scope);
-        FplValue right = parameters[1] == null ? null : parameters[1].evaluate(scope);
+	/**
+	 * @see AbstractFunction.data.Function#callInternal(lang.data.Scope, FplValue.data.LObject[])
+	 */
+	@Override
+	public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+		FplValue left = parameters[0] == null ? null : parameters[0].evaluate(scope);
+		FplValue right = parameters[1] == null ? null : parameters[1].evaluate(scope);
 
-        if (left == null) {
-            if (right == null) {
-                switch (operator) {
-                case EQ:
-                    return TRUE;
-                case NE:
-                    return null;
-                default:
-                    throw new EvaluationException("Comparison with null");
-                }
-            } else { // left == null, right != null
-                switch (operator) {
-                case EQ:
-                    return null;
-                case NE:
-                    return TRUE;
-                default:
-                    throw new EvaluationException("Comparison with null");
-                }
-            }
-        } else { // left != null
-            if (right == null) {
-                switch (operator) {
-                case EQ:
-                    return null;
-                case NE:
-                    return TRUE;
-                default:
-                    throw new EvaluationException("Comparison with null");
-                }
-            } else { // left != null, right != null
-                return compareValues(left, right);
-            }
-        }
-    }
+		if (left == null) {
+			if (right == null) {
+				switch (operator) {
+				case EQ:
+					return TRUE;
+				case NE:
+					return null;
+				default:
+					throw new EvaluationException("Comparison with null");
+				}
+			} else { // left == null, right != null
+				switch (operator) {
+				case EQ:
+					return null;
+				case NE:
+					return TRUE;
+				default:
+					throw new EvaluationException("Comparison with null");
+				}
+			}
+		} else { // left != null
+			if (right == null) {
+				switch (operator) {
+				case EQ:
+					return null;
+				case NE:
+					return TRUE;
+				default:
+					throw new EvaluationException("Comparison with null");
+				}
+			} else { // left != null, right != null
+				return compareValues(left, right);
+			}
+		}
+	}
 
-    private FplValue compareValues(FplValue left, FplValue right) {
-        // Precondition: left != null && right != null
-        if (left instanceof FplInteger) {
-            if (right instanceof FplInteger) {
-            	return operator.compare(((FplInteger) left).getValue(), ((FplInteger) right).getValue());
-            } else if (right instanceof FplDouble) {
-            	return operator.compare((double)((FplInteger) left).getValue(), ((FplDouble) right).getValue());
-            } else if (right instanceof FplString) {
-                switch (operator) {
-                case EQ:
-                    return null;
-                case NE:
-                    return TRUE;
-                default:
-                    return null;
-                }
-            } else {
-                return null;
-            }
-        } else if (left instanceof FplDouble) {
-            if (right instanceof FplInteger) {
-            	return operator.compare(((FplDouble) left).getValue(), (double)((FplInteger) right).getValue());
-            } else if (right instanceof FplDouble) {
-            	return operator.compare(((FplDouble) left).getValue(), ((FplDouble) right).getValue());
-            } else if (right instanceof FplString) {
-                switch (operator) {
-                case EQ:
-                    return null;
-                case NE:
-                    return TRUE;
-                default:
-                    return null;
-                }
-            } else {
-                return null;
-            }
-        } else if (left instanceof FplString) {
-            if (right instanceof FplInteger || right instanceof FplDouble) {
-                switch (operator) {
-                case EQ:
-                    return null;
-                case NE:
-                    return TRUE;
-                default:
-                    return null;
-                }
-            } else if (right instanceof FplString) {
-            	return operator.compare(((FplString) left).getContent(), ((FplString) right).getContent());
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
+	private FplValue compareValues(FplValue left, FplValue right) {
+		// Precondition: left != null && right != null
+		if (left instanceof FplInteger) {
+			if (right instanceof FplInteger) {
+				return operator.compare(((FplInteger) left).getValue(), ((FplInteger) right).getValue());
+			} else if (right instanceof FplDouble) {
+				return operator.compare(((FplInteger) left).getValue(), ((FplDouble) right).getValue());
+			} else if (right instanceof FplString) {
+				switch (operator) {
+				case EQ:
+					return null;
+				case NE:
+					return TRUE;
+				default:
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} else if (left instanceof FplDouble) {
+			if (right instanceof FplInteger) {
+				return operator.compare(((FplDouble) left).getValue(), ((FplInteger) right).getValue());
+			} else if (right instanceof FplDouble) {
+				return operator.compare(((FplDouble) left).getValue(), ((FplDouble) right).getValue());
+			} else if (right instanceof FplString) {
+				switch (operator) {
+				case EQ:
+					return null;
+				case NE:
+					return TRUE;
+				default:
+					return null;
+				}
+			} else {
+				return null;
+			}
+		} else if (left instanceof FplString) {
+			if (right instanceof FplInteger || right instanceof FplDouble) {
+				switch (operator) {
+				case EQ:
+					return null;
+				case NE:
+					return TRUE;
+				default:
+					return null;
+				}
+			} else if (right instanceof FplString) {
+				return operator.compare(((FplString) left).getContent(), ((FplString) right).getContent());
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
 }

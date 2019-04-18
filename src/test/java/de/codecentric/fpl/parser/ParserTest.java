@@ -1,9 +1,6 @@
 package de.codecentric.fpl.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -201,7 +198,6 @@ public class ParserTest extends AbstractFplTest {
 		Parser p = parser("quote", "'('symbol 42 3.1415 \"a string\")");
 		assertTrue(p.hasNext());
 		FplList l = (FplList) p.next();
-		;
 		assertEquals(2, l.size());
 		assertEquals("(quote ((quote symbol) 42 3.1415 \"a string\"))", l.toString());
 	}

@@ -1,7 +1,7 @@
 package de.codecentric.fpl.datatypes.list;
 
-import static java.lang.System.arraycopy;
-import static java.util.Arrays.copyOf;
+import static java.lang.System.*;
+import static java.util.Arrays.*;
 
 import java.util.Iterator;
 import java.util.List;
@@ -18,7 +18,7 @@ import de.codecentric.fpl.datatypes.Function;
 // remove(int index)
 // insert(FplValue value, int index),
 // set/replace(FplValue value, int index)
-// lowerHalf / upperHalf: split in two halfs, number of buckets power of 2, 
+// lowerHalf / upperHalf: split in two halfs, number of buckets power of 2,
 // so a divide and conquer algorithm is efficient
 
 /**
@@ -38,12 +38,12 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	private FplList(FplValue[][] data) {
-		this.shape = data;
+		shape = data;
 	}
 
 	/**
 	 * Create a list from one value
-	 * 
+	 *
 	 * @param value The value
 	 */
 	public static FplList fromValue(FplValue value) {
@@ -54,7 +54,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	/**
 	 * Create a list.
-	 * 
+	 *
 	 * @param values Array with values, the values will NOT be copied, so don't
 	 *               modify the array after calling this method!
 	 */
@@ -162,9 +162,9 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	/**
 	 * Create a list.
-	 * 
+	 *
 	 * @param values      Array with values, the values be copied.
-	 * 
+	 *
 	 * @param bucketSizes The size of the used buckets. The of the sizes must match
 	 *                    the length of <code>values</code>
 	 */
@@ -174,8 +174,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			sum += l;
 		}
 		if (values.length != sum) {
-			throw new IllegalArgumentException(
-					"values.length = " + values.length + ", but sum of bucketSizes = " + sum);
+			throw new IllegalArgumentException("values.length = " + values.length + ", but sum of bucketSizes = " + sum);
 		}
 		FplValue[][] data = new FplValue[bucketSizes.length][];
 		int i = 0;
@@ -341,7 +340,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	/**
 	 * Add one value as new first element of the list. (The "cons" of Lisp)
-	 * 
+	 *
 	 * @param value Element to insert at front.
 	 * @return New List: This list plus one new element at front.
 	 */
@@ -393,7 +392,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	/**
 	 * Append one value at the end of the list.
-	 * 
+	 *
 	 * @param value Element to be appended
 	 * @return New List: This list plus the new element at the end.
 	 */
@@ -445,7 +444,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	/**
 	 * Append a second list to this list.
-	 * 
+	 *
 	 * @param list List to append, <code>null</code> is the same as an empty list.
 	 * @return This list with appended list.
 	 */
@@ -533,7 +532,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	/**
 	 * Create an empty shape starting at both ends with size 3/4 * BASE_SIZE and
 	 * increasing by FACTOR to the middle.
-	 * 
+	 *
 	 * @param size It place for this number of values.
 	 * @return Array of arrays, all values <code>null</code>
 	 */
@@ -714,6 +713,128 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	/**
+	 * @return The lower / first half of a list. Get the other half with {@link #upperHalf()}. When the size
+	 * of the list is not an even number, the lower half will be one element smaller than the upper half.
+	 */
+	public FplList lowerHalf() {
+		// from is 0, so no variable
+		int to = size() / 2; // exclusive
+		// size = to
+		if (to == 0) {
+			return EMPTY_LIST;
+		}
+		FplValue[][] data;
+
+		int count = 0;
+		int fromBucketIdx = 0;
+		while (count < to) {
+			count += shape[fromBucketIdx++].length;
+		}
+		if (fromBucketIdx < shape.length && count == to) {
+			data = new FplValue[fromBucketIdx][];
+			arraycopy(shape, 0, data, 0, data.length);
+		} else {
+			data = createShapeForSplitting(to);
+			fromBucketIdx = 0;
+			FplValue[] fromBucket = shape[fromBucketIdx];
+			int inFromBucketIdx = 0;
+			int toBucketIdx = 0;
+			FplValue[] toBucket = data[toBucketIdx];
+			int inToBucketIdx = 0;
+			for (int i = 0; i < to; i++) {
+				toBucket[inToBucketIdx++] = fromBucket[inFromBucketIdx++];
+				if (inFromBucketIdx == fromBucket.length) {
+					// We can never hit the last value in the last bucket,
+					// so here no if necessary as for toBucketIdx
+					fromBucket = shape[++fromBucketIdx];
+					inFromBucketIdx = 0;
+				}
+				if (inToBucketIdx == toBucket.length) {
+					if (++toBucketIdx < data.length) {
+						toBucket = data[toBucketIdx];
+					}
+					inToBucketIdx = 0;
+				}
+			}
+		}
+		return new FplList(data);
+	}
+
+	/**
+	 * @return The upper / second half of a list. Get the other half with {@link #lowerHalf()}. When the size
+	 * of the list is not an even number, the lower half will be one element smaller than the upper half.
+	 */
+	public FplList upperHalf() {
+		int to = size(); // exclusive
+		int from = to / 2; // inclusive
+		int size = to - from;
+		if (size == 0) {
+			return EMPTY_LIST;
+		}
+		FplValue[][] data;
+
+		int count = 0;
+		int fromBucketIdx = shape.length - 1;
+		while (count < size) {
+			count += shape[fromBucketIdx--].length;
+		}
+		fromBucketIdx++;
+		if (count == size) {
+			data = new FplValue[shape.length - fromBucketIdx][];
+			arraycopy(shape, fromBucketIdx, data, 0, data.length);
+		} else {
+			data = createShapeForSplitting(size);
+
+			fromBucketIdx = shape.length - 1;
+			FplValue[] fromBucket = shape[fromBucketIdx];
+			int inFromBucketIdx = fromBucket.length - 1;
+			int toBucketIdx = data.length - 1;
+			FplValue[] toBucket = data[toBucketIdx];
+			int inToBucketIdx = toBucket.length - 1;
+			for (int i = 0; i < size; i++) {
+				toBucket[inToBucketIdx--] = fromBucket[inFromBucketIdx--];
+				if (inFromBucketIdx < 0) {
+					fromBucket = shape[--fromBucketIdx];
+					inFromBucketIdx = fromBucket.length - 1;
+				}
+				if (inToBucketIdx < 0) {
+					if (--toBucketIdx >= 0) {
+						toBucket = data[toBucketIdx];
+					}
+					inToBucketIdx = toBucket.length - 1;
+				}
+			}
+		}
+
+		return new FplList(data);
+	}
+
+	private FplValue[][] createShapeForSplitting(int size) {
+		int numberOfBuckets = 1;
+		int bucketSize = size;
+		while (bucketSize > BASE_SIZE && (2L << numberOfBuckets) < size) {
+			numberOfBuckets *= 2;
+			bucketSize = size / numberOfBuckets;
+		}
+		FplValue[][] data = new FplValue[numberOfBuckets][];
+		createBuckets(data, 0, numberOfBuckets, size);
+
+		return data;
+	}
+
+	private void createBuckets(FplValue[][] data, int offset, int numberOfBuckets, int size) {
+		if (numberOfBuckets == 1) {
+			data[offset] = new FplValue[size];
+		} else {
+			int nextNumberOfBuckets = numberOfBuckets / 2;
+			int lower = size / 2;
+			int upper = size - lower;
+			createBuckets(data, offset, nextNumberOfBuckets, lower);
+			createBuckets(data, offset + nextNumberOfBuckets, nextNumberOfBuckets, upper);
+		}
+	}
+
+	/**
 	 * @return Number of elements in the list.
 	 */
 	public int size() {
@@ -727,7 +848,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	/**
 	 * Return an {@link Iterator} over this list, where each element is processed by
 	 * a function before it is returned.
-	 * 
+	 *
 	 * @param scope    Scope for evaluation of function
 	 * @param function Lambda to apply.
 	 * @return processed elements

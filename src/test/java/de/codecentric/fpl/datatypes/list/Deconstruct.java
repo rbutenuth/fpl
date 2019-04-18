@@ -1,12 +1,11 @@
 package de.codecentric.fpl.datatypes.list;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.list.FplList;
 
 public class Deconstruct extends AbstractListTest {
 	@Test
@@ -83,4 +82,86 @@ public class Deconstruct extends AbstractListTest {
 		assertEquals(value(1), rest.get(0));
 	}
 
+	@Test
+	public void lowerHalfFromEmptyList() throws EvaluationException {
+		FplList list = FplList.EMPTY_LIST.lowerHalf();
+		assertTrue(list.isEmpty());
+	}
+
+	@Test
+	public void lowerHalfFromListWithSizeOne() throws EvaluationException {
+		FplList list = create(0, 1).lowerHalf();
+		assertTrue(list.isEmpty());
+	}
+
+	@Test
+	public void lowerHalfFromSmallList() throws EvaluationException {
+		FplList list = create(0, 16);
+		FplList lower = list.lowerHalf();
+		check(lower, 0, 8);
+		checkSizes(lower, 8);
+	}
+
+	@Test
+	public void lowerHalfFromMediumList() throws EvaluationException {
+		FplList list = create(0, 100, 30, 40, 30);
+		FplList lower = list.lowerHalf();
+		check(lower, 0, 50);
+		checkSizes(lower, 6, 6, 6, 7, 6, 6, 6, 7);
+	}
+
+	@Test
+	public void lowerHalfFromBigList() throws EvaluationException {
+		FplList list = create(0, 1000000);
+		FplList lower = list.lowerHalf();
+		check(lower, 0, 500000);
+		assertEquals(32, lower.bucketSizes().length);
+		lower = lower.lowerHalf();
+		check(lower, 0, 250000);
+		assertEquals(16, lower.bucketSizes().length);
+		while (lower.bucketSizes().length > 1) {
+			lower = lower.lowerHalf();
+		}
+		lower = lower.lowerHalf();
+		assertEquals(16, lower.bucketSizes().length);
+	}
+
+	@Test
+	public void upperHalfFromEmptyList() throws EvaluationException {
+		FplList list = FplList.EMPTY_LIST.upperHalf();
+		assertTrue(list.isEmpty());
+	}
+
+	@Test
+	public void upperHalfFromListWithSizeOne() throws EvaluationException {
+		FplList list = create(0, 1).upperHalf();
+		check(list, 0, 1);
+	}
+
+	@Test
+	public void upperHalfFromSmallList() throws EvaluationException {
+		FplList list = create(0, 16);
+		FplList upper = list.upperHalf();
+		check(upper, 8, 16);
+		checkSizes(upper, 8);
+	}
+
+	@Test
+	public void upperHalfFromMediumList() throws EvaluationException {
+		FplList list = create(0, 100, 30, 40, 30);
+		FplList upper = list.upperHalf();
+		check(upper, 50, 100);
+		checkSizes(upper, 6, 6, 6, 7, 6, 6, 6, 7);
+	}
+
+	@Test
+	public void upperHalfFromBigList() throws EvaluationException {
+		FplList list = create(0, 1000000);
+		FplList upper = list.upperHalf();
+		check(upper, 500000, 1000000);
+		assertEquals(32, upper.bucketSizes().length);
+		upper = upper.upperHalf();
+		check(upper, 750000, 1000000);
+		assertEquals(16, upper.bucketSizes().length);
+	}
 }

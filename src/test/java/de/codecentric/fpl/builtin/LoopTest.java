@@ -1,9 +1,6 @@
 package de.codecentric.fpl.builtin;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.Iterator;
 
@@ -23,27 +20,28 @@ public class LoopTest extends AbstractFplTest {
 	public void coverConstructor() {
 		new Loop();
 	}
-	
+
 	@Test
 	public void forEachOfList() throws Exception {
-		evaluate("for-each", "(def-function fun (x) (+ x x))");;
+		evaluate("for-each", "(def-function fun (x) (+ x x))");
 		FplInteger result = (FplInteger) evaluate("for-each", "(for-each fun '(1 2 3 4))");
 		assertEquals(FplInteger.valueOf(8), result);
 	}
-	
-    @Test
-    public void forEachThrowsException() throws Exception {
-    	evaluate("fail", "(def-function fail (x) (/ 1 0))");;
-        try {
-    		evaluate("for-each", "(for-each fail '(1 2 3 4))");
-        	fail("should not be reached.");
-        } catch (EvaluationException expected) {
-        	assertEquals("java.lang.ArithmeticException: / by zero", expected.getMessage());
-        }
-    }
+
+	@Test
+	public void forEachThrowsException() throws Exception {
+		evaluate("fail", "(def-function fail (x) (/ 1 0))");
+		try {
+			evaluate("for-each", "(for-each fail '(1 2 3 4))");
+			fail("should not be reached.");
+		} catch (EvaluationException expected) {
+			assertEquals("java.lang.ArithmeticException: / by zero", expected.getMessage());
+		}
+	}
+
 	@Test
 	public void filterOfList() throws Exception {
-		evaluate("filter", "(def-function my-filter (x) (lt x 3))");;
+		evaluate("filter", "(def-function my-filter (x) (lt x 3))");
 		FplList filtered = (FplList) evaluate("filter", "(filter my-filter '(1 2 3 4))");
 		assertEquals(2, filtered.size());
 		for (int i = 1; i <= 2; i++) {
@@ -53,7 +51,7 @@ public class LoopTest extends AbstractFplTest {
 
 	@Test
 	public void mapOfSmallList() throws Exception {
-		evaluate("square", "(def-function square (x) (* x x))");;
+		evaluate("square", "(def-function square (x) (* x x))");
 		FplList squares = (FplList) evaluate("map", "(map square '(1 2 3 4))");
 		assertEquals(4, squares.size());
 		for (int i = 1; i <= 4; i++) {
@@ -63,7 +61,7 @@ public class LoopTest extends AbstractFplTest {
 
 	@Test
 	public void mapOfLargeList() throws Exception {
-		evaluate("square", "(def-function square (x) (* x x))");;
+		evaluate("square", "(def-function square (x) (* x x))");
 		FplList squares = (FplList) evaluate("map", "(map square '(1 2 3 4 5 6 7 8 9 10))");
 		assertEquals(10, squares.size());
 		for (int i = 1; i <= 10; i++) {
@@ -71,41 +69,41 @@ public class LoopTest extends AbstractFplTest {
 		}
 	}
 
-    @Test
-    public void mapNotAList() throws Exception {
-        evaluate("input", "(def input 4)");
-		evaluate("square", "(def-function square (x) (* x x))");;
-        try {
-        	evaluate("map-test", "(map square input)");
-        	fail("should not be reached.");
-        } catch (EvaluationException expected) {
-        	assertEquals("Not a list: 4", expected.getMessage());
-        }
-    }
-    
-    @Test
-    public void testMapNotALambda() throws Exception {
-        evaluate("input", "(def input '(1 2 3))");
-        evaluate("square", "(put square 4)");
-        try {
-        	evaluate("map-test", "(map square input)");
-        	fail("should not be reached.");
-        } catch (EvaluationException expected) {
-        	assertEquals("Not a lambda: 4", expected.getMessage());
-        }
-    }
-    
-    @Test
-    public void testMapLambdaThrowsException() throws Exception {
-    	evaluate("fail", "(def-function square (x) (/ 1 0))");;
-        try {
-    		evaluate("map", "(map square '(1 2 3 4))");
-        	fail("should not be reached.");
-        } catch (EvaluationException expected) {
-        	assertEquals("java.lang.ArithmeticException: / by zero", expected.getMessage());
-        }
-    }
-    
+	@Test
+	public void mapNotAList() throws Exception {
+		evaluate("input", "(def input 4)");
+		evaluate("square", "(def-function square (x) (* x x))");
+		try {
+			evaluate("map-test", "(map square input)");
+			fail("should not be reached.");
+		} catch (EvaluationException expected) {
+			assertEquals("Not a list: 4", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void testMapNotALambda() throws Exception {
+		evaluate("input", "(def input '(1 2 3))");
+		evaluate("square", "(put square 4)");
+		try {
+			evaluate("map-test", "(map square input)");
+			fail("should not be reached.");
+		} catch (EvaluationException expected) {
+			assertEquals("Not a lambda: 4", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void testMapLambdaThrowsException() throws Exception {
+		evaluate("fail", "(def-function square (x) (/ 1 0))");
+		try {
+			evaluate("map", "(map square '(1 2 3 4))");
+			fail("should not be reached.");
+		} catch (EvaluationException expected) {
+			assertEquals("java.lang.ArithmeticException: / by zero", expected.getMessage());
+		}
+	}
+
 	@Test
 	public void iterateWithLambda() throws Exception {
 		FplLambda lambda = (FplLambda) evaluate("lambda", "(lambda (x) x)");

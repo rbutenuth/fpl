@@ -1,9 +1,6 @@
 package de.codecentric.fpl.builtin;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -15,13 +12,13 @@ import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ListResultCallback;
 import de.codecentric.fpl.data.ScopeException;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplDouble;
-import de.codecentric.fpl.datatypes.FplLambda;
 import de.codecentric.fpl.datatypes.FplInteger;
+import de.codecentric.fpl.datatypes.FplLambda;
 import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
@@ -32,12 +29,14 @@ public class LambdaTest extends AbstractFplTest {
 	private AbstractFunction lambda;
 
 	@Before
+	@Override
 	public void setUp() throws ScopeException, EvaluationException {
 		super.setUp();
 		lambda = (AbstractFunction) scope.get("lambda");
 	}
 
 	@After
+	@Override
 	public void tearDown() {
 		lambda = null;
 		super.tearDown();
@@ -148,7 +147,7 @@ public class LambdaTest extends AbstractFplTest {
 		FplInteger i = (FplInteger) evaluate("last-run", "(letzt 5 6)");
 		assertEquals(6, i.getValue());
 	}
-	
+
 	@Test
 	public void testDefFunctionSquare() throws Exception {
 		FplLambda f = (FplLambda) evaluate("square", "(def-function square (x) (* x x))");
@@ -225,7 +224,7 @@ public class LambdaTest extends AbstractFplTest {
 		FplValue value = values.get(1);
 		assertEquals(new FplString("value"), value);
 	}
-	
+
 	@Test
 	public void testException() throws Exception {
 		evaluate("fun1.fpl", "(def-function fun1 (a) (fun2 a))");

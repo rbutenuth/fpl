@@ -50,7 +50,7 @@ public final class Token {
 		public boolean isPrimitive() {
 			return primitive;
 		}
-	};
+	}
 
 	private final Position position;
 	private final Id id;
@@ -61,7 +61,7 @@ public final class Token {
 
 	/**
 	 * Create a token without a value.
-	 * 
+	 *
 	 * @param position Position in the source, where this token has been found (not
 	 *                 null).
 	 * @param id       Token id, not null.
@@ -85,7 +85,7 @@ public final class Token {
 
 	/**
 	 * Create a double Token.
-	 * 
+	 *
 	 * @param position    Position in the source, where this token has been found
 	 *                    (not null).
 	 * @param doubleValue
@@ -104,7 +104,7 @@ public final class Token {
 
 	/**
 	 * Create an integer Token.
-	 * 
+	 *
 	 * @param position     Position in the source, where this token has been found
 	 *                     (not null).
 	 * @param integerValue Value.
@@ -123,7 +123,7 @@ public final class Token {
 
 	/**
 	 * Create a String or Symbol token.
-	 * 
+	 *
 	 * @param position     Position in the source, where this token has been found
 	 *                     (not null).
 	 * @param id           Token id, not null.
@@ -159,7 +159,7 @@ public final class Token {
 
 	/**
 	 * Is this a Token with the given id?
-	 * 
+	 *
 	 * @param id Let's compare with this.
 	 * @return Is it?
 	 */
@@ -169,7 +169,7 @@ public final class Token {
 
 	/**
 	 * Is this a Token NOT with the given id?
-	 * 
+	 *
 	 * @param id Let's compare with this.
 	 * @return Is it?
 	 */

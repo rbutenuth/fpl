@@ -25,7 +25,7 @@ public class FplWrapper extends AbstractFunction {
 		primitive2Wrapper.put(Float.TYPE, Float.class);
 		primitive2Wrapper.put(Void.TYPE, Void.TYPE);
 	}
-	
+
 	private final Class<?> clazz;
 	private final Object instance;
 
@@ -91,7 +91,7 @@ public class FplWrapper extends AbstractFunction {
 
 	/**
 	 * Find the best matching method (or constructor) for the given arguments.
-	 * 
+	 *
 	 * @param name        Name of method (or class name when searching constructors
 	 * @param executables methods / constructors
 	 * @param params      parameters for the method / constructor
@@ -99,8 +99,7 @@ public class FplWrapper extends AbstractFunction {
 	 * @throws EvaluationException If no matching method is found.
 	 */
 	@SuppressWarnings("unchecked")
-	private <T extends Executable> T findBestMatch(String name, Executable[] executables, Object[] params)
-			throws EvaluationException {
+	private <T extends Executable> T findBestMatch(String name, Executable[] executables, Object[] params) throws EvaluationException {
 		int targetIndex = 0;
 		for (int sourceIndex = 0; sourceIndex < executables.length; sourceIndex++) {
 			if (isMatch(name, executables[sourceIndex], params)) {
@@ -130,7 +129,7 @@ public class FplWrapper extends AbstractFunction {
 				Class<?> paramClass = parameters[i].getType();
 				if (paramClass.equals(Boolean.class) || paramClass.equals(boolean.class)) {
 					if (value instanceof Boolean) {
-						values[i] = (Boolean) value;
+						values[i] = value;
 					} else {
 						values[i] = ((Number) value).intValue() != 0;
 					}
@@ -255,7 +254,7 @@ public class FplWrapper extends AbstractFunction {
 			return match;
 		}
 	}
-	
+
 	private boolean isIntegralNumber(Class<?> clazz) {
 		return Byte.class.equals(clazz) || Short.class.equals(clazz) //
 				|| Integer.class.equals(clazz) || Long.class.equals(clazz);
