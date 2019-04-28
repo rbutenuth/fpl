@@ -1,0 +1,10 @@
+(put-global value 0)
+
+(def-function plusxx (x) (+ x x))
+
+(def-function get-and-increment ()
+	(put-global value (+ value 1))
+	value
+)
+
+(plusxx (get-and-increment))

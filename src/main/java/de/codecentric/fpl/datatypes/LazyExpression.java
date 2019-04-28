@@ -9,6 +9,8 @@ import de.codecentric.fpl.data.Scope;
 public class LazyExpression implements FplValue {
     private Scope scope;
     private FplValue originalExpression;
+    private boolean evaluated;
+    private FplValue value;
 
     /**
      * @param scope Scope for evaluation, not null.
@@ -26,8 +28,12 @@ public class LazyExpression implements FplValue {
      * @see FplValue.data.LObject#evaluateResource(lang.data.Scope)
      */
     @Override
-    public FplValue evaluate(Scope unusedScope) throws EvaluationException {
-        return originalExpression.evaluate(scope);
+    public synchronized FplValue evaluate(Scope unusedScope) throws EvaluationException {
+    	if (!evaluated) {
+    		evaluated = true;
+    		value = originalExpression.evaluate(scope);
+    	}
+    	return value;
     }
     
     @Override

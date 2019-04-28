@@ -92,6 +92,11 @@ public class Arithmetic extends AbstractFunction {
 		
 		abstract double execute(double left, double right);
 		abstract long execute(long left, long right);
+		
+		@Override
+		public String toString() {
+			return name;
+		}
 	}
 	
 	private final ArithmeticOperator op;
@@ -127,7 +132,7 @@ public class Arithmetic extends AbstractFunction {
 	@Override
 	public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 		try {
-			FplValue value = parameters[0].evaluate(scope);
+			FplValue value = parameters[0] == null ? null : parameters[0].evaluate(scope);
 			boolean isDouble;
 			long intAccumulator = 0;
 			double doubleAccumulator = 0;
@@ -138,7 +143,7 @@ public class Arithmetic extends AbstractFunction {
 				isDouble = true;
 				doubleAccumulator = ((FplDouble) value).getValue();
 			} else {
-				throw new EvaluationException(op + " does not work on " + value.getClass().getSimpleName());
+				throw new EvaluationException(op + " does not work on " + (value == null ? "nil" : value.getClass().getSimpleName()));
 			}
 			if (op == ArithmeticOperator.MINUS && parameters.length == 1) {
 				// unary minus
@@ -151,7 +156,7 @@ public class Arithmetic extends AbstractFunction {
 			for (int i = 1; i < parameters.length; i++) {
 				long intNext = 0;
 				double doubleNext = 0;
-				value = parameters[i].evaluate(scope);
+				value = parameters[i] == null ? null : parameters[i].evaluate(scope);
 				if (value instanceof FplInteger) {
 					if (isDouble) {
 						doubleNext = ((FplInteger) value).getValue();
@@ -166,7 +171,7 @@ public class Arithmetic extends AbstractFunction {
 					}
 					doubleNext = ((FplDouble) value).getValue();
 				} else {
-					throw new EvaluationException(op + " does not work on " + value.getClass().getSimpleName());
+					throw new EvaluationException(op + " does not work on " + (value == null ? "nil" : value.getClass().getSimpleName()));
 				}
 
 				if (isDouble) {

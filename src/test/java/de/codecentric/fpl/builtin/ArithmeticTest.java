@@ -111,13 +111,23 @@ public class ArithmeticTest extends AbstractFplTest {
 
     @Test
     public void testDoubleTimesDouble() throws Exception {
-        FplDouble d = (FplDouble)evaluate("plus", "(* 3.0 4.0)");
+        FplDouble d = (FplDouble)evaluate("times", "(* 3.0 4.0)");
         assertEquals(12.0, d.getValue(), 0.0000001);
     }
 
     @Test
-    public void testDoublePowerDouble() throws Exception {
-        FplDouble d = (FplDouble)evaluate("plus", "(** 3.0 4.0)");
+    public void doublePowerDouble() throws Exception {
+        FplDouble d = (FplDouble)evaluate("power", "(** 3.0 4.0)");
         assertEquals(81.0, d.getValue(), 0.0000001);
+    }
+    
+    @Test(expected = EvaluationException.class)
+    public void doublePlusNullFails() throws Exception {
+        evaluate("plus", "(+ 3.0 nil)");
+    }
+    
+    @Test(expected = EvaluationException.class)
+    public void nullPlusDoubleFails() throws Exception {
+        evaluate("plus", "(+ nil 3.0)");
     }
 }
