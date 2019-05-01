@@ -40,60 +40,6 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testEmptyJsonList() throws Exception {
-		Parser p = parser("empty json list", "[]");
-		assertTrue(p.hasNext());
-		FplList l = (FplList) p.next();
-		assertEquals(0, l.size());
-		assertFalse(p.hasNext());
-	}
-
-	@Test
-	public void testUnterminatedEmptyJsonList() throws Exception {
-		Parser p = parser("syntax error", "[");
-		try {
-			assertTrue(p.hasNext());
-			p.next();
-			fail("Exception missing");
-		} catch (ParseException e) {
-			assertEquals("Unexpected end of source in json list", e.getMessage());
-			assertEquals("syntax error", e.getPosition().getName());
-			assertEquals(1, e.getPosition().getLine());
-			assertEquals(1, e.getPosition().getColumn());
-		}
-	}
-
-	@Test
-	public void testUnterminatedJsonList() throws Exception {
-		Parser p = parser("syntax error", "[symbol");
-		try {
-			assertTrue(p.hasNext());
-			p.next();
-			fail("Exception missing");
-		} catch (ParseException e) {
-			assertEquals("Unexpected end of source in json list", e.getMessage());
-			assertEquals("syntax error", e.getPosition().getName());
-			assertEquals(1, e.getPosition().getLine());
-			assertEquals(2, e.getPosition().getColumn());
-		}
-	}
-
-	@Test
-	public void testWrongTerminatedJsonList() throws Exception {
-		Parser p = parser("syntax error", "[symbol)");
-		try {
-			assertTrue(p.hasNext());
-			p.next();
-			fail("Exception missing");
-		} catch (ParseException e) {
-			assertEquals("Unexpected token in json list: )", e.getMessage());
-			assertEquals("syntax error", e.getPosition().getName());
-			assertEquals(1, e.getPosition().getLine());
-			assertEquals(8, e.getPosition().getColumn());
-		}
-	}
-
-	@Test
 	public void testString() throws Exception {
 		Parser p = parser("string", "\"a string\"");
 		assertTrue(p.hasNext());
@@ -118,12 +64,6 @@ public class ParserTest extends AbstractFplTest {
 	@Test
 	public void testSimpleList() throws Exception {
 		Parser p = parser("simple list", "(symbol 42 3.1415 \"a string\")");
-		verifySimpleList(p);
-	}
-
-	@Test
-	public void testSimpleJsonList() throws Exception {
-		Parser p = parser("simple json-list", "[symbol, 42, 3.1415, \"a string\"]");
 		verifySimpleList(p);
 	}
 

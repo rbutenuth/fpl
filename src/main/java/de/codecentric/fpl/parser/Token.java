@@ -16,10 +16,6 @@ public final class Token {
 		LEFT_PAREN(true),
 		/** ) */
 		RIGHT_PAREN(true),
-		/** [ */
-		LEFT_SQUARE_BRACKET(true),
-		/** ] */
-		RIGHT_SQUARE_BRACKET(true),
 		/** { */
 		LEFT_CURLY_BRACKET(true),
 		/** } */
@@ -241,9 +237,6 @@ public final class Token {
 		case LEFT_PAREN:
 			s = "(";
 			break;
-		case LEFT_SQUARE_BRACKET:
-			s = "[";
-			break;
 		case LEFT_CURLY_BRACKET:
 			s = "{";
 			break;
@@ -252,9 +245,6 @@ public final class Token {
 			break;
 		case RIGHT_PAREN:
 			s = ")";
-			break;
-		case RIGHT_SQUARE_BRACKET:
-			s = "]";
 			break;
 		case RIGHT_CURLY_BRACKET:
 			s = "}";

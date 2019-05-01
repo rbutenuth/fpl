@@ -72,12 +72,6 @@ public class Scanner implements Closeable {
 		} else if (ch == ')') {
 			readChar();
 			return new Token(position, Id.RIGHT_PAREN);
-		} else if (ch == '[') {
-			readChar();
-			return new Token(position, Id.LEFT_SQUARE_BRACKET);
-		} else if (ch == ']') {
-			readChar();
-			return new Token(position, Id.RIGHT_SQUARE_BRACKET);
 		} else if (ch == '{') {
 			readChar();
 			return new Token(position, Id.LEFT_CURLY_BRACKET);

@@ -75,9 +75,6 @@ public class Parser implements Closeable {
 		case LEFT_PAREN:
 			result = list();
 			break;
-		case LEFT_SQUARE_BRACKET:
-			result = jsonList();
-			break;
 		case LEFT_CURLY_BRACKET:
 			result = object();
 			break;
@@ -138,27 +135,6 @@ public class Parser implements Closeable {
 		}
 		expectNotEof("Unexpected end of source in list");
 		fetchNextToken(); // skip RIGHT_PAREN
-		return FplList.fromValues(elements);
-	}
-
-	private FplValue jsonList() throws ParseException, IOException {
-		fetchNextToken(); // skip LEFT_SQUARE_BRACKET
-		expectNotEof("Unexpected end of source in json list");
-		if (nextToken.is(Id.RIGHT_SQUARE_BRACKET)) {
-			fetchNextToken();
-			return FplList.EMPTY_LIST;
-		}
-		List<FplValue> elements = new ArrayList<>();
-		elements.add(value());
-		while (nextToken.is(Id.COMMA)) {
-			fetchNextToken(); // skip COMMA
-			elements.add(value());
-		}
-		expectNotEof("Unexpected end of source in json list");
-		if (nextToken.isNot(Id.RIGHT_SQUARE_BRACKET)) {
-			throw new ParseException(nextToken.getPosition(), "Unexpected token in json list: " + nextToken);
-		}
-		fetchNextToken(); // skip RIGHT_SQUARE_BRACKET
 		return FplList.fromValues(elements);
 	}
 
