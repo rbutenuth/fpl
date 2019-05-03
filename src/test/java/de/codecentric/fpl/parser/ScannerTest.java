@@ -63,7 +63,7 @@ public class ScannerTest {
 
 	@Test
 	public void testParenthesisAndSymbol() throws Exception {
-		try (Scanner sc = new Scanner("test", new StringReader("'( bla \n\r) ; sinnfrei\n\r;leer\n{,:}"))) {
+		try (Scanner sc = new Scanner("test", new StringReader("'( bla \n\r) ; sinnfrei\n\r;leer\n{:}"))) {
 			Token t = sc.next();
 			assertNotNull(t);
 			assertEquals(Id.QUOTE, t.getId());
@@ -93,11 +93,6 @@ public class ScannerTest {
 			assertNotNull(t);
 			assertEquals(Id.LEFT_CURLY_BRACKET, t.getId());
 			assertEquals("{", t.toString());
-
-			t = sc.next();
-			assertNotNull(t);
-			assertEquals(Id.COMMA, t.getId());
-			assertEquals(",", t.toString());
 
 			t = sc.next();
 			assertNotNull(t);

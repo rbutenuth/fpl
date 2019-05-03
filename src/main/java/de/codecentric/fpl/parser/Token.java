@@ -20,8 +20,6 @@ public final class Token {
 		LEFT_CURLY_BRACKET(true),
 		/** } */
 		RIGHT_CURLY_BRACKET(true),
-		/** , */
-		COMMA(true),
 		/** : */
 		COLON(true),
 		/** 'x, short for (qoute x) */
@@ -224,9 +222,6 @@ public final class Token {
 		switch (id) {
 		case COLON:
 			s = ":";
-			break;
-		case COMMA:
-			s = ",";
 			break;
 		case DOUBLE:
 			s = Double.toString(doubleValue);

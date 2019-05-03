@@ -165,8 +165,7 @@ public class Parser implements Closeable {
 	}
 
 	private void keyValuePairs(FplObject obj) throws ParseException, IOException {
-		while (nextToken.is(Id.COMMA)) {
-			fetchNextToken(); // skip COMMA
+		while (nextToken.isNot(Id.RIGHT_CURLY_BRACKET)) {
 			if (nextToken.is(Id.SYMBOL) || nextToken.is(Id.STRING)) {
 				keyValuePair(obj);
 			} else {
@@ -174,9 +173,6 @@ public class Parser implements Closeable {
 			}
 		}
 		expectNotEof("Unexpected end of source in object");
-		if (nextToken.isNot(Id.RIGHT_CURLY_BRACKET)) {
-			throw new ParseException(nextToken.getPosition(), "} at end of map missing");
-		}
 	}
 
 	/*
