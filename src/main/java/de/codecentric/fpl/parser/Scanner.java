@@ -163,7 +163,7 @@ public class Scanner implements Closeable {
 	}
 
 	private Token symbol(Position position) throws IOException {
-		final String NON_SYMBOL_CHARS = "\"[](),:";
+		final String NON_SYMBOL_CHARS = "\"():";
 		StringBuilder sb = new StringBuilder();
 		while (ch != -1 && !Character.isWhitespace(ch) && NON_SYMBOL_CHARS.indexOf(ch) == -1) {
 			sb.append((char) ch);
