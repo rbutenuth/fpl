@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.Symbol;
 
 public class ScopeTest {
 	Scope outer;
@@ -29,22 +30,27 @@ public class ScopeTest {
 	}
 	
 	@Test
-	public void testEmptyScope() {
+	public void emptyScope() {
 		assertTrue(outer.isEmpty());
 		assertNull(inner.get("foo"));
 		assertNull(outer.get("foo"));
 	}
 
 	@Test
-	public void testNesting() throws ScopeException {
+	public void nesting() throws ScopeException {
 		assertTrue(inner.getNext() == outer);
 		outer.put("foo", new FplString("bar"));
 		assertEquals(new FplString("bar"), inner.get("foo"));
 		assertEquals(new FplString("bar"), outer.get("foo"));
 	}
 	
+	@Test(expected = IllegalArgumentException.class)
+	public void checkNestingWithNullParentThrowsException() throws ScopeException {
+		new Scope(null);
+	}
+	
 	@Test
-	public void testNestingOtherDirection() throws ScopeException {
+	public void nestingOtherDirection() throws ScopeException {
 		assertTrue(inner.getNext() == outer);
 		inner.put("foo", new FplString("bar"));
 		assertEquals(new FplString("bar"), inner.get("foo"));
@@ -52,23 +58,28 @@ public class ScopeTest {
 	}
 	
 	@Test(expected = ScopeException.class)
-	public void testPutNullKey() throws ScopeException {
+	public void assertPutNullKeyFails() throws ScopeException {
 		outer.put(null, new FplString("foo"));
 	}
 	
 	@Test(expected = ScopeException.class)
-	public void testPutEmptyKey() throws ScopeException {
+	public void assertPutEmptyKeyFails() throws ScopeException {
 		outer.put("", new FplString("foo"));
+	}
+	
+	@Test(expected = ScopeException.class)
+	public void assertDefineNullValueFails() throws ScopeException {
+		outer.define(new Symbol("foo"), null);
 	}
 	
 	@Test
 	public void testChangeNullKey() throws ScopeException {
-		changeWithException(null, new FplString("newValue"), "key null or empty");
+		changeWithException(null, new FplString("newValue"), "nil is not a valid name");
 	}
 	
 	@Test
 	public void testChangeEmptyKey() throws ScopeException {
-		changeWithException("", new FplString("newValue"), "key null or empty");
+		changeWithException("", new FplString("newValue"), "nil is not a valid name");
 	}
 	
 	@Test

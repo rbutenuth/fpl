@@ -1,6 +1,0 @@
-(def object {
-
-	"key": "value"
-})
-
-(object get key)

@@ -5,12 +5,12 @@ import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
-import de.codecentric.fpl.datatypes.FplObject;
-import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplObject;
+import de.codecentric.fpl.datatypes.FplString;
+import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Parameter;
 import de.codecentric.fpl.datatypes.Symbol;
-import de.codecentric.fpl.parser.Position;
 
 /**
  * Functions like "set", "set-global", "let", etc.
@@ -66,20 +66,20 @@ public class Assignment {
 		});
 
 		scope.put(new AbstractFunction("def",
-				comment("Assign value in local scope, it must be unassigned before. nil as value not allowed"), false,
+				comment("Assign value in current scope, it must be unassigned before. nil as value not allowed"), false,
 				"symbol", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				try {
-					return scope.define(targetName(scope, parameters[0]), value(scope, parameters[1]));
+					return scope.define(targetSymbol(scope, parameters[0]), value(scope, parameters[1]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}
 			}
 		});
 
-		scope.put(new AbstractFunction("def-field",
-				comment("Assign value in the next object scope, it must be unassigned before. nil as value not allowed"), false,
+		scope.put(new AbstractFunction("def-field", comment(
+				"Assign value in the next object scope, it must be unassigned before. nil as value not allowed"), false,
 				"symbol", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -91,7 +91,7 @@ public class Assignment {
 					if (s == null) {
 						throw new EvaluationException("No object found");
 					}
-					return s.define(targetName(scope, parameters[0]), value(scope, parameters[1]));
+					return s.define(targetSymbol(scope, parameters[0]), value(scope, parameters[1]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}
@@ -108,59 +108,58 @@ public class Assignment {
 					while (s.getNext() != null) {
 						s = s.getNext();
 					}
-					return s.define(targetName(scope, parameters[0]), value(scope, parameters[1]));
+					return s.define(targetSymbol(scope, parameters[0]), value(scope, parameters[1]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}
 			}
 		});
 
-		scope.put(new AbstractFunction("instance", comment("Create an instce of an object."), true, "key-value-pair...") {
-
-			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				if (parameters.length % 2 != 0) {
-					throw new EvaluationException("Number of parameters must be even");
-				}
-				int keyValueCount = parameters.length / 2;
-				String[] keys = new String[keyValueCount];
-				FplValue[] values = new FplValue[keyValueCount];
-				for (int i = 0; i < keyValueCount; i++) {
-					keys[i] = Assignment.targetName(scope, parameters[i * 2]);
-					values[i] = Assignment.value(scope, parameters[i * 2 + 1]);
-				}
-				
-				FplObject object = new FplObject(Position.UNKNOWN, scope);
-				for (int i = 0; i < keyValueCount; i++) {
-					try {
-						object.put(keys[i], values[i]);
-					} catch (ScopeException e) {
-						throw new EvaluationException(e.getMessage());
-					}
-				}
-				return object;
-			}
-		});
 	}
 
-	static private String targetName(Scope scope, FplValue expression) throws EvaluationException {
-		if (expression == null) {
-			return null;
-		} else if (expression instanceof Symbol) {
-			return ((Symbol) expression).getName();
+	static public String targetName(Scope scope, FplValue expression) throws EvaluationException {
+		return targetSymbol(scope, expression).getName();
+	}
+	
+	/**
+	 * Compute the name for an assignment. For a symbol/parameter it's the symbol/parameter name. For other
+	 * expressions, evaluate it. Result must be a {@link FplString} or {@link Symbol}. Return the content/name.
+	 * @param scope For the evaluation.
+	 * @param expression Expression resulting in the name.
+	 * @return see description.
+	 * @throws EvaluationException
+	 */
+	static public Symbol targetSymbol(Scope scope, FplValue expression) throws EvaluationException {
+		if (expression instanceof Symbol) {
+			return (Symbol) expression;
 		} else if (expression instanceof Parameter) {
-			return ((Parameter) expression).getName();
+			return ((Parameter) expression).getSymbol();
 		} else {
+			if (expression == null) {
+				throw new EvaluationException("nil is not a valid name");
+			}
 			FplValue value = expression.evaluate(scope);
 			if (value instanceof Symbol) {
-				return ((Symbol) value).getName();
+				return (Symbol) value;
+			} else if (value instanceof FplString) {
+				String s = ((FplString)value).getContent();
+				if (s.length() == 0) {
+					throw new EvaluationException("\"\" is not a valid name");
+				}
+				return new Symbol(s);
 			} else {
-				throw new EvaluationException("Not a symbol: " + value);
+				throw new EvaluationException("Not a symbol or string: " + value);
 			}
 		}
 	}
-	
-	static private FplValue value(Scope scope, FplValue expression) throws EvaluationException {
+
+	/**
+	 * @param scope For the evaluation
+	 * @param expression Expression to evaluate
+	 * @return <code>null</code> for nil input, otherwise evaluated expression.
+	 * @throws EvaluationException
+	 */
+	static public FplValue value(Scope scope, FplValue expression) throws EvaluationException {
 		return expression == null ? null : expression.evaluate(scope);
 	}
 }

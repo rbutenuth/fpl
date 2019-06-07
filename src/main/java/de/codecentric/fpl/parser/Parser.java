@@ -95,7 +95,7 @@ public class Parser implements Closeable {
 			break;
 		case SYMBOL:
 			Symbol s;
-			if (isNil(nextToken)) {
+			if ("nil".equals(nextToken.getStringValue())) {
 				s = null;
 				scanner.clearCommentLines();
 			} else {
@@ -146,7 +146,6 @@ public class Parser implements Closeable {
 	private FplValue object() throws ParseException, IOException {
 		FplObject obj = new FplObject(nextToken.getPosition());
 		fetchNextToken(); // skip LEFT_CURLY_BRACKET
-		initCode(obj);
 		if (nextToken.isNot(Id.EOF) && nextToken.isNot(Id.RIGHT_CURLY_BRACKET)) {
 			keyValuePair(obj);
 		}
@@ -155,21 +154,12 @@ public class Parser implements Closeable {
 		return obj;
 	}
 
-	private void initCode(FplObject obj) throws ParseException, IOException {
-		while (nextToken.is(Id.LEFT_PAREN) || isNil(nextToken)) {
-			FplValue v = value();
-			if (v != null) {
-				obj.addInitCodeValue(v);
-			}
-		}
-	}
-
 	private void keyValuePairs(FplObject obj) throws ParseException, IOException {
 		while (nextToken.isNot(Id.RIGHT_CURLY_BRACKET)) {
-			if (nextToken.is(Id.SYMBOL) || nextToken.is(Id.STRING)) {
+			if (nextToken.is(Id.SYMBOL)) {
 				keyValuePair(obj);
 			} else {
-				throw new ParseException(nextToken.getPosition(), "Symbol, String or } expected.");
+				throw new ParseException(nextToken.getPosition(), "Symbol or } expected.");
 			}
 		}
 		expectNotEof("Unexpected end of source in object");
@@ -179,14 +169,14 @@ public class Parser implements Closeable {
 	 * string or symbol, comma, value
 	 */
 	private void keyValuePair(FplObject obj) throws ParseException, IOException {
-		String key = nextToken.getStringValue();
-		if (key.length() == 0) {
-			throw new ParseException(lastToken.getPosition(), "Key in map must have length > 0");
+		if (nextToken.isNot(Id.SYMBOL)) {
+			throw new ParseException(lastToken.getPosition(), "Expect key (symbol), but got " + nextToken);
 		}
+		String key = nextToken.getStringValue();
 		fetchNextToken(); // skip STRING or SYMBOL
 		expectNotEof("Unexpected end of source in object");
 		if (nextToken.isNot(Id.COLON)) {
-			throw new ParseException(nextToken.getPosition(), "Expect : after key");
+			throw new ParseException(nextToken.getPosition(), "Expect : after key.");
 		}
 		fetchNextToken(); // skip COLON
 		expectNotEof("Unexpected end of source in object");
@@ -195,7 +185,7 @@ public class Parser implements Closeable {
 			throw new ParseException(lastToken.getPosition(), "Null no allowed as value.");
 		}
 		try {
-			obj.define(key, v);
+			obj.define(new Symbol(key), v);
 		} catch (ScopeException e) {
 			throw new ParseException(lastToken.getPosition(), e.getMessage(), e);
 		}
@@ -206,10 +196,6 @@ public class Parser implements Closeable {
 		nextToken = scanner.next();
 	}
 
-	private boolean isNil(Token token) {
-		return token.is(Id.SYMBOL) && "nil".equals(token.getStringValue());
-	}
-	
 	private void expectNotEof(String message) throws ParseException, IOException {
 		if (nextToken.is(Id.EOF)) {
 			throw new ParseException(lastToken.getPosition(), message);

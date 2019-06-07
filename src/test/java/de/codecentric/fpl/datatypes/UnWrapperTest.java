@@ -64,7 +64,7 @@ public class UnWrapperTest {
 			UnWrapper.wrap(map);
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("nil or \"\" is not a valid name", e.getLocalizedMessage());
+			assertEquals("nil is not a valid name", e.getLocalizedMessage());
 		}
 	}
 	

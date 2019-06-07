@@ -71,13 +71,13 @@ public class ParameterScopeTest {
 	@Test
 	public void testDefine() throws ScopeException {
 		FplString euro = new FplString("€");
-		inner.define("euro", euro);
+		inner.define(new Symbol("euro"), euro);
 		assertEquals(euro, inner.get("euro"));
 	}
 
 	@Test
 	public void testParameterTypeName() {
-		Parameter p = new Parameter("foo", 0);
+		Parameter p = new Parameter(new Symbol("foo"), 0);
 		assertEquals("parameter", p.typeName());
 	}
 }

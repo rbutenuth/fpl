@@ -215,7 +215,7 @@ public class ParserTest extends AbstractFplTest {
 			p.next();
 			fail("Exception missing");
 		} catch (ParseException e) {
-			assertEquals("Symbol, String or } expected.", e.getMessage());
+			assertEquals("Symbol or } expected.", e.getMessage());
 			assertEquals("unterminated object", e.getPosition().getName());
 			assertEquals(1, e.getPosition().getLine());
 			assertEquals(2, e.getPosition().getColumn());
@@ -223,24 +223,8 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testInitCodeWithNil() throws Exception {
-		Parser p = parser("init code with nil", "{ nil }");
-		assertTrue(p.hasNext());
-		FplObject object = (FplObject) p.next();
-		assertTrue(object.isEmpty());
-	}
-
-	@Test
-	public void testInitCodeWithEmptyList() throws Exception {
-		Parser p = parser("init code with nil", "{ () }");
-		assertTrue(p.hasNext());
-		FplObject object = (FplObject) p.next();
-		assertTrue(object.isEmpty());
-	}
-
-	@Test
 	public void testOneIncompletePair() throws Exception {
-		Parser p = parser("one pair", "{ \"1\": }");
+		Parser p = parser("one pair", "{ foo: }");
 		assertTrue(p.hasNext());
 		try {
 			p.next();
@@ -252,25 +236,13 @@ public class ParserTest extends AbstractFplTest {
 
 	@Test
 	public void testOneIncompletePairEOF() throws Exception {
-		Parser p = parser("one pair", "{ \"1\":");
+		Parser p = parser("one pair", "{ foo:");
 		assertTrue(p.hasNext());
 		try {
 			p.next();
 			fail("exception missing");
 		} catch (ParseException e) {
 			assertEquals("Unexpected end of source in object", e.getMessage());
-		}
-	}
-
-	@Test
-	public void testEmptyKey() throws Exception {
-		Parser p = parser("one pair", "{ \"\": 1");
-		assertTrue(p.hasNext());
-		try {
-			p.next();
-			fail("exception missing");
-		} catch (ParseException e) {
-			assertEquals("Key in map must have length > 0", e.getMessage());
 		}
 	}
 
@@ -282,7 +254,19 @@ public class ParserTest extends AbstractFplTest {
 			p.next();
 			fail("exception missing");
 		} catch (ParseException e) {
-			assertEquals("Symbol, String or } expected.", e.getMessage());
+			assertEquals("Symbol or } expected.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void colonMissingInPair() throws Exception {
+		Parser p = parser("pair and two values", "{ key 1 }");
+		assertTrue(p.hasNext());
+		try {
+			p.next();
+			fail("exception missing");
+		} catch (ParseException e) {
+			assertEquals("Expect : after key.", e.getMessage());
 		}
 	}
 
@@ -294,7 +278,7 @@ public class ParserTest extends AbstractFplTest {
 			p.next();
 			fail("exception missing");
 		} catch (ParseException e) {
-			assertEquals("Expect : after key", e.getMessage());
+			assertEquals("Expect key (symbol), but got (", e.getMessage());
 		}
 	}
 
@@ -311,14 +295,6 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testOnePairStringKey() throws Exception {
-		Parser p = parser("one pair", "{ \"1\": 2}");
-		assertTrue(p.hasNext());
-		FplObject object = (FplObject) p.next();
-		assertFalse(object.isEmpty());
-	}
-
-	@Test
 	public void testOnePairSymbolKey() throws Exception {
 		Parser p = parser("one pair", "{ foo: 2}");
 		assertTrue(p.hasNext());
@@ -328,7 +304,7 @@ public class ParserTest extends AbstractFplTest {
 
 	@Test
 	public void testTwoPairs() throws Exception {
-		Parser p = parser("two pairs", "{ \"1\": 2 \"3\": 4}");
+		Parser p = parser("two pairs", "{ foo: 2 bar: 4}");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
 		assertFalse(object.isEmpty());
@@ -352,21 +328,5 @@ public class ParserTest extends AbstractFplTest {
 		} catch (ParseException e) {
 			assertEquals("Duplicate key: foo", e.getMessage());
 		}
-	}
-
-	@Test
-	public void testOnePairAndOneFunction() throws Exception {
-		Parser p = parser("one function and one pair", "{ \n" + //
-				"(def-function factorial (n)\n" + //
-				"  (if (le n 1)\n" + //
-				"    1\n" + //
-				"    (* n (factorial (- n 1)))\n" + //
-				"  )\n" + //
-				")\n" + //
-				"\"1\": 2\n" + //
-				"}");
-		assertTrue(p.hasNext());
-		FplObject object = (FplObject) p.next();
-		assertFalse(object.isEmpty());
 	}
 }

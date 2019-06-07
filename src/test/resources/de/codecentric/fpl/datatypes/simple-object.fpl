@@ -1,8 +1,0 @@
-(def obj {
-
-	(def constant 3)
-	
-	(def-function plus3 (x) (+ constant x))  
-})
-
-(obj plus3 4)

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
@@ -42,7 +43,7 @@ public class AssignmentTest extends AbstractFplTest {
 			evaluate(scope, "put", "(put nil 20)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("nil or \"\" is not a valid name", e.getMessage());
+			assertEquals("nil is not a valid name", e.getMessage());
 		}
 	}
 
@@ -72,7 +73,7 @@ public class AssignmentTest extends AbstractFplTest {
 			evaluate(scope, "put-global", "(put-global nil 20)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("nil or \"\" is not a valid name", e.getMessage());
+			assertEquals("nil is not a valid name", e.getMessage());
 		}
 	}
 
@@ -116,6 +117,7 @@ public class AssignmentTest extends AbstractFplTest {
 		assertEquals(10, ((FplInteger) scope.get("key")).getValue());
 	}
 
+	@Ignore
 	@Test
 	public void testDefField() throws Exception {
 		ListResultCallback callback = evaluateResource("def-field.fpl");
@@ -125,6 +127,7 @@ public class AssignmentTest extends AbstractFplTest {
 		assertEquals(new FplString("value"), object.get("key"));
 	}
 
+	@Ignore
 	@Test
 	public void testDefGlobal() throws Exception {
 		evaluateResource("def-global.fpl");
@@ -147,6 +150,7 @@ public class AssignmentTest extends AbstractFplTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void testDefFieldNil() throws Exception {
 		try {
@@ -165,16 +169,6 @@ public class AssignmentTest extends AbstractFplTest {
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("Duplicate key: foo", e.getMessage());
-		}
-	}
-
-	@Test
-	public void testInstanceNilKey() throws Exception {
-		try {
-			evaluate("instance", "(instance nil 42)");
-			fail("missing exception");
-		} catch (EvaluationException e) {
-			assertEquals("nil or \"\" is not a valid name", e.getMessage());
 		}
 	}
 }

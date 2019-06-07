@@ -1,0 +1,14 @@
+(def-class my-class 
+
+	(def-function new (a b)
+		(new-instance a a b b)
+	)
+	
+	(def-function bad-new (a b)
+		(new-instance a a b )
+	)
+	
+	(def-field key 42)
+)
+
+(my-class new 6 7)

@@ -1,15 +1,12 @@
 package de.codecentric.fpl.datatypes;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map.Entry;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.data.PositionHolder;
+import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.parser.Position;
 
 /**
@@ -20,12 +17,11 @@ import de.codecentric.fpl.parser.Position;
 public class FplObject extends Scope implements PositionHolder, FplValue, Function {
 	private static String NL = System.lineSeparator();
 	private Position position;
-	private List<FplValue> initCode;
 
 	public FplObject() {
 		position = Position.UNKNOWN;
 	}
-	
+
 	/**
 	 * @param position Where it is defined in the source
 	 */
@@ -34,7 +30,6 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 			throw new IllegalArgumentException("position is null");
 		}
 		this.position = position;
-		initCode = Collections.emptyList();
 	}
 
 	/**
@@ -46,56 +41,27 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 		setNext(next);
 	}
 
-	public synchronized void addInitCodeValue(FplValue value) {
-		// Replace unmodifiable emptyList with empty array list
-		if (initCode.isEmpty()) {
-			initCode = new ArrayList<FplValue>();
-		}
-		initCode.add(value);
-	}
-
-	public synchronized List<FplValue> getInitCode() {
-		return Collections.unmodifiableList(initCode);
+	@Override
+	public FplValue evaluate(Scope scope) throws EvaluationException {
+		return this;
 	}
 
 	@Override
 	public FplValue call(Scope scope, FplValue[] parameters) throws EvaluationException {
-		FplValue firstElement = parameters[0].evaluate(this);
+		Scope callScope;
+		if (scope instanceof ParameterScope) {
+			callScope = new ParameterScope(this, (ParameterScope) scope);
+		} else {
+			callScope = this;
+		}
+		FplValue firstElement = parameters[0].evaluate(callScope);
 
 		if (firstElement instanceof Function) {
-			Scope callScope;
-			if (scope instanceof ParameterScope) {
-				callScope = new ParameterScope(this, (ParameterScope) scope);
-			} else {
-				callScope = this;
-			}
 			FplValue[] shiftedParameters = Arrays.copyOfRange(parameters, 1, parameters.length);
 			return ((Function) firstElement).call(callScope, shiftedParameters);
 		} else {
 			throw new EvaluationException("Not a function: " + firstElement);
 		}
-	}
-
-	// TODO: remove the "synchronized", don't change the Scope, instead create a copy (recursive).
-	// When referenced lists contain objects (test it), then copy them, too. This makes it save
-	// to cache parsed code and use it several times.
-	@Override
-	public synchronized FplValue evaluate(Scope scope) throws EvaluationException {
-		if (scope == null) {
-			throw new IllegalArgumentException("Scope of object can't be null");
-		}
-		if (getNext() == null) {
-			setNext(scope);
-			for (FplValue v : initCode) {
-				v.evaluate(this);
-			}
-			for (FplValue value : map.values()) {
-				if (value instanceof FplObject) {
-					value.evaluate(this);
-				}
-			}
-		}
-		return this;
 	}
 
 	@Override
@@ -112,21 +78,8 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
-		if (!initCode.isEmpty()) {
-			sb.append(NL);
-		}
-		for (FplValue element : initCode) {
-			sb.append(element.toString());
-			sb.append(NL).append(NL);
-		}
-		boolean first = true;
 		for (Entry<String, FplValue> entry : map.entrySet()) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(",").append(NL);
-			}
-			sb.append("    ");
+			sb.append(NL).append("    ");
 			sb.append(entry.getKey()).append(": ").append(entry.getValue().toString());
 		}
 		sb.append(NL).append("}").append(NL);

@@ -1,6 +1,9 @@
 package de.codecentric.fpl.builtin;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -16,7 +19,6 @@ import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplLambda;
-import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.FplList;
@@ -122,11 +124,6 @@ public class LambdaTest extends AbstractFplTest {
 	}
 
 	@Test(expected = EvaluationException.class)
-	public void defFunctionNameNotSymbol() throws Exception {
-		evaluate("no args", "(def-function \"foo\" () 42)");
-	}
-
-	@Test(expected = EvaluationException.class)
 	public void lambdaArgumentNotSymbol() throws Exception {
 		evaluate("no args", "(lambda (40) 42)");
 	}
@@ -218,14 +215,6 @@ public class LambdaTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void get() throws Exception {
-		ListResultCallback callback = evaluateResource("get.fpl");
-		List<FplValue> values = callback.getResults();
-		FplValue value = values.get(1);
-		assertEquals(new FplString("value"), value);
-	}
-
-	@Test
 	public void exceptionChain() throws Exception {
 		evaluate("fun1.fpl", "(def-function fun1 (a) (fun2 a))");
 		evaluate("fun2.fpl", "(def-function fun2 (a) (fun3 a))");
@@ -250,12 +239,6 @@ public class LambdaTest extends AbstractFplTest {
 		assertNull(evaluate("nil", "(type-of nil)"));
 	}
 
-	@Test
-	public void createEmptyObjectInstance() throws Exception {
-		FplValue value = evaluate("instance", "(instance)");
-		assertTrue(value instanceof FplObject);
-	}
-	
 	@Test
 	public void duplicateUsedParameterIsEvalulatedOnlyOnce() throws Exception {
 		ListResultCallback callback = evaluateResource("duplicate-used-parameter.fpl");

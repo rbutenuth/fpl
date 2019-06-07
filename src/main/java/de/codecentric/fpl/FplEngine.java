@@ -8,6 +8,7 @@ import java.util.List;
 
 import de.codecentric.fpl.builtin.Arithmetic;
 import de.codecentric.fpl.builtin.Assignment;
+import de.codecentric.fpl.builtin.ClassAndObject;
 import de.codecentric.fpl.builtin.Comparison;
 import de.codecentric.fpl.builtin.Conditional;
 import de.codecentric.fpl.builtin.Lambda;
@@ -52,6 +53,7 @@ public class FplEngine {
 		Conditional.put(scope);
 		Loop.put(scope);
 		Lambda.put(scope);
+		ClassAndObject.put(scope);
 
 		return scope;
 	}

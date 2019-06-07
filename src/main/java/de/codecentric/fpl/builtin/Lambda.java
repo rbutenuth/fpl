@@ -52,15 +52,12 @@ public class Lambda {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				if (!(parameters[0] instanceof Symbol)) {
-					throw new EvaluationException("Expect symbol, got: " + parameters[0]);
-				}
-				Symbol name = (Symbol) parameters[0];
+				Symbol name = Assignment.targetSymbol(scope, parameters[0]);
 				FplValue[] code = new FplValue[parameters.length - 2];
 				System.arraycopy(parameters, 2, code, 0, code.length);
 				FplLambda result = lambda(name, parameters[1], code);
 				try {
-					scope.define(name.getName(), result);
+					scope.define(name, result);
 				} catch (ScopeException e) {
 					throw new EvaluationException(e);
 				}
@@ -73,7 +70,7 @@ public class Lambda {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplValue expression = parameters[0].evaluate(scope);
-				return value(scope, expression);
+				return Assignment.value(scope, expression);
 			}
 		});
 
@@ -89,12 +86,12 @@ public class Lambda {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				FplValue expression = value(scope, parameters[0]);
+				FplValue expression = Assignment.value(scope, parameters[0]);
 				return expression == null ? null : new FplString(expression.typeName());
 			}
 		});
 
-		scope.put(new AbstractFunction("java-instance", comment("Create an instce of a Java wrapper object."), //
+		scope.put(new AbstractFunction("java-instance", comment("Create an instance of a Java wrapper object."), //
 				true, "class...") {
 
 			@Override
@@ -112,13 +109,13 @@ public class Lambda {
 				}
 				Object[] methodParams = new Object[parameters.length - 1];
 				for (int i = 0; i < methodParams.length; i++) {
-					methodParams[i] = value(scope, parameters[i + 1]);
+					methodParams[i] = Assignment.value(scope, parameters[i + 1]);
 				}
 				return new FplWrapper(name, methodParams);
 			}
 		});
 
-		scope.put(new AbstractFunction("java-class", comment("Create an instce of a Java wrapper object."), //
+		scope.put(new AbstractFunction("java-class", comment("Create an instance of a Java wrapper object."), //
 				false, "class") {
 
 			@Override
@@ -168,10 +165,6 @@ public class Lambda {
 			}
 		}
 		return paramList;
-	}
-
-	static private FplValue value(Scope scope, FplValue expression) throws EvaluationException {
-		return expression == null ? null : expression.evaluate(scope);
 	}
 
 	private static String joinLines(List<String> commentLines) {

@@ -5,11 +5,11 @@ import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.data.Scope;
 
 public class Parameter implements FplValue {
-	private String name;
+	private Symbol symbol;
 	private int index;
 
-	public Parameter(String name, int index) {
-		this.name = name;
+	public Parameter(Symbol symbol, int index) {
+		this.symbol = symbol;
 		this.index = index;
 	}
 
@@ -28,13 +28,17 @@ public class Parameter implements FplValue {
         return paramScope.getParameter(index);
 	}
 
+	public Symbol getSymbol() {
+		return symbol;
+	}
+	
 	public String getName() {
-		return name;
+		return symbol.getName();
 	}
 	
 	@Override
 	public String toString() {
-		return name;
+		return symbol.getName();
 	}
 	
 	@Override

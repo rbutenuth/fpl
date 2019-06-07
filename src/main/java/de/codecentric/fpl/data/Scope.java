@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Named;
+import de.codecentric.fpl.datatypes.Symbol;
 
 /**
  * Just a little bit more than a {@link Map}, can be nested.
@@ -26,10 +27,13 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	/**
 	 * Create an inner scope.
 	 * 
-	 * @param next Next outer scope.
+	 * @param next Next outer scope, not <code>null</code>.
 	 */
 	public Scope(Scope next) {
 		this();
+		if (next == null) {
+			throw new IllegalArgumentException("next can't be null");
+		}
 		this.next = next;
 	}
 
@@ -101,9 +105,7 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	 *                        chain.
 	 */
 	public FplValue replace(String key, FplValue newValue) throws ScopeException {
-		if (key == null || key.length() == 0) {
-			throw new ScopeException("key null or empty");
-		}
+		checkKeyNotEmpty(key);
 		if (newValue == null) {
 			throw new ScopeException("Change does not allow null values");
 		}
@@ -124,12 +126,12 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	 * @return value
 	 * @throws ScopeException If value did already exist.
 	 */
-	public FplValue define(String key, FplValue value) throws ScopeException {
-		checkKeyNotEmpty(key);
+	public FplValue define(Symbol key, FplValue value) throws ScopeException {
+		checkKeyNotNull(key);
 		if (value == null) {
 			throw new ScopeException("value is nil");
 		}
-		FplValue old = map.putIfAbsent(key, value);
+		FplValue old = map.putIfAbsent(key.getName(), value);
 		if (old != null) {
 			throw new ScopeException("Duplicate key: " + key);
 		}
@@ -149,9 +151,15 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 		return map.isEmpty();
 	}
 	
+	private void checkKeyNotNull(Symbol key) throws ScopeException {
+		if (key == null) {
+			throw new ScopeException("nil is not a valid name");
+		}
+	}
+	
 	private void checkKeyNotEmpty(String key) throws ScopeException {
 		if (key == null || key.length() == 0) {
-			throw new ScopeException("nil or \"\" is not a valid name");
+			throw new ScopeException("nil is not a valid name");
 		}
 	}
 }

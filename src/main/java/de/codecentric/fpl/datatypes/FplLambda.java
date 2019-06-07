@@ -157,7 +157,7 @@ public class FplLambda extends AbstractFunction {
 				if (index == null) {
 					return s;
 				} else {
-					return new Parameter(s.getName(), index);
+					return new Parameter(s, index);
 				}
 			} else {
 				return code;
