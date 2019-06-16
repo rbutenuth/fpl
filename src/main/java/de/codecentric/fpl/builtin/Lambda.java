@@ -42,7 +42,7 @@ public class Lambda {
 
 		// Example:
 		// (def-function factorial (n)
-		// (if (le n 1)
+		// (if-else (le n 1)
 		// 1
 		// (* n (factorial (- n 1)))
 		// )

@@ -160,24 +160,22 @@ public class SimpleHttpServer extends Thread {
 		he.close();
 	}
 
-	private String lastBlock(String raw) {
-		String text = raw.trim();
-		int newLinePos = 0;
-		int i = text.length() - 1;
-		while (i > 0) {
-			while (i > 0 && text.charAt(i) != '\n') {
-				i--;
-			}
-			newLinePos = i--;
-			while (i > 0 && text.charAt(i) != '\n') {
-				i--;
-			}
-			int prevNewLinePos = i--;
-			if (prevNewLinePos < 0 || text.substring(prevNewLinePos, newLinePos).trim().length() == 0) {
-				break;
+	public static String lastBlock(String raw) {
+		// Split at line breaks
+		String[] text = raw.trim().split("\\R");
+		// Search for the first empty line from the end
+		int i = text.length - 1;
+		while (i > 0 && text[i].trim().length() > 0) {
+			i--;
+		}
+		StringBuilder sb = new StringBuilder(raw.length());
+		while (i < text.length) {
+			sb.append(text[i++]);
+			if (i < text.length) {
+				sb.append('\n');
 			}
 		}
-		return text.substring(newLinePos);
+		return sb.toString();
 	}
 
 	public static Map<String, List<String>> splitQuery(String query) throws UnsupportedEncodingException {

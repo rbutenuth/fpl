@@ -30,7 +30,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testEmptyList() throws Exception {
+	public void emptyList() throws Exception {
 		Parser p = parser("empty list", "()");
 		assertTrue(p.hasNext());
 		FplList l = (FplList) p.next();
@@ -40,7 +40,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testString() throws Exception {
+	public void stringConstant() throws Exception {
 		Parser p = parser("string", "\"a string\"");
 		assertTrue(p.hasNext());
 		FplValue e = p.next();
@@ -51,7 +51,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testInteger() throws Exception {
+	public void integerConstant() throws Exception {
 		Parser p = parser("integer", "42");
 		assertTrue(p.hasNext());
 		FplValue e = p.next();
@@ -62,7 +62,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testSimpleList() throws Exception {
+	public void simpleList() throws Exception {
 		Parser p = parser("simple list", "(symbol 42 3.1415 \"a string\")");
 		verifySimpleList(p);
 	}
@@ -89,7 +89,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testNestedList() throws Exception {
+	public void nestedList() throws Exception {
 		Parser p = parser("nested list", "(symbol (42 3.1415) \"a string\")");
 		assertTrue(p.hasNext());
 		FplList l = (FplList) p.next();
@@ -119,7 +119,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testUnterminatedList() throws Exception {
+	public void unterminatedList() throws Exception {
 		Parser p = parser("syntax error", "(symbol");
 		try {
 			assertTrue(p.hasNext());
@@ -134,7 +134,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testQuote() throws Exception {
+	public void quote() throws Exception {
 		Parser p = parser("quote", "'('symbol 42 3.1415 \"a string\")");
 		assertTrue(p.hasNext());
 		FplList l = (FplList) p.next();
@@ -143,7 +143,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testSyntaxError1() throws Exception {
+	public void unbalancedParenthesesResultInSyntaxError1() throws Exception {
 		Parser p = parser("syntax error", "())");
 		assertTrue(p.hasNext());
 		p.next(); // parse ()
@@ -155,12 +155,12 @@ public class ParserTest extends AbstractFplTest {
 			assertEquals("unexpected token: )", e.getMessage());
 			assertEquals("syntax error", e.getPosition().getName());
 			assertEquals(1, e.getPosition().getLine());
-			assertEquals(3, e.getPosition().getColumn());
+			assertEquals(4, e.getPosition().getColumn());
 		}
 	}
 
 	@Test
-	public void testSyntaxError2() throws Exception {
+	public void unbalancedParenthesesResultInSyntaxError2() throws Exception {
 		Parser p = parser("syntax error", "(");
 		try {
 			assertTrue(p.hasNext());
@@ -175,7 +175,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test(expected = NoSuchElementException.class)
-	public void testTooMuchNext() throws Exception {
+	public void nextAtEndOfSourceThrowsException() throws Exception {
 		Parser p = parser("symbol", "symbol");
 		assertTrue(p.hasNext());
 		FplValue symbol = p.next();
@@ -185,14 +185,14 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testParseException() {
+	public void checkParseException() {
 		ParseException p = new ParseException(null, "foo");
 		assertEquals("foo", p.getMessage());
 		assertEquals(Position.UNKNOWN, p.getPosition());
 	}
 
 	@Test
-	public void testParseExceptionWithCause() {
+	public void checkParseExceptionWithCause() {
 		ParseException p = new ParseException(null, "foo", new NullPointerException("bar"));
 		assertEquals("foo", p.getMessage());
 		assertEquals(Position.UNKNOWN, p.getPosition());
@@ -200,7 +200,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testEmptyObject() throws Exception {
+	public void creayteEmptyObject() throws Exception {
 		Parser p = parser("empty object", "{}");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
@@ -208,7 +208,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testUnterminatedObject() throws Exception {
+	public void unterminatedObjectThrowsException() throws Exception {
 		Parser p = parser("unterminated object", "{");
 		try {
 			assertTrue(p.hasNext());
@@ -223,7 +223,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testOneIncompletePair() throws Exception {
+	public void incompletePairThrowsException() throws Exception {
 		Parser p = parser("one pair", "{ foo: }");
 		assertTrue(p.hasNext());
 		try {
@@ -235,7 +235,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testOneIncompletePairEOF() throws Exception {
+	public void incompletePairAtEOFThrowsException() throws Exception {
 		Parser p = parser("one pair", "{ foo:");
 		assertTrue(p.hasNext());
 		try {
@@ -247,7 +247,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testTwoValuesBehindKey() throws Exception {
+	public void twoValuesBehindKeyThrowsException() throws Exception {
 		Parser p = parser("pair and two values", "{ key: 1 2");
 		assertTrue(p.hasNext());
 		try {
@@ -259,7 +259,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void colonMissingInPair() throws Exception {
+	public void colonWithMissingInPairThrowsException() throws Exception {
 		Parser p = parser("pair and two values", "{ key 1 }");
 		assertTrue(p.hasNext());
 		try {
@@ -271,7 +271,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testKeyOnly() throws Exception {
+	public void keyOnlyThrowsException() throws Exception {
 		Parser p = parser("key only", "{ (a b) key nonsense");
 		assertTrue(p.hasNext());
 		try {
@@ -283,7 +283,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testNullValue() throws Exception {
+	public void nilValueInMapThrowsException() throws Exception {
 		Parser p = parser("null value", "{ key: nil }");
 		assertTrue(p.hasNext());
 		try {
@@ -295,7 +295,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testOnePairSymbolKey() throws Exception {
+	public void mapWithOneKey() throws Exception {
 		Parser p = parser("one pair", "{ foo: 2}");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
@@ -303,7 +303,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testTwoPairs() throws Exception {
+	public void mapWithTwoPairs() throws Exception {
 		Parser p = parser("two pairs", "{ foo: 2 bar: 4}");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
@@ -311,15 +311,7 @@ public class ParserTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testTwoPairsSymbolKeys() throws Exception {
-		Parser p = parser("two pairs", "{ foo: 2 bar: 4}");
-		assertTrue(p.hasNext());
-		FplObject object = (FplObject) p.next();
-		assertFalse(object.isEmpty());
-	}
-
-	@Test
-	public void testDuplicateKey() throws Exception {
+	public void duplicateKeyInMapThrowsException() throws Exception {
 		Parser p = parser("duplicate-key", "{ foo: 2 foo: 4}");
 		assertTrue(p.hasNext());
 		try {

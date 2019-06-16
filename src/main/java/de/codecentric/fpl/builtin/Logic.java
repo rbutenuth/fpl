@@ -5,10 +5,10 @@ import java.util.List;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 
@@ -83,11 +83,11 @@ public class Logic extends AbstractFunction {
     @Override
     public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
         if (getName().equals("not")) {
-            return booleanValue(scope, parameters[0]) ? null : L_TRUE;
+            return evaluateToBoolean(scope, parameters[0]) ? null : L_TRUE;
         }
         boolean current = getName().equals("and");
         for (FplValue parameter : parameters) {
-            boolean next = booleanValue(scope, parameter);
+            boolean next = evaluateToBoolean(scope, parameter);
             switch (getName()) {
             case "and":
                 current &= next;
@@ -107,19 +107,5 @@ public class Logic extends AbstractFunction {
             }
         }
         return current ? L_TRUE : null;
-    }
-
-    private boolean booleanValue(Scope scope, FplValue expression) throws EvaluationException {
-        FplValue value = expression == null ? null : expression.evaluate(scope);
-        if (value == null) {
-            return false;
-        }
-        if (value instanceof FplInteger) {
-            return ((FplInteger) value).getValue() != 0;
-        }
-        if (value instanceof FplList) {
-            return ((FplList) value).size() != 0;
-        }
-        return true;
     }
 }

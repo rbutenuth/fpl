@@ -16,11 +16,14 @@ public class LogicTest extends AbstractFplTest {
     @Test
     public void testNot() throws Exception {
         assertEquals(1, ((FplInteger)evaluate("not", "(not 0)")).getValue());
+        assertEquals(1, ((FplInteger)evaluate("not", "(not 0.0)")).getValue());
         assertEquals(1, ((FplInteger)evaluate("not", "(not nil)")).getValue());
         assertEquals(1, ((FplInteger)evaluate("not", "(not ())")).getValue());
+        assertEquals(1, ((FplInteger)evaluate("not", "(not \"\")")).getValue());
         assertNull(evaluate("not", "(not 1)"));
         assertNull(evaluate("not", "(not '(1))"));
         assertNull(evaluate("not", "(not 1.0)"));
+        assertNull(evaluate("not", "(not \"a\")"));
     }
 
     @Test

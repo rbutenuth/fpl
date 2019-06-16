@@ -215,6 +215,11 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 		} else if (value instanceof FplInteger) {
 			FplInteger i = (FplInteger) value;
 			return i.getValue() != 0;
+		} else if (value instanceof FplDouble) {
+			FplDouble d = (FplDouble) value;
+			return d.getValue() != 0;
+		} else if (value instanceof FplString) {
+	        return ((FplString)value).getContent().length() > 0;
 		} else {
 			return false;
 		}

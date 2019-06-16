@@ -108,7 +108,8 @@ public class Parser implements Closeable {
 			result = s;
 			break;
 		default:
-			throw new ParseException(nextToken.getPosition(), "unexpected token: " + nextToken);
+			fetchNextToken();
+			throw new ParseException(nextToken.getPosition(), "unexpected token: " + lastToken);
 		}
 		return result;
 	}

@@ -7,7 +7,7 @@ evaluates to:
 
 
 (def-function factorial (n)
-   (if (le n 1)
+   (if-else (le n 1)
       1
       (* n (factorial (- n 1)))
    )
@@ -33,36 +33,11 @@ cond auswerten mit pre = Scope@1: (le n 1) -> nil
 then ignorieren (wegen nil)
 else auswerten mit pre = Scope@1: (* n (factorial (- n 1)))
 
-a: Akkumulator
-b: Zähler
-c: Obergrenze
-
-(def-function factorial (n)
-  (rrfac 1 1 n)
-)
-
-(def-function rrfac (a b c)
-   (if (lt b c)
-      (rrfac (* a (+ b 1)) (+ b 1) c)
-      a
-   )
-)
-
 
 Scope@0: Global scope
 
-(rrfac 1 1 2)
-Scope@1
-   a = {Scope@0 1}
-   b = {Scope@0 1}
-   c = {Scope@0 2}
 
-   (if (lt b c)
-      (rrfac (* a (+ b 1)) (+ b 1) c)
-      a
-   )
-
-(if cond then else) 
+(if-else cond then else) 
 Scope@2:
    cond = {Scope@1 (lt b c)}
    then = {Scope@1 (rrfac (* a (+ b 1)) (+ b 1) c)}

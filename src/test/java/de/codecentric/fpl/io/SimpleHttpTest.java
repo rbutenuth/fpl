@@ -70,19 +70,19 @@ public class SimpleHttpTest {
 	}
 
 	@Test
-	public void testGet() throws Exception {
+	public void emptyGetReturnsError() throws Exception {
 		String response = get("");
 		assertEquals("Post your FPL expressions to this URL for evaluation.", response);
 	}
 
 	@Test
-	public void testOneExpression() throws IOException {
+	public void evaluateOneExpression() throws IOException {
 		String response = SimpleHttpClient.post(baseUrl, user, password, stream("(+ 3 4)"), false);
 		assertEquals("7", response.trim());
 	}
 
 	@Test
-	public void testNullResult() throws IOException {
+	public void evaluateNil() throws IOException {
 		String response = SimpleHttpClient.post(baseUrl, user, password, stream("nil"), false);
 		// nil -> null -> terminates the parsing loop, therefore "nothing" returned as
 		// result.
@@ -90,7 +90,7 @@ public class SimpleHttpTest {
 	}
 
 	@Test
-	public void testNullResultViaMain() throws Exception {
+	public void nilResultViaMainMethod() throws Exception {
 		PrintStream originalOut = System.out;
 		try (PrintStream dummyOut = new PrintStream(new ByteArrayOutputStream())) {
 			System.setOut(dummyOut);
@@ -113,7 +113,7 @@ public class SimpleHttpTest {
 	}
 
 	@Test
-	public void testNullResultViaMainWithNonsensArg() throws Exception {
+	public void nilResultViaMainWithNonsensArg() throws Exception {
 		PrintStream originalOut = System.out;
 		try (PrintStream dummyOut = new PrintStream(new ByteArrayOutputStream())) {
 			System.setOut(dummyOut);
@@ -137,7 +137,7 @@ public class SimpleHttpTest {
 	}
 
 	@Test
-	public void testNullResultViaMainLastBlockOnly() throws Exception {
+	public void nilResultViaMainLastBlockOnly() throws Exception {
 		PrintStream originalOut = System.out;
 		try (PrintStream dummyOut = new PrintStream(new ByteArrayOutputStream())) {
 			System.setOut(dummyOut);
@@ -161,7 +161,7 @@ public class SimpleHttpTest {
 	}
 
 	@Test
-	public void testEmptyFileBlockOnly() throws Exception {
+	public void emptyFileBlockOnly() throws Exception {
 		PrintStream originalOut = System.out;
 		try (PrintStream dummyOut = new PrintStream(new ByteArrayOutputStream())) {
 			System.setOut(dummyOut);
@@ -183,19 +183,19 @@ public class SimpleHttpTest {
 	}
 
 	@Test
-	public void testTwoExpressions() throws IOException {
+	public void twoExpressionsReturnTwoResults() throws IOException {
 		String response = SimpleHttpClient.post(baseUrl, user, password, stream("(+ 3 4) (* 6 7)"), false);
 		assertEquals("7" + System.lineSeparator() + System.lineSeparator() + "42", response.trim());
 	}
 
 	@Test
-	public void testExpressionFollowedByFailure() throws IOException {
+	public void oneExpressionFollowedByFailureGivesResultAndFailure() throws IOException {
 		String response = SimpleHttpClient.post(baseUrl, user, password, stream("(+ 3 4)\n(/ 3 0)"), false);
 		assertEquals("7" + nl + nl + "java.lang.ArithmeticException: / by zero" + nl + "    at /(<unknown>:1)", response.trim());
 	}
 
 	@Test
-	public void testStacktrace() throws IOException {
+	public void checkStacktrace() throws IOException {
 		String input = "(def-function function-a (a) (function-b a))" + nl + //
 				"(def-function function-b (a) (function-c a))" + nl + //
 				"(def-function function-c (a) (/ 1 a))" + nl + //
@@ -213,32 +213,32 @@ public class SimpleHttpTest {
 	}
 
 	@Test
-	public void testParseException() throws IOException {
+	public void checkParseException() throws IOException {
 		String response = SimpleHttpClient.post(baseUrl, user, password, stream("(+ 3 4"), false);
 		assertEquals("Unexpected end of source in list", response.trim());
 	}
 
 	@Test
-	public void testOneExpressionLastBlockOnly() throws IOException {
+	public void oneExpressionExecutedLastBlockOnly() throws IOException {
 		String str = "(* 6 7)\r\n\r\n(+ 3 4)";
 		String response = SimpleHttpClient.post(baseUrl + "?lastBlockOnly", user, password, stream(str), false);
 		assertEquals("7", response.trim());
 	}
 
 	@Test
-	public void testUknownUser() throws IOException {
+	public void badUserShouldReturn401() throws IOException {
 		String response = SimpleHttpClient.post(baseUrl, user + "foo", password, stream("(+ 3 4) (* 6 7)"), false);
 		assertEquals("Failure: 401", response.trim());
 	}
 
 	@Test
-	public void testWrongPassword() throws IOException {
+	public void wrongPasswordShouldReturn401() throws IOException {
 		String response = SimpleHttpClient.post(baseUrl, user, password + "foo", stream("(+ 3 4) (* 6 7)"), false);
 		assertEquals("Failure: 401", response.trim());
 	}
 	
 	@Test
-	public void testWrongMethod() throws IOException {
+	public void wrongHttpMethodShouldReturn500() throws IOException {
 		URL url = new URL(baseUrl);
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
 		byte[] bytes = (user + ":" + password).getBytes();
@@ -257,7 +257,16 @@ public class SimpleHttpTest {
 	}
 	
 	@Test
-	public void testSplitEmptyQuery() throws UnsupportedEncodingException {
+	public void lastBlockOfTwoLineList() {
+		String input = "(put a 3\n" + 
+				")\n" + 
+				"";
+		String lastBlock =SimpleHttpServer.lastBlock(input);
+		assertEquals(input.trim(), lastBlock);
+	}
+	
+	@Test
+	public void splitEmptyQueryShouldReturnEmptyMap() throws UnsupportedEncodingException {
 		Map<String, List<String>> query = SimpleHttpServer.splitQuery("");
 		assertEquals(0, query.size());
 		query = SimpleHttpServer.splitQuery(null);
@@ -265,7 +274,7 @@ public class SimpleHttpTest {
 	}
 	
 	@Test
-	public void testSplitQuery() throws UnsupportedEncodingException {
+	public void splitQueryStringIntoMap() throws UnsupportedEncodingException {
 		Map<String, List<String>> query = SimpleHttpServer.splitQuery("foo=bar&foo=baz&key1=&key2");
 		assertEquals(3, query.size());
 		List<String> foo = query.get("foo");
@@ -281,12 +290,12 @@ public class SimpleHttpTest {
 	}
 	
 	@Test
-	public void testInstantiateClient() {
+	public void justInstantiateClientToCoverConstructor() {
 		new SimpleHttpClient();
 	}
 
 	@Test
-	public void testInterrupt() throws Exception {
+	public void interruptServer() throws Exception {
 		assertTrue(SimpleHttpServer.isRunning());
 		SimpleHttpServer.getInstance().interrupt();
 		assertTrue(SimpleHttpServer.isRunning());
