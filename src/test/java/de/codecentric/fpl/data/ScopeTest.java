@@ -34,6 +34,7 @@ public class ScopeTest {
 		assertTrue(outer.isEmpty());
 		assertNull(inner.get("foo"));
 		assertNull(outer.get("foo"));
+		assertEquals(0, inner.size());
 	}
 
 	@Test
@@ -70,6 +71,11 @@ public class ScopeTest {
 	@Test(expected = ScopeException.class)
 	public void assertDefineNullValueFails() throws ScopeException {
 		outer.define(new Symbol("foo"), null);
+	}
+	
+	@Test(expected = ScopeException.class)
+	public void assertDefineNullKeyFails() throws ScopeException {
+		outer.define(null, new FplString("bar"));
 	}
 	
 	@Test

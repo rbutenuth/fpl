@@ -74,7 +74,7 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	 * @throws ScopeException If key is empty.
 	 */
 	public FplValue put(String key, FplValue value) throws ScopeException {
-		checkKeyNotEmpty(key);
+		checkKeyNotNullOrEmpty(key);
 		// null means remove
 		if (value == null) {
 			return map.remove(key);
@@ -153,6 +153,12 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	
 	private void checkKeyNotNull(Symbol key) throws ScopeException {
 		if (key == null) {
+			throw new ScopeException("nil is not a valid name");
+		}
+	}
+	
+	private void checkKeyNotNullOrEmpty(String key) throws ScopeException {
+		if (key == null || key.isEmpty()) {
 			throw new ScopeException("nil is not a valid name");
 		}
 	}
