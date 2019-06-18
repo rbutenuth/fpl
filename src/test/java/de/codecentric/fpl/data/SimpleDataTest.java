@@ -24,9 +24,10 @@ public class SimpleDataTest {
         new Symbol(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testEmptySymbol() {
-        new Symbol("");
+        Symbol s = new Symbol("");
+        assertEquals("", s.getName());
     }
 
     @Test

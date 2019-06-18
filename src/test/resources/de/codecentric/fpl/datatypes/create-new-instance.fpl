@@ -1,11 +1,15 @@
 (def-class my-class 
 
 	(def-function new (a b)
-		(new-instance a a b b)
+		(new-instance a a "b" b)
 	)
 	
 	(def-function bad-new (a b)
 		(new-instance a a b )
+	)
+	
+	(def-function bad-new-empty-key (a b)
+		(new-instance "" a b b )
 	)
 	
 	(def-field key 42)

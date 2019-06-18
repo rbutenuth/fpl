@@ -22,8 +22,12 @@ import de.codecentric.fpl.datatypes.FplValue;
 public class AssignmentTest extends AbstractFplTest {
 
 	@Test
-	public void testPut() throws Exception {
-		new Assignment(); // cover the constructor...
+	public void coverDefaultConstructor() throws Exception {
+		new Assignment();
+	}
+	
+	@Test
+	public void simplePutAndGet() throws Exception {
 		Scope local = new Scope(scope);
 		assertNull(scope.get("local"));
 		assertNull(local.get("local"));
@@ -38,7 +42,7 @@ public class AssignmentTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testPutNullKey() throws Exception {
+	public void putWithNullKeyThrowsException() throws Exception {
 		try {
 			evaluate(scope, "put", "(put nil 20)");
 			fail("exception missing");
@@ -48,7 +52,17 @@ public class AssignmentTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testPutGlobal() throws Exception {
+	public void putEmptyKeyThrowsException() throws Exception {
+		try {
+			evaluate(scope, "put", "(put \"\" 20)");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("\"\" is not a valid name", e.getMessage());
+		}
+	}
+
+	@Test
+	public void simplePutGlobal() throws Exception {
 		Scope local = new Scope(scope);
 		assertNull(scope.get("global"));
 		assertNull(local.get("global"));
@@ -68,7 +82,7 @@ public class AssignmentTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testPutGlobalNullKey() throws Exception {
+	public void putGlobalWithNullKeyThrowsException() throws Exception {
 		try {
 			evaluate(scope, "put-global", "(put-global nil 20)");
 			fail("exception missing");
@@ -78,7 +92,17 @@ public class AssignmentTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testPutWithQuotedTarget() throws Exception {
+	public void putGlobalWithEmptyKeyThrowsException() throws Exception {
+		try {
+			evaluate(scope, "put-global", "(put-global \"\" 20)");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("\"\" is not a valid name", e.getMessage());
+		}
+	}
+
+	@Test
+	public void putWithQuotedTarget() throws Exception {
 		Scope local = new Scope(scope);
 		assertNull(evaluate(local, "put", "(put (quote local) 20)"));
 		assertEquals(FplInteger.valueOf(20), (local.get("local")));
@@ -89,20 +113,40 @@ public class AssignmentTest extends AbstractFplTest {
 	}
 
 	@Test(expected = EvaluationException.class)
-	public void testPutWithTargetNotSymbolFails() throws Exception {
+	public void putWithTargetNotSymbolFails() throws Exception {
 		Scope local = new Scope(scope);
 		assertEquals(20, ((FplInteger) evaluate(local, "put", "(put 10 20)")).getValue());
 	}
 
 	@Test
-	public void testSet() throws Exception {
+	public void simpleDefGlobal() throws Exception {
+		Scope local = new Scope(scope);
+		assertEquals(FplInteger.valueOf(20), evaluate(local, "def-global", "(def-global global 20)"));
+
+		// Value should be visible in local scope (via recursive get), and in global scope
+		assertEquals(FplInteger.valueOf(20), local.get("global"));
+		assertEquals(FplInteger.valueOf(20), scope.get("global"));
+	}
+
+	@Test
+	public void defGlobalWithEmptyKeyThrowsException() throws Exception {
+		try {
+			evaluate(scope, "def-global", "(def-global \"\" 20)");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("\"\" is not a valid name", e.getMessage());
+		}
+	}
+
+	@Test
+	public void simpleSet() throws Exception {
 		assertNull(evaluate("put", "(put key 10)"));
 		assertEquals(FplInteger.valueOf(10), evaluate("set", "(set key 20)"));
 		assertEquals(FplInteger.valueOf(20), scope.get("key"));
 	}
 
 	@Test
-	public void testSetOnUndefinedFails() throws Exception {
+	public void setOnUndefinedFails() throws Exception {
 		try {
 			evaluate("set", "(set foo 20)");
 			fail("exception missing");
@@ -112,14 +156,14 @@ public class AssignmentTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testDef() throws Exception {
+	public void simpleDef() throws Exception {
 		assertEquals(10, ((FplInteger) evaluate("def", "(def key 10)")).getValue());
 		assertEquals(10, ((FplInteger) scope.get("key")).getValue());
 	}
 
 	@Ignore
 	@Test
-	public void testDefField() throws Exception {
+	public void defField() throws Exception {
 		ListResultCallback callback = evaluateResource("def-field.fpl");
 		List<FplValue> values = callback.getResults();
 		FplObject object = (FplObject) values.get(0);
@@ -134,12 +178,14 @@ public class AssignmentTest extends AbstractFplTest {
 		assertEquals(new FplString("bar"), scope.get("foo"));
 	}
 
+	@Ignore
 	@Test(expected = EvaluationException.class)
 	public void testDefGlobalFail() throws Exception {
 		scope.put("foo", FplInteger.valueOf(1));
 		evaluate("def-global-fail", "(def-global foo \"baz\")\n");
 	}
 
+	@Ignore
 	@Test
 	public void testDefFieldNoObject() throws Exception {
 		try {
@@ -162,7 +208,7 @@ public class AssignmentTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testDefOnDefinedFails() throws Exception {
+	public void defOnDefinedFails() throws Exception {
 		try {
 			evaluate("def-1", "(def foo 20)");
 			evaluate("def-2", "(def foo 30)");

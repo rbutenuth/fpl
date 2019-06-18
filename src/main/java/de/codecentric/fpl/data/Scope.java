@@ -105,7 +105,7 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	 *                        chain.
 	 */
 	public FplValue replace(String key, FplValue newValue) throws ScopeException {
-		checkKeyNotEmpty(key);
+		checkKeyNotNullOrEmpty(key);
 		if (newValue == null) {
 			throw new ScopeException("Change does not allow null values");
 		}
@@ -127,7 +127,7 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	 * @throws ScopeException If value did already exist.
 	 */
 	public FplValue define(Symbol key, FplValue value) throws ScopeException {
-		checkKeyNotNull(key);
+		checkKeyNotNullOrEmpty(key.getName());
 		if (value == null) {
 			throw new ScopeException("value is nil");
 		}
@@ -158,14 +158,10 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	}
 	
 	private void checkKeyNotNullOrEmpty(String key) throws ScopeException {
-		if (key == null || key.isEmpty()) {
+		if (key == null) {
 			throw new ScopeException("nil is not a valid name");
-		}
-	}
-	
-	private void checkKeyNotEmpty(String key) throws ScopeException {
-		if (key == null || key.length() == 0) {
-			throw new ScopeException("nil is not a valid name");
+		} else if (key.isEmpty()) {
+			throw new ScopeException("\"\" is not a valid name");
 		}
 	}
 }

@@ -14,6 +14,7 @@ import org.junit.Test;
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ListResultCallback;
+import de.codecentric.fpl.builtin.ClassAndObject;
 import de.codecentric.fpl.data.Scope;
 
 public class FplObjectTest extends AbstractFplTest {
@@ -21,6 +22,11 @@ public class FplObjectTest extends AbstractFplTest {
 
 	public FplObjectTest() {
 		super(FplObjectTest.class);
+	}
+	
+	@Test
+	public void instanciateClassAndObject() {
+		new ClassAndObject(); // cover constuctor
 	}
 
 	@Test
@@ -191,6 +197,17 @@ public class FplObjectTest extends AbstractFplTest {
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("Number of parameters must be even.", e.getMessage());
+		}
+	}
+
+	@Test
+	public void newInstanceWithEmptyKeyString() throws Exception {
+		evaluateResource("create-new-instance.fpl");
+		try {
+			evaluate("odd", "(my-class bad-new-empty-key 1 2)");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("\"\" is not a valid name", e.getMessage());
 		}
 	}
 

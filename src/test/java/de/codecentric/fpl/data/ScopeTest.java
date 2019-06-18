@@ -75,7 +75,7 @@ public class ScopeTest {
 	
 	@Test(expected = ScopeException.class)
 	public void assertDefineNullKeyFails() throws ScopeException {
-		outer.define(null, new FplString("bar"));
+		outer.define(new Symbol(""), new FplString("bar"));
 	}
 	
 	@Test
@@ -85,7 +85,7 @@ public class ScopeTest {
 	
 	@Test
 	public void testChangeEmptyKey() throws ScopeException {
-		changeWithException("", new FplString("newValue"), "nil is not a valid name");
+		changeWithException("", new FplString("newValue"), "\"\" is not a valid name");
 	}
 	
 	@Test

@@ -105,20 +105,6 @@ public class ClassAndObject {
 
 		});
 
-		scope.put(new AbstractFunction("object", comment("Create an object."), true, "key-value-pair...") {
-
-			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				if (parameters.length % 2 != 0) {
-					throw new EvaluationException("Number of parameters must be even.");
-				}
-				FplObject object = new FplObject(Position.UNKNOWN);
-
-				initializeObject(scope, parameters, object);
-				return object;
-			}
-		});
-
 		scope.put(new AbstractFunction("this",
 				comment("The next object in the scope chain, can be nil when not within an object context."), false) {
 

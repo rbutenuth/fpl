@@ -30,8 +30,8 @@ public class Symbol implements Named, PositionHolder {
      * @param commentLines The comments found in the source before this symbol
      */
     public Symbol(String name, Position position, List<String> commentLines) {
-        if (name == null || name.length() == 0) {
-            throw new IllegalArgumentException("name null or empty");
+        if (name == null) {
+            throw new IllegalArgumentException("name null");
         }
         this.name = name;
         this.position = position == null ? Position.UNKNOWN : position;

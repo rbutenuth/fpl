@@ -143,9 +143,6 @@ public class Assignment {
 				return (Symbol) value;
 			} else if (value instanceof FplString) {
 				String s = ((FplString)value).getContent();
-				if (s.length() == 0) {
-					throw new EvaluationException("\"\" is not a valid name");
-				}
 				return new Symbol(s);
 			} else {
 				throw new EvaluationException("Not a symbol or string: " + value);

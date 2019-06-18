@@ -74,14 +74,6 @@ public class Lambda {
 			}
 		});
 
-		scope.put(new AbstractFunction("get", comment("Get value."), false, "symbol") {
-
-			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				return parameters[0].evaluate(scope);
-			}
-		});
-
 		scope.put(new AbstractFunction("type-of", comment("Return type of argument as string"), false, "value") {
 
 			@Override
