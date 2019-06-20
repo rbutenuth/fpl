@@ -151,12 +151,6 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 		return map.isEmpty();
 	}
 	
-	private void checkKeyNotNull(Symbol key) throws ScopeException {
-		if (key == null) {
-			throw new ScopeException("nil is not a valid name");
-		}
-	}
-	
 	private void checkKeyNotNullOrEmpty(String key) throws ScopeException {
 		if (key == null) {
 			throw new ScopeException("nil is not a valid name");

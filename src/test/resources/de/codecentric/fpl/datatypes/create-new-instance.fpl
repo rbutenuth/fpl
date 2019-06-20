@@ -16,3 +16,7 @@
 )
 
 (my-class new 6 7)
+
+(def-function make ()
+	(my-class new 8 9)
+)

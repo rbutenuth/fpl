@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
@@ -161,31 +160,14 @@ public class AssignmentTest extends AbstractFplTest {
 		assertEquals(10, ((FplInteger) scope.get("key")).getValue());
 	}
 
-	@Ignore
 	@Test
 	public void defField() throws Exception {
 		ListResultCallback callback = evaluateResource("def-field.fpl");
 		List<FplValue> values = callback.getResults();
 		FplObject object = (FplObject) values.get(0);
 		assertEquals(new FplString("bar"), object.get("foo"));
-		assertEquals(new FplString("value"), object.get("key"));
 	}
 
-	@Ignore
-	@Test
-	public void testDefGlobal() throws Exception {
-		evaluateResource("def-global.fpl");
-		assertEquals(new FplString("bar"), scope.get("foo"));
-	}
-
-	@Ignore
-	@Test(expected = EvaluationException.class)
-	public void testDefGlobalFail() throws Exception {
-		scope.put("foo", FplInteger.valueOf(1));
-		evaluate("def-global-fail", "(def-global foo \"baz\")\n");
-	}
-
-	@Ignore
 	@Test
 	public void testDefFieldNoObject() throws Exception {
 		try {
@@ -195,18 +177,23 @@ public class AssignmentTest extends AbstractFplTest {
 			assertEquals("No object found", e.getMessage());
 		}
 	}
-
-	@Ignore
+	
 	@Test
 	public void testDefFieldNil() throws Exception {
 		try {
-			evaluate("def-field", "(def object {\n" + "	(def-field foo nil)\n" + "})");
+			evaluate("def-field", "(def-class my-class (def-field foo nil) )");
 			fail("missing exception");
 		} catch (EvaluationException e) {
 			assertEquals("value is nil", e.getMessage());
 		}
 	}
 
+//	@Test(expected = EvaluationException.class)
+//	public void testDefGlobalFail() throws Exception {
+//		scope.put("foo", FplInteger.valueOf(1));
+//		evaluate("def-global-fail", "(def-global foo \"baz\")\n");
+//	}
+	
 	@Test
 	public void defOnDefinedFails() throws Exception {
 		try {

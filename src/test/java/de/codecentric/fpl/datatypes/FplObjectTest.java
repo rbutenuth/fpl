@@ -179,6 +179,14 @@ public class FplObjectTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void callWithParameterScope() throws Exception {
+		evaluateResource("create-new-instance.fpl");
+		FplObject instance = (FplObject) evaluate("call-method", "(make)");
+		assertEquals(FplInteger.valueOf(8), instance.get("a"));
+		assertEquals(FplInteger.valueOf(9), instance.get("b"));
+	}
+
+	@Test
 	public void callingMemberFails() throws Exception {
 		evaluateResource("create-new-instance.fpl");
 		try {

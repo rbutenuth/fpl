@@ -1,7 +1,6 @@
-(def object {
+(def-class my-class 
 
 	(def-field foo "bar")
 	
-	"key": "value"
-})
+)
 

@@ -1,7 +1,0 @@
-(def object {
-
-	(def-global foo "bar")
-	
-	"key": "value"
-})
-
