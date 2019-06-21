@@ -110,7 +110,9 @@ public class Assignment implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("object-put", comment(""), false, "object", "symbol", "value") {
+		scope.define(new AbstractFunction("object-put", comment("Put a value into the scope of an object or class,",
+				"symbol can be a symbol or a string,",
+				"returns the old value associated with the symbol/key."), false, "object", "symbol", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				try {
@@ -122,7 +124,8 @@ public class Assignment implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("object-get", comment(""), false, "object", "symbol") {
+		scope.define(new AbstractFunction("object-get", comment("Get a value from the scope of an objec or class,",
+				"symbol can be a symbol or a string."), false, "object", "symbol") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplObject o = evaluateToObject(scope, parameters[0]);
