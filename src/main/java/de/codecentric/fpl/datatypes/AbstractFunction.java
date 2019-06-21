@@ -193,6 +193,26 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	}
 
 	/**
+	 * Evaluate an expression and cast the result to a {@link FplObject}.
+	 * 
+	 * @param scope
+	 *            Scope used for evaluation.
+	 * @param expression
+	 *            Expression to evaluate.
+	 * @return A FplObject.
+	 * @throws EvaluationException
+	 *             If <code>expression</code> does not evaluate to a FplObject.
+	 */
+	protected FplObject evaluateToObject(Scope scope, FplValue expression) throws EvaluationException {
+		FplValue value = expression.evaluate(scope);
+		if (value instanceof FplObject) {
+			return (FplObject) value;
+		} else {
+			throw new EvaluationException("Not an object: " + value);
+		}
+	}
+
+	/**
 	 * Evaluate an expression, check for boolean value. <code>null</code> (nil), the
 	 * integer value 0, and an empty list are <code>false</code>, everything else is
 	 * <code>true</code>

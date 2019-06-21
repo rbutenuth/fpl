@@ -24,7 +24,7 @@ public class AssignmentTest extends AbstractFplTest {
 	public void coverDefaultConstructor() throws Exception {
 		new Assignment();
 	}
-	
+
 	@Test
 	public void simplePutAndGet() throws Exception {
 		Scope local = new Scope(scope);
@@ -67,7 +67,8 @@ public class AssignmentTest extends AbstractFplTest {
 		assertNull(local.get("global"));
 		assertNull(evaluate(local, "put-global", "(put-global global 20)"));
 
-		// Value should be visible in local scope (via recursive get), and in global scope
+		// Value should be visible in local scope (via recursive get), and in global
+		// scope
 		assertEquals(FplInteger.valueOf(20), local.get("global"));
 		assertEquals(FplInteger.valueOf(20), scope.get("global"));
 
@@ -122,7 +123,8 @@ public class AssignmentTest extends AbstractFplTest {
 		Scope local = new Scope(scope);
 		assertEquals(FplInteger.valueOf(20), evaluate(local, "def-global", "(def-global global 20)"));
 
-		// Value should be visible in local scope (via recursive get), and in global scope
+		// Value should be visible in local scope (via recursive get), and in global
+		// scope
 		assertEquals(FplInteger.valueOf(20), local.get("global"));
 		assertEquals(FplInteger.valueOf(20), scope.get("global"));
 	}
@@ -155,6 +157,16 @@ public class AssignmentTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void defWithEmptyKeyFails() throws Exception {
+		try {
+			evaluate("def", "(def \"\" 20)");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("\"\" is not a valid name", e.getMessage());
+		}
+	}
+
+	@Test
 	public void simpleDef() throws Exception {
 		assertEquals(10, ((FplInteger) evaluate("def", "(def key 10)")).getValue());
 		assertEquals(10, ((FplInteger) scope.get("key")).getValue());
@@ -169,7 +181,7 @@ public class AssignmentTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testDefFieldNoObject() throws Exception {
+	public void defFieldNoObject() throws Exception {
 		try {
 			evaluate("def-field", "(def-field key 10)");
 			fail("missing exception");
@@ -177,9 +189,9 @@ public class AssignmentTest extends AbstractFplTest {
 			assertEquals("No object found", e.getMessage());
 		}
 	}
-	
+
 	@Test
-	public void testDefFieldNil() throws Exception {
+	public void defFieldNil() throws Exception {
 		try {
 			evaluate("def-field", "(def-class my-class (def-field foo nil) )");
 			fail("missing exception");
@@ -188,20 +200,32 @@ public class AssignmentTest extends AbstractFplTest {
 		}
 	}
 
-//	@Test(expected = EvaluationException.class)
-//	public void testDefGlobalFail() throws Exception {
-//		scope.put("foo", FplInteger.valueOf(1));
-//		evaluate("def-global-fail", "(def-global foo \"baz\")\n");
-//	}
-	
 	@Test
-	public void defOnDefinedFails() throws Exception {
+	public void objectPutAndGet() throws Exception {
+		FplObject obj = (FplObject) evaluate("create", "(def obj { })");
+		assertNull(evaluate("put", "(object-put obj name 42)"));
+		assertEquals(FplInteger.valueOf(42), obj.get("name"));
+		assertEquals(FplInteger.valueOf(42), evaluate("gut", "(object-get obj name)"));
+	}
+
+	@Test
+	public void objectPutWithEmptyNameFails() throws Exception {
 		try {
-			evaluate("def-1", "(def foo 20)");
-			evaluate("def-2", "(def foo 30)");
+			evaluate("create", "(def obj { })");
+			evaluate("put", "(object-put obj \"\" 42)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("Duplicate key: foo", e.getMessage());
+			assertEquals("\"\" is not a valid name", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void objectPutOnNotObjectFails() throws Exception {
+		try {
+			evaluate("put", "(object-put '(1 2 3) \"\" 42)");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("Not an object: (1 2 3)", e.getMessage());
 		}
 	}
 }

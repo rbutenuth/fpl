@@ -48,8 +48,8 @@ public class Assignment implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("set", comment("Reassign value in scope chain. nil as value not allowed"), false,
-				"symbol", "value") {
+		scope.define(new AbstractFunction("set", comment("Reassign value in scope chain. nil as value not allowed"),
+				false, "symbol", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				try {
@@ -110,16 +110,37 @@ public class Assignment implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("object-put", comment(""), false, "object", "symbol", "value") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				try {
+					FplObject o = evaluateToObject(scope, parameters[0]);
+					return o.put(targetName(scope, parameters[1]), value(scope, parameters[2]));
+				} catch (ScopeException e) {
+					throw new EvaluationException(e.getMessage());
+				}
+			}
+		});
+
+		scope.define(new AbstractFunction("object-get", comment(""), false, "object", "symbol") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				FplObject o = evaluateToObject(scope, parameters[0]);
+				return o.get(targetName(scope, parameters[1]));
+			}
+		});
 	}
 
 	static public String targetName(Scope scope, FplValue expression) throws EvaluationException {
 		return targetSymbol(scope, expression).getName();
 	}
-	
+
 	/**
-	 * Compute the name for an assignment. For a symbol/parameter it's the symbol/parameter name. For other
-	 * expressions, evaluate it. Result must be a {@link FplString} or {@link Symbol}. Return the content/name.
-	 * @param scope For the evaluation.
+	 * Compute the name for an assignment. For a symbol/parameter it's the
+	 * symbol/parameter name. For other expressions, evaluate it. Result must be a
+	 * {@link FplString} or {@link Symbol}. Return the content/name.
+	 * 
+	 * @param scope      For the evaluation.
 	 * @param expression Expression resulting in the name.
 	 * @return see description.
 	 * @throws EvaluationException
@@ -137,7 +158,7 @@ public class Assignment implements ScopePopulator {
 			if (value instanceof Symbol) {
 				return (Symbol) value;
 			} else if (value instanceof FplString) {
-				String s = ((FplString)value).getContent();
+				String s = ((FplString) value).getContent();
 				return new Symbol(s);
 			} else {
 				throw new EvaluationException("Not a symbol or string: " + value);
@@ -146,7 +167,7 @@ public class Assignment implements ScopePopulator {
 	}
 
 	/**
-	 * @param scope For the evaluation
+	 * @param scope      For the evaluation
 	 * @param expression Expression to evaluate
 	 * @return <code>null</code> for nil input, otherwise evaluated expression.
 	 * @throws EvaluationException
