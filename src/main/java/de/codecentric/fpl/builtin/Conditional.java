@@ -1,25 +1,20 @@
 package de.codecentric.fpl.builtin;
 
-import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
-
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
-import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplValue;
 
 /**
  * Basic logic functions. <code>LInteger(0)</code> and <code>null</code> are false, everything else is true.
  */
-public class Conditional {
+public class Conditional implements ScopePopulator {
+	@Override
+	public void populate(Scope scope) throws ScopeException {
 
-    /**
-     * @param scope Scope to which functions should be added.
-     * @throws ScopeException Should not happen on initialization.
-     */
-    public static void put(Scope scope) throws ScopeException {
-
-    	scope.put(new AbstractFunction("if-else", //
+    	scope.define(new AbstractFunction("if-else", //
     			comment("Evaluate condition, if true, return evaluated if-part, otherwise evaluated else-part."),
     			false, "condition", "if-part", "else-part") {
             @Override
@@ -33,7 +28,7 @@ public class Conditional {
             }
         });
 
-    	scope.put(new AbstractFunction("if", //
+    	scope.define(new AbstractFunction("if", //
     			comment("Evaluate condition, if true, return evaluated if-part, otherwise nil."),
     			false, "condition", "if-part") {
             @Override
@@ -48,4 +43,5 @@ public class Conditional {
         });
         // TODO: some sort of switch/case
     }
+
 }

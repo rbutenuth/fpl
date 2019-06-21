@@ -6,7 +6,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.codecentric.fpl.builtin.Arithmetic;
+import de.codecentric.fpl.builtin.Arithmetric;
 import de.codecentric.fpl.builtin.Assignment;
 import de.codecentric.fpl.builtin.ClassAndObject;
 import de.codecentric.fpl.builtin.Comparison;
@@ -43,17 +43,17 @@ public class FplEngine {
 	public Scope createDefaultScope() throws ScopeException {
 		Scope scope = new Scope();
 
-		Print.put(scope, this);
-		Assignment.put(scope);
-		Arithmetic.put(scope);
-		Logic.put(scope);
-		ListFunctions.put(scope);
-		StringFunctions.put(scope);
-		Comparison.put(scope);
-		Conditional.put(scope);
-		Loop.put(scope);
-		Lambda.put(scope);
-		ClassAndObject.put(scope);
+		new Print(this).populate(scope);
+		new Assignment().populate(scope);
+		new Arithmetric().populate(scope);
+		new Logic().populate(scope);
+		new ListFunctions().populate(scope);
+		new StringFunctions().populate(scope);
+		new Comparison().populate(scope);
+		new Conditional().populate(scope);
+		new Loop().populate(scope);
+		new Lambda().populate(scope);
+		new ClassAndObject().populate(scope);
 
 		return scope;
 	}

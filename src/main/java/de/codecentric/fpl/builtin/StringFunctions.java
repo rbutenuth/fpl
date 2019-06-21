@@ -1,19 +1,19 @@
 package de.codecentric.fpl.builtin;
 
-import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
-
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.AbstractFunction;
 
-public class StringFunctions {
+public class StringFunctions implements ScopePopulator {
 	private static final String nl = System.lineSeparator();
 
-	public static void put(Scope scope) throws ScopeException {
-		scope.put(new AbstractFunction("describe", comment("Create a comment in markdown format for a function"), false,
+	@Override
+	public void populate(Scope scope) throws ScopeException {
+		scope.define(new AbstractFunction("describe", comment("Create a comment in markdown format for a function"), false,
 				"expression") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {

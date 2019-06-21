@@ -84,17 +84,6 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	}
 
 	/**
-	 * Put a key value mapping in the scope, may overwrite an existing mapping. The
-	 * name is taken from the value.
-	 * 
-	 * @param value The value of the symbol, null values are allowed and will remove
-	 *              the mapping.
-	 */
-	public void put(Named value) throws ScopeException {
-		put(value.getName(), value);
-	}
-
-	/**
 	 * Replace a value in this scope, if not there, search through scope chain until
 	 * value is found.
 	 * 
@@ -136,6 +125,17 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 			throw new ScopeException("Duplicate key: " + key);
 		}
 		return value;
+	}
+
+	/**
+	 * Put a key value mapping in the scope, may overwrite an existing mapping. The
+	 * name is taken from the value.
+	 * 
+	 * @param value The value of the symbol, null values are allowed and will remove
+	 *              the mapping.
+	 */
+	public void define(Named value) throws ScopeException {
+		define(new Symbol(value.getName()), value);
 	}
 
 	@Override

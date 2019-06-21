@@ -1,12 +1,11 @@
 package de.codecentric.fpl.builtin;
 
-import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
@@ -18,15 +17,10 @@ import de.codecentric.fpl.datatypes.list.FplList;
 /**
  * Loop functions.
  */
-public class Loop {
-
-	/**
-	 * @param scope Scope to which functions should be added.
-	 * @throws ScopeException Should not happen on initialization.
-	 */
-	public static void put(Scope scope) throws ScopeException {
-
-        scope.put(new AbstractFunction("while", comment("Execute code while condition returns true."), true, "condition", "code...") {
+public class Loop implements ScopePopulator {
+	@Override
+	public void populate(Scope scope) throws ScopeException {
+        scope.define(new AbstractFunction("while", comment("Execute code while condition returns true."), true, "condition", "code...") {
             @Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
                 FplValue result = null;
@@ -39,7 +33,7 @@ public class Loop {
             }
         });
 
-		scope.put(new AbstractFunction("for-each", comment("Apply a lambda to all list elements, return last result"),
+		scope.define(new AbstractFunction("for-each", comment("Apply a lambda to all list elements, return last result"),
 				false, "function", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -58,7 +52,7 @@ public class Loop {
 			}
 		});
 
-		scope.put(new AbstractFunction("map",
+		scope.define(new AbstractFunction("map",
 				comment("Apply a lambda to all list elements and return list with applied elements"), false, "function",
 				"list") {
 			@Override
@@ -73,7 +67,7 @@ public class Loop {
 			}
 		});
 
-		scope.put(new AbstractFunction("filter", comment("Filter a list elements."), false, "func", "list") {
+		scope.define(new AbstractFunction("filter", comment("Filter a list elements."), false, "func", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplList list = evaluateToList(scope, parameters[1]);

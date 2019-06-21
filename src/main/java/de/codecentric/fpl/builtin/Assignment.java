@@ -1,8 +1,7 @@
 package de.codecentric.fpl.builtin;
 
-import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
-
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
@@ -15,15 +14,11 @@ import de.codecentric.fpl.datatypes.Symbol;
 /**
  * Functions like "set", "set-global", "let", etc.
  */
-public class Assignment {
+public class Assignment implements ScopePopulator {
+	@Override
+	public void populate(Scope scope) throws ScopeException {
 
-	/**
-	 * @param scope Scope to which functions should be added.
-	 * @throws ScopeException Should not happen on initialization.
-	 */
-	public static void put(Scope scope) throws ScopeException {
-
-		scope.put(new AbstractFunction("put",
+		scope.define(new AbstractFunction("put",
 				comment("Assign symbol to evluated value in current scope, deletes if value is null"), false, "symbol",
 				"value") {
 			@Override
@@ -36,7 +31,7 @@ public class Assignment {
 			}
 		});
 
-		scope.put(new AbstractFunction("put-global",
+		scope.define(new AbstractFunction("put-global",
 				comment("Assign symbol to evluated value in global scope, deletes if value is null"), false, "symbol",
 				"value") {
 			@Override
@@ -53,7 +48,7 @@ public class Assignment {
 			}
 		});
 
-		scope.put(new AbstractFunction("set", comment("Reassign value in scope chain. nil as value not allowed"), false,
+		scope.define(new AbstractFunction("set", comment("Reassign value in scope chain. nil as value not allowed"), false,
 				"symbol", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -65,7 +60,7 @@ public class Assignment {
 			}
 		});
 
-		scope.put(new AbstractFunction("def",
+		scope.define(new AbstractFunction("def",
 				comment("Assign value in current scope, it must be unassigned before. nil as value not allowed"), false,
 				"symbol", "value") {
 			@Override
@@ -78,7 +73,7 @@ public class Assignment {
 			}
 		});
 
-		scope.put(new AbstractFunction("def-field", comment(
+		scope.define(new AbstractFunction("def-field", comment(
 				"Assign value in the next object scope, it must be unassigned before. nil as value not allowed"), false,
 				"symbol", "value") {
 			@Override
@@ -98,7 +93,7 @@ public class Assignment {
 			}
 		});
 
-		scope.put(new AbstractFunction("def-global",
+		scope.define(new AbstractFunction("def-global",
 				comment("Assign value in global scope, it must be unassigned before. nil as value not allowed"), false,
 				"symbol", "value") {
 			@Override

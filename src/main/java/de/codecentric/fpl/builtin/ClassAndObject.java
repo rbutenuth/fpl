@@ -1,8 +1,7 @@
 package de.codecentric.fpl.builtin;
 
-import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
-
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
@@ -15,15 +14,11 @@ import de.codecentric.fpl.parser.Position;
 /**
  * Class and Object related functions.
  */
-public class ClassAndObject {
+public class ClassAndObject implements ScopePopulator {
+	@Override
+	public void populate(Scope scope) throws ScopeException {
 
-	/**
-	 * @param scope Scope to which functions should be added.
-	 * @throws ScopeException Should not happen on initialization.
-	 */
-	public static void put(Scope scope) throws ScopeException {
-
-		scope.put(new AbstractFunction("class", comment("Create a new scope and execute the given code within it."),
+		scope.define(new AbstractFunction("class", comment("Create a new scope and execute the given code within it."),
 				true, "code...") {
 
 			@Override
@@ -34,7 +29,7 @@ public class ClassAndObject {
 
 		});
 
-		scope.put(new AbstractFunction("def-class", comment(
+		scope.define(new AbstractFunction("def-class", comment(
 				"Create a new scope and execude the given code within it. Assign the resulting class to \"name\""),
 				true, "name", "code...") {
 
@@ -52,7 +47,7 @@ public class ClassAndObject {
 
 		});
 
-		scope.put(new AbstractFunction("sub-class",
+		scope.define(new AbstractFunction("sub-class",
 				comment("Create a new scope and execute the given code within it, set parent to parameter."), true,
 				"parent", "code...") {
 
@@ -67,7 +62,7 @@ public class ClassAndObject {
 		});
 
 		// (def-sub-class name parent [one or more code blocks to define it])
-		scope.put(new AbstractFunction("def-sub-class", comment("TODO"), true, "name", "parent", "code...") {
+		scope.define(new AbstractFunction("def-sub-class", comment("TODO"), true, "name", "parent", "code...") {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -85,7 +80,7 @@ public class ClassAndObject {
 
 		});
 
-		scope.put(new AbstractFunction("new-instance", comment("Create an instce of an object."), true,
+		scope.define(new AbstractFunction("new-instance", comment("Create an instce of an object."), true,
 				"key-value-pair...") {
 
 			@Override
@@ -105,7 +100,7 @@ public class ClassAndObject {
 
 		});
 
-		scope.put(new AbstractFunction("this",
+		scope.define(new AbstractFunction("this",
 				comment("The next object in the scope chain, can be nil when not within an object context."), false) {
 
 			@Override
@@ -120,6 +115,7 @@ public class ClassAndObject {
 			throw new EvaluationException("Parent is not an object: " + parent);
 		}
 	}
+	
 	static private FplObject makeClass(Position position, Scope next, FplValue[] parameters, int first)
 			throws EvaluationException {
 		FplObject obj = new FplObject(position, next);

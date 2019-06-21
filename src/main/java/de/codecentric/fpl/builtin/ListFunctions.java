@@ -1,8 +1,7 @@
 package de.codecentric.fpl.builtin;
 
-import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
-
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
@@ -14,17 +13,12 @@ import de.codecentric.fpl.datatypes.list.FplList;
 /**
  * Basic list functions and quote.
  */
-public class ListFunctions {
+public class ListFunctions implements ScopePopulator {
+	@Override
+	public void populate(Scope scope) throws ScopeException {
 
-	/**
-	 * @param scope
-	 *            Scope to which functions should be added.
-	 * @throws ScopeException
-	 *             Should not happen on initialization.
-	 */
-	public static void put(Scope scope) throws ScopeException {
-
-		scope.put(new AbstractFunction("quote", comment("Don't evaluate the argument, return it as is."), false, "expression") {
+		scope.define(new AbstractFunction("quote", comment("Don't evaluate the argument, return it as is."), false,
+				"expression") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				if (parameters[0] instanceof Parameter) {
@@ -35,14 +29,14 @@ public class ListFunctions {
 			}
 		});
 
-		scope.put(new AbstractFunction("size", comment("Number of elements in a list."), false, "list") {
+		scope.define(new AbstractFunction("size", comment("Number of elements in a list."), false, "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				return FplInteger.valueOf(evaluateToList(scope, parameters[0]).size());
 			}
 		});
 
-		scope.put(new AbstractFunction("list", comment("Make a list out of the parameters."), true, "element") {
+		scope.define(new AbstractFunction("list", comment("Make a list out of the parameters."), true, "element") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplValue[] values = new FplValue[parameters.length];
@@ -53,44 +47,46 @@ public class ListFunctions {
 			}
 		});
 
-		scope.put(new AbstractFunction("first", comment("Return first element of the list."), false, "list") {
+		scope.define(new AbstractFunction("first", comment("Return first element of the list."), false, "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				return evaluateToList(scope, parameters[0]).first();
 			}
 		});
 
-		scope.put(new AbstractFunction("last", comment("Return last element of the list."), false, "list") {
+		scope.define(new AbstractFunction("last", comment("Return last element of the list."), false, "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				return evaluateToList(scope, parameters[0]).last();
 			}
 		});
 
-		scope.put(new AbstractFunction("rest", comment("Return list without the first element."), false, "list") {
+		scope.define(new AbstractFunction("rest", comment("Return list without the first element."), false, "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				return evaluateToList(scope, parameters[0]).removeFirst();
 			}
 		});
 
-		scope.put(new AbstractFunction("cons", comment("Return a new list with expression added in front of the given list."),
-				false, "expression", "list") {
+		scope.define(new AbstractFunction("cons",
+				comment("Return a new list with expression added in front of the given list."), false, "expression",
+				"list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				return evaluateToList(scope, parameters[1]).addAtStart(parameters[0].evaluate(scope));
 			}
 		});
 
-		scope.put(new AbstractFunction("add", comment("Return a new list with expression added at the end of the given list."),
-				false, "list", "expression") {
+		scope.define(new AbstractFunction("add",
+				comment("Return a new list with expression added at the end of the given list."), false, "list",
+				"expression") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				return evaluateToList(scope, parameters[0]).addAtEnd(parameters[1].evaluate(scope));
 			}
 		});
 
-		scope.put(new AbstractFunction("append", comment("Append two lists."), false, "list-a", "list-b") {
+		scope.define(new AbstractFunction("append", comment("Append two lists."), false, "list-a", "list-b") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				return evaluateToList(scope, parameters[0]).append(evaluateToList(scope, parameters[1]));

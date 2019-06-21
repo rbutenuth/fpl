@@ -1,32 +1,28 @@
 package de.codecentric.fpl.builtin;
 
-import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
-
 import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplLambda;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.FplWrapper;
-import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
- * Lisp "lambda".
+ * The functional part of FPL.
  */
-public class Lambda {
+public class Lambda implements ScopePopulator {
 
-	/**
-	 * @param scope Scope to which functions should be added.
-	 * @throws ScopeException Should not happen on initialization.
-	 */
-	public static void put(Scope scope) throws ScopeException {
+	@Override
+	public void populate(Scope scope) throws ScopeException {
 
-		scope.put(new AbstractFunction("lambda", comment("Create an anonymous function."), false, "parameter-list",
+		scope.define(new AbstractFunction("lambda", comment("Create an anonymous function."), false, "parameter-list",
 				"code...") {
 
 			@Override
@@ -47,7 +43,7 @@ public class Lambda {
 		// (* n (factorial (- n 1)))
 		// )
 		// )
-		scope.put(new AbstractFunction("def-function", comment("Define a function."), true, "name", "parameter-list",
+		scope.define(new AbstractFunction("def-function", comment("Define a function."), true, "name", "parameter-list",
 				"code...") {
 
 			@Override
@@ -65,7 +61,7 @@ public class Lambda {
 			}
 		});
 
-		scope.put(new AbstractFunction("eval", comment("Evaluate expression."), false, "expression") {
+		scope.define(new AbstractFunction("eval", comment("Evaluate expression."), false, "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -74,7 +70,7 @@ public class Lambda {
 			}
 		});
 
-		scope.put(new AbstractFunction("type-of", comment("Return type of argument as string"), false, "value") {
+		scope.define(new AbstractFunction("type-of", comment("Return type of argument as string"), false, "value") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -83,7 +79,7 @@ public class Lambda {
 			}
 		});
 
-		scope.put(new AbstractFunction("java-instance", comment("Create an instance of a Java wrapper object."), //
+		scope.define(new AbstractFunction("java-instance", comment("Create an instance of a Java wrapper object."), //
 				true, "class...") {
 
 			@Override
@@ -107,7 +103,7 @@ public class Lambda {
 			}
 		});
 
-		scope.put(new AbstractFunction("java-class", comment("Create an instance of a Java wrapper object."), //
+		scope.define(new AbstractFunction("java-class", comment("Create an instance of a Java wrapper object."), //
 				false, "class") {
 
 			@Override

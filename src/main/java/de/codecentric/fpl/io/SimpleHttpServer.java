@@ -86,7 +86,7 @@ public class SimpleHttpServer extends Thread {
 		});
 		engine = new FplEngine();
 		Scope scope = engine.getScope();
-		scope.put(new AbstractFunction("stop-server", comment("Stop HTTP server."), false) {
+		scope.define(new AbstractFunction("stop-server", comment("Stop HTTP server."), false) {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
