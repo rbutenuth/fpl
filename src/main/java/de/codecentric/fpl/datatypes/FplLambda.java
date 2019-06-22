@@ -14,7 +14,7 @@ import de.codecentric.fpl.parser.Position;
  * Code examples:
  *
  * <pre>
- * (if nil (list 1 2 "foo") (list 3 4 "bar"))
+ * (if-else nil (list 1 2 "foo") (list 3 4 "bar"))
  * </pre>
  *
  * evaluates to
@@ -34,7 +34,7 @@ import de.codecentric.fpl.parser.Position;
  *
  * <pre>
  * (def-function factorial (n)
- *    (if (le n 1)
+ *    (if-else (le n 1)
  *       1
  *       (* n (factorial (- n 1)))
  *    )
