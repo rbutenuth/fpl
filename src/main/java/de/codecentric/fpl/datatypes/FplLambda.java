@@ -125,14 +125,6 @@ public class FplLambda extends AbstractFunction {
 		return parameterMap;
 	}
 
-	private FplValue makeLazy(Scope scope, FplValue e) {
-		if (e instanceof LazyExpression || e instanceof EvaluatesToThisValue) {
-			return e;
-		} else {
-			return new LazyExpression(scope, e);
-		}
-	}
-
 	private FplValue[] compile(FplValue[] code, Map<String, Integer> parameterMap) {
 		FplValue[] compiled = new FplValue[code.length];
 		for (int i = 0; i < code.length; i++) {

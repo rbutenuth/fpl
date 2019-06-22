@@ -245,6 +245,14 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 		}
 	}
 
+	protected FplValue makeLazy(Scope scope, FplValue e) {
+		if (e instanceof LazyExpression || e instanceof EvaluatesToThisValue) {
+			return e;
+		} else {
+			return new LazyExpression(scope, e);
+		}
+	}
+
 	@Override
 	public Position getPosition() {
 		return position;
@@ -325,12 +333,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 		System.arraycopy(parameterNames, parameters.length, curryParameterNames, 0, curryParameterNames.length);
 		FplValue[] givenParameters = new FplValue[parameters.length];
 		for (int i = 0; i < givenParameters.length; i++) {
-			FplValue p = parameters[i];
-			if (p instanceof EvaluatesToThisValue) {
-				givenParameters[i] = p;
-			} else {
-				givenParameters[i] = new LazyExpression(scope, p);
-			}
+			givenParameters[i] = makeLazy(scope, parameters[i]);
 		}
 		return new CurryFunction(curryName, givenParameters, curryParameterNames, varArg);
 	}
