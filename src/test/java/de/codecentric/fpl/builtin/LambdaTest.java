@@ -47,7 +47,7 @@ public class LambdaTest extends AbstractFplTest {
 	@Test(expected = EvaluationException.class)
 	public void evaluateToList() throws Exception {
 		new Lambda(); // just to cover default constructor
-		evaluate("cons", "(cons 1 2)");
+		evaluate("cons", "(add-front 1 2)");
 	}
 
 	@Test

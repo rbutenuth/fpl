@@ -120,7 +120,7 @@ public class LoopTest extends AbstractFplTest {
 	public void whileLoop() throws Exception {
 		evaluate("empty", "(def li '())");
 		evaluate("count", "(def count 0)");
-		evaluate("while", "(while (lt count 10) (set li (cons count li)) (set count (+ count 1)))");
+		evaluate("while", "(while (lt count 10) (set li (add-front count li)) (set count (+ count 1)))");
 		FplValue count = scope.get("count");
 		assertEquals(FplInteger.valueOf(10), count);
 		FplList list = (FplList) scope.get("li");

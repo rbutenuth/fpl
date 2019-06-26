@@ -105,7 +105,7 @@ public class ListFunctionsTest extends AbstractFplTest {
 
     @Test
     public void testCons() throws Exception {
-        FplList list = (FplList) evaluate("cons", "(cons 1 '(2 3))");
+        FplList list = (FplList) evaluate("add-front", "(add-front 1 '(2 3))");
         assertEquals(3, list.size());
         for (int i = 0; i < list.size(); i++) {
             FplInteger li = (FplInteger) list.get(i);
@@ -122,7 +122,7 @@ public class ListFunctionsTest extends AbstractFplTest {
             FplInteger li = (FplInteger) both.get(i);
             assertEquals(1 + i, li.getValue());
         }
-        FplList cons = (FplList) evaluate("cons", "(cons 42 front)");
+        FplList cons = (FplList) evaluate("add-front", "(add-front 42 front)");
         assertEquals(4, cons.size());
         long[] values = new long[] { 42, 1, 2, 3 };
         for (int i = 0; i < cons.size(); i++) {
@@ -133,14 +133,14 @@ public class ListFunctionsTest extends AbstractFplTest {
 
     @Test
     public void testAdd() throws Exception {
-        FplList list = (FplList) evaluate("add", "(add '(1 2) 3)");
+        FplList list = (FplList) evaluate("add", "(add-end '(1 2) 3)");
         assertEquals(3, list.size());
         for (int i = 0; i < list.size(); i++) {
             FplInteger li = (FplInteger) list.get(i);
             assertEquals(1 + i, li.getValue());
         }
 
-        list = (FplList) evaluate("add", "(add '() 3)");
+        list = (FplList) evaluate("add", "(add-end '() 3)");
         assertEquals(1, list.size());
         for (int i = 0; i < list.size(); i++) {
             FplInteger li = (FplInteger) list.get(i);
@@ -157,7 +157,7 @@ public class ListFunctionsTest extends AbstractFplTest {
             FplInteger li = (FplInteger) both.get(i);
             assertEquals(1 + i, li.getValue());
         }
-        FplList add = (FplList) evaluate("add", "(add front 42)");
+        FplList add = (FplList) evaluate("add-end", "(add-end front 42)");
         assertEquals(4, add.size());
         long[] values = new long[] { 1, 2, 3, 42 };
         for (int i = 0; i < add.size(); i++) {
