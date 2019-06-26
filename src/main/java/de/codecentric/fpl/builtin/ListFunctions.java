@@ -61,10 +61,17 @@ public class ListFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("rest", comment("Return list without the first element."), false, "list") {
+		scope.define(new AbstractFunction("remove-first", comment("Return list without the first element."), false, "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				return evaluateToList(scope, parameters[0]).removeFirst();
+			}
+		});
+
+		scope.define(new AbstractFunction("remove-last", comment("Return list without the last element."), false, "list") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				return evaluateToList(scope, parameters[0]).removeLast();
 			}
 		});
 

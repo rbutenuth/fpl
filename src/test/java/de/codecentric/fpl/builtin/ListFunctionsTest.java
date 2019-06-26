@@ -94,12 +94,22 @@ public class ListFunctionsTest extends AbstractFplTest {
     }
 
     @Test
-    public void testRest() throws Exception {
-        FplList list = (FplList) evaluate("rest", "(rest '(1 2 3))");
+    public void removeFirst() throws Exception {
+        FplList list = (FplList) evaluate("remove-first", "(remove-first '(1 2 3))");
         assertEquals(2, list.size());
         for (int i = 0; i < list.size(); i++) {
             FplInteger li = (FplInteger) list.get(i);
             assertEquals(2 + i, li.getValue());
+        }
+    }
+
+    @Test
+    public void removeLast() throws Exception {
+        FplList list = (FplList) evaluate("remove-last", "(remove-last '(1 2 3))");
+        assertEquals(2, list.size());
+        for (int i = 0; i < list.size(); i++) {
+            FplInteger li = (FplInteger) list.get(i);
+            assertEquals(1 + i, li.getValue());
         }
     }
 
