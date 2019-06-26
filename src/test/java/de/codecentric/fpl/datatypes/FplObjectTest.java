@@ -36,9 +36,10 @@ public class FplObjectTest extends AbstractFplTest {
 
 	@Test
 	public void thisInObjectReturnsObject() throws Exception {
-		FplObject object = (FplObject) evaluate("class", "(class (def-field a0 (this)))");
-		FplValue a = object.get("a0");
-		assertEquals(object, a);
+		FplObject clazz = (FplObject) evaluate("class", "(class (def-field a0 (this)))");
+		FplValue a = clazz.get("a0");
+		assertEquals(clazz, a);
+		assertEquals("class", clazz.typeName());
 	}
 
 	@Test

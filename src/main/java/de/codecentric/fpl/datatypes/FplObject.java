@@ -71,7 +71,7 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 
 	@Override
 	public String typeName() {
-		return "object";
+		return next == null ? "object" : "class";
 	}
 
 	@Override
