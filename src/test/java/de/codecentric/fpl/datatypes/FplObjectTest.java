@@ -39,14 +39,14 @@ public class FplObjectTest extends AbstractFplTest {
 		FplObject clazz = (FplObject) evaluate("class", "(class (def-field a0 (this)))");
 		FplValue a = clazz.get("a0");
 		assertEquals(clazz, a);
-		assertEquals("class", clazz.typeName());
+		assertEquals("object", clazz.typeName());
 	}
 
 	@Test
 	public void createEmptyObject() throws Exception {
 		FplObject object = (FplObject) evaluate("empty", "{ }");
 		assertEquals("{" + NL + "}" + NL, object.toString());
-		assertEquals("object", object.typeName());
+		assertEquals("dictionary", object.typeName());
 	}
 
 	@Test
