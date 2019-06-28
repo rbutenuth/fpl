@@ -122,8 +122,14 @@ public class ListFunctions implements ScopePopulator {
 			}
 		});
 
-		// TODO:
-		// subList(int, int)
-		// lambdaIterator (look at Loop.java)
+		scope.define(new AbstractFunction("sub-list",
+				comment("Return a part from the given list, including start, excluding end (counted from 0)."), false, "list", "start", "end") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				return evaluateToList(scope, parameters[0]).subList(((int)evaluateToLong(scope, parameters[1])), ((int)evaluateToLong(scope, parameters[2])));
+			}
+		});
+
+		// iterator with lambda: See Loop.java
 	}
 }

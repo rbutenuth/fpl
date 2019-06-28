@@ -240,6 +240,12 @@ public class ListFunctionsTest extends AbstractFplTest {
 		}
 	}
 
+	@Test
+	public void subList() throws Exception {
+		FplList list = (FplList) evaluate("get", "(sub-list '(0 1 2 3 4) 1 3)");
+		AbstractListTest.check(list, 1, 3);
+	}
+
 	@Test(expected = EvaluationException.class)
 	public void testTooManyParameters() throws Exception {
 		evaluate("pair", "(def-function pair (a b) (list a b))");
