@@ -99,5 +99,31 @@ public class ListFunctions implements ScopePopulator {
 				return evaluateToList(scope, parameters[0]).append(evaluateToList(scope, parameters[1]));
 			}
 		});
+		
+		scope.define(new AbstractFunction("lower-half", comment("Return the lower half of a list (opposite to upper-half)."), false, "list") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				return evaluateToList(scope, parameters[0]).lowerHalf();
+			}
+		});
+
+		scope.define(new AbstractFunction("upper-half", comment("Return the upper half of a list (opposite to lower-half)."), false, "list") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				return evaluateToList(scope, parameters[0]).upperHalf();
+			}
+		});
+
+		scope.define(new AbstractFunction("get-element",
+				comment("Return the element at position pos (counted from 0 ) from the given list."), false, "list", "pos") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				return evaluateToList(scope, parameters[0]).get((int)evaluateToLong(scope, parameters[1]));
+			}
+		});
+
+		// TODO:
+		// subList(int, int)
+		// lambdaIterator (look at Loop.java)
 	}
 }

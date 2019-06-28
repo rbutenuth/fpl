@@ -223,7 +223,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 *            Expression to evaluate.
 	 * @return Boolean value of expression.
 	 * @throws EvaluationException
-	 *             If <code>expression</code> does not evaluate to a list.
+	 *             If <code>expression</code> does not evaluate to a boolean.
 	 */
 	protected boolean evaluateToBoolean(Scope scope, FplValue expression) throws EvaluationException {
 		if (expression == null) {
@@ -242,6 +242,31 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	        return ((FplString)value).getContent().length() > 0;
 		} else {
 			return false;
+		}
+	}
+
+	/**
+	 * Evaluate an expression, convert the result to <code>long</code>. <code>nil</code> evalutes to 0.
+	 * 
+	 * @param scope
+	 *            Scope used for evaluation.
+	 * @param expression
+	 *            Expression to evaluate.
+	 * @return long value of expression.
+	 * @throws EvaluationException
+	 *             If <code>expression</code> does not evaluate to a number.
+	 */
+	protected long evaluateToLong(Scope scope, FplValue expression) throws EvaluationException {
+		if (expression == null) {
+			return 0;
+		}
+		FplValue value = expression.evaluate(scope);
+		if (value instanceof FplInteger) {
+			return ((FplInteger) value).getValue();
+		} else if (value instanceof FplDouble) {
+			return (long)((FplDouble) value).getValue();
+		} else {
+			throw new EvaluationException("Does not evaluate to number: " + expression);
 		}
 	}
 
