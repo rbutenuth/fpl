@@ -109,29 +109,6 @@ public class Assignment implements ScopePopulator {
 				}
 			}
 		});
-
-		scope.define(new AbstractFunction("object-put", comment("Put a value into the scope of an object or class,",
-				"symbol can be a symbol or a string,",
-				"returns the old value associated with the symbol/key."), false, "object", "symbol", "value") {
-			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				try {
-					FplObject o = evaluateToObject(scope, parameters[0]);
-					return o.put(targetName(scope, parameters[1]), value(scope, parameters[2]));
-				} catch (ScopeException e) {
-					throw new EvaluationException(e.getMessage());
-				}
-			}
-		});
-
-		scope.define(new AbstractFunction("object-get", comment("Get a value from the scope of an objec or class,",
-				"symbol can be a symbol or a string."), false, "object", "symbol") {
-			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				FplObject o = evaluateToObject(scope, parameters[0]);
-				return o.get(targetName(scope, parameters[1]));
-			}
-		});
 	}
 
 	static public String targetName(Scope scope, FplValue expression) throws EvaluationException {

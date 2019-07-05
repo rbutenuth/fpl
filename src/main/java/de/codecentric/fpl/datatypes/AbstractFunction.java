@@ -203,13 +203,33 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * @throws EvaluationException
 	 *             If <code>expression</code> does not evaluate to a FplObject.
 	 */
-	protected FplObject evaluateToObject(Scope scope, FplValue expression) throws EvaluationException {
+	protected FplObject evaluateToDictionary(Scope scope, FplValue expression) throws EvaluationException {
 		FplValue value = expression.evaluate(scope);
 		if (value instanceof FplObject) {
 			return (FplObject) value;
 		} else {
-			throw new EvaluationException("Not an object: " + value);
+			throw new EvaluationException("Not a dictionary: " + value);
 		}
+	}
+
+	/**
+	 * Evaluate an expression and cast the result to a {@link FplObject}, check it has a parent scope
+	 * (the difference between a simple dictionary and an {@link FplObject} is the parent scope).
+	 * 
+	 * @param scope
+	 *            Scope used for evaluation.
+	 * @param expression
+	 *            Expression to evaluate.
+	 * @return A FplObject.
+	 * @throws EvaluationException
+	 *             If <code>expression</code> does not evaluate to a FplObject.
+	 */
+	protected FplObject evaluateToObject(Scope scope, FplValue expression) throws EvaluationException {
+		FplObject object = evaluateToDictionary(scope, expression);
+		if (object.getNext() == null) {
+			throw new EvaluationException("Not an object: " + object);
+		}
+		return object;
 	}
 
 	/**

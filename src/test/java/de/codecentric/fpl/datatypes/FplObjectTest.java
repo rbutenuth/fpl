@@ -110,7 +110,7 @@ public class FplObjectTest extends AbstractFplTest {
 			evaluate("sub-class", "(sub-class my-class (def-field a2 3) (def-field a3 4))");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("Parent is not an object: 42", e.getMessage());
+			assertEquals("Not a dictionary: 42", e.getMessage());
 		}
 	}
 
@@ -138,13 +138,24 @@ public class FplObjectTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void defSubClassFailsWhenParentIsNotObject() throws Exception {
+	public void defSubClassFailsWhenParentIsNumber() throws Exception {
 		evaluate("def-class", "(def my-class 42)");
 		try {
 			evaluate("sub-class", "(def-sub-class my-sub-class my-class (def-field a2 3) (def-field a3 4))");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("Parent is not an object: 42", e.getMessage());
+			assertEquals("Not a dictionary: 42", e.getMessage());
+		}
+	}
+
+	@Test
+	public void defSubClassFailsWhenParentIsDictionary() throws Exception {
+		evaluate("def-class", "(def my-class { } )");
+		try {
+			evaluate("sub-class", "(def-sub-class my-sub-class my-class (def-field a2 3) (def-field a3 4))");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals(String.format("Not an object: {%n}%n"), e.getMessage());
 		}
 	}
 

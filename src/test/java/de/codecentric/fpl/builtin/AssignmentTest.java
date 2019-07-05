@@ -199,33 +199,4 @@ public class AssignmentTest extends AbstractFplTest {
 			assertEquals("value is nil", e.getMessage());
 		}
 	}
-
-	@Test
-	public void objectPutAndGet() throws Exception {
-		FplObject obj = (FplObject) evaluate("create", "(def obj { })");
-		assertNull(evaluate("put", "(object-put obj name 42)"));
-		assertEquals(FplInteger.valueOf(42), obj.get("name"));
-		assertEquals(FplInteger.valueOf(42), evaluate("gut", "(object-get obj name)"));
-	}
-
-	@Test
-	public void objectPutWithEmptyNameFails() throws Exception {
-		try {
-			evaluate("create", "(def obj { })");
-			evaluate("put", "(object-put obj \"\" 42)");
-			fail("exception missing");
-		} catch (EvaluationException e) {
-			assertEquals("\"\" is not a valid name", e.getMessage());
-		}
-	}
-	
-	@Test
-	public void objectPutOnNotObjectFails() throws Exception {
-		try {
-			evaluate("put", "(object-put '(1 2 3) \"\" 42)");
-			fail("exception missing");
-		} catch (EvaluationException e) {
-			assertEquals("Not an object: (1 2 3)", e.getMessage());
-		}
-	}
 }

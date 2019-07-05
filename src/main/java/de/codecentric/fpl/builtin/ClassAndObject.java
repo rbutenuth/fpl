@@ -54,8 +54,7 @@ public class ClassAndObject implements ScopePopulator {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				Position position = determinePosition(parameters[0]);
-				FplValue parent = parameters[0].evaluate(scope);
-				checkIsClass(parent);
+				FplValue parent = evaluateToObject(scope, parameters[0]);
 				return makeClass(position, (FplObject)parent, parameters, 1);
 			}
 
@@ -67,8 +66,7 @@ public class ClassAndObject implements ScopePopulator {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				Symbol target = Assignment.targetSymbol(scope, parameters[0]);
-				FplValue parent = parameters[1].evaluate(scope);
-				checkIsClass(parent);
+				FplValue parent = evaluateToObject(scope, parameters[1]);
 				FplObject obj = makeClass(target.getPosition(), (FplObject)parent, parameters, 2);
 				try {
 					scope.define(target, obj);
@@ -110,12 +108,6 @@ public class ClassAndObject implements ScopePopulator {
 		});
 	}
 
-	static private void checkIsClass(FplValue parent) throws EvaluationException {
-		if (!(parent instanceof FplObject)) {
-			throw new EvaluationException("Parent is not an object: " + parent);
-		}
-	}
-	
 	static private FplObject makeClass(Position position, Scope next, FplValue[] parameters, int first)
 			throws EvaluationException {
 		FplObject obj = new FplObject(position, next);
