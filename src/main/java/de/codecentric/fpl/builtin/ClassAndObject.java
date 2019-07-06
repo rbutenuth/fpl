@@ -24,7 +24,7 @@ public class ClassAndObject implements ScopePopulator {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				Position position = determinePosition(parameters[0]);
-				return makeClass(position, skipParameterScopes(scope), parameters, 0);
+				return makeClass("class", position, skipParameterScopes(scope), parameters, 0);
 			}
 
 		});
@@ -36,7 +36,7 @@ public class ClassAndObject implements ScopePopulator {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				Symbol target = Assignment.targetSymbol(scope, parameters[0]);
-				FplObject obj = makeClass(target.getPosition(), skipParameterScopes(scope), parameters, 1);
+				FplObject obj = makeClass(target.getName(), target.getPosition(), skipParameterScopes(scope), parameters, 1);
 				try {
 					scope.define(target, obj);
 				} catch (ScopeException e) {
@@ -54,8 +54,8 @@ public class ClassAndObject implements ScopePopulator {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				Position position = determinePosition(parameters[0]);
-				FplValue parent = evaluateToObject(scope, parameters[0]);
-				return makeClass(position, (FplObject)parent, parameters, 1);
+				FplObject parent = evaluateToObject(scope, parameters[0]);
+				return makeClass("sub-class-of-" + parent.getName(), position, parent, parameters, 1);
 			}
 
 		});
@@ -66,8 +66,8 @@ public class ClassAndObject implements ScopePopulator {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				Symbol target = Assignment.targetSymbol(scope, parameters[0]);
-				FplValue parent = evaluateToObject(scope, parameters[1]);
-				FplObject obj = makeClass(target.getPosition(), (FplObject)parent, parameters, 2);
+				FplObject parent = evaluateToObject(scope, parameters[1]);
+				FplObject obj = makeClass(target.getName(), target.getPosition(), parent, parameters, 2);
 				try {
 					scope.define(target, obj);
 				} catch (ScopeException e) {
@@ -108,9 +108,9 @@ public class ClassAndObject implements ScopePopulator {
 		});
 	}
 
-	static private FplObject makeClass(Position position, Scope next, FplValue[] parameters, int first)
+	static private FplObject makeClass(String name, Position position, Scope next, FplValue[] parameters, int first)
 			throws EvaluationException {
-		FplObject obj = new FplObject("class", position, next);
+		FplObject obj = new FplObject(name, position, next);
 		for (int i = first; i < parameters.length; i++) {
 			parameters[i].evaluate(obj);
 		}
