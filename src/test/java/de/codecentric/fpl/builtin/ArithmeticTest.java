@@ -15,16 +15,17 @@ import de.codecentric.fpl.datatypes.FplInteger;
 public class ArithmeticTest extends AbstractFplTest {
 
     @Test
-    public void testUnaryMinusInteger() throws Exception {
+    public void unaryMinusInteger() throws Exception {
         FplInteger i = (FplInteger)evaluate("minus", "( - 3)");
         assertEquals(-3, i.getValue());
     }
 
     @Test
-    public void testUnaryMinusDouble() throws Exception {
+    public void unaryMinusDouble() throws Exception {
         FplDouble d = (FplDouble)evaluate("minus", "( - 3.14)");
         assertEquals(-3.14, d.getValue(), 0.00001);
         assertEquals("double", d.typeName());
+        assertEquals("-3.14", d.toString());
     }
 
     @Test(expected = EvaluationException.class)

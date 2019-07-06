@@ -7,6 +7,7 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
 
 /**
@@ -18,14 +19,16 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 	private static String NL = System.lineSeparator();
 	private Position position;
 
-	public FplObject() {
+	public FplObject(String name) {
+		super(name);
 		position = Position.UNKNOWN;
 	}
 
 	/**
 	 * @param position Where it is defined in the source
 	 */
-	public FplObject(Position position) throws IllegalArgumentException {
+	public FplObject(String name, Position position) throws IllegalArgumentException {
+		super(name);
 		if (position == null) {
 			throw new IllegalArgumentException("position is null");
 		}
@@ -36,8 +39,8 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 	 * @param position Where it is defined in the source
 	 * @param next     Next outer {@link Scope}
 	 */
-	public FplObject(Position position, Scope next) throws IllegalArgumentException {
-		this(position);
+	public FplObject(String name, Position position, Scope next) throws IllegalArgumentException {
+		this(name, position);
 		setNext(next);
 	}
 
@@ -50,7 +53,7 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 	public FplValue call(Scope scope, FplValue[] parameters) throws EvaluationException {
 		Scope callScope;
 		if (scope instanceof ParameterScope) {
-			callScope = new ParameterScope(this, (ParameterScope) scope);
+			callScope = new ParameterScope(getName(), this, (ParameterScope) scope);
 		} else {
 			callScope = this;
 		}
@@ -80,7 +83,13 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 		sb.append("{");
 		for (Entry<String, FplValue> entry : map.entrySet()) {
 			sb.append(NL).append("    ");
-			sb.append(entry.getKey()).append(": ").append(entry.getValue().toString());
+			sb.append(entry.getKey()).append(": ");
+			FplValue v = entry.getValue();
+			if (v instanceof FplList || v instanceof FplObject) {
+				sb.append("<").append(v.typeName()).append(">");
+			} else {
+				sb.append(v.toString());
+			}
 		}
 		sb.append(NL).append("}").append(NL);
 

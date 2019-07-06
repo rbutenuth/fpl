@@ -20,8 +20,8 @@ public class SimpleObjectTest {
 
 	@Before
 	public void before() throws EvaluationException {
-		outer = new Scope();
-		object = new FplObject(new Position("object-test", 2, 3));
+		outer = new Scope("outer");
+		object = new FplObject("obj", new Position("object-test", 2, 3));
 	}
 
 	@After
@@ -31,7 +31,7 @@ public class SimpleObjectTest {
 	}
 
 	@Test
-	public void testEmptyObject() throws EvaluationException {
+	public void emptyObject() throws EvaluationException {
 		assertTrue(outer.isEmpty());
 		assertNull(object.get("foo"));
 		assertEquals("object-test", object.getPosition().getName());
@@ -40,10 +40,17 @@ public class SimpleObjectTest {
 	}
 
 	@Test
-	public void testEntriesToString() throws Exception {
+	public void entriesToString() throws Exception {
 		object.put("foo", new FplString("bar"));
 		object.put("one", FplInteger.valueOf(1));
 		assertEquals("{" + NL + "    foo: \"bar\"" + NL + "    one: 1" + NL + "}" + NL, object.toString());
+	}
+
+	@Test
+	public void nestedToString() throws Exception {
+		object.put("foo", new FplString("bar"));
+		object.put("one", new FplObject("nested"));
+		assertEquals("{" + NL + "    foo: \"bar\"" + NL + "    one: <dictionary>" + NL + "}" + NL, object.toString());
 	}
 
 	@Test
@@ -52,13 +59,23 @@ public class SimpleObjectTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testNullPositionOne() {
+	public void nullName() {
 		new FplObject(null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
+	public void emptyName() {
+		new FplObject("");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void withPositionNull() {
+		new FplObject("name", null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
 	public void testNullPositionTwo() {
-		new FplObject(null, new Scope());
+		new FplObject("scope-name", null, new Scope("test"));
 	}
 
 	@Test(expected = ScopeException.class)

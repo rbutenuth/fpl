@@ -11,6 +11,7 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.FplLambda;
+import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 
@@ -960,7 +961,12 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		sb.append('(');
 		Iterator<FplValue> iter = iterator();
 		while (iter.hasNext()) {
-			sb.append(iter.next().toString());
+			FplValue v = iter.next();
+			if (v instanceof FplList || v instanceof FplObject)  {
+				sb.append("<").append(v.typeName()).append(">");
+			} else {
+				sb.append(v.toString());
+			}
 			if (iter.hasNext()) {
 				sb.append(" ");
 			}

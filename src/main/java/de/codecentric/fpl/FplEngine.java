@@ -42,7 +42,7 @@ public class FplEngine {
 	 *             Should not happen on initialization.
 	 */
 	public Scope createDefaultScope() throws ScopeException {
-		Scope scope = new Scope();
+		Scope scope = new Scope("global");
 
 		new Print(this).populate(scope);
 		new Assignment().populate(scope);

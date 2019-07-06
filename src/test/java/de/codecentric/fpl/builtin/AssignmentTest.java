@@ -27,7 +27,7 @@ public class AssignmentTest extends AbstractFplTest {
 
 	@Test
 	public void simplePutAndGet() throws Exception {
-		Scope local = new Scope(scope);
+		Scope local = new Scope("local", scope);
 		assertNull(scope.get("local"));
 		assertNull(local.get("local"));
 		assertNull(evaluate(local, "put", "(put local 20)"));
@@ -62,7 +62,7 @@ public class AssignmentTest extends AbstractFplTest {
 
 	@Test
 	public void simplePutGlobal() throws Exception {
-		Scope local = new Scope(scope);
+		Scope local = new Scope("local", scope);
 		assertNull(scope.get("global"));
 		assertNull(local.get("global"));
 		assertNull(evaluate(local, "put-global", "(put-global global 20)"));
@@ -103,7 +103,7 @@ public class AssignmentTest extends AbstractFplTest {
 
 	@Test
 	public void putWithQuotedTarget() throws Exception {
-		Scope local = new Scope(scope);
+		Scope local = new Scope("local", scope);
 		assertNull(evaluate(local, "put", "(put (quote local) 20)"));
 		assertEquals(FplInteger.valueOf(20), (local.get("local")));
 
@@ -114,13 +114,13 @@ public class AssignmentTest extends AbstractFplTest {
 
 	@Test(expected = EvaluationException.class)
 	public void putWithTargetNotSymbolFails() throws Exception {
-		Scope local = new Scope(scope);
+		Scope local = new Scope("local", scope);
 		assertEquals(20, ((FplInteger) evaluate(local, "put", "(put 10 20)")).getValue());
 	}
 
 	@Test
 	public void simpleDefGlobal() throws Exception {
-		Scope local = new Scope(scope);
+		Scope local = new Scope("local", scope);
 		assertEquals(FplInteger.valueOf(20), evaluate(local, "def-global", "(def-global global 20)"));
 
 		// Value should be visible in local scope (via recursive get), and in global

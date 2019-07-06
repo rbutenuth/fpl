@@ -60,7 +60,7 @@ public class UnWrapper {
 	}
 	
 	private static FplObject wrap(Map<?, ?> map) throws EvaluationException {
-		FplObject object = new FplObject();
+		FplObject object = new FplObject("dict");
 		try {
 			for (Entry<?, ?> entry : map.entrySet()) {
 				object.put((String)entry.getKey(), wrap(entry.getValue()));

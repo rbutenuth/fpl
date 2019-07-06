@@ -90,7 +90,7 @@ public class ClassAndObject implements ScopePopulator {
 				while (objectScope instanceof ParameterScope) {
 					objectScope = objectScope.getNext();
 				}
-				FplObject object = new FplObject(Position.UNKNOWN, objectScope);
+				FplObject object = new FplObject("instance-of-" + getName(), Position.UNKNOWN, objectScope);
 
 				initializeObject(scope, parameters, object);
 				return object;
@@ -110,7 +110,7 @@ public class ClassAndObject implements ScopePopulator {
 
 	static private FplObject makeClass(Position position, Scope next, FplValue[] parameters, int first)
 			throws EvaluationException {
-		FplObject obj = new FplObject(position, next);
+		FplObject obj = new FplObject("class", position, next);
 		for (int i = first; i < parameters.length; i++) {
 			parameters[i].evaluate(obj);
 		}

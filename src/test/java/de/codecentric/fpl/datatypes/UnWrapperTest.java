@@ -105,7 +105,7 @@ public class UnWrapperTest {
 	
 	@Test
 	public void testUnwrapObject() throws Exception {
-		FplObject obj = new FplObject();
+		FplObject obj = new FplObject("obj");
 		obj.put("foo", new FplString("bar"));
 		Map<?, ?> map = (Map<?, ?>) UnWrapper.unwrap(obj);
 		assertEquals("bar", map.get("foo"));

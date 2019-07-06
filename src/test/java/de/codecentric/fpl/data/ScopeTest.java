@@ -19,8 +19,8 @@ public class ScopeTest {
 	
 	@Before
 	public void before() {
-		outer = new Scope();
-		inner = new Scope(outer);
+		outer = new Scope("outer");
+		inner = new Scope("inner", outer);
 	}
 
 	@After
@@ -35,6 +35,7 @@ public class ScopeTest {
 		assertNull(inner.get("foo"));
 		assertNull(outer.get("foo"));
 		assertEquals(0, inner.size());
+		assertEquals("Scope<outer>", outer.toString());
 	}
 
 	@Test
@@ -47,7 +48,7 @@ public class ScopeTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void checkNestingWithNullParentThrowsException() throws ScopeException {
-		new Scope(null);
+		new Scope("name", null);
 	}
 	
 	@Test

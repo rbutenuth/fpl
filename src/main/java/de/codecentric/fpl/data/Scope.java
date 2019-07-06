@@ -14,14 +14,19 @@ import de.codecentric.fpl.datatypes.Symbol;
  * Just a little bit more than a {@link Map}, can be nested.
  */
 public class Scope implements Iterable<Entry<String, FplValue>> {
+	protected final String name;
 	protected ConcurrentMap<String, FplValue> map;
 	protected Scope next;
 
 	/**
 	 * Create a top level scope.
 	 */
-	public Scope() {
+	public Scope(String name) {
 		map = new ConcurrentHashMap<>();
+		this.name = name;
+		if (name == null || name.length() == 0) {
+			throw new IllegalArgumentException("empty name not allowed");
+		}
 	}
 
 	/**
@@ -29,8 +34,8 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	 * 
 	 * @param next Next outer scope, not <code>null</code>.
 	 */
-	public Scope(Scope next) {
-		this();
+	public Scope(String name, Scope next) {
+		this(name);
 		if (next == null) {
 			throw new IllegalArgumentException("next can't be null");
 		}
@@ -43,11 +48,15 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	public Scope getNext() {
 		return next;
 	}
-
+	
 	protected void setNext(Scope next) {
 		this.next = next;
 	}
 
+	public String getName() {
+		return name;
+	}
+	
 	/**
 	 * Lookup a symbol, if not found in this scope, walk chain of scopes.
 	 * 
@@ -141,6 +150,11 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 	@Override
 	public Iterator<Entry<String, FplValue>> iterator() {
 		return map.entrySet().iterator();
+	}
+	
+	@Override
+	public String toString() {
+		return "Scope<" + name + ">";
 	}
 
 	public int size() {

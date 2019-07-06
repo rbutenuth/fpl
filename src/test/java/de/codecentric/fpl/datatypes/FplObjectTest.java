@@ -2,13 +2,11 @@ package de.codecentric.fpl.datatypes;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
@@ -229,29 +227,6 @@ public class FplObjectTest extends AbstractFplTest {
 		} catch (EvaluationException e) {
 			assertEquals("\"\" is not a valid name", e.getMessage());
 		}
-	}
-
-	@Ignore
-	@Test
-	public void testConstructor() throws Exception {
-		ListResultCallback callback = evaluateResource("constructor.fpl");
-		List<FplValue> values = callback.getResults();
-		assertEquals(2, values.size());
-		assertTrue(values.get(0) instanceof FplObject);
-		FplObject instance = (FplObject) values.get(1);
-		assertEquals("Wert", ((FplString) instance.get("key")).getContent());
-		assertEquals("anders", ((FplString) instance.get("other")).getContent());
-	}
-
-	@Ignore
-	@Test
-	public void testCallMethodFromFunction() throws Exception {
-		ListResultCallback callback = evaluateResource("method-called-from-function.fpl");
-		List<FplValue> values = callback.getResults();
-		assertEquals(3, values.size());
-		assertTrue(values.get(0) instanceof FplObject);
-		FplObject instance = (FplObject) values.get(2);
-		assertEquals("Wert", ((FplString) instance.get("key")).getContent());
 	}
 
 	@Test(expected = EvaluationException.class)

@@ -56,7 +56,7 @@ public class FunctionTest {
 	@Test
 	public void testEvaluateNonEmptyListToBoolean() throws Exception {
 		AbstractFunction f = new TestFunction(null, "foo", false, new String[0]);
-		Scope scope = new Scope();
+		Scope scope = new Scope("test");
 		scope.put("x", FplList.fromValues(new FplValue[] { new FplString("baz") }));
 		assertTrue(f.evaluateToBoolean(scope, new Symbol("x")));
 	}

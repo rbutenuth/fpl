@@ -19,9 +19,9 @@ public class ParameterScopeTest {
 
 	@Before
 	public void before() {
-		outer = new Scope();
+		outer = new Scope("outer");
 		FplValue[] parameters = { new FplString("foo"), new Symbol("bar") };
-		inner = new ParameterScope(outer, parameters);
+		inner = new ParameterScope("inner", outer, parameters);
 	}
 
 	@After

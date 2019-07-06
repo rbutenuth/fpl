@@ -145,7 +145,7 @@ public class Parser implements Closeable {
 	 * pair is either a symbol or a string, followed by a colon, followed by a value
 	 */
 	private FplValue object() throws ParseException, IOException {
-		FplObject obj = new FplObject(nextToken.getPosition());
+		FplObject obj = new FplObject("dict", nextToken.getPosition());
 		fetchNextToken(); // skip LEFT_CURLY_BRACKET
 		if (nextToken.isNot(Id.EOF) && nextToken.isNot(Id.RIGHT_CURLY_BRACKET)) {
 			keyValuePair(obj);
