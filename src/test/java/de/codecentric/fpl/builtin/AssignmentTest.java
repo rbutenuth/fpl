@@ -199,4 +199,15 @@ public class AssignmentTest extends AbstractFplTest {
 			assertEquals("value is nil", e.getMessage());
 		}
 	}
+	
+	@Test
+	public void assignmentToParameterFails() throws Exception {
+		evaluate("def-function", "(def-function f (a) (put a 2))");
+		try {
+			evaluate("call-function", "(f 3)");
+			fail("missing exception");
+		} catch (EvaluationException e) {
+			assertEquals("Parameter a can't be a target.", e.getMessage());
+		}
+	}
 }

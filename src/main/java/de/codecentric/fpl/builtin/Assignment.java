@@ -129,7 +129,7 @@ public class Assignment implements ScopePopulator {
 		if (expression instanceof Symbol) {
 			return (Symbol) expression;
 		} else if (expression instanceof Parameter) {
-			return ((Parameter) expression).getSymbol();
+			throw new EvaluationException("Parameter " + expression + " can't be a target.");
 		} else {
 			if (expression == null) {
 				throw new EvaluationException("nil is not a valid name");

@@ -16,4 +16,9 @@ public class ParameterTest {
 	public void toStringReturnsName() {
 		assertEquals("foo", parameter.toString());
 	}
+	
+	@Test
+	public void getSymbolReturnsSymbol() {
+		assertEquals(new Symbol("foo"), parameter.getSymbol());
+	}
 }
