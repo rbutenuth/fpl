@@ -8,7 +8,8 @@ import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplValue;
 
 /**
- * Basic logic functions. <code>LInteger(0)</code> and <code>null</code> are false, everything else is true.
+ * Basic logic functions. <code>FplInteger(0)</code>, <code>FplDouble(0.0)</code>, <code>()</code>
+ * and <code>nil</code> are <code>false</code>, everything else is true.
  */
 public class Conditional implements ScopePopulator {
 	@Override
@@ -41,7 +42,6 @@ public class Conditional implements ScopePopulator {
                 }
             }
         });
-        // TODO: some sort of switch/case
     }
 
 }

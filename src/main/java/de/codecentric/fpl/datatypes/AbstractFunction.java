@@ -234,7 +234,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 
 	/**
 	 * Evaluate an expression, check for boolean value. <code>null</code> (nil), the
-	 * integer value 0, and an empty list are <code>false</code>, everything else is
+	 * integer/double value 0, and an empty list are <code>false</code>, everything else is
 	 * <code>true</code>
 	 * 
 	 * @param scope
