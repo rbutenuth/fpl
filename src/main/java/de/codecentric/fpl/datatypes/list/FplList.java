@@ -15,15 +15,8 @@ import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 
-// TODO: More operations:
-// remove(int index)
-// insert(FplValue value, int index),
-// set/replace(FplValue value, int index)
-// lowerHalf / upperHalf: split in two halfs, number of buckets power of 2,
-// so a divide and conquer algorithm is efficient
-
 /**
- * An FPL List.
+ * A persistent list implementation. 
  */
 public class FplList implements FplValue, Iterable<FplValue> {
 	public static final FplList EMPTY_LIST = new FplList();
