@@ -10,7 +10,7 @@ import java.util.List;
 import de.codecentric.fpl.parser.Token.Id;
 
 /**
- * A simple scanner. The reader is closed when EOF is reached.
+ * A simple scanner. The reader is closed implicitly when EOF is reached.
  */
 public class Scanner implements Closeable {
 	private Reader rd;

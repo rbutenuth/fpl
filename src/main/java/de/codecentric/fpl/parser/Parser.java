@@ -43,10 +43,8 @@ public class Parser implements Closeable {
 			throw new NullPointerException("scanner");
 		}
 		this.scanner = scanner;
-		// the parser would be simpler when we parse the first value here, but on the
-		// other
-		// side (caller) code would be more complicate because we would throw
-		// ParseException here.
+		// the parser would be simpler when we parse the first value here, but on the other
+		// side (caller) code would be more complicate because we would throw ParseException here.
 	}
 
 	public boolean hasNext() throws ParseException, IOException {
