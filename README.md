@@ -24,28 +24,28 @@ The syntax is the same as in Java (without the _ feature to structure numbers.
 
 ### Symbol and Strings
 
-Symbols are sequences of non whitespace characters except __"__, __(__, __)__, __:__. A symbol must not start with __'__.
+Symbols are sequences of non whitespace characters except `"`, `(`, `)`, `:`. A symbol must not start with `'`.
 
-Strings are delimited by __"__. Quoting works as in Java with \.
+Strings are delimited by `"`. Quoting works as in Java with \.
 
 ### Keywords
 
-There is only one keyword: __nil__. It stands for "nothing", like null in Java.
+There is only one keyword: `nil`. It stands for "nothing", like null in Java.
 
 ### Lists
 
-A List starts with __(__, followed by the elements of the list, followed by __)__. A List may be empty: __()__.
+A List starts with `(`, followed by the elements of the list, followed by `)`. A List may be empty: `()`.
 
 ### Objects / Dictionaries
 
-Objects are delimited by __{__ and __}__. Inside that you can define zero to n mappings, consisting of a  symbol (key), __:__ and a value.
-Don't confuse it with JSON syntax: The keys are not surrounded by __"__ and there is no __,__ between the key pairs.
+Objects are delimited by `{` and `}`. Inside that you can define zero to n mappings, consisting of a  symbol (key), `:` and a value.
+Don't confuse it with JSON syntax: The keys are not surrounded by `"` and there is no `,` between the key pairs.
 
 ### Quote
 
-The character __'__ in front of a list blocks the evaluation of the list.
+The character `'` in front of a list blocks the evaluation of the list.
 
 ### Comments
 
-Comments start with __;__ and end with the next newline. One or several comment lines before a symbol are collected and associated
+Comments start with `;` and end with the next newline. One or several comment lines before a symbol are collected and associated
 with that symbol. This can be used like Javadoc.
