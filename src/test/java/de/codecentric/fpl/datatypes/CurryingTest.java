@@ -30,7 +30,7 @@ public class CurryingTest extends AbstractFplTest {
         String[] pn = f.getParameterNames();
         assertEquals(2, pn.length);
         assertEquals("op2", pn[0]);
-        assertEquals("ops", pn[1]);
+        assertEquals("ops...", pn[1]);
         FplInteger i = (FplInteger)evaluate("plus3", "(plus3 4)");
         assertEquals(7, i.getValue());
     }

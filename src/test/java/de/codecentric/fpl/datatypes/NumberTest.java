@@ -65,7 +65,8 @@ public class NumberTest {
     	assertFalse(new FplDouble(1).equals(null));
     }
 
-    @Test
+    @SuppressWarnings("unlikely-arg-type")
+	@Test
     public void testNotEqualDoubleString() {
     	assertFalse(new FplDouble(1).equals("foo"));
     }

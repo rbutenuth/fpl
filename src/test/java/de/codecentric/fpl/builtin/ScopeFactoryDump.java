@@ -1,5 +1,6 @@
 package de.codecentric.fpl.builtin;
 
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -28,12 +29,22 @@ public class ScopeFactoryDump {
 			FplValue value = entry.getValue();
 			if (value instanceof AbstractFunction) {
 				AbstractFunction f = (AbstractFunction) value;
+				System.out.println("### " + f.getName());
+				List<String> comments = f.getComment();
+				if (!comments.isEmpty()) {
+					for (String c : comments) {
+						System.out.println(c);
+					}
+				}
+				System.out.print("```");
 				System.out.print("(" + f.getName());
 				String[] pns = f.getParameterNames();
 				for (String pn : pns) {
 					System.out.print(" " + pn);
 				}
 				System.out.println(")");
+				System.out.println("```");
+				System.out.println();
 			}
 		}
 	}

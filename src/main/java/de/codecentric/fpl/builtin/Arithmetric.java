@@ -120,7 +120,7 @@ public class Arithmetric implements ScopePopulator {
 		 */
 		ArithmetricFunction(ArithmeticOperator op) {
 			super(op.name, comment(op.comment), true,
-					op == ArithmeticOperator.MINUS ? new String[] { "op" } : new String[] { "op1", "op2", "ops" });
+					op == ArithmeticOperator.MINUS ? new String[] { "op" } : new String[] { "op1", "op2", "ops..." });
 			this.op = op;
 		}
 
