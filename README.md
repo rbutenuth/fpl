@@ -53,3 +53,8 @@ with that symbol. This can be used like Javadoc.
 ## Built-in Functions
 
 See [documentation of built-in functions](doc/builtin-functions.md)
+
+## Built-in HTTP Server
+
+See [Built-in HTTP server](http-server.md)
+
