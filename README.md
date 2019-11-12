@@ -56,5 +56,5 @@ See [documentation of built-in functions](doc/builtin-functions.md)
 
 ## Built-in HTTP Server
 
-See [Built-in HTTP server](http-server.md)
+See [Built-in HTTP server](doc/http-server.md)
 
