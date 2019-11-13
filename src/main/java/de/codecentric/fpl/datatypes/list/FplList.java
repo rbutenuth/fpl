@@ -958,7 +958,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			if (v instanceof FplList || v instanceof FplObject)  {
 				sb.append("<").append(v.typeName()).append(">");
 			} else {
-				sb.append(v.toString());
+				sb.append(v == null ? "nil" : v.toString());
 			}
 			if (iter.hasNext()) {
 				sb.append(" ");

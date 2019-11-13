@@ -41,7 +41,7 @@ public class ListFunctions implements ScopePopulator {
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplValue[] values = new FplValue[parameters.length];
 				for (int i = 0; i < parameters.length; i++) {
-					values[i] = parameters[i].evaluate(scope);
+					values[i] = evaluateToAny(scope, parameters[i]);
 				}
 				return FplList.fromValues(values);
 			}

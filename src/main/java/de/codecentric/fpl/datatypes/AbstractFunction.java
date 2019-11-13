@@ -153,6 +153,24 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	}
 
 	/**
+	 * Evaluate an expression.
+	 * 
+	 * @param scope
+	 *            Scope used for evaluation.
+	 * @param expression
+	 *            Expression to evaluate.
+	 * @return Evaluated expression.
+	 * @throws EvaluationException
+	 */
+	protected FplValue evaluateToAny(Scope scope, FplValue expression) throws EvaluationException {
+		if (expression == null) {
+			return null;
+		} else {
+			return expression.evaluate(scope);
+		}
+	}
+
+	/**
 	 * Evaluate an expression and cast the result to a {@link FplList}.
 	 * 
 	 * @param scope

@@ -25,7 +25,12 @@ public class Parameter implements FplValue {
 	
 	public FplValue quote(Scope scope) throws EvaluationException {
 		ParameterScope paramScope = (ParameterScope) scope;
-        return paramScope.getParameter(index);
+        FplValue parameter = paramScope.getParameter(index);
+        if (parameter instanceof LazyExpression) {
+        	return ((LazyExpression)parameter).getOriginalExpression();
+        } else {
+        	return parameter;
+        }
 	}
 
 	public Symbol getSymbol() {

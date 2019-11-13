@@ -52,8 +52,8 @@ public class LambdaTest extends AbstractFplTest {
 
 	@Test
 	public void testLambda() throws Exception {
-		assertEquals(2, lambda.getMinimumNumberOfParameters());
-		assertFalse(lambda.isVararg());
+		assertEquals(1, lambda.getMinimumNumberOfParameters());
+		assertTrue(lambda.isVararg());
 	}
 
 	@Test(expected = EvaluationException.class)
@@ -130,12 +130,12 @@ public class LambdaTest extends AbstractFplTest {
 
 	@Test
 	public void lambdaString() throws Exception {
-		FplLambda f = (FplLambda) evaluate("lambda", "(lambda (a b c...) 42)");
+		FplLambda f = (FplLambda) evaluate("lambda", "(lambda (a b c...) 42 43)");
 		assertEquals(2, f.getMinimumNumberOfParameters());
 		assertTrue(f.isVararg());
 		assertEquals("function", f.typeName());
 		assertEquals("lambda", f.getName());
-		assertEquals("(lambda (a b c...) 42)", f.toString());
+		assertEquals("(lambda (a b c...) 42 43)", f.toString());
 	}
 
 	@Test

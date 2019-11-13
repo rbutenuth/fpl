@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.datatypes.FplValue;
 
 public class EvaluateTest extends AbstractFplTest {
 
@@ -17,4 +18,11 @@ public class EvaluateTest extends AbstractFplTest {
 			assertEquals("Not a function: 1", e.getMessage());
 		}
 	}
+
+	@Test
+	public void listToStringObjectAndNil() throws Exception {
+		FplValue list = evaluate("list", "(list nil 1 {})");
+		assertEquals("(nil 1 <dictionary>)", list.toString());
+	}
+
 }

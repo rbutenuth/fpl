@@ -172,8 +172,11 @@ public class FplLambda extends AbstractFunction {
 			}
 		}
 		sb.append(") ");
-		for (FplValue c : code) {
-			sb.append(c.toString());
+		for (int i = 0; i < code.length; i++) {
+			sb.append(code[i].toString());
+			if (i < code.length - 1) {
+				sb.append(' ');
+			}
 		}
 		sb.append(")");
 		return sb.toString();

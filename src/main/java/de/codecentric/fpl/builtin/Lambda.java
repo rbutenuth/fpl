@@ -22,7 +22,7 @@ public class Lambda implements ScopePopulator {
 	@Override
 	public void populate(Scope scope) throws ScopeException {
 
-		scope.define(new AbstractFunction("lambda", comment("Create an anonymous function."), false, "parameter-list",
+		scope.define(new AbstractFunction("lambda", comment("Create an anonymous function."), true, "parameter-list",
 				"code...") {
 
 			@Override

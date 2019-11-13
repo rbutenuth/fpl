@@ -12,7 +12,6 @@ import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.LazyExpression;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.AbstractListTest;
 import de.codecentric.fpl.datatypes.list.FplList;
@@ -35,12 +34,29 @@ public class ListFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void indirectQuote() throws Exception {
+	public void indirectQuoteExpression() throws Exception {
 		evaluate("my-qoute", "(def-function myquote (x) (quote x))");
-		LazyExpression lazy = (LazyExpression) evaluate("call", "(myquote (+ 3 4))");
+		FplValue lazy = evaluate("call", "(myquote (+ 3 4))");
 		assertEquals("list", lazy.typeName());
-		FplInteger result = (FplInteger) lazy.evaluate(null);
+		FplInteger result = (FplInteger) lazy.evaluate(scope);
 		assertEquals(FplInteger.valueOf(7), result);
+	}
+
+	@Test
+	public void indirectQuoteSymbol() throws Exception {
+		evaluate("my-qoute", "(def-function myquote (x) (quote x))");
+		FplValue lazy = evaluate("call", "(myquote foo)");
+		assertEquals("symbol", lazy.typeName());
+		Symbol s = (Symbol) lazy;
+		assertEquals("foo", s.getName());
+	}
+
+	@Test
+	public void indirectQuoteNumber() throws Exception {
+		evaluate("my-qoute", "(def-function myquote (x) (quote x))");
+		FplValue lazy = evaluate("call", "(myquote 42)");
+		assertEquals("integer", lazy.typeName());
+		assertEquals(FplInteger.valueOf(42), lazy);
 	}
 
 	@Test

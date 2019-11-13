@@ -42,7 +42,7 @@ public class AccessMethods extends AbstractListTest {
 	}
 
 	@Test
-	public void listToString() {
+	public void listToStringNumbers() {
 		assertEquals("(0 1 2)", create(0, 3).toString());
 	}
 
