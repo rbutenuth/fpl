@@ -50,11 +50,12 @@ The character `'` in front of a list blocks the evaluation of the list.
 Comments start with `;` and end with the next newline. One or several comment lines before a symbol are collected and associated
 with that symbol. This can be used like Javadoc.
 
-## Built-in Functions
+## Further Reading...
 
-See [documentation of built-in functions](doc/builtin-functions.md)
-
-## Built-in HTTP Server
-
-See [Built-in HTTP server](doc/http-server.md)
-
+* [Documentation of built-in functions](doc/builtin-functions.md)
+* [Built-in HTTP server](doc/http-server.md)
+* [Variables, assignments, and scopes](doc/variables-assignments-scopes.md)
+* TODO: Lambdas and Functions
+* TODO: Lists and list functions
+* TODO: Objects
+* TODO: Java-Wrapper
