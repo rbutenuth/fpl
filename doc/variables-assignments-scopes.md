@@ -11,7 +11,11 @@ This works only when `x` is not associated with any value before, otherwise you 
 
 Whenever you want to change the value of an existing variable, you should use `set`. This works on existing variables only. 
 When you try `(set foo "bar")` without defining `foo` before, the error message will be 
-`No value with key foo found`.   
+`No value with key foo found`.
+
+How do symbols look like? There are very few restrictions: They can't start with a digit and they can't contain any
+of the other special characters used by the fpl syntax: `"()[] {}:`. The brackets (`[]`) are reserved
+for future use. So `++` is a valid symbol.
 
 ## Short Cut for Functions: def-function
 
@@ -35,28 +39,50 @@ pure functional programming.
 
 ## Nested Scopes
 
------
+When you are evaluating expressions "top level", you are operating on the global scope. When you are executing
+code in a function (defined by you), it executes within it's own scope. As in most programming languages, `a`
+in the global scope can be hidden by a parameter or variable `a` within a functions. So when you define
+a variable with `def` within a function, it's visible in this function only. 
 
-TODO: put, def-global, def-function etc.
+When you want to define a global variable within a function, you have to use `def-global` or `put-global`
+instead. They are similar to their counterparts without the `-global` suffix, but they always operate on 
+the global scope, not on the current local scope.
 
-(put ++ nil)
-(put foo nil)
-(put square nil)
+Is there a `set-global`? No. Why? Because it's not needed! When you use set, it starts it search in the
+current scope and walks up the chain up to the global scope. In the first scope where the symbol is bound,
+it will be bound (set) to the new value. When it is not found, an error will be thrown.
 
-(def-function square (x) * x x)
+So let's have a look on an example:
 
-(def-function ++ (x) (set (quote x) (+ x 1)))
+```
+(def-function my-function (x) 
+	(set a x)
+	(def b x)
+	(def-global c x)
+)
 
-(def foo 3)
+(def a 42)
+(my-function 43)
+```
 
-foo
+What is happening here? The function has one parameter `x` and uses `set`, `def` and `def-global` with
+the parameter and binds the value to the symbols `a`, `b`, and `c`. Before we call the function, we set
+the value of `a` to 42 in the global scope. So when we call the function with 43 as argument, `a` in the
+global scope is set to 43. `b` is set to 43, too, but that is only visible within the function. The last
+action is to set `c` in the global scope to 43. When we execute 
 
-(++ foo)
+```
+(list "a" a "b" b "c" c)
+```
 
-foo
+we will get `("a" 43 "b" nil "c" 43)` as a result.
 
-(list nil nil nil)
+## Additional Notes
 
+The first parameter of all the "assignment functions" is usually a symbol. When it is not a symbol, it will
+be evaluated. In case the result is a string, it is converted to a symbol. This way you can generate the 
+name of the assignment target dynamically with a function (which has to return a string). 
 
-(put square nil)
-(def-function square (x) * x x)
+What if you try to assign a value to a parameter of a function? This is not allowed and will cause an 
+error. So the bad style of assigning values to parameters is not legal in fpl.
+
