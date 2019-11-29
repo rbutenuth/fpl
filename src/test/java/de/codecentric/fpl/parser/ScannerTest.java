@@ -62,6 +62,17 @@ public class ScannerTest {
 	}
 
 	@Test
+	public void symbolStartsWithMinus() throws Exception {
+		try (Scanner sc = new Scanner("test", new StringReader("-a"))) {
+			Token t = sc.next();
+			assertEquals(Id.SYMBOL, t.getId());
+			assertEquals("-a", t.toString());
+			t = sc.next();
+			assertEquals(Id.EOF, t.getId());
+		}
+	}
+
+	@Test
 	public void testParenthesisAndSymbol() throws Exception {
 		try (Scanner sc = new Scanner("test", new StringReader("'( bla \n\r) ; sinnfrei\n\r;leer\n{:}"))) {
 			Token t = sc.next();

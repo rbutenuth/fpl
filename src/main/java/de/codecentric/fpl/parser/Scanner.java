@@ -84,13 +84,17 @@ public class Scanner implements Closeable {
 		} else if (ch == '\'') {
 			readChar();
 			return new Token(position, Id.QUOTE);
-		} else if (ch == '-' && !Character.isWhitespace(nextCh) || ch >= '0' && ch <= '9') {
+		} else if (ch == '-' && nextIsNumberCharacter() || ch >= '0' && ch <= '9') {
 			return number(position);
 		} else if (ch == '"') {
 			return string(position);
 		} else {
 			return symbol(position);
 		}
+	}
+	
+	private boolean nextIsNumberCharacter() {
+		return Character.isDigit(nextCh) || nextCh == '.';
 	}
 
 	public void clearCommentLines() {
@@ -163,7 +167,7 @@ public class Scanner implements Closeable {
 	}
 
 	private Token symbol(Position position) throws IOException {
-		final String NON_SYMBOL_CHARS = "\"()[]:";
+		final String NON_SYMBOL_CHARS = "\"()[] {}:";
 		StringBuilder sb = new StringBuilder();
 		while (ch != -1 && !Character.isWhitespace(ch) && NON_SYMBOL_CHARS.indexOf(ch) == -1) {
 			sb.append((char) ch);
