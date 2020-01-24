@@ -82,6 +82,12 @@ public class SimpleHttpTest {
 	}
 
 	@Test
+	public void evaluatePrintExpression() throws IOException {
+		String response = SimpleHttpClient.post(baseUrl, user, password, stream("(print 42)"), false);
+		assertEquals("42" + System.lineSeparator() + "nil", response.trim());
+	}
+
+	@Test
 	public void evaluateNil() throws IOException {
 		String response = SimpleHttpClient.post(baseUrl, user, password, stream("nil"), false);
 		// nil -> null -> terminates the parsing loop, therefore "nothing" returned as

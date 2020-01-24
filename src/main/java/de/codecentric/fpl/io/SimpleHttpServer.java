@@ -4,6 +4,7 @@ import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -146,8 +147,11 @@ public class SimpleHttpServer extends Thread {
 			content = lastBlock(content);
 		}
 		StringResultCallback callback = new StringResultCallback(true);
-		engine.evaluate("http-post", new StringReader(content), callback);
-
+		synchronized (engine) {
+			engine.setSystemOut(new PrintStream(callback.getOutputStream(), true, "UTF-8"));
+			engine.evaluate("http-post", new StringReader(content), callback);
+			engine.setSystemOut(System.out);
+		}
 		sendResponse(he, callback.toString());
 	}
 
