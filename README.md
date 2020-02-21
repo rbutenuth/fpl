@@ -56,6 +56,6 @@ with that symbol. This can be used like Javadoc.
 * [Built-in HTTP server](doc/http-server.md)
 * [Variables, assignments, and scopes](doc/variables-assignments-scopes.md)
 * [Lambdas and Functions](doc/lambdas-and-funcions.md)
-* TODO: Lists and list functions
-* TODO: Objects
+* [Dictionaries](doc/dictionaries.md)
+* [Classes and Objects](doc/classes-and-objects.md)
 * TODO: Java-Wrapper

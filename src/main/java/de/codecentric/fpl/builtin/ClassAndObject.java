@@ -30,7 +30,7 @@ public class ClassAndObject implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("def-class", comment(
-				"Create a new scope and execude the given code within it. Assign the resulting class to \"name\""),
+				"Create a new scope and execute the given code within it. Assign the resulting class to \"name\""),
 				true, "name", "code...") {
 
 			@Override
@@ -78,7 +78,7 @@ public class ClassAndObject implements ScopePopulator {
 
 		});
 
-		scope.define(new AbstractFunction("new-instance", comment("Create an instce of an object."), true,
+		scope.define(new AbstractFunction("new-instance", comment("Create an instance of an object."), true,
 				"key-value-pair...") {
 
 			@Override

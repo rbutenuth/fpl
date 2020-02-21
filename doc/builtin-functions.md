@@ -34,7 +34,7 @@ Add values.
 ### -
 Unary minus or subtract from first.
 ```
-(- op)
+(- ops...)
 ```
 
 ### /
@@ -80,7 +80,7 @@ Assign value in current scope, it must be unassigned before. nil as value not al
 ```
 
 ### def-class
-Create a new scope and execude the given code within it. Assign the resulting class to "name"
+Create a new scope and execute the given code within it. Assign the resulting class to "name"
 ```
 (def-class name code...)
 ```
@@ -297,7 +297,7 @@ Compare for not equal.
 ```
 
 ### new-instance
-Create an instce of an object.
+Create an instance of an object.
 ```
 (new-instance key-value-pair...)
 ```
