@@ -138,9 +138,9 @@ public class Parser implements Closeable {
 	}
 
 	/*
-	 * An object is a sequence of elements, separated by commas. An element is
-	 * either a pair or a value (value can't be symbol, symbol is start of a pair) A
-	 * pair is either a symbol or a string, followed by a colon, followed by a value
+	 * An object is a sequence of key/value pairs.
+	 * A pair is either a symbol or a string, followed by a colon, followed by a value.
+	 * There is no comma between the pairs.
 	 */
 	private FplValue object() throws ParseException, IOException {
 		FplObject obj = new FplObject("dict", nextToken.getPosition());
