@@ -79,7 +79,7 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("java-instance", comment("Create an instance of a Java wrapper object."), //
+		scope.define(new AbstractFunction("java-instance", comment("Create an instance of a Java wrapper object by calling a constructor."), //
 				true, "class...") {
 
 			@Override
@@ -103,7 +103,7 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("java-class", comment("Create an instance of a Java wrapper object."), //
+		scope.define(new AbstractFunction("java-class", comment("Create a handle to call static methods of a Java class."), //
 				false, "class") {
 
 			@Override

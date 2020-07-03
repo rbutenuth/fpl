@@ -89,6 +89,11 @@ public class FplWrapper extends AbstractFunction {
 		return instance;
 	}
 
+	@Override
+	public String toString() {
+		return "FplWrapper(\"" + instance.getClass().getName() + "\")";
+	}
+	
 	/**
 	 * Find the best matching method (or constructor) for the given arguments.
 	 *
