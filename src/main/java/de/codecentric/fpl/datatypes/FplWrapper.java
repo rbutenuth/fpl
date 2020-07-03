@@ -91,7 +91,7 @@ public class FplWrapper extends AbstractFunction {
 
 	@Override
 	public String toString() {
-		return "FplWrapper(\"" + instance.getClass().getName() + "\")";
+		return "FplWrapper(\"" + clazz.getName() + "\")";
 	}
 	
 	/**
