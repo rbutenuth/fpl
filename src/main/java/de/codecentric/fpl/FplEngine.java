@@ -6,7 +6,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.codecentric.fpl.builtin.Arithmetric;
+import de.codecentric.fpl.builtin.Arithmetic;
 import de.codecentric.fpl.builtin.Assignment;
 import de.codecentric.fpl.builtin.ClassAndObject;
 import de.codecentric.fpl.builtin.Comparison;
@@ -46,7 +46,7 @@ public class FplEngine {
 
 		new Print(this).populate(scope);
 		new Assignment().populate(scope);
-		new Arithmetric().populate(scope);
+		new Arithmetic().populate(scope);
 		new Logic().populate(scope);
 		new ListFunctions().populate(scope);
 		new StringFunctions().populate(scope);

@@ -14,16 +14,16 @@ import de.codecentric.fpl.datatypes.AbstractFunction;
 /**
  * Basic arithmetic functions.
  */
-public class Arithmetric implements ScopePopulator {
+public class Arithmetic implements ScopePopulator {
 
 	@Override
 	public void populate(Scope scope) throws ScopeException {
-		scope.define(new ArithmetricFunction(ArithmeticOperator.PLUS));
-		scope.define(new ArithmetricFunction(ArithmeticOperator.MINUS));
-		scope.define(new ArithmetricFunction(ArithmeticOperator.TIMES));
-		scope.define(new ArithmetricFunction(ArithmeticOperator.DIVIDE));
-		scope.define(new ArithmetricFunction(ArithmeticOperator.MODULO));
-		scope.define(new ArithmetricFunction(ArithmeticOperator.EXP));
+		scope.define(new ArithmeticFunction(ArithmeticOperator.PLUS));
+		scope.define(new ArithmeticFunction(ArithmeticOperator.MINUS));
+		scope.define(new ArithmeticFunction(ArithmeticOperator.TIMES));
+		scope.define(new ArithmeticFunction(ArithmeticOperator.DIVIDE));
+		scope.define(new ArithmeticFunction(ArithmeticOperator.MODULO));
+		scope.define(new ArithmeticFunction(ArithmeticOperator.EXP));
 	}
 
 	private enum ArithmeticOperator {
@@ -112,13 +112,13 @@ public class Arithmetric implements ScopePopulator {
 		}
 	}
 
-	private static class ArithmetricFunction extends AbstractFunction {
+	private static class ArithmeticFunction extends AbstractFunction {
 		private final ArithmeticOperator op;
 
 		/**
 		 * @param op Operator: +, -, *, /, %, **
 		 */
-		ArithmetricFunction(ArithmeticOperator op) {
+		ArithmeticFunction(ArithmeticOperator op) {
 			super(op.name, comment(op.comment), true,
 					op == ArithmeticOperator.MINUS ? new String[] { "op" } : new String[] { "op1", "op2", "ops..." });
 			this.op = op;

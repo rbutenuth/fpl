@@ -13,6 +13,7 @@ value (you may know this from C). In FPL nearly everything is true, false is:
 * The empty string
 
 
+
 ### for-each
 Apply a lambda to all list elements, return evaluation result of last lambda.
 ```
@@ -48,36 +49,4 @@ Example:
 The code defines a symbol with value 10. The loop is executed while the value of the symbol `counter` is >= 0. 
 So the the lines from 10 to 0 are printed.  The last `set` assigns the value -1. The function `set` returns the 
 value of the symbol before changing it, 0 in this case. As a consequence, the return value of the loop is 0.
-
-# Type checking functions
-
-### is-double
-Is expression a double?
-```
-(is-double expression)
-```
-
-### is-function
-Is expression a function?
-```
-(is-function expression)
-```
-
-### is-integer
-Is expression an integer?
-```
-(is-integer expression)
-```
-
-### is-list
-Is expression a list?
-```
-(is-list expression)
-```
-
-### is-symbol
-Is expression a symbol?
-```
-(is-symbol expression)
-```
 

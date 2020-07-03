@@ -52,7 +52,7 @@ with that symbol. This can be used like Javadoc.
 
 ## Further Reading...
 
-* [Documentation of built-in functions](doc/builtin-functions.md)
+* [Arithmetic and comparison](doc/arithmetic-comparison.md)
 * [Built-in HTTP server](doc/http-server.md)
 * [Variables, assignments, and scopes](doc/variables-assignments-scopes.md)
 * [Lambdas and Functions](doc/lambdas-and-funcions.md)
