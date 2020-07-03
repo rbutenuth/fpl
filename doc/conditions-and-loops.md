@@ -1,0 +1,70 @@
+# Conditions and Loops
+
+### for-each
+Apply a lambda to all list elements, return evaluation result of last lambda.
+```
+(for-each function list)
+```
+
+### if
+Evaluate condition, if true, return evaluated if-part, otherwise return nil.
+```
+(if condition if-part)
+```
+
+### if-else
+Evaluate condition, if true, return evaluated if-part, otherwise evaluated else-part.
+```
+(if-else condition if-part else-part)
+```
+
+### while
+Execute code while condition returns true. Return value is the value of the last evaluated expression.
+`code` can be one or more expressions. 
+```
+(while condition code...)
+```
+Example:
+```
+(def counter 10)
+(while (ge counter 0) 
+	(println counter)
+	(set counter (- counter 1))
+)
+```
+The code defines a symbol with value 10. The loop is executed while the value of the symbol `counter` is >= 0. 
+So the the lines from 10 to 0 are printed.  The last `set` assigns the value -1. The function `set` returns the 
+value of the symbol before changing it, 0 in this case. As a consequence, the return value of the loop is 0.
+
+# Type checking functions
+
+### is-double
+Is expression a double?
+```
+(is-double expression)
+```
+
+### is-function
+Is expression a function?
+```
+(is-function expression)
+```
+
+### is-integer
+Is expression an integer?
+```
+(is-integer expression)
+```
+
+### is-list
+Is expression a list?
+```
+(is-list expression)
+```
+
+### is-symbol
+Is expression a symbol?
+```
+(is-symbol expression)
+```
+
