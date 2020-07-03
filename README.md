@@ -43,7 +43,7 @@ Don't confuse it with JSON syntax: The keys are not surrounded by `"` and there 
 
 ### Quote
 
-The character `'` in front of a list blocks the evaluation of the list.
+The character `'` in front of a list blocks the evaluation of the list. This is a short cut for the function `qoute`.
 
 ### Comments
 
@@ -56,6 +56,7 @@ with that symbol. This can be used like Javadoc.
 * [Built-in HTTP server](doc/http-server.md)
 * [Variables, assignments, and scopes](doc/variables-assignments-scopes.md)
 * [Lambdas and Functions](doc/lambdas-and-funcions.md)
+* [List functions](doc/lists.md)
 * [Dictionaries](doc/dictionaries.md)
 * [Classes and Objects](doc/classes-and-objects.md)
-* TODO: Java-Wrapper
+* [Java wrapper](doc/java.md)
