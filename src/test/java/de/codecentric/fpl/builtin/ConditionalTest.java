@@ -1,6 +1,7 @@
 package de.codecentric.fpl.builtin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
@@ -31,5 +32,9 @@ public class ConditionalTest extends AbstractFplTest {
         assertNull(evaluate("if", "(if 1 nil)"));
         assertNull(evaluate("else-0", "(if 0 2)"));
         assertNull(evaluate("else-nil", "(if nil 2)"));
+        assertEquals(FplInteger.valueOf(1), evaluate("if", "(if \"foo\" 1)"));
+        assertNull(evaluate("if", "(if \"\" 1)"));
+        assertEquals(FplInteger.valueOf(1), evaluate("if", "(if (+ 1 1) 1)"));
+        assertEquals(FplInteger.valueOf(1), evaluate("if", "(if (java-instance \"java.util.ArrayList\") 1)"));
 	}
 }

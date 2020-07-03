@@ -1,5 +1,18 @@
 # Conditions and Loops
 
+## Introduction
+
+### What is true?
+
+Conditional execution of function must have an understanding of truth. FPL has no explicit boolean
+value (you may know this from C). In FPL nearly everything is true, false is:
+* `nil`
+* An empty list
+* The integer 0
+* The double value 0.0 (be careful, rounding may fool you)
+* The empty string
+
+
 ### for-each
 Apply a lambda to all list elements, return evaluation result of last lambda.
 ```

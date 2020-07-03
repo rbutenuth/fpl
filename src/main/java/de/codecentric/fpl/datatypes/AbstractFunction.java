@@ -268,7 +268,9 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 			return false;
 		}
 		FplValue value = expression.evaluate(scope);
-		if (value instanceof FplList) {
+		if (value == null) {
+			return false;
+		} else  if (value instanceof FplList) {
 			return ((FplList) value).size() > 0;
 		} else if (value instanceof FplInteger) {
 			FplInteger i = (FplInteger) value;
@@ -279,7 +281,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 		} else if (value instanceof FplString) {
 	        return ((FplString)value).getContent().length() > 0;
 		} else {
-			return false;
+			return true;
 		}
 	}
 
