@@ -82,7 +82,7 @@ public class LoopTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testMapNotALambda() throws Exception {
+	public void mapNotALambda() throws Exception {
 		evaluate("input", "(def input '(1 2 3))");
 		evaluate("square", "(put square 4)");
 		try {
@@ -94,7 +94,7 @@ public class LoopTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testMapLambdaThrowsException() throws Exception {
+	public void mapLambdaThrowsException() throws Exception {
 		evaluate("fail", "(def-function square (x) (/ 1 0))");
 		try {
 			evaluate("map", "(map square '(1 2 3 4))");
@@ -129,4 +129,11 @@ public class LoopTest extends AbstractFplTest {
 			assertEquals(FplInteger.valueOf(i), list.get(9 - i));
 		}
 	}
+	
+	@Test
+	public void reduce() throws Exception {
+		FplValue sum = evaluate("reduce", "(reduce (lambda (acc value) (+ acc value)) 0 '(1 2 3 4 5 6))");
+		assertEquals(FplInteger.valueOf(21), sum);
+	}
 }
+
