@@ -16,6 +16,7 @@ import de.codecentric.fpl.builtin.Lambda;
 import de.codecentric.fpl.builtin.ListFunctions;
 import de.codecentric.fpl.builtin.Logic;
 import de.codecentric.fpl.builtin.Loop;
+import de.codecentric.fpl.builtin.Parallel;
 import de.codecentric.fpl.builtin.Print;
 import de.codecentric.fpl.builtin.StringFunctions;
 import de.codecentric.fpl.data.Scope;
@@ -52,6 +53,7 @@ public class FplEngine {
 		new StringFunctions().populate(scope);
 		new Comparison().populate(scope);
 		new Conditional().populate(scope);
+		new Parallel().populate(scope);
 		new Loop().populate(scope);
 		new Lambda().populate(scope);
 		new ClassAndObject().populate(scope);

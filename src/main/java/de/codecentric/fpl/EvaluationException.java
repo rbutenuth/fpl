@@ -26,7 +26,11 @@ public class EvaluationException extends Exception {
 	}
 
 	private static String determineMessage(String message, Throwable cause) {
-		if (cause instanceof InvocationTargetException) {
+		if (cause.getCause() instanceof TunnelException) {
+			return ((TunnelException)cause.getCause()).getTunnelledException().getMessage();
+		} else if (cause instanceof TunnelException) {
+			return ((TunnelException)cause).getTunnelledException().getMessage();
+		} else if (cause instanceof InvocationTargetException) {
 			return cause.getCause().getMessage();
 		} else {
 			if (message == null || message.length() == 0) {
