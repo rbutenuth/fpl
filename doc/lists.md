@@ -19,12 +19,6 @@ Append two lists, return the concatenation of the two lists as one.
 (append list-a list-b)
 ```
 
-### filter
-Filter a list elements. Return a list containing all elements from input list for which func returned true.
-```
-(filter func list)
-```
-
 ### first
 Return first element of the list.
 ```
@@ -35,12 +29,6 @@ Return first element of the list.
 Return last element of the list.
 ```
 (last list)
-```
-
-### for-each
-Apply a lambda to all list elements, return last result
-```
-(for-each function list)
 ```
 
 ### get-element
@@ -91,12 +79,6 @@ returns
 (2 3)
 ```
 
-### map
-Apply a lambda to all list elements and return list with applied elements
-```
-(map function list)
-```
-
 ### remove-first
 Return list without the first element.
 ```
@@ -121,3 +103,34 @@ Return a part from the given list, including start, excluding end (counted from 
 (sub-list list start end)
 ```
 
+## Loops over lists
+
+### for-each
+Apply a lambda to all list elements, return last result
+```
+(for-each function list)
+```
+
+### map
+Apply a funtion to all list elements and return list with applied elements
+```
+(map function list)
+```
+
+### filter
+Filter a list elements. Return a list containing all elements from input list for which `function` returned true.
+```
+(filter function list)
+```
+
+### reduce
+Reduce a list to one value. The function must accept two parameters: 
+`accumulator` and `value`. It must return the \"reduction\" of accumulator and value.
+```
+(reduce funcction accumulator list)
+```
+Example:
+```
+(reduce (lambda (acc value) (+ acc value)) 0 '(1 2 3 4 5 6))
+```
+Computes the sum of the number 1 to 6.
