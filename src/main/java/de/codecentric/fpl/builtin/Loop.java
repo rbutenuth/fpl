@@ -58,8 +58,8 @@ public class Loop implements ScopePopulator {
 				"list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				FplList list = evaluateToList(scope, parameters[1]);
 				FplLambda function = evaluateToLambda(scope, parameters[0]);
+				FplList list = evaluateToList(scope, parameters[1]);
 				try {
 					return FplList.fromIterator(list.lambdaIterator(scope, function), list.size());
 				} catch (TunnelException e) {
