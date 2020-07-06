@@ -75,4 +75,21 @@ public class ParallelTest  extends AbstractFplTest {
 		}
 	}
 
+	@Test
+	public void createFuture() throws Exception {
+		evaluate("create-future", "(put future (create-future (* 6 7)))");
+		FplInteger result = (FplInteger)evaluate("future", "(future)");
+		assertEquals(FplInteger.valueOf(42), result);
+	}
+
+	@Test
+	public void createFutureWithEvaluatonException() throws Exception {
+		evaluate("create-future", "(put future (create-future (/ 42 0)))");
+		try {
+			evaluate("future", "(future)");
+			fail("Exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("java.lang.ArithmeticException: / by zero", e.getMessage());
+		}
+	}
 }

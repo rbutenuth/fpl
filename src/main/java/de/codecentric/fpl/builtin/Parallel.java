@@ -55,7 +55,9 @@ public class Parallel implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("parallel-map", comment(""), false, "function", "list") {
+		scope.define(new AbstractFunction("parallel-map",
+				comment("Apply a function parallel to all list elements and return list with applied elements"), false,
+				"function", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplLambda function = evaluateToLambda(scope, parameters[0]);
@@ -90,7 +92,8 @@ public class Parallel implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("parallel-for-each", comment(""), true, "code...") {
+		scope.define(new AbstractFunction("parallel-for-each",
+				comment("Apply a function parallel to all list elements, return last result"), false, "function", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplLambda function = evaluateToLambda(scope, parameters[0]);
@@ -125,5 +128,35 @@ public class Parallel implements ScopePopulator {
 				return value;
 			}
 		});
+
+		scope.define(new AbstractFunction("create-future", comment(""), false, "code") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+					ForkJoinTask<FplValue> task = pool.submit(new RecursiveTask<FplValue>() {
+						private static final long serialVersionUID = -5037994686972663758L;
+
+						@Override
+						protected FplValue compute() {
+							try {
+								return parameters[0].evaluate(scope);
+							} catch (EvaluationException e) {
+								throw new TunnelException(e);
+							}
+						}
+					});
+				return new AbstractFunction("future", comment("future"), false) {
+
+					@Override
+					protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+						try {
+							return task.get();
+						} catch (InterruptedException | ExecutionException e) {
+							throw new EvaluationException(e);
+						}
+					}
+				};
+			}
+		});
+
 	}
 }
