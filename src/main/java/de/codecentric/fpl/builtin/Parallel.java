@@ -21,7 +21,6 @@ public class Parallel implements ScopePopulator {
 	@Override
 	public void populate(Scope scope) throws ScopeException {
 
-		// TODO: Documentation!
 		scope.define(new AbstractFunction("parallel", comment(""), true, "code...") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
