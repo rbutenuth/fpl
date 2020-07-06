@@ -60,3 +60,4 @@ with that symbol. This can be used like Javadoc.
 * [Dictionaries](doc/dictionaries.md)
 * [Classes and Objects](doc/classes-and-objects.md)
 * [Java wrapper](doc/java.md)
+* [Function for parallelism](doc/parallel.md)

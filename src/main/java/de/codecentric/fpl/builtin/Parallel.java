@@ -21,7 +21,9 @@ public class Parallel implements ScopePopulator {
 	@Override
 	public void populate(Scope scope) throws ScopeException {
 
-		scope.define(new AbstractFunction("parallel", comment(""), true, "code...") {
+		scope.define(new AbstractFunction("parallel",
+				comment("Evaluate the code in parallel and return a list with the evaluation results."), true,
+				"code...") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				@SuppressWarnings("unchecked")
