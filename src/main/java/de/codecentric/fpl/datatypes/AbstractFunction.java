@@ -286,7 +286,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	}
 
 	/**
-	 * Evaluate an expression, convert the result to <code>long</code>. <code>nil</code> evalutes to 0.
+	 * Evaluate an expression, convert the result to <code>long</code>. <code>nil</code> evaluates to 0.
 	 * 
 	 * @param scope
 	 *            Scope used for evaluation.
@@ -307,6 +307,30 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 			return (long)((FplDouble) value).getValue();
 		} else {
 			throw new EvaluationException("Does not evaluate to number: " + expression);
+		}
+	}
+
+	/**
+	 * Evaluate an expression, convert the result to <code>FplString</code>.
+	 * 
+	 * @param scope
+	 *            Scope used for evaluation.
+	 * @param expression
+	 *            Expression to evaluate.
+	 * @return long value of expression.
+	 * @throws EvaluationException
+	 */
+	protected String evaluateToString(Scope scope, FplValue expression) throws EvaluationException {
+		if (expression == null) {
+			return "nil";
+		}
+		FplValue value = expression.evaluate(scope);
+		if (value instanceof FplString) {
+			return ((FplString)value).getContent();
+		} else if (value == null) {
+			return "nil";
+		} else {
+			return value.toString();
 		}
 	}
 

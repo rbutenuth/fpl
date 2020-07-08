@@ -11,7 +11,7 @@ public class StringFunctionsTest extends AbstractFplTest {
 	private static final String nl = System.lineSeparator();
 
 	@Test
-	public void testNoDescription() throws Exception {
+	public void noDescription() throws Exception {
 		// cover constructor
 		new StringFunctions();
 		
@@ -22,7 +22,7 @@ public class StringFunctionsTest extends AbstractFplTest {
 	}
 	
 	@Test
-	public void testDescribe() throws Exception {
+	public void describe() throws Exception {
 		evaluate("function", "" + //
 				"; Multiply three parameters." + nl + //
 				"; A second line without sense." + nl + //
@@ -48,5 +48,23 @@ public class StringFunctionsTest extends AbstractFplTest {
 		for (int i = 0; i < expected.length; i++) {
 			assertEquals(expected[i], split[i]);
 		}
+	}
+	
+	@Test
+	public void joinNoParameters() throws Exception {
+		FplString str = (FplString) evaluate("join", "(join)");
+		assertEquals("", str.getContent());
+	}
+	
+	@Test
+	public void joinOneParameter() throws Exception {
+		FplString str = (FplString) evaluate("join", "(join \"first\")");
+		assertEquals("first", str.getContent());
+	}
+	
+	@Test
+	public void joinWithNil() throws Exception {
+		FplString str = (FplString) evaluate("join", "(join \"first\" nil 42 null-symbol)");
+		assertEquals("firstnil42nil", str.getContent());
 	}
 }

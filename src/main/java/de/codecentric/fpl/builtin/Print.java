@@ -39,8 +39,8 @@ public class Print implements ScopePopulator {
 		@Override
 		public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 			for (int i = 0; i < parameters.length; i++) {
-				FplValue value = parameters[i].evaluate(scope);
-				engine.getSystemOut().print(value);
+				String string = evaluateToString(scope, parameters[i]);
+				engine.getSystemOut().print(string);
 				if (i < parameters.length - 1) {
 					engine.getSystemOut().print(' ');
 				}

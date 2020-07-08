@@ -13,8 +13,8 @@ public class StringFunctions implements ScopePopulator {
 
 	@Override
 	public void populate(Scope scope) throws ScopeException {
-		scope.define(new AbstractFunction("describe", comment("Create a description in markdown format for a function"), false,
-				"expression") {
+		scope.define(new AbstractFunction("describe", comment("Create a description in markdown format for a function"),
+				false, "expression") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplValue value = parameters[0].evaluate(scope);
@@ -38,6 +38,18 @@ public class StringFunctions implements ScopePopulator {
 				} else {
 					return new FplString("There is no documentation for " + value);
 				}
+			}
+		});
+
+		scope.define(new AbstractFunction("join", comment("join strings"), true, "string...") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				StringBuilder result = new StringBuilder();
+				for (FplValue value : parameters) {
+					result.append(evaluateToString(scope, value));
+				}
+				return new FplString(result.toString());
 			}
 		});
 	}
