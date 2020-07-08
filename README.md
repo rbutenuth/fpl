@@ -53,11 +53,12 @@ with that symbol. This can be used like Javadoc.
 ## Further Reading...
 
 * [Arithmetic and comparison](doc/arithmetic-comparison.md)
-* [Built-in HTTP server](doc/http-server.md)
 * [Variables, assignments, and scopes](doc/variables-assignments-scopes.md)
 * [Lambdas and Functions](doc/lambdas-and-funcions.md)
 * [List functions](doc/lists.md)
+* [String functions](doc/strings.md)
 * [Dictionaries](doc/dictionaries.md)
 * [Classes and Objects](doc/classes-and-objects.md)
 * [Java wrapper](doc/java.md)
 * [Functions for parallelism](doc/parallel.md)
+* [Built-in HTTP server](doc/http-server.md)

@@ -13,7 +13,7 @@ public class StringFunctions implements ScopePopulator {
 
 	@Override
 	public void populate(Scope scope) throws ScopeException {
-		scope.define(new AbstractFunction("describe", comment("Create a comment in markdown format for a function"), false,
+		scope.define(new AbstractFunction("describe", comment("Create a description in markdown format for a function"), false,
 				"expression") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {

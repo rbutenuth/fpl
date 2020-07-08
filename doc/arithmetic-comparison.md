@@ -128,8 +128,21 @@ Is expression a list?
 (is-list expression)
 ```
 
+### is-object
+Is expression an object?
+```
+(is-object expression)
+```
+
 ### is-symbol
 Is expression a symbol?
 ```
 (is-symbol expression)
 ```
+
+### is-string
+Is expression a string?
+```
+(is-string expression)
+```
+

@@ -14,7 +14,7 @@ import de.codecentric.fpl.datatypes.FplInteger;
 public class LogicTest extends AbstractFplTest {
 
     @Test
-    public void testNot() throws Exception {
+    public void not() throws Exception {
         assertEquals(1, ((FplInteger)evaluate("not", "(not 0)")).getValue());
         assertEquals(1, ((FplInteger)evaluate("not", "(not 0.0)")).getValue());
         assertEquals(1, ((FplInteger)evaluate("not", "(not nil)")).getValue());
@@ -27,7 +27,7 @@ public class LogicTest extends AbstractFplTest {
     }
 
     @Test
-    public void testAnd() throws Exception {
+    public void and() throws Exception {
         FplInteger i = (FplInteger)evaluate("and", "(and 1 1)");
         assertEquals(1, i.getValue());
         i = (FplInteger)evaluate("and", "(and 1)");
@@ -39,7 +39,7 @@ public class LogicTest extends AbstractFplTest {
     }
 
     @Test
-    public void testOr() throws Exception {
+    public void or() throws Exception {
         FplInteger i = (FplInteger)evaluate("or", "(or 0 1)");
         assertEquals(1, i.getValue());
         i = (FplInteger)evaluate("or", "(or 1 0)");
@@ -53,7 +53,7 @@ public class LogicTest extends AbstractFplTest {
     }
 
     @Test
-    public void testXor() throws Exception {
+    public void xor() throws Exception {
         FplInteger i = (FplInteger)evaluate("xor", "(or 0 1)");
         assertEquals(1, i.getValue());
         i = (FplInteger)evaluate("xor", "(xor 1 0)");
@@ -68,7 +68,7 @@ public class LogicTest extends AbstractFplTest {
     }
 
     @Test
-    public void testIsSymbol() throws Exception {
+    public void isSymbol() throws Exception {
         assertEquals(1, ((FplInteger) evaluate("is-symbol", "(is-symbol 'x)")).getValue());
         assertNull(evaluate("is-symbol", "(is-symbol x)"));
         assertNull(evaluate("is-symbol", "(is-symbol (eval x))"));
@@ -78,25 +78,37 @@ public class LogicTest extends AbstractFplTest {
     }
 
     @Test
-    public void testIsInteger() throws Exception {
+    public void isInteger() throws Exception {
         assertEquals(1, ((FplInteger) evaluate("is-integer", "(is-integer 1)")).getValue());
         assertNull(evaluate("is-integer", "(is-integer 1.5)"));
     }
 
     @Test
-    public void testIsDouble() throws Exception {
+    public void isDouble() throws Exception {
         assertEquals(1, ((FplInteger) evaluate("is-double", "(is-double 1.5)")).getValue());
         assertNull(evaluate("is-double", "(is-double 1)"));
     }
 
     @Test
-    public void testIsList() throws Exception {
+    public void isList() throws Exception {
         assertEquals(1, ((FplInteger) evaluate("is-list", "(is-list (list 1 2 3))")).getValue());
         assertNull(evaluate("is-list", "(is-list 1)"));
     }
 
     @Test
-    public void testIsFunction() throws Exception {
+    public void isObject() throws Exception {
+        assertEquals(1, ((FplInteger) evaluate("is-object", "(is-object { foo : bar })")).getValue());
+        assertNull(evaluate("is-object", "(is-object 1)"));
+    }
+
+    @Test
+    public void isString() throws Exception {
+        assertEquals(1, ((FplInteger) evaluate("is-string", "(is-string \"hello\")")).getValue());
+        assertNull(evaluate("is-string", "(is-string 1)"));
+    }
+
+    @Test
+    public void isFunction() throws Exception {
         assertEquals(1, ((FplInteger) evaluate("is-function", "(is-function is-function)")).getValue());
         assertEquals(1, ((FplInteger) evaluate("is-function", "(is-function (lambda (x) (* x x)))")).getValue());
         assertNull(evaluate("is-function", "(is-function 1)"));

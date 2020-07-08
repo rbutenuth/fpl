@@ -9,6 +9,8 @@ import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
+import de.codecentric.fpl.datatypes.FplObject;
+import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
@@ -52,11 +54,27 @@ public class Logic implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("is-string", comment("Is expression a string?"), false, "expression") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				return parameters[0].evaluate(scope) instanceof FplString ? L_TRUE : null;
+			}
+		});
+
 		scope.define(new AbstractFunction("is-list", comment("Is expression a list?"), false, "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				return parameters[0].evaluate(scope) instanceof FplList ? L_TRUE : null;
+			}
+		});
+
+		scope.define(new AbstractFunction("is-object", comment("Is expression an object?"), false, "expression") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				return parameters[0].evaluate(scope) instanceof FplObject ? L_TRUE : null;
 			}
 		});
 
