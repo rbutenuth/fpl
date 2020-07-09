@@ -1,10 +1,18 @@
 package de.codecentric.fpl.builtin;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
+
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplDouble;
+import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 
@@ -50,6 +58,49 @@ public class StringFunctions implements ScopePopulator {
 					result.append(evaluateToString(scope, value));
 				}
 				return new FplString(result.toString());
+			}
+		});
+
+		scope.define(new AbstractFunction("format-number", comment(
+				"Format a number to string format. The format is a Java DecimalFormat string. The locale a two letter locale."),
+				false, "format", "locale", "number") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				DecimalFormatSymbols symbols = new DecimalFormatSymbols(
+						new Locale(evaluateToString(scope, parameters[1])));
+				NumberFormat format = new DecimalFormat(evaluateToString(scope, parameters[0]), symbols);
+				FplValue number = parameters[2].evaluate(scope);
+				if (number instanceof FplDouble) {
+					return new FplString(format.format(((FplDouble) number).getValue()));
+				} else if (number instanceof FplInteger) {
+					return new FplString(format.format(((FplInteger) number).getValue()));
+				} else {
+					throw new EvaluationException("Not a number: " + number);
+				}
+			}
+		});
+
+		scope.define(new AbstractFunction("parse-number", comment(
+				"Parse a string to a number. The format is a Java NumberFormat string. The locale a two letter locale."),
+				false, "format", "locale", "string") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				DecimalFormatSymbols symbols = new DecimalFormatSymbols(
+						new Locale(evaluateToString(scope, parameters[1])));
+				NumberFormat format = new DecimalFormat(evaluateToString(scope, parameters[0]), symbols);
+				String string = evaluateToString(scope, parameters[2]);
+				try {
+					Number number = format.parse(string);
+					if (number instanceof Double) {
+						return new FplDouble(number.doubleValue());
+					} else {
+						return FplInteger.valueOf(number.longValue());
+					}
+				} catch (ParseException e) {
+					throw new EvaluationException(e.getMessage());
+				}
 			}
 		});
 	}
