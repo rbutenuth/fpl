@@ -115,4 +115,10 @@ public class StringFunctionsTest extends AbstractFplTest {
 			assertEquals("Unparseable number: \"foo\"", e.getMessage());
 		}
 	}
+	
+	@Test
+	public void length() throws Exception {
+		FplInteger i = (FplInteger) evaluate("length", "(length \"1234\")");
+		assertEquals(4L, i.getValue());
+	}
 }

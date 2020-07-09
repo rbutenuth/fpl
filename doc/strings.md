@@ -18,3 +18,9 @@ Parse a string to a number. The format is a Java DecimalFormat string. The local
 (parse-number format locale string)
 ```
 
+### length
+Determine the length (number of characters) of a string
+```
+(length string)
+```
+

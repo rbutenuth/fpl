@@ -103,5 +103,15 @@ public class StringFunctions implements ScopePopulator {
 				}
 			}
 		});
+
+		scope.define(new AbstractFunction("length", comment("Determine the length (number of characters) of a string."),
+				false, "string") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				return FplInteger.valueOf(evaluateToString(scope, parameters[0]).length());
+			}
+		});
+
 	}
 }
