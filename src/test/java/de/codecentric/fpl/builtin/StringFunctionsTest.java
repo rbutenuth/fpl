@@ -10,6 +10,7 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplString;
+import de.codecentric.fpl.datatypes.list.FplList;
 
 public class StringFunctionsTest extends AbstractFplTest {
 	private static final String nl = System.lineSeparator();
@@ -121,4 +122,77 @@ public class StringFunctionsTest extends AbstractFplTest {
 		FplInteger i = (FplInteger) evaluate("length", "(length \"1234\")");
 		assertEquals(4L, i.getValue());
 	}
+	
+	@Test
+	public void charAt() throws Exception {
+		FplInteger i = (FplInteger) evaluate("char-at", "(char-at \"1234\" 1)");
+		assertEquals('2', i.getValue());
+	}
+	
+	@Test
+	public void fromChars() throws Exception {
+		FplString str = (FplString) evaluate("from chars", "(from-chars '(97 98 99))");
+		assertEquals("abc", str.getContent());
+	}
+
+	@Test
+	public void fromCharsWithException() throws Exception {
+		try {
+		evaluate("from chars", "(from-chars '(97 \"huhu\" 99))");
+		fail("missing exception");
+		} catch (EvaluationException e) {
+			assertEquals("Not an integer at list pos 1: \"huhu\"", e.getMessage());
+		}
+	}
+
+	@Test
+	public void indexOf() throws Exception {
+		FplInteger i = (FplInteger) evaluate("index-of", "(index-of \"abcd\" \"b\")");
+		assertEquals(1L, i.getValue());
+	}
+	
+	@Test
+	public void lastIndexOf() throws Exception {
+		FplInteger i = (FplInteger) evaluate("last-index-of", "(last-index-of \"abbd\" \"b\")");
+		assertEquals(2L, i.getValue());
+	}
+	
+	@Test
+	public void substring() throws Exception {
+		FplString str = (FplString) evaluate("substring", "(substring \"abcdef\" 2 4)");
+		assertEquals("cd", str.getContent());
+	}
+	
+	@Test
+	public void matchFound() throws Exception {
+		FplList list = (FplList) evaluate("match", "(match \"abcdefghij\" \"d(ef)g\")");
+		assertEquals(3, ((FplInteger)list.get(0)).getValue());
+		assertEquals("defg", ((FplString)list.get(1)).getContent());
+		assertEquals("ef", ((FplString)list.get(2)).getContent());
+		assertEquals(3, list.size());
+	}
+	
+	@Test
+	public void matchNotFound() throws Exception {
+		FplList list = (FplList) evaluate("match", "(match \"abcdefghij\" \"xx\")");
+		assertEquals(0, list.size());
+	}
+	
+	@Test
+	public void replaceAll() throws Exception {
+		FplString str = (FplString) evaluate("replace-all", "(replace-all \"abcdefcd\" \"cd\" \"xy\")");
+		assertEquals("abxyefxy", str.getContent());
+	}
+	
+	@Test
+	public void toLowerCase() throws Exception {
+		FplString str = (FplString) evaluate("to-lower-case", "(to-lower-case \"ABCDEF\")");
+		assertEquals("abcdef", str.getContent());
+	}
+	
+	@Test
+	public void toUpperCase() throws Exception {
+		FplString str = (FplString) evaluate("to-upper-case", "(to-upper-case \"abcdef\")");
+		assertEquals("ABCDEF", str.getContent());
+	}	
 }
