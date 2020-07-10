@@ -50,6 +50,14 @@ The character `'` in front of a list blocks the evaluation of the list. This is 
 Comments start with `;` and end with the next newline. One or several comment lines before a symbol are collected and associated
 with that symbol. This can be used like Javadoc.
 
+## Command Line Interpreter
+
+When you have build the jar file, you can interpreted one or more files by calling it from the command line, example:
+```
+java -jar fpl.jar file.fpl another.fpl
+```
+Results are written to standard output.
+
 ## Further Reading...
 
 * [Arithmetic and comparison](doc/arithmetic-comparison.md)
