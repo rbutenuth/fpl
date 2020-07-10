@@ -3,9 +3,13 @@ package de.codecentric.fpl;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.After;
 import org.junit.Before;
@@ -72,5 +76,14 @@ public class AbstractFplTest {
 			throw callback.getException();
 		}
 		return callback;
+	}
+	
+	protected File writeToTempFile(String s) throws IOException {
+		File f = File.createTempFile("code", ".fpl");
+		try (FileOutputStream fos = new FileOutputStream(f);
+				OutputStreamWriter os = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
+			os.write(s);
+			return f;
+		}
 	}
 }

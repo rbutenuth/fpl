@@ -12,6 +12,7 @@ import de.codecentric.fpl.builtin.ClassAndObject;
 import de.codecentric.fpl.builtin.Comparison;
 import de.codecentric.fpl.builtin.Conditional;
 import de.codecentric.fpl.builtin.Dictionary;
+import de.codecentric.fpl.builtin.InputOutput;
 import de.codecentric.fpl.builtin.Lambda;
 import de.codecentric.fpl.builtin.ListFunctions;
 import de.codecentric.fpl.builtin.Logic;
@@ -58,6 +59,7 @@ public class FplEngine {
 		new Lambda().populate(scope);
 		new ClassAndObject().populate(scope);
 		new Dictionary().populate(scope);
+		new InputOutput().populate(scope);
 
 		return scope;
 	}

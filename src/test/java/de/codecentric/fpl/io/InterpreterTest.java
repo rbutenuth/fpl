@@ -4,16 +4,19 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
-public class InterpreterTest {
+import de.codecentric.fpl.AbstractFplTest;
+
+public class InterpreterTest extends AbstractFplTest {
 	private static final String sep = System.lineSeparator();
+
+	@Test
+	public void coverConstructor() throws Exception {
+		new Interpreter();
+	}
 
 	@Test
 	public void noArgs() throws Exception {
@@ -49,15 +52,6 @@ public class InterpreterTest {
 			for (File f : files) {
 				f.delete();
 			}
-		}
-	}
-
-	private File writeToTempFile(String s) throws IOException {
-		File f = File.createTempFile("code", ".fpl");
-		try (FileOutputStream fos = new FileOutputStream(f);
-				OutputStreamWriter os = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
-			os.write(s);
-			return f;
 		}
 	}
 }

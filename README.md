@@ -69,4 +69,5 @@ Results are written to standard output.
 * [Classes and Objects](doc/classes-and-objects.md)
 * [Java wrapper](doc/java.md)
 * [Functions for parallelism](doc/parallel.md)
+* [Input/Output functions](doc/io.md)
 * [Built-in HTTP server](doc/http-server.md)
