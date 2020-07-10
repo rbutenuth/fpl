@@ -14,8 +14,8 @@ public class StringResultCallback implements ResultCallback {
 	private StringBuilder builder;
 	private OutputStream out;
 
-	public StringResultCallback(boolean stopOnException) {
-		this.continueOnException = stopOnException;
+	public StringResultCallback(boolean continueOnException) {
+		this.continueOnException = continueOnException;
 		builder = new StringBuilder();
 		out = new CopyOutputStream();
 	}

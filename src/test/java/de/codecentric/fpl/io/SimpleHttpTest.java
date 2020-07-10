@@ -60,7 +60,7 @@ public class SimpleHttpTest {
 	}
 
 	@Test
-	public void testStopServerWithFplFunction() throws IOException {
+	public void stopServerWithFplFunction() throws IOException {
 		InputStream is = getClass().getResourceAsStream("stop-server.fpl");
 		assertNotNull(is);
 		String response = SimpleHttpClient.post(baseUrl, user, password, is, false);
