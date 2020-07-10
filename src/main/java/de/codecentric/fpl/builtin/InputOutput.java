@@ -1,8 +1,11 @@
 package de.codecentric.fpl.builtin;
 
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -14,6 +17,7 @@ import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.ParseException;
@@ -40,7 +44,7 @@ public class InputOutput implements ScopePopulator {
 									new Scanner(uriAsString, new InputStreamReader(is, StandardCharsets.UTF_8)))) {
 						List<FplValue> values = new ArrayList<>();
 						while (p.hasNext()) {
-							
+
 							FplValue value = p.next();
 							if (evaluate) {
 								value = value.evaluate(scope);
@@ -62,6 +66,21 @@ public class InputOutput implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("write-to-file", //
+				comment("Write the content of a string to a file. Use UTF-8 as encoding."), false, "filename", "content") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				String filename = evaluateToString(scope, parameters[0]);
+				String content = evaluateToString(scope, parameters[1]);
+				try (FileOutputStream fos = new FileOutputStream(filename);
+						OutputStreamWriter writer = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
+					writer.write(content);
+					return new FplString(content);
+				} catch (IOException e) {
+					throw new EvaluationException(e);
+				}
+			}
+		});
 	}
 
 }

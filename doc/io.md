@@ -7,8 +7,8 @@ The resource must be UTF-8 encoded.
 (read-resource uri evaluate)
 ```
 
-### x
-x
+### write-to-file
+Write the content of a string to a file. Use UTF-8 as encoding.
 ```
-(x)
+(write-to-file filename content)
 ```

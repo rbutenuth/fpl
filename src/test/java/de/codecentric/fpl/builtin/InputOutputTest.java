@@ -1,15 +1,22 @@
 package de.codecentric.fpl.builtin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
+import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 
@@ -71,6 +78,42 @@ public class InputOutputTest extends AbstractFplTest {
 			StackTraceElement top = e.getStackTrace()[0];
 			assertEquals("htsonstwas://foo.fpl", top.getFileName());
 			assertEquals(0, top.getLineNumber());
+		}
+	}
+
+	@Test
+	public void writeToFile() throws Exception {
+		File file = File.createTempFile("test", ".txt");
+		try {
+			FplString content = (FplString) evaluate("write-to-file", "(write-to-file \"" + file.getAbsolutePath().replace('\\', '/') + "\" \"Hello world!\")");
+			assertEquals("Hello world!", content.getContent());
+			try (InputStream is = new FileInputStream(file);
+			InputStreamReader rd = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+				StringBuilder sb = new StringBuilder();
+				int ch = rd.read();
+				while (ch != -1) {
+					sb.append((char)ch);
+					ch = rd.read();
+				}
+				assertEquals("Hello world!", sb.toString());
+			}
+		} finally {
+			file.delete();
+		}
+	}
+
+	@Test
+	public void writeToFileWithException() throws Exception {
+		File file = File.createTempFile("test", ".txt");
+		file.setWritable(false);
+		try {
+			evaluate("write-to-file", "(write-to-file \"" + file.getAbsolutePath().replace('\\', '/') + "\" \"Hello world!\")");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertTrue(e.getCause() instanceof IOException);
+		} finally {
+			file.setWritable(true);
+			file.delete();
 		}
 	}
 }
