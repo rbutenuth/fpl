@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ForkJoinPool;
 
 import com.sun.net.httpserver.BasicAuthenticator;
 import com.sun.net.httpserver.HttpContext;
@@ -68,6 +69,7 @@ public class SimpleHttpServer extends Thread {
 			throws IOException, EvaluationException, ScopeException {
 		super("http-server-starter");
 		server = HttpServer.create(new InetSocketAddress(port), 0);
+		server.setExecutor(ForkJoinPool.commonPool());
 		HttpContext context = server.createContext("/fpl");
 		context.setAuthenticator(new BasicAuthenticator("FPL Server") {
 			@Override
