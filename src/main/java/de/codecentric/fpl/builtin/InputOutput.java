@@ -20,6 +20,7 @@ import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.FplList;
+import de.codecentric.fpl.io.BomAwareReader;
 import de.codecentric.fpl.parser.ParseException;
 import de.codecentric.fpl.parser.Parser;
 import de.codecentric.fpl.parser.Position;
@@ -41,7 +42,7 @@ public class InputOutput implements ScopePopulator {
 					URI uri = new URI(uriAsString);
 					try (InputStream is = uri.toURL().openStream();
 							Parser p = new Parser(
-									new Scanner(uriAsString, new InputStreamReader(is, StandardCharsets.UTF_8)))) {
+									new Scanner(uriAsString, new BomAwareReader(is)))) {
 						List<FplValue> values = new ArrayList<>();
 						while (p.hasNext()) {
 
