@@ -23,10 +23,10 @@ import de.codecentric.fpl.datatypes.list.FplList;
 public class InputOutputTest extends AbstractFplTest {
 
 	@Test
-	public void loadOnlyOne() throws Exception {
+	public void loadOnlyOneFromFile() throws Exception {
 		File file = writeToTempFile("(* 6 7)");
 		try {
-			FplList list = (FplList) evaluate("load", "(parse-resource \"" + file.toURI() + "\" 0)");
+			FplList list = (FplList) evaluate("parse-resource", "(parse-resource \"" + file.toURI() + "\" 0)");
 			assertEquals(1, list.size());
 			FplList expression = (FplList) list.get(0);
 			assertEquals(3, expression.size());
@@ -39,7 +39,7 @@ public class InputOutputTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void loadAndEvaluateOnlyOne() throws Exception {
+	public void loadAndEvaluateOnlyOneFromFile() throws Exception {
 		File file = writeToTempFile("(* 6 7)");
 		try {
 			FplList list = (FplList) evaluate("evaluate", "(parse-resource \"" + file.toURI() + "\" 1)");
@@ -52,7 +52,7 @@ public class InputOutputTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void syntaxError() throws Exception {
+	public void syntaxErrorFromFile() throws Exception {
 		// missing closing parenthesis
 		File file = writeToTempFile("(* 6 7");
 		try {
@@ -65,6 +65,39 @@ public class InputOutputTest extends AbstractFplTest {
 			assertEquals(1, top.getLineNumber());
 		} finally {
 			file.delete();
+		}
+	}
+
+	@Test
+	public void loadOnlyOne() throws Exception {
+		FplList list = (FplList) evaluate("parse-string", "(parse-string \"(* 6 7)\" 0)");
+		assertEquals(1, list.size());
+		FplList expression = (FplList) list.get(0);
+		assertEquals(3, expression.size());
+		assertEquals(new Symbol("*"), expression.get(0));
+		assertEquals(6L, ((FplInteger) expression.get(1)).getValue());
+		assertEquals(7L, ((FplInteger) expression.get(2)).getValue());
+	}
+
+	@Test
+	public void loadAndEvaluateOnlyOne() throws Exception {
+		FplList list = (FplList) evaluate("evaluate", "(parse-string \"(* 6 7)\" 1)");
+		assertEquals(1, list.size());
+		FplInteger value = (FplInteger) list.get(0);
+		assertEquals(42L, ((FplInteger) value).getValue());
+	}
+
+	@Test
+	public void syntaxError() throws Exception {
+		try {
+			// missing closing parenthesis
+			evaluate("evaluate", "(parse-string \"(* 6 7\" 1)");
+			fail("missing exception");
+		} catch (EvaluationException e) {
+			assertEquals("Unexpected end of source in list", e.getMessage());
+			StackTraceElement top = e.getStackTrace()[0];
+			assertEquals("(* 6 7", top.getFileName());
+			assertEquals(1, top.getLineNumber());
 		}
 	}
 

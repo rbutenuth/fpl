@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -43,7 +44,6 @@ public class InputOutput implements ScopePopulator {
 									new Scanner(uriAsString, new BomAwareReader(is)))) {
 						List<FplValue> values = new ArrayList<>();
 						while (p.hasNext()) {
-
 							FplValue value = p.next();
 							if (evaluate) {
 								value = value.evaluate(scope);
@@ -54,12 +54,39 @@ public class InputOutput implements ScopePopulator {
 					}
 				} catch (IOException | URISyntaxException e) {
 					EvaluationException ee = new EvaluationException(e.getMessage(), e);
-					ee.add(new StackTraceElement("InputOutput", "read-resource", uriAsString, 0));
+					ee.add(new StackTraceElement("InputOutput", "parse-resource", uriAsString, 0));
 					throw ee;
 				} catch (ParseException e) {
 					EvaluationException ee = new EvaluationException(e.getMessage(), e);
 					Position pos = e.getPosition();
-					ee.add(new StackTraceElement("InputOutput", "read-resource", uriAsString, pos.getLine()));
+					ee.add(new StackTraceElement("InputOutput", "parse-resource", uriAsString, pos.getLine()));
+					throw ee;
+				}
+			}
+		});
+
+		scope.define(new AbstractFunction("parse-string", //
+				comment("Parse or evaluate all expressions within the string. Return a list which contains the results."),
+				false, "string", "evaluate") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				String str = evaluateToString(scope, parameters[0]);
+				boolean evaluate = evaluateToBoolean(scope, parameters[1]);
+				try (Parser p = new Parser(new Scanner(str, new StringReader(str)))) {
+						List<FplValue> values = new ArrayList<>();
+						while (p.hasNext()) {
+							FplValue value = p.next();
+							if (evaluate) {
+								value = value.evaluate(scope);
+							}
+							values.add(value);
+						}
+						return FplList.fromValues(values);
+				} catch (ParseException | IOException e) {
+					EvaluationException ee = new EvaluationException(e.getMessage(), e);
+					// the cast does not have to be protected, the IOException will never be thrown when reading from a String
+					Position pos = ((ParseException)e).getPosition();
+					ee.add(new StackTraceElement("InputOutput", "parse-string", str, pos.getLine()));
 					throw ee;
 				}
 			}
