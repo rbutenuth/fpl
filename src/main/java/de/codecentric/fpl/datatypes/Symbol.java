@@ -53,24 +53,20 @@ public class Symbol implements Named, PositionHolder {
     }
     
     /**
-     * @see FplValue.data.LObject#evaluateResource(lang.data.Scope)
+     * Look up a symbol in given scope, follow chain of scopes.
+     * @param scope Where we start with lookup.
+     * @return value of the symbol (may be null)
      */
     @Override
     public FplValue evaluate(Scope scope) throws EvaluationException {
         return scope.get(name);
     }
 
-    /**
-     * @see java.lang.Object#hashCode()
-     */
     @Override
     public int hashCode() {
         return name.hashCode();
     }
 
-    /**
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -89,9 +85,6 @@ public class Symbol implements Named, PositionHolder {
         return true;
     }
 
-    /**
-     * @see java.lang.Object#toString()
-     */
     @Override
     public String toString() {
         return name;

@@ -81,3 +81,9 @@ Convert the string to upper case.
 ```
 (to-upper-case string)
 ```
+
+### symbol
+Create a symbol.
+```
+(symbol string)
+```

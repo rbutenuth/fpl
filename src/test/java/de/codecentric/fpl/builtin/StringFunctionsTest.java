@@ -10,6 +10,7 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplString;
+import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 public class StringFunctionsTest extends AbstractFplTest {
@@ -194,5 +195,11 @@ public class StringFunctionsTest extends AbstractFplTest {
 	public void toUpperCase() throws Exception {
 		FplString str = (FplString) evaluate("to-upper-case", "(to-upper-case \"abcdef\")");
 		assertEquals("ABCDEF", str.getContent());
+	}	
+	
+	@Test
+	public void symbol() throws Exception {
+		Symbol s = (Symbol) evaluate("symbol", "(symbol \"abcdef\")");
+		assertEquals("abcdef", s.getName());
 	}	
 }

@@ -17,6 +17,7 @@ import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 public class StringFunctions implements ScopePopulator {
@@ -116,18 +117,19 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("char-at", comment("Return the code (integer) of the character at position index."),
-				false, "string", "index") {
-			
+		scope.define(new AbstractFunction("char-at",
+				comment("Return the code (integer) of the character at position index."), false, "string", "index") {
+
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				return FplInteger.valueOf(evaluateToString(scope, parameters[0]).charAt((int)evaluateToLong(scope, parameters[1])));
+				return FplInteger.valueOf(
+						evaluateToString(scope, parameters[0]).charAt((int) evaluateToLong(scope, parameters[1])));
 			}
 		});
-		
+
 		scope.define(new AbstractFunction("from-chars", comment("Build a string from a list of characters (integers)."),
 				false, "list-of-chars") {
-			
+
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplList list = evaluateToList(scope, parameters[0]);
@@ -135,7 +137,7 @@ public class StringFunctions implements ScopePopulator {
 				int i = 0;
 				for (FplValue value : list) {
 					if (value instanceof FplInteger) {
-						chars[i++] = (char)((FplInteger)value).getValue();
+						chars[i++] = (char) ((FplInteger) value).getValue();
 					} else {
 						throw new EvaluationException("Not an integer at list pos " + i + ": " + value);
 					}
@@ -143,42 +145,48 @@ public class StringFunctions implements ScopePopulator {
 				return new FplString(new String(chars));
 			}
 		});
-		
-		scope.define(new AbstractFunction("index-of", comment("Determine the first index of pattern in a string. Return -1 for not found."),
-				false, "string", "pattern") {
-			
+
+		scope.define(new AbstractFunction("index-of",
+				comment("Determine the first index of pattern in a string. Return -1 for not found."), false, "string",
+				"pattern") {
+
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				return FplInteger.valueOf(evaluateToString(scope, parameters[0]).indexOf(evaluateToString(scope, parameters[1])));
+				return FplInteger.valueOf(
+						evaluateToString(scope, parameters[0]).indexOf(evaluateToString(scope, parameters[1])));
 			}
 		});
-		
-		scope.define(new AbstractFunction("last-index-of", comment("Determine the last index of pattern in a string. Return -1 for not found."),
-				false, "string", "pattern") {
-			
+
+		scope.define(new AbstractFunction("last-index-of",
+				comment("Determine the last index of pattern in a string. Return -1 for not found."), false, "string",
+				"pattern") {
+
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				return FplInteger.valueOf(evaluateToString(scope, parameters[0]).lastIndexOf(evaluateToString(scope, parameters[1])));
+				return FplInteger.valueOf(
+						evaluateToString(scope, parameters[0]).lastIndexOf(evaluateToString(scope, parameters[1])));
 			}
 		});
-		
-		scope.define(new AbstractFunction("substring", comment("Returns a substring starting at begin-index (including) and ending at end-index (excluding)."),
-				false, "string", "begin-index",  "end-index") {
-			
+
+		scope.define(new AbstractFunction("substring",
+				comment("Returns a substring starting at begin-index (including) and ending at end-index (excluding)."),
+				false, "string", "begin-index", "end-index") {
+
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				int beginIndex = (int)evaluateToLong(scope, parameters[1]);
-				int endIndex = (int)evaluateToLong(scope, parameters[2]);
+				int beginIndex = (int) evaluateToLong(scope, parameters[1]);
+				int endIndex = (int) evaluateToLong(scope, parameters[2]);
 				return new FplString(evaluateToString(scope, parameters[0]).substring(beginIndex, endIndex));
 			}
 		});
-		
-		scope.define(new AbstractFunction("match", comment("Matches a string against a regular expression. Returns a list where the first element "
-				+"contains the position of the match, followed by the matches. The second entry in the list" + 
-				"is the complete match, followed by the partial matches (marked by parentheses in the pattern). Empty list" + 
-				"if no match found."),
+
+		scope.define(new AbstractFunction("match",
+				comment("Matches a string against a regular expression. Returns a list where the first element "
+						+ "contains the position of the match, followed by the matches. The second entry in the list"
+						+ "is the complete match, followed by the partial matches (marked by parentheses in the pattern). Empty list"
+						+ "if no match found."),
 				false, "string", "regex") {
-			
+
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				Pattern pattern = Pattern.compile(evaluateToString(scope, parameters[1]));
@@ -196,7 +204,7 @@ public class StringFunctions implements ScopePopulator {
 				}
 			}
 		});
-		
+
 		scope.define(new AbstractFunction("replace-all", comment(
 				"Replaces each substring of this string that matches the given regex with the given replacement. "
 						+ "(See String.replaceAll for more details.)"),
@@ -210,7 +218,7 @@ public class StringFunctions implements ScopePopulator {
 				return new FplString(str.replaceAll(regex, replacement));
 			}
 		});
-		
+
 		scope.define(
 				new AbstractFunction("to-lower-case", comment("Convert the string to lower case."), false, "string") {
 
@@ -228,5 +236,13 @@ public class StringFunctions implements ScopePopulator {
 						return new FplString(evaluateToString(scope, parameters[0]).toUpperCase());
 					}
 				});
+
+		scope.define(new AbstractFunction("symbol", comment("Create a symbol."), false, "string") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				return new Symbol(evaluateToString(scope, parameters[0]));
+			}
+		});
 	}
 }
