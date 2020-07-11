@@ -201,5 +201,11 @@ public class StringFunctionsTest extends AbstractFplTest {
 	public void symbol() throws Exception {
 		Symbol s = (Symbol) evaluate("symbol", "(symbol \"abcdef\")");
 		assertEquals("abcdef", s.getName());
+	}
+	
+	@Test
+	public void nameOfSymbol() throws Exception {
+		FplString s = (FplString) evaluate("name-of-symbol", "(name-of-symbol 'abcdef)");
+		assertEquals("abcdef", s.getContent());
 	}	
 }

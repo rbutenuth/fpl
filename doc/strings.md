@@ -87,3 +87,9 @@ Create a symbol.
 ```
 (symbol string)
 ```
+
+### name-of-symbol
+Determine the name of a symbol.
+```
+(name-of-symbol string)
+```

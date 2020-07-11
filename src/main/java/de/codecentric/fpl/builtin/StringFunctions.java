@@ -244,5 +244,13 @@ public class StringFunctions implements ScopePopulator {
 				return new Symbol(evaluateToString(scope, parameters[0]));
 			}
 		});
+		
+		scope.define(new AbstractFunction("name-of-symbol", comment("Determine the name of a symbol."), false, "symbol") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				return new FplString(((Symbol)parameters[0].evaluate(scope)).getName());
+			}
+		});
 	}
 }
