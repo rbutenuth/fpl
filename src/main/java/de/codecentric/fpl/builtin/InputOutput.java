@@ -28,7 +28,7 @@ public class InputOutput implements ScopePopulator {
 	@Override
 	public void populate(Scope scope) throws ScopeException {
 
-		scope.define(new AbstractFunction("read-resource", //
+		scope.define(new AbstractFunction("parse-resource", //
 				comment("Read or evaluate all expressions within the resource given by the URI. Return a list which contains the results. "
 						+ "The resource must be UTF-8 encoded."),
 				false, "uri", "evaluate") {
@@ -65,7 +65,7 @@ public class InputOutput implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("write-to-file", //
+		scope.define(new AbstractFunction("write-string-to-file", //
 				comment("Write the content of a string to a file. Use UTF-8 as encoding."), false, "filename", "content") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {

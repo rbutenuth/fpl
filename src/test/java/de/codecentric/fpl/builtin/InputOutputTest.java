@@ -26,7 +26,7 @@ public class InputOutputTest extends AbstractFplTest {
 	public void loadOnlyOne() throws Exception {
 		File file = writeToTempFile("(* 6 7)");
 		try {
-			FplList list = (FplList) evaluate("load", "(read-resource \"" + file.toURI() + "\" 0)");
+			FplList list = (FplList) evaluate("load", "(parse-resource \"" + file.toURI() + "\" 0)");
 			assertEquals(1, list.size());
 			FplList expression = (FplList) list.get(0);
 			assertEquals(3, expression.size());
@@ -42,7 +42,7 @@ public class InputOutputTest extends AbstractFplTest {
 	public void loadAndEvaluateOnlyOne() throws Exception {
 		File file = writeToTempFile("(* 6 7)");
 		try {
-			FplList list = (FplList) evaluate("evaluate", "(read-resource \"" + file.toURI() + "\" 1)");
+			FplList list = (FplList) evaluate("evaluate", "(parse-resource \"" + file.toURI() + "\" 1)");
 			assertEquals(1, list.size());
 			FplInteger value = (FplInteger) list.get(0);
 			assertEquals(42L, ((FplInteger) value).getValue());
@@ -56,7 +56,7 @@ public class InputOutputTest extends AbstractFplTest {
 		// missing closing parenthesis
 		File file = writeToTempFile("(* 6 7");
 		try {
-			evaluate("evaluate", "(read-resource \"" + file.toURI() + "\" 1)");
+			evaluate("evaluate", "(parse-resource \"" + file.toURI() + "\" 1)");
 			fail("missing exception");
 		} catch (EvaluationException e) {
 			assertEquals("Unexpected end of source in list", e.getMessage());
@@ -71,7 +71,7 @@ public class InputOutputTest extends AbstractFplTest {
 	@Test
 	public void badURI() throws Exception {
 		try {
-			evaluate("evaluate", "(read-resource \"htsonstwas://foo.fpl\" 1)");
+			evaluate("evaluate", "(parse-resource \"htsonstwas://foo.fpl\" 1)");
 			fail("missing exception");
 		} catch (EvaluationException e) {
 			assertEquals("unknown protocol: htsonstwas", e.getMessage());
@@ -85,14 +85,15 @@ public class InputOutputTest extends AbstractFplTest {
 	public void writeToFile() throws Exception {
 		File file = File.createTempFile("test", ".txt");
 		try {
-			FplString content = (FplString) evaluate("write-to-file", "(write-to-file \"" + file.getAbsolutePath().replace('\\', '/') + "\" \"Hello world!\")");
+			FplString content = (FplString) evaluate("write-string-to-file",
+					"(write-string-to-file \"" + file.getAbsolutePath().replace('\\', '/') + "\" \"Hello world!\")");
 			assertEquals("Hello world!", content.getContent());
 			try (InputStream is = new FileInputStream(file);
-			InputStreamReader rd = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+					InputStreamReader rd = new InputStreamReader(is, StandardCharsets.UTF_8)) {
 				StringBuilder sb = new StringBuilder();
 				int ch = rd.read();
 				while (ch != -1) {
-					sb.append((char)ch);
+					sb.append((char) ch);
 					ch = rd.read();
 				}
 				assertEquals("Hello world!", sb.toString());
@@ -107,7 +108,8 @@ public class InputOutputTest extends AbstractFplTest {
 		File file = File.createTempFile("test", ".txt");
 		file.setWritable(false);
 		try {
-			evaluate("write-to-file", "(write-to-file \"" + file.getAbsolutePath().replace('\\', '/') + "\" \"Hello world!\")");
+			evaluate("write-string-to-file",
+					"(write-string-to-file \"" + file.getAbsolutePath().replace('\\', '/') + "\" \"Hello world!\")");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertTrue(e.getCause() instanceof IOException);
