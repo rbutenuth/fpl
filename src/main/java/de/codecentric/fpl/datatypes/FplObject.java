@@ -85,11 +85,7 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 			sb.append(NL).append("    ");
 			sb.append(entry.getKey()).append(": ");
 			FplValue v = entry.getValue();
-			if (v instanceof FplList || v instanceof FplObject) {
-				sb.append("<").append(v.typeName()).append(">");
-			} else {
-				sb.append(v.toString());
-			}
+			sb.append(v.toString());
 		}
 		sb.append(NL).append("}").append(NL);
 

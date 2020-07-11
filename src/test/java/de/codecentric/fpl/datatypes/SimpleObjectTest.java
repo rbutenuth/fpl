@@ -50,7 +50,8 @@ public class SimpleObjectTest {
 	public void nestedToString() throws Exception {
 		object.put("foo", new FplString("bar"));
 		object.put("one", new FplObject("nested"));
-		assertEquals("{" + NL + "    foo: \"bar\"" + NL + "    one: <dictionary>" + NL + "}" + NL, object.toString());
+		assertEquals("{" + NL + "    foo: \"bar\"" + NL + "    one: {" + NL + "}" + NL + NL + "}" + NL,
+				object.toString());
 	}
 
 	@Test

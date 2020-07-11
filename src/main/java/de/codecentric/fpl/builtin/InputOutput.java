@@ -92,6 +92,19 @@ public class InputOutput implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("to-string", //
+				comment("Write the content of a string to a file. Use UTF-8 as encoding."), false, "expression") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				if (parameters[0] == null) {
+					return new FplString("nil");
+				} else {
+					FplValue value = parameters[0].evaluate(scope);
+					return new FplString(value == null ? "nil" : value.toString());
+				}
+			}
+		});
+		
 		scope.define(new AbstractFunction("write-string-to-file", //
 				comment("Write the content of a string to a file. Use UTF-8 as encoding."), false, "filename", "content") {
 			@Override

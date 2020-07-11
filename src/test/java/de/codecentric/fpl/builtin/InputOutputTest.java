@@ -137,6 +137,24 @@ public class InputOutputTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void toStringOfNil() throws Exception {
+		FplString str = (FplString) evaluate("nil", "(to-string nil)");
+		assertEquals("nil", str.getContent());
+	}
+	
+	@Test
+	public void toStringOfValueNil() throws Exception {
+		FplString str = (FplString) evaluate("nil", "(to-string symbol-with-value-nil)");
+		assertEquals("nil", str.getContent());
+	}
+	
+	@Test
+	public void toStringOfSymbol() throws Exception {
+		FplString str = (FplString) evaluate("nil", "(to-string 'some-symbol)");
+		assertEquals("some-symbol", str.getContent());
+	}
+	
+	@Test
 	public void writeToFileWithException() throws Exception {
 		File file = File.createTempFile("test", ".txt");
 		file.setWritable(false);
