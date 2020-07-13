@@ -27,7 +27,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SimpleHttpTest {
+public class ExecuteViaHttpTest {
 	private final static String baseUrl = "http://localhost:9099/fpl";
 	private final static String user = "fred";
 	private final static String nl = System.lineSeparator();
@@ -63,7 +63,7 @@ public class SimpleHttpTest {
 	public void stopServerWithFplFunction() throws IOException {
 		InputStream is = getClass().getResourceAsStream("stop-server.fpl");
 		assertNotNull(is);
-		String response = SimpleHttpClient.post(baseUrl, user, password, is, false);
+		String response = ExecuteViaHttp.post(baseUrl, user, password, is, false);
 		assertNotNull(response);
 		assertEquals("\"Stopping HTTP server...\"", response.trim());
 		stopped = true;
@@ -77,19 +77,19 @@ public class SimpleHttpTest {
 
 	@Test
 	public void evaluateOneExpression() throws IOException {
-		String response = SimpleHttpClient.post(baseUrl, user, password, stream("(+ 3 4)"), false);
+		String response = ExecuteViaHttp.post(baseUrl, user, password, stream("(+ 3 4)"), false);
 		assertEquals("7", response.trim());
 	}
 
 	@Test
 	public void evaluatePrintExpression() throws IOException {
-		String response = SimpleHttpClient.post(baseUrl, user, password, stream("(print 42)"), false);
+		String response = ExecuteViaHttp.post(baseUrl, user, password, stream("(print 42)"), false);
 		assertEquals("42" + System.lineSeparator() + "nil", response.trim());
 	}
 
 	@Test
 	public void evaluateNil() throws IOException {
-		String response = SimpleHttpClient.post(baseUrl, user, password, stream("nil"), false);
+		String response = ExecuteViaHttp.post(baseUrl, user, password, stream("nil"), false);
 		// nil -> null -> terminates the parsing loop, therefore "nothing" returned as
 		// result.
 		assertEquals("nil", response.trim());
@@ -109,7 +109,7 @@ public class SimpleHttpTest {
 			args[1] = user;
 			args[2] = password;
 			args[3] = file.getAbsolutePath();
-			SimpleHttpClient.main(args);
+			ExecuteViaHttp.main(args);
 			// nil -> null -> terminates the parsing loop, therefore "nothing" returned as
 			// result.
 			file.delete();
@@ -133,7 +133,7 @@ public class SimpleHttpTest {
 			args[2] = password;
 			args[3] = file.getAbsolutePath();
 			args[4] = "foobar";
-			SimpleHttpClient.main(args);
+			ExecuteViaHttp.main(args);
 			// nil -> null -> terminates the parsing loop, therefore "nothing" returned as
 			// result.
 			file.delete();
@@ -157,7 +157,7 @@ public class SimpleHttpTest {
 			args[2] = password;
 			args[3] = file.getAbsolutePath();
 			args[4] = "lastBlockOnly";
-			SimpleHttpClient.main(args);
+			ExecuteViaHttp.main(args);
 			// nil -> null -> terminates the parsing loop, therefore "nothing" returned as
 			// result.
 			file.delete();
@@ -181,7 +181,7 @@ public class SimpleHttpTest {
 			args[2] = password;
 			args[3] = file.getAbsolutePath();
 			args[4] = "lastBlockOnly";
-			SimpleHttpClient.main(args);
+			ExecuteViaHttp.main(args);
 			file.delete();
 		} finally {
 			System.setOut(originalOut);
@@ -190,13 +190,13 @@ public class SimpleHttpTest {
 
 	@Test
 	public void twoExpressionsReturnTwoResults() throws IOException {
-		String response = SimpleHttpClient.post(baseUrl, user, password, stream("(+ 3 4) (* 6 7)"), false);
+		String response = ExecuteViaHttp.post(baseUrl, user, password, stream("(+ 3 4) (* 6 7)"), false);
 		assertEquals("7" + System.lineSeparator() + System.lineSeparator() + "42", response.trim());
 	}
 
 	@Test
 	public void oneExpressionFollowedByFailureGivesResultAndFailure() throws IOException {
-		String response = SimpleHttpClient.post(baseUrl, user, password, stream("(+ 3 4)\n(/ 3 0)"), false);
+		String response = ExecuteViaHttp.post(baseUrl, user, password, stream("(+ 3 4)\n(/ 3 0)"), false);
 		assertEquals("7" + nl + nl + "java.lang.ArithmeticException: / by zero" + nl + "    at /(<unknown>:1)", response.trim());
 	}
 
@@ -206,7 +206,7 @@ public class SimpleHttpTest {
 				"(def-function function-b (a) (function-c a))" + nl + //
 				"(def-function function-c (a) (/ 1 a))" + nl + //
 				"(function-a 0)";
-		String response = SimpleHttpClient.post(baseUrl, user, password, stream(input), false);
+		String response = ExecuteViaHttp.post(baseUrl, user, password, stream(input), false);
 		assertEquals("(lambda (a) (function-b a))" + nl + nl + //
 				"(lambda (a) (function-c a))" + nl + nl + //
 				"(lambda (a) (/ 1 a))" + nl + nl + //
@@ -220,26 +220,26 @@ public class SimpleHttpTest {
 
 	@Test
 	public void checkParseException() throws IOException {
-		String response = SimpleHttpClient.post(baseUrl, user, password, stream("(+ 3 4"), false);
+		String response = ExecuteViaHttp.post(baseUrl, user, password, stream("(+ 3 4"), false);
 		assertEquals("Unexpected end of source in list", response.trim());
 	}
 
 	@Test
 	public void oneExpressionExecutedLastBlockOnly() throws IOException {
 		String str = "(* 6 7)\r\n\r\n(+ 3 4)";
-		String response = SimpleHttpClient.post(baseUrl + "?lastBlockOnly", user, password, stream(str), false);
+		String response = ExecuteViaHttp.post(baseUrl + "?lastBlockOnly", user, password, stream(str), false);
 		assertEquals("7", response.trim());
 	}
 
 	@Test
 	public void badUserShouldReturn401() throws IOException {
-		String response = SimpleHttpClient.post(baseUrl, user + "foo", password, stream("(+ 3 4) (* 6 7)"), false);
+		String response = ExecuteViaHttp.post(baseUrl, user + "foo", password, stream("(+ 3 4) (* 6 7)"), false);
 		assertEquals("Failure: 401", response.trim());
 	}
 
 	@Test
 	public void wrongPasswordShouldReturn401() throws IOException {
-		String response = SimpleHttpClient.post(baseUrl, user, password + "foo", stream("(+ 3 4) (* 6 7)"), false);
+		String response = ExecuteViaHttp.post(baseUrl, user, password + "foo", stream("(+ 3 4) (* 6 7)"), false);
 		assertEquals("Failure: 401", response.trim());
 	}
 	
@@ -297,7 +297,7 @@ public class SimpleHttpTest {
 	
 	@Test
 	public void justInstantiateClientToCoverConstructor() {
-		new SimpleHttpClient();
+		new ExecuteViaHttp();
 	}
 
 	@Test
