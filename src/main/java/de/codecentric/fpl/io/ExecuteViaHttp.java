@@ -1,13 +1,9 @@
 package de.codecentric.fpl.io;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Base64;
 
 public class ExecuteViaHttp {
 
@@ -33,39 +29,28 @@ public class ExecuteViaHttp {
 
 	public static String post(String baseUrl, String user, String password, InputStream fis, boolean lastBlockOnly)
 			throws IOException {
+		HttpRequest req = new HttpRequest();
 		if (lastBlockOnly) {
-			baseUrl = baseUrl + "?lastBlockOnly";
+			req.addParam("lastBlockOnly", "");
 		}
 
-		URL url = new URL(baseUrl);
-		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-		byte[] bytes = (user + ":" + password).getBytes();
-		String basicAuth = "Basic " + Base64.getEncoder().encodeToString(bytes);
-		con.setRequestProperty("Authorization", basicAuth);
-		con.setRequestMethod("POST");
-		con.setDoOutput(true);
-		try (OutputStream os = con.getOutputStream()) {
+		req.setBaseUri(baseUrl);
+		req.setBasicAuth(user, password);
+		req.setMethod("POST");
+		try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
 			int b = fis.read();
 			while (b != -1) {
 				os.write(b);
 				b = fis.read();
 			}
+			req.setBody(os.toByteArray());
 		} finally {
 			fis.close();
 		}
-
-		int responseCode = con.getResponseCode();
-		if (responseCode != 200) {
-			return "Failure: " + responseCode;
+		HttpResponse res = new HttpClient().execute(req);
+		if (res.getStatusCode() != 200) {
+			return "Failure: " + res.getStatusCode() + ", reason: " + res.getStatusMessage();
 		}
-		StringBuilder response = new StringBuilder();
-		try (Reader rd = new BomAwareReader(con.getInputStream())) {
-			int ch = rd.read();
-			while (ch != -1) {
-				response.append((char) ch);
-				ch = rd.read();
-			}
-		}
-		return response.toString();
+		return res.getBodyAsString("UTF-8");
 	}
 }

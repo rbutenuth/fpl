@@ -70,6 +70,27 @@ public class ExecuteViaHttpTest {
 	}
 
 	@Test
+	public void getWithoutAuthGives401() throws IOException {
+		HttpRequest req = new HttpRequest();
+		req.setBaseUri(baseUrl + "/terminate");
+		new HttpClient().execute(req);
+		HttpResponse res = new HttpClient().execute(req);
+		assertEquals(401, res.getStatusCode());
+	}
+
+	@Test
+	public void stopServerWithGet() throws IOException {
+		HttpRequest req = new HttpRequest();
+		req.setBaseUri(baseUrl + "/terminate");
+		req.setBasicAuth(user, password);
+		req.addHeader("someKey", "someValue");
+		new HttpClient().execute(req);
+		HttpResponse res = new HttpClient().execute(req);
+		assertEquals(200, res.getStatusCode());
+		stopped = true;
+	}
+
+	@Test
 	public void emptyGetReturnsError() throws Exception {
 		String response = get("");
 		assertEquals("Post your FPL expressions to this URL for evaluation.", response);
@@ -234,13 +255,13 @@ public class ExecuteViaHttpTest {
 	@Test
 	public void badUserShouldReturn401() throws IOException {
 		String response = ExecuteViaHttp.post(baseUrl, user + "foo", password, stream("(+ 3 4) (* 6 7)"), false);
-		assertEquals("Failure: 401", response.trim());
+		assertEquals("Failure: 401, reason: Unauthorized", response.trim());
 	}
 
 	@Test
 	public void wrongPasswordShouldReturn401() throws IOException {
 		String response = ExecuteViaHttp.post(baseUrl, user, password + "foo", stream("(+ 3 4) (* 6 7)"), false);
-		assertEquals("Failure: 401", response.trim());
+		assertEquals("Failure: 401, reason: Unauthorized", response.trim());
 	}
 	
 	@Test
