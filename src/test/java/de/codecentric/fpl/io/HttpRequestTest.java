@@ -21,11 +21,23 @@ public class HttpRequestTest {
 	}
 
 	@Test
-	public void userAndPassword() {
+	public void setUserAndPassword() {
 		req.setBasicAuth("max", "secret");
 		assertEquals("Basic bWF4OnNlY3JldA==", req.getBasicAuth());
+	}
+	
+	@Test
+	public void setBasicAuth() {
+		req.setBasicAuth("Basic bWF4OnNlY3JldA==");
 		assertEquals("max", req.getUser());
 		assertEquals("secret", req.getPassword());
+	}
+	
+	@Test
+	public void setBasicAuthMissingPrefix() {
+		req.setBasicAuth("bWF4OnNlY3JldA==");
+		assertNull(req.getUser());
+		assertNull(req.getPassword());
 	}
 	
 	@Test

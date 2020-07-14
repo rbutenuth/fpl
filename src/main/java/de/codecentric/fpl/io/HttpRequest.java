@@ -2,6 +2,8 @@ package de.codecentric.fpl.io;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -19,6 +21,9 @@ public class HttpRequest extends HttpEntity {
 		allowedMethods.add("DELETE");
 		allowedMethods.add("PATCH");
 	}
+	private static final String BASIC = "Basic ";
+
+	private String basicAuthString;
 	private String baseUri;
 	private String method;
 	private Map<String, List<String>> params;
@@ -89,6 +94,46 @@ public class HttpRequest extends HttpEntity {
 
 	public String getParam(String key) {
 		return getValue(params, key);
+	}
+
+	public void setBasicAuth(String user, String password) {
+		byte[] bytes = (user + ":" + password).getBytes(StandardCharsets.UTF_8);
+		basicAuthString = Base64.getEncoder().encodeToString(bytes);
+	}
+
+	/**
+	 * @param authHeader Header value, including "Basic " as prefix.
+	 */
+	public void setBasicAuth(String authHeader) {
+		if (authHeader.startsWith(BASIC)) {
+			basicAuthString = authHeader.substring(BASIC.length());
+		}
+	}
+	
+	/**
+	 * @return Encoded user and password, including "Basic" prefix or
+	 *         <code>null</code> when user/password are not set.
+	 */
+	public String getBasicAuth() {
+		return basicAuthString == null ? null : BASIC + basicAuthString;
+	}
+	
+	public String getUser() {
+		if (basicAuthString == null) {
+			return null;
+		}
+		byte[] bytes = Base64.getDecoder().decode(basicAuthString);
+		String userColonPassword = new String(bytes, StandardCharsets.UTF_8);
+		return userColonPassword.substring(0, userColonPassword.indexOf(':'));
+	}
+	
+	public String getPassword() {
+		if (basicAuthString == null) {
+			return null;
+		}
+		byte[] bytes = Base64.getDecoder().decode(basicAuthString);
+		String userColonPassword = new String(bytes, StandardCharsets.UTF_8);
+		return userColonPassword.substring(userColonPassword.indexOf(':') + 1);
 	}
 
 	protected String urlEncode(String value) {

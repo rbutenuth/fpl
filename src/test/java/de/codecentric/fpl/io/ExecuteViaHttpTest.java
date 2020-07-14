@@ -2,8 +2,6 @@ package de.codecentric.fpl.io;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,30 +11,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
-import java.util.List;
-import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 public class ExecuteViaHttpTest {
-	private final static String baseUrl = "http://localhost:9099/fpl";
 	private final static String user = "fred";
 	private final static String nl = System.lineSeparator();
 
+	private static int nextPort = 9099;
+	private int port;
+	private String baseUrl;
 	private String password;
-	private boolean stopped;
 
 	@Before
 	public void startServer() throws Exception {
+		port = nextPort++;
+		baseUrl = "http://localhost:" + port + "/fpl";
 		SecureRandom sr = new SecureRandom();
 		byte[] bytes = new byte[32];
 		sr.nextBytes(bytes);
@@ -44,19 +43,38 @@ public class ExecuteViaHttpTest {
 			bytes[i] = (byte) ('0' + ((0xff & bytes[i]) % 10));
 		}
 		password = new String(bytes);
-		SimpleHttpServer.main(new String[] { "9099", user, password });
+		HttpServerMain.main(new String[] { Integer.toString(port), user, password });
+		// Wait until server in background thread has started and we can really connect.
+		boolean success = false;
+		while (!success) {
+			try (Socket s = new Socket(InetAddress.getLocalHost(), port)) {
+				success = true;
+			} catch (IOException e) {
+				Thread.sleep(100);
+			}
+		}
 	}
 
 	@After
 	public void stopServer() throws Exception {
-		if (!stopped) {
-			get("/terminate");
-		}
-		synchronized (SimpleHttpServer.class) {
-			while (SimpleHttpServer.isRunning()) {
-				SimpleHttpServer.class.wait(1000);
-			}
-		}
+		HttpServerMain.terminate(0);
+		HttpServerMain.waitForTermination();
+	}
+
+	@Test
+	public void coverConstructors() {
+		new HttpServerMain();
+		new StreamUtil();
+	}
+
+	@Test
+	public void stopServerWithGetTerminate() throws IOException {
+		HttpRequest req = new HttpRequest();
+		req.setBaseUri(baseUrl + "/terminate");
+		req.setBasicAuth(user, password);
+		new HttpClient().execute(req);
+		HttpResponse res = new HttpClient().execute(req);
+		assertEquals(200, res.getStatusCode());
 	}
 
 	@Test
@@ -66,7 +84,6 @@ public class ExecuteViaHttpTest {
 		String response = ExecuteViaHttp.post(baseUrl, user, password, is, false);
 		assertNotNull(response);
 		assertEquals("\"Stopping HTTP server...\"", response.trim());
-		stopped = true;
 	}
 
 	@Test
@@ -79,21 +96,26 @@ public class ExecuteViaHttpTest {
 	}
 
 	@Test
-	public void stopServerWithGet() throws IOException {
+	public void postToBadUrlAuthGives404() throws IOException {
 		HttpRequest req = new HttpRequest();
-		req.setBaseUri(baseUrl + "/terminate");
 		req.setBasicAuth(user, password);
-		req.addHeader("someKey", "someValue");
+		req.setBaseUri(baseUrl.substring(0, baseUrl.indexOf("fpl")));
+		req.setMethod("POST");
 		new HttpClient().execute(req);
 		HttpResponse res = new HttpClient().execute(req);
-		assertEquals(200, res.getStatusCode());
-		stopped = true;
+		assertEquals(404, res.getStatusCode());
 	}
 
 	@Test
 	public void emptyGetReturnsError() throws Exception {
-		String response = get("");
-		assertEquals("Post your FPL expressions to this URL for evaluation.", response);
+		HttpRequest req = new HttpRequest();
+		req.setBaseUri(baseUrl);
+		req.setBasicAuth(user, password);
+		req.addHeader("key", "value"); // some useless header
+		new HttpClient().execute(req);
+		HttpResponse res = new HttpClient().execute(req);
+		assertEquals(200, res.getStatusCode());
+		assertEquals("Post your FPL expressions to this URL for evaluation.", res.getBodyAsString("UTF-8"));
 	}
 
 	@Test
@@ -188,7 +210,7 @@ public class ExecuteViaHttpTest {
 	}
 
 	@Test
-	public void emptyFileBlockOnly() throws Exception {
+	public void nilResultViaMainLastBlockOnlyAndOnlyOneBlockInFile() throws Exception {
 		PrintStream originalOut = System.out;
 		try (PrintStream dummyOut = new PrintStream(new ByteArrayOutputStream())) {
 			System.setOut(dummyOut);
@@ -218,7 +240,8 @@ public class ExecuteViaHttpTest {
 	@Test
 	public void oneExpressionFollowedByFailureGivesResultAndFailure() throws IOException {
 		String response = ExecuteViaHttp.post(baseUrl, user, password, stream("(+ 3 4)\n(/ 3 0)"), false);
-		assertEquals("7" + nl + nl + "java.lang.ArithmeticException: / by zero" + nl + "    at /(<unknown>:1)", response.trim());
+		assertEquals("7" + nl + nl + "java.lang.ArithmeticException: / by zero" + nl + "    at /(<unknown>:1)",
+				response.trim());
 	}
 
 	@Test
@@ -263,7 +286,7 @@ public class ExecuteViaHttpTest {
 		String response = ExecuteViaHttp.post(baseUrl, user, password + "foo", stream("(+ 3 4) (* 6 7)"), false);
 		assertEquals("Failure: 401, reason: Unauthorized", response.trim());
 	}
-	
+
 	@Test
 	public void wrongHttpMethodShouldReturn500() throws IOException {
 		URL url = new URL(baseUrl);
@@ -274,7 +297,7 @@ public class ExecuteViaHttpTest {
 		con.setRequestMethod("PUT");
 		con.setDoOutput(true);
 		try (OutputStream os = con.getOutputStream()) {
-			for (byte b: "foo".getBytes()) {
+			for (byte b : "foo".getBytes()) {
 				os.write(b);
 			}
 		}
@@ -282,77 +305,20 @@ public class ExecuteViaHttpTest {
 		int responseCode = con.getResponseCode();
 		assertEquals(500, responseCode);
 	}
-	
+
 	@Test
 	public void lastBlockOfTwoLineList() {
-		String input = "(put a 3\n" + 
-				")\n" + 
-				"";
-		String lastBlock =SimpleHttpServer.lastBlock(input);
+		String input = "(put a 3\n" + ")\n" + "";
+		String lastBlock = HttpServerMain.lastBlock(input);
 		assertEquals(input.trim(), lastBlock);
 	}
-	
-	@Test
-	public void splitEmptyQueryShouldReturnEmptyMap() throws UnsupportedEncodingException {
-		Map<String, List<String>> query = SimpleHttpServer.splitQuery("");
-		assertEquals(0, query.size());
-		query = SimpleHttpServer.splitQuery(null);
-		assertEquals(0, query.size());
-	}
-	
-	@Test
-	public void splitQueryStringIntoMap() throws UnsupportedEncodingException {
-		Map<String, List<String>> query = SimpleHttpServer.splitQuery("foo=bar&foo=baz&key1=&key2");
-		assertEquals(3, query.size());
-		List<String> foo = query.get("foo");
-		assertEquals(2, foo.size());
-		assertEquals("bar", foo.get(0));
-		assertEquals("baz", foo.get(1));
-		List<String> values1 = query.get("key1");
-		assertEquals(1, values1.size());
-		assertNull(values1.get(0));
-		List<String> values2 = query.get("key2");
-		assertEquals(1, values2.size());
-		assertNull(values2.get(0));
-	}
-	
+
 	@Test
 	public void justInstantiateClientToCoverConstructor() {
 		new ExecuteViaHttp();
 	}
 
-	@Test
-	public void interruptServer() throws Exception {
-		assertTrue(SimpleHttpServer.isRunning());
-		SimpleHttpServer.getInstance().interrupt();
-		assertTrue(SimpleHttpServer.isRunning());
-	}
-	
 	private InputStream stream(String str) {
 		return new ByteArrayInputStream(str.getBytes(StandardCharsets.UTF_8));
-	}
-
-	private String get(String relativeUrl) throws Exception {
-		URL url = new URL(baseUrl + relativeUrl);
-		HttpURLConnection con = (HttpURLConnection) url.openConnection();
-		byte[] bytes = (user + ":" + password).getBytes();
-		String basicAuth = "Basic " + Base64.getEncoder().encodeToString(bytes);
-		con.setRequestProperty("Authorization", basicAuth);
-		con.setRequestMethod("GET");
-		int responseCode = con.getResponseCode();
-		assertEquals(200, responseCode);
-		try (Reader rd = new BomAwareReader(con.getInputStream())) {
-			return readContent(rd);
-		}
-	}
-
-	private String readContent(Reader rd) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		int ch = rd.read();
-		while (ch != -1) {
-			sb.append((char) ch);
-			ch = rd.read();
-		}
-		return sb.toString();
 	}
 }

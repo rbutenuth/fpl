@@ -4,16 +4,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.StandardCharsets;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public abstract class HttpEntity {
-	private String basicAuthString;
 	private Map<String, List<String>> headers;
 	private byte[] body;
 	
@@ -21,37 +19,6 @@ public abstract class HttpEntity {
 		headers = new LinkedHashMap<>();
 	}
 
-	public void setBasicAuth(String user, String password) {
-		byte[] bytes = (user + ":" + password).getBytes(StandardCharsets.UTF_8);
-		basicAuthString = Base64.getEncoder().encodeToString(bytes);
-	}
-
-	/**
-	 * @return Encoded user and password, including "Basic" prefix or
-	 *         <code>null</code> when user/password are not set.
-	 */
-	public String getBasicAuth() {
-		return basicAuthString == null ? null : "Basic " + basicAuthString;
-	}
-	
-	public String getUser() {
-		if (basicAuthString == null) {
-			return null;
-		}
-		byte[] bytes = Base64.getDecoder().decode(basicAuthString);
-		String userColonPassword = new String(bytes, StandardCharsets.UTF_8);
-		return userColonPassword.substring(0, userColonPassword.indexOf(':'));
-	}
-	
-	public String getPassword() {
-		if (basicAuthString == null) {
-			return null;
-		}
-		byte[] bytes = Base64.getDecoder().decode(basicAuthString);
-		String userColonPassword = new String(bytes, StandardCharsets.UTF_8);
-		return userColonPassword.substring(userColonPassword.indexOf(':') + 1);
-	}
-	
 	public Set<String> getHeaderNames() {
 		return headers.keySet();
 	}
@@ -86,6 +53,19 @@ public abstract class HttpEntity {
 	 */
 	public void setBody(byte[] body) {
 		this.body = body;
+	}
+
+	/**
+	 * @param body Body as String
+	 * @param encoding Used to convert String into bytes
+	 * @throws UnsupportedEncodingException 
+	 */
+	public void setBody(String body, String encoding) throws UnsupportedEncodingException {
+		this.body = body.getBytes(encoding);
+	}
+
+	public boolean hasBody() {
+		return body != null;
 	}
 	
 	/**
