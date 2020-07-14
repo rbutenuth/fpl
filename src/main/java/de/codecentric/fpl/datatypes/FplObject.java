@@ -7,7 +7,6 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
-import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
 
 /**

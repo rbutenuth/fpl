@@ -93,3 +93,15 @@ Determine the name of a symbol.
 ```
 (name-of-symbol string)
 ```
+
+### serialize-to-json
+Convert value to JSON string.
+```
+(serialize-to-json value)
+```
+
+### parse-json
+Convert a JSON string to list/object. In case the JSON contain a key "nil", it is converted to "<nil>", as "nil" is not a valid symbol in FPL.
+```
+(parse-json string)
+```
