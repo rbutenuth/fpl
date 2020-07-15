@@ -37,17 +37,14 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	private final String[] parameterComments;
 
 	/**
-	 * @param position
-	 *            Position in source code.
-	 * @param comment
-	 *            A list of lines with comments in markdown syntax
-	 * @param name
-	 *            Not null, not empty.
-	 * @param parameterNames
-	 *            Names of the parameters. If last ends with "...", function is
-	 *            variable argument function.
+	 * @param position       Position in source code.
+	 * @param comment        A list of lines with comments in markdown syntax
+	 * @param name           Not null, not empty.
+	 * @param parameterNames Names of the parameters. If last ends with "...",
+	 *                       function is variable argument function.
 	 */
-	protected AbstractFunction(Position position, List<String> comment, String name, boolean varArg, String... parameterNames) {
+	protected AbstractFunction(Position position, List<String> comment, String name, boolean varArg,
+			String... parameterNames) {
 		if (name == null || name.length() == 0) {
 			throw new IllegalArgumentException("empty or null name");
 		}
@@ -62,28 +59,22 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	}
 
 	/**
-	 * @param position
-	 *            Position in source code.
-	 * @param name
-	 *            Not null, not empty.
-	 * @param varArg
-	 *            Is this a function with variable argument list?
-	 * @param parameterNames
-	 *            Names of the parameters. If last ends with "...", function is
-	 *            variable argument function.
+	 * @param position       Position in source code.
+	 * @param name           Not null, not empty.
+	 * @param varArg         Is this a function with variable argument list?
+	 * @param parameterNames Names of the parameters. If last ends with "...",
+	 *                       function is variable argument function.
 	 */
-	protected AbstractFunction(Position position, String name, List<String> comment, boolean varArg, String... parameterNames) {
+	protected AbstractFunction(Position position, String name, List<String> comment, boolean varArg,
+			String... parameterNames) {
 		this(position, comment, name, varArg, parameterNames);
 	}
 
 	/**
-	 * @param name
-	 *            Not null, not empty.
-	 * @param varArg
-	 *            Is this a function with variable argument list?
-	 * @param parameterNames
-	 *            Names of the parameters. If last ends with "...", function is
-	 *            variable argument function.
+	 * @param name           Not null, not empty.
+	 * @param varArg         Is this a function with variable argument list?
+	 * @param parameterNames Names of the parameters. If last ends with "...",
+	 *                       function is variable argument function.
 	 */
 	protected AbstractFunction(String name, List<String> comment, boolean varArg, String... parameterNames) {
 		this(Position.UNKNOWN, comment, name, varArg, parameterNames);
@@ -102,13 +93,11 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * parameters has already been checked. When there are not enough parameters,
 	 * the method is not called, instead Currying takes place.
 	 * 
-	 * @param scope
-	 *            Evaluation scope.
-	 * @param parameters
-	 *            The parameters of the function. Do not change the array elements!
+	 * @param scope      Evaluation scope.
+	 * @param parameters The parameters of the function. Do not change the array
+	 *                   elements!
 	 * @return The result of the function.
-	 * @throws EvaluationException
-	 *             If execution fails.
+	 * @throws EvaluationException If execution fails.
 	 */
 	protected abstract FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException;
 
@@ -132,11 +121,9 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	}
 
 	/**
-	 * @param parameters
-	 *            Parameters
+	 * @param parameters Parameters
 	 * @return Number of missing parameters, caller has to do "currying"
-	 * @throws EvaluationException
-	 *             If number of parameters is not correct.
+	 * @throws EvaluationException If number of parameters is not correct.
 	 */
 	private int checkNumberOfParameters(FplValue[] parameters) throws EvaluationException {
 		if (parameters.length < minimumNumberOfParameters) {
@@ -155,10 +142,8 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	/**
 	 * Evaluate an expression.
 	 * 
-	 * @param scope
-	 *            Scope used for evaluation.
-	 * @param expression
-	 *            Expression to evaluate.
+	 * @param scope      Scope used for evaluation.
+	 * @param expression Expression to evaluate.
 	 * @return Evaluated expression.
 	 * @throws EvaluationException
 	 */
@@ -173,13 +158,11 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	/**
 	 * Evaluate an expression and cast the result to a {@link FplList}.
 	 * 
-	 * @param scope
-	 *            Scope used for evaluation.
-	 * @param expression
-	 *            Expression to evaluate.
+	 * @param scope      Scope used for evaluation.
+	 * @param expression Expression to evaluate.
 	 * @return A list.
-	 * @throws EvaluationException
-	 *             If <code>expression</code> does not evaluate to a list.
+	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
+	 *                             list.
 	 */
 	protected FplList evaluateToList(Scope scope, FplValue expression) throws EvaluationException {
 		FplValue value = expression.evaluate(scope);
@@ -193,13 +176,11 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	/**
 	 * Evaluate an expression and cast the result to a {@link FplLambda}.
 	 * 
-	 * @param scope
-	 *            Scope used for evaluation.
-	 * @param expression
-	 *            Expression to evaluate.
+	 * @param scope      Scope used for evaluation.
+	 * @param expression Expression to evaluate.
 	 * @return A FplLambda.
-	 * @throws EvaluationException
-	 *             If <code>expression</code> does not evaluate to a FplLambda.
+	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
+	 *                             FplLambda.
 	 */
 	protected FplLambda evaluateToLambda(Scope scope, FplValue expression) throws EvaluationException {
 		FplValue value = expression.evaluate(scope);
@@ -213,13 +194,11 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	/**
 	 * Evaluate an expression and cast the result to a {@link FplObject}.
 	 * 
-	 * @param scope
-	 *            Scope used for evaluation.
-	 * @param expression
-	 *            Expression to evaluate.
+	 * @param scope      Scope used for evaluation.
+	 * @param expression Expression to evaluate.
 	 * @return A FplObject.
-	 * @throws EvaluationException
-	 *             If <code>expression</code> does not evaluate to a FplObject.
+	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
+	 *                             FplObject.
 	 */
 	protected FplObject evaluateToDictionary(Scope scope, FplValue expression) throws EvaluationException {
 		FplValue value = expression.evaluate(scope);
@@ -231,16 +210,39 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	}
 
 	/**
-	 * Evaluate an expression and cast the result to a {@link FplObject}, check it has a parent scope
-	 * (the difference between a simple dictionary and an {@link FplObject} is the parent scope).
+	 * Evaluate an expression and cast the result to a {@link FplObject}.
+	 * <code>null</code> is replaced by an empty dictionary.
 	 * 
-	 * @param scope
-	 *            Scope used for evaluation.
-	 * @param expression
-	 *            Expression to evaluate.
+	 * @param scope      Scope used for evaluation.
+	 * @param expression Expression to evaluate.
 	 * @return A FplObject.
-	 * @throws EvaluationException
-	 *             If <code>expression</code> does not evaluate to a FplObject.
+	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
+	 *                             FplObject.
+	 */
+	protected FplObject evaluateToDictionaryNullDefaultsToEmpty(Scope scope, FplValue expression) throws EvaluationException {
+		if (expression == null) {
+			return new FplObject("dict");
+		}
+		FplValue value = expression.evaluate(scope);
+		if (value == null) {
+			return new FplObject("dict");
+		} else if (value instanceof FplObject) {
+			return (FplObject) value;
+		} else {
+			throw new EvaluationException("Not a dictionary: " + value);
+		}
+	}
+
+	/**
+	 * Evaluate an expression and cast the result to a {@link FplObject}, check it
+	 * has a parent scope (the difference between a simple dictionary and an
+	 * {@link FplObject} is the parent scope).
+	 * 
+	 * @param scope      Scope used for evaluation.
+	 * @param expression Expression to evaluate.
+	 * @return A FplObject.
+	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
+	 *                             FplObject.
 	 */
 	protected FplObject evaluateToObject(Scope scope, FplValue expression) throws EvaluationException {
 		FplObject object = evaluateToDictionary(scope, expression);
@@ -252,16 +254,14 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 
 	/**
 	 * Evaluate an expression, check for boolean value. <code>null</code> (nil), the
-	 * integer/double value 0, and an empty list are <code>false</code>, everything else is
-	 * <code>true</code>
+	 * integer/double value 0, and an empty list are <code>false</code>, everything
+	 * else is <code>true</code>
 	 * 
-	 * @param scope
-	 *            Scope used for evaluation.
-	 * @param expression
-	 *            Expression to evaluate.
+	 * @param scope      Scope used for evaluation.
+	 * @param expression Expression to evaluate.
 	 * @return Boolean value of expression.
-	 * @throws EvaluationException
-	 *             If <code>expression</code> does not evaluate to a boolean.
+	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
+	 *                             boolean.
 	 */
 	protected boolean evaluateToBoolean(Scope scope, FplValue expression) throws EvaluationException {
 		if (expression == null) {
@@ -270,7 +270,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 		FplValue value = expression.evaluate(scope);
 		if (value == null) {
 			return false;
-		} else  if (value instanceof FplList) {
+		} else if (value instanceof FplList) {
 			return ((FplList) value).size() > 0;
 		} else if (value instanceof FplInteger) {
 			FplInteger i = (FplInteger) value;
@@ -279,32 +279,33 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 			FplDouble d = (FplDouble) value;
 			return d.getValue() != 0;
 		} else if (value instanceof FplString) {
-	        return ((FplString)value).getContent().length() > 0;
+			return ((FplString) value).getContent().length() > 0;
 		} else {
 			return true;
 		}
 	}
 
 	/**
-	 * Evaluate an expression, convert the result to <code>long</code>. <code>nil</code> evaluates to 0.
+	 * Evaluate an expression, convert the result to <code>long</code>.
+	 * <code>nil</code> evaluates to 0.
 	 * 
-	 * @param scope
-	 *            Scope used for evaluation.
-	 * @param expression
-	 *            Expression to evaluate.
+	 * @param scope      Scope used for evaluation.
+	 * @param expression Expression to evaluate.
 	 * @return long value of expression.
-	 * @throws EvaluationException
-	 *             If <code>expression</code> does not evaluate to a number.
+	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
+	 *                             number.
 	 */
 	protected long evaluateToLong(Scope scope, FplValue expression) throws EvaluationException {
 		if (expression == null) {
 			return 0;
 		}
 		FplValue value = expression.evaluate(scope);
-		if (value instanceof FplInteger) {
+		if (value == null) {
+			return 0;
+		} else if (value instanceof FplInteger) {
 			return ((FplInteger) value).getValue();
 		} else if (value instanceof FplDouble) {
-			return (long)((FplDouble) value).getValue();
+			return (long) ((FplDouble) value).getValue();
 		} else {
 			throw new EvaluationException("Does not evaluate to number: " + expression);
 		}
@@ -313,10 +314,8 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	/**
 	 * Evaluate an expression, convert the result to <code>FplString</code>.
 	 * 
-	 * @param scope
-	 *            Scope used for evaluation.
-	 * @param expression
-	 *            Expression to evaluate.
+	 * @param scope      Scope used for evaluation.
+	 * @param expression Expression to evaluate.
 	 * @return long value of expression.
 	 * @throws EvaluationException
 	 */
@@ -325,10 +324,10 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 			return "nil";
 		}
 		FplValue value = expression.evaluate(scope);
-		if (value instanceof FplString) {
-			return ((FplString)value).getContent();
-		} else if (value == null) {
+		if (value == null) {
 			return "nil";
+		} else if (value instanceof FplString) {
+			return ((FplString) value).getContent();
 		} else {
 			return value.toString();
 		}
@@ -346,7 +345,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	public Position getPosition() {
 		return position;
 	}
-	
+
 	@Override
 	public String typeName() {
 		return "function";
@@ -357,9 +356,8 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	}
 
 	/**
-	 * @param position
-	 *            Position where function is defined. May be
-	 *            {@link Position#UNKNOWN}, but never null.
+	 * @param position Position where function is defined. May be
+	 *                 {@link Position#UNKNOWN}, but never null.
 	 */
 	public void setPosition(Position position) {
 		this.position = position == null ? Position.UNKNOWN : position;

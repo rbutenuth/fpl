@@ -955,11 +955,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		Iterator<FplValue> iter = iterator();
 		while (iter.hasNext()) {
 			FplValue v = iter.next();
-			if (v instanceof FplList || v instanceof FplObject)  {
-				sb.append("<").append(v.typeName()).append(">");
-			} else {
-				sb.append(v == null ? "nil" : v.toString());
-			}
+			sb.append(v == null ? "nil" : v.toString());
 			if (iter.hasNext()) {
 				sb.append(" ");
 			}

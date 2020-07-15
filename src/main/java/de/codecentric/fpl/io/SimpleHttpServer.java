@@ -9,7 +9,6 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.concurrent.ForkJoinPool;
 
 import com.sun.net.httpserver.BasicAuthenticator;
 import com.sun.net.httpserver.Headers;
@@ -18,6 +17,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.builtin.Parallel;
 import de.codecentric.fpl.data.ScopeException;
 
 public class SimpleHttpServer {
@@ -27,7 +27,7 @@ public class SimpleHttpServer {
 	public SimpleHttpServer(int port, HttpRequestHandler handler, BasicAuthenticator authenticator)
 			throws IOException, EvaluationException, ScopeException {
 		server = HttpServer.create(new InetSocketAddress(port), 0);
-		server.setExecutor(ForkJoinPool.commonPool());
+		server.setExecutor(Parallel.fplPool());
 		HttpContext context = server.createContext("/");
 		context.setAuthenticator(authenticator);
 		context.setHandler((he) -> {
@@ -86,7 +86,7 @@ public class SimpleHttpServer {
 	 */
 	public synchronized void terminate(int delayInSeconds) {
 		if (isRunning()) {
-			ForkJoinPool.commonPool().execute(new Runnable() {
+			Parallel.fplPool().execute(new Runnable() {
 				@Override
 				public void run() {
 					server.stop(delayInSeconds);
@@ -102,11 +102,17 @@ public class SimpleHttpServer {
 	private void handleHeaders(HttpRequest req, HttpExchange he) {
 		Headers reqHeaders = he.getRequestHeaders();
 		for (Entry<String, List<String>> entry : reqHeaders.entrySet()) {
-			String key = entry.getKey();
+			String key = entry.getKey().toLowerCase();
 			for (String value : entry.getValue()) {
-				req.addHeader(key, value);
+				if (value.indexOf(',') < 0) {
+					req.addHeader(key, value);
+				} else {
+					for (String v : value.split(",")) {
+						req.addHeader(key, v.trim());
+					}
+				}
 			}
-			if ("Authorization".equals(key)) {
+			if ("authorization".equals(key)) {
 				req.setBasicAuth(entry.getValue().get(0));
 			}
 		}

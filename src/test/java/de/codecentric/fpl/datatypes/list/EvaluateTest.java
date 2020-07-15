@@ -10,6 +10,8 @@ import de.codecentric.fpl.datatypes.FplValue;
 
 public class EvaluateTest extends AbstractFplTest {
 
+	private static final String NL = System.lineSeparator();
+
 	@Test
 	public void testNotAFunction() throws Exception {
 		try {
@@ -22,7 +24,7 @@ public class EvaluateTest extends AbstractFplTest {
 	@Test
 	public void listToStringObjectAndNil() throws Exception {
 		FplValue list = evaluate("list", "(list nil 1 {})");
-		assertEquals("(nil 1 <dictionary>)", list.toString());
+		assertEquals("(nil 1 {" + NL + "}" + NL + ")", list.toString());
 	}
 
 }

@@ -132,6 +132,12 @@ public class StringFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void charAtNullAsIndex() throws Exception {
+		FplInteger i = (FplInteger) evaluate("char-at", "(char-at \"1234\" symbol-with-null-value)");
+		assertEquals('1', i.getValue());
+	}
+
+	@Test
 	public void fromChars() throws Exception {
 		FplString str = (FplString) evaluate("from chars", "(from-chars '(97 98 99))");
 		assertEquals("abc", str.getContent());

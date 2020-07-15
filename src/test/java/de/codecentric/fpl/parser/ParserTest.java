@@ -139,7 +139,7 @@ public class ParserTest extends AbstractFplTest {
 		assertTrue(p.hasNext());
 		FplList l = (FplList) p.next();
 		assertEquals(2, l.size());
-		assertEquals("(quote <list>)", l.toString());
+		assertEquals("(quote ((quote symbol) 42 3.1415 \"a string\"))", l.toString());
 	}
 
 	@Test

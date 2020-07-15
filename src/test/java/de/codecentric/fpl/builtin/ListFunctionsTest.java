@@ -252,7 +252,7 @@ public class ListFunctionsTest extends AbstractFplTest {
 			evaluate("get", "(get-element '(0 1 2 3 4) '())");
 			fail("Exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("Does not evaluate to number: (quote <list>)", e.getMessage());
+			assertEquals("Does not evaluate to number: (quote ())", e.getMessage());
 		}
 	}
 

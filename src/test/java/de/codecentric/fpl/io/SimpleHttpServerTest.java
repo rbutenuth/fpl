@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -18,6 +17,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.sun.net.httpserver.BasicAuthenticator;
+
+import de.codecentric.fpl.builtin.Parallel;
 
 public class SimpleHttpServerTest {
 	private final static String testUser = "fred";
@@ -80,7 +81,7 @@ public class SimpleHttpServerTest {
 	
 	@Test
 	public void InterruptWaitTermination() throws Exception {
-		Future<?> future = ForkJoinPool.commonPool().submit(new Runnable() {
+		Future<?> future = Parallel.fplPool().submit(new Runnable() {
 			@Override
 			public void run() {
 				waiter = Thread.currentThread();

@@ -65,7 +65,7 @@ public abstract class HttpEntity {
 	}
 
 	public boolean hasBody() {
-		return body != null;
+		return body != null && body.length > 0;
 	}
 	
 	/**

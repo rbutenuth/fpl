@@ -11,15 +11,35 @@ import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplLambda;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 public class Parallel implements ScopePopulator {
 	private static ForkJoinPool pool = ForkJoinPool.commonPool();
-
+	
+	public static synchronized ForkJoinPool fplPool() {
+		return pool;
+	}
+	
+	private static synchronized void setNewPool(ForkJoinPool newPool) {
+		pool = newPool;
+	}
+	
 	@Override
 	public void populate(Scope scope) throws ScopeException {
+
+		scope.define(new AbstractFunction("thread-pool-size",
+				comment("Create a new thread-pool with the given size."), true, "size") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				int size = (int)evaluateToLong(scope, parameters[0]);
+				int oldSize = fplPool().getParallelism();
+				setNewPool(new ForkJoinPool(size));
+				return FplInteger.valueOf(oldSize);
+			}
+		});
 
 		scope.define(new AbstractFunction("parallel",
 				comment("Evaluate the code in parallel and return a list with the evaluation results."), true,
@@ -30,7 +50,7 @@ public class Parallel implements ScopePopulator {
 				ForkJoinTask<FplValue>[] tasks = new ForkJoinTask[parameters.length];
 				for (int i = 0; i < parameters.length; i++) {
 					final FplValue value = parameters[i];
-					tasks[i] = pool.submit(new RecursiveTask<FplValue>() {
+					tasks[i] = fplPool().submit(new RecursiveTask<FplValue>() {
 						private static final long serialVersionUID = -5037994686972663758L;
 
 						@Override
@@ -67,7 +87,7 @@ public class Parallel implements ScopePopulator {
 				ForkJoinTask<FplValue>[] tasks = new ForkJoinTask[size];
 				int i = 0;
 				for (FplValue value : list) {
-					tasks[i++] = pool.submit(new RecursiveTask<FplValue>() {
+					tasks[i++] = fplPool().submit(new RecursiveTask<FplValue>() {
 						private static final long serialVersionUID = -5037994686972663758L;
 
 						@Override
@@ -103,7 +123,7 @@ public class Parallel implements ScopePopulator {
 				ForkJoinTask<FplValue>[] tasks = new ForkJoinTask[size];
 				int i = 0;
 				for (FplValue value : list) {
-					tasks[i++] = pool.submit(new RecursiveTask<FplValue>() {
+					tasks[i++] = fplPool().submit(new RecursiveTask<FplValue>() {
 						private static final long serialVersionUID = -5037994686972663758L;
 
 						@Override
@@ -132,7 +152,7 @@ public class Parallel implements ScopePopulator {
 		scope.define(new AbstractFunction("create-future", comment(""), false, "code") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-					ForkJoinTask<FplValue> task = pool.submit(new RecursiveTask<FplValue>() {
+					ForkJoinTask<FplValue> task = fplPool().submit(new RecursiveTask<FplValue>() {
 						private static final long serialVersionUID = -5037994686972663758L;
 
 						@Override

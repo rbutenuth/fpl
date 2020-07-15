@@ -1,6 +1,7 @@
 package de.codecentric.fpl.builtin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -15,6 +16,12 @@ public class ParallelTest  extends AbstractFplTest {
 	@Test
 	public void coverConstructor() {
 		new Loop();
+	}
+
+	@Test
+	public void threadPoolSize() throws Exception {
+		FplInteger oldSize = (FplInteger)evaluate("thread-pool-size", "(thread-pool-size 17)");
+		assertTrue(oldSize.getValue() > 0);
 	}
 
 	@Test
