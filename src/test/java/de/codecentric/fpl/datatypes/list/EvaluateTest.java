@@ -13,7 +13,7 @@ public class EvaluateTest extends AbstractFplTest {
 	private static final String NL = System.lineSeparator();
 
 	@Test
-	public void testNotAFunction() throws Exception {
+	public void notAFunction() throws Exception {
 		try {
 			evaluate("error", "(1 2)");
 		} catch (EvaluationException e) {

@@ -55,7 +55,7 @@ public class SimpleObjectTest {
 	}
 
 	@Test
-	public void testEvaluate() throws EvaluationException {
+	public void evaluate() throws EvaluationException {
 		assertTrue(object == object.evaluate(outer));
 	}
 
@@ -75,22 +75,22 @@ public class SimpleObjectTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testNullPositionTwo() {
+	public void nullPositionTwo() {
 		new FplObject("scope-name", null, new Scope("test"));
 	}
 
 	@Test(expected = ScopeException.class)
-	public void testNullKey() throws ScopeException {
+	public void nullKey() throws ScopeException {
 		object.put(null, FplInteger.valueOf(0));
 	}
 
 	@Test(expected = ScopeException.class)
-	public void testEmptyKey() throws ScopeException {
+	public void emptyKey() throws ScopeException {
 		object.put("", FplInteger.valueOf(0));
 	}
 
 	@Test
-	public void testPut() throws ScopeException {
+	public void put() throws ScopeException {
 		FplInteger one = FplInteger.valueOf(1);
 		FplInteger two = FplInteger.valueOf(2);
 		object.put("one", one);

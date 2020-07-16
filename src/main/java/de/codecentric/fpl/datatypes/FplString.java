@@ -6,6 +6,14 @@ package de.codecentric.fpl.datatypes;
 public class FplString extends EvaluatesToThisValue {
     private final String content;
 
+	/**
+	 * @param content Content of String
+	 * @return FplString with given content or <code>null</code> when content is <code>null</code>
+	 */
+	public static FplString make(String content) {
+		return content == null ? null : new FplString(content);
+	}
+	
     /**
      * @param content Content of the String, not null.
      */

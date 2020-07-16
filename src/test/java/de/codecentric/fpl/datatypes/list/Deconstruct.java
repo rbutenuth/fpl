@@ -9,14 +9,14 @@ import de.codecentric.fpl.datatypes.FplValue;
 
 public class Deconstruct extends AbstractListTest {
 	@Test
-	public void testRemoveFirstSizeOne() throws EvaluationException {
+	public void removeFirstSizeOne() throws EvaluationException {
 		FplList list = FplList.fromValues(new FplValue[1]);
 		FplList rest = list.removeFirst();
 		assertEquals(0, rest.size());
 	}
 
 	@Test
-	public void testRemoveFirstSizeTwo() throws EvaluationException {
+	public void removeFirstSizeTwo() throws EvaluationException {
 		FplList list = FplList.fromValue(value(1)).addAtEnd(value(2));
 		FplList rest = list.removeFirst();
 		assertEquals(1, rest.size());
@@ -24,21 +24,21 @@ public class Deconstruct extends AbstractListTest {
 	}
 
 	@Test
-	public void testRemoveFirstSizeHundred() throws EvaluationException {
+	public void removeFirstSizeHundred() throws EvaluationException {
 		FplList list = create(0, 100);
 		FplList rest = list.removeFirst();
 		check(rest, 1, 100);
 	}
 
 	@Test
-	public void testRemoveFirstSizeFiftyAppendFifty() throws EvaluationException {
+	public void removeFirstSizeFiftyAppendFifty() throws EvaluationException {
 		FplList list = create(0, 50).append(create(50, 100));
 		FplList rest = list.removeFirst();
 		check(rest, 1, 100);
 	}
 
 	@Test
-	public void testRemoveFirstSizeTwoFromAppend() throws EvaluationException {
+	public void removeFirstSizeTwoFromAppend() throws EvaluationException {
 		FplList list = create(1, 2).append(create(2, 3));
 		FplList rest = list.removeFirst();
 		assertEquals(1, rest.size());
@@ -46,14 +46,14 @@ public class Deconstruct extends AbstractListTest {
 	}
 
 	@Test
-	public void testRemoveLastSizeOne() throws EvaluationException {
+	public void removeLastSizeOne() throws EvaluationException {
 		FplList list = FplList.fromValues(new FplValue[1]);
 		FplList rest = list.removeLast();
 		assertEquals(0, rest.size());
 	}
 
 	@Test
-	public void testRemoveLastSizeTwo() throws EvaluationException {
+	public void removeLastSizeTwo() throws EvaluationException {
 		FplList list = FplList.fromValue(value(1)).addAtEnd(value(2));
 		FplList rest = list.removeLast();
 		assertEquals(1, rest.size());
@@ -61,21 +61,21 @@ public class Deconstruct extends AbstractListTest {
 	}
 
 	@Test
-	public void testRemoveLastSizeHundred() throws EvaluationException {
+	public void removeLastSizeHundred() throws EvaluationException {
 		FplList list = create(0, 100);
 		FplList rest = list.removeLast();
 		check(rest, 0, 99);
 	}
 
 	@Test
-	public void testRemoveLastSizeFiftyAppendFifty() throws EvaluationException {
+	public void removeLastSizeFiftyAppendFifty() throws EvaluationException {
 		FplList list = create(0, 50).append(create(50, 100));
 		FplList rest = list.removeLast();
 		check(rest, 0, 99);
 	}
 
 	@Test
-	public void testRemoveLastSizeTwoFromAppend() throws EvaluationException {
+	public void removeLastSizeTwoFromAppend() throws EvaluationException {
 		FplList list = create(1, 2).append(create(2, 3));
 		FplList rest = list.removeLast();
 		assertEquals(1, rest.size());

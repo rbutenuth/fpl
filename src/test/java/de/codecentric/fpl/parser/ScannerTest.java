@@ -22,21 +22,21 @@ import de.codecentric.fpl.parser.Token.Id;
 public class ScannerTest {
 
 	@Test(expected = NullPointerException.class)
-	public void testNameNull() throws IOException {
+	public void nameNull() throws IOException {
 		try (Scanner s = new Scanner(null, new StringReader(""))) {
 			// not reached
 		}
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testBadLineNumber() throws IOException {
+	public void badLineNumber() throws IOException {
 		try (Scanner s = new Scanner("bla", 0, new StringReader(""))) {
 			// not reached
 		}
 	}
 
 	@Test(expected = ParseException.class)
-	public void testUnterminatedString() throws Exception {
+	public void unterminatedString() throws Exception {
 		try (Scanner sc = new Scanner("test", new StringReader("'( bla \") ; sinnfrei"))) {
 			Token t = sc.next();
 			while (t != null) {
@@ -46,7 +46,7 @@ public class ScannerTest {
 	}
 
 	@Test
-	public void testCommentsAndSymbol() throws Exception {
+	public void commentsAndSymbol() throws Exception {
 		try (Scanner sc = new Scanner("test",
 				new StringReader(";   commentLine1\n; commentLine2\n;commentLine3\n symbol"))) {
 			Token t = sc.next();
@@ -73,7 +73,7 @@ public class ScannerTest {
 	}
 
 	@Test
-	public void testParenthesisAndSymbol() throws Exception {
+	public void parenthesisAndSymbol() throws Exception {
 		try (Scanner sc = new Scanner("test", new StringReader("'( bla \n\r) ; sinnfrei\n\r;leer\n{:}"))) {
 			Token t = sc.next();
 			assertNotNull(t);
@@ -121,7 +121,7 @@ public class ScannerTest {
 	}
 
 	@Test
-	public void testNumber() throws Exception {
+	public void number() throws Exception {
 		try (Scanner sc = new Scanner("test",
 				new StringReader("123\t-456 ;comment \n1.23e4\n-31.4e-1\n2.78E+0\n3.14"))) {
 			Token t = sc.next();
@@ -163,8 +163,8 @@ public class ScannerTest {
 		}
 	}
 
-	@Test()
-	public void testBadNumber() throws Exception {
+	@Test
+	public void badNumber() throws Exception {
 		try (Scanner sc = new Scanner("test", new StringReader("123ef456"))) {
 			try {
 				sc.next();
@@ -174,8 +174,8 @@ public class ScannerTest {
 		}
 	}
 
-	@Test()
-	public void testString() throws Exception {
+	@Test
+	public void string() throws Exception {
 		try (Scanner sc = new Scanner("test", new StringReader("(\"a\\\"bc\ndef\\nhij\" \r\n\"a\\tb\\rc\\n\")"))) {
 			Token t = sc.next();
 			assertNotNull(t);
@@ -201,7 +201,7 @@ public class ScannerTest {
 	}
 
 	@Test
-	public void testJsonEscapes() throws Exception {
+	public void jsonEscapes() throws Exception {
 		try (Scanner sc = new Scanner("test", new StringReader("\"\\/\\f\\b\")"))) {
 			Token t = sc.next();
 			assertNotNull(t);
@@ -211,7 +211,7 @@ public class ScannerTest {
 	}
 
 	@Test
-	public void testHexEscape() throws Exception {
+	public void hexEscape() throws Exception {
 		try (Scanner sc = new Scanner("test", new StringReader("\"\\u12ab\")"))) {
 			Token t = sc.next();
 			assertNotNull(t);
@@ -223,8 +223,8 @@ public class ScannerTest {
 		}
 	}
 
-	@Test()
-	public void testBadHexDigit() throws Exception {
+	@Test
+	public void badHexDigit() throws Exception {
 		try (Scanner sc = new Scanner("test", new StringReader("\"\\u12z4\""))) {
 			sc.next();
 			fail("missing exception");
@@ -233,8 +233,8 @@ public class ScannerTest {
 		}
 	}
 
-	@Test()
-	public void testShortHexSequence() throws Exception {
+	@Test
+	public void shortHexSequence() throws Exception {
 		try (Scanner sc = new Scanner("test", new StringReader("\"\\u12\""))) {
 			sc.next();
 			fail("missing exception");
@@ -243,8 +243,8 @@ public class ScannerTest {
 		}
 	}
 
-	@Test()
-	public void testBadQuoting() throws Exception {
+	@Test
+	public void badQuoting() throws Exception {
 		try (Scanner sc = new Scanner("test", new StringReader("\"\\"))) {
 			sc.next();
 			fail("missing exception");
@@ -253,8 +253,8 @@ public class ScannerTest {
 		}
 	}
 
-	@Test()
-	public void testEndOfSourceInHexSequence() throws Exception {
+	@Test
+	public void endOfSourceInHexSequence() throws Exception {
 		try (Scanner sc = new Scanner("test", new StringReader("\"\\u12"))) {
 			sc.next();
 			fail("missing exception");

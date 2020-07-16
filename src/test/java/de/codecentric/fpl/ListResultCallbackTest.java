@@ -22,14 +22,14 @@ public class ListResultCallbackTest {
 	}
 
 	@Test
-	public void testEmpty() {
+	public void empty() {
 		assertFalse(callback.hasException());
 		assertNull(callback.getException());
 		assertTrue(callback.getResults().isEmpty());
 	}
 
 	@Test
-	public void testException() {
+	public void exception() {
 		assertFalse(callback.handleException(new Exception("bam")));
 		assertTrue(callback.hasException());
 		assertEquals("bam", callback.getException().getMessage());
@@ -37,7 +37,7 @@ public class ListResultCallbackTest {
 	}
 
 	@Test
-	public void testOneResult() {
+	public void oneResult() {
 		assertTrue(callback.handleSuccess(FplInteger.valueOf(42)));
 		assertFalse(callback.hasException());
 		assertNull(callback.getException());

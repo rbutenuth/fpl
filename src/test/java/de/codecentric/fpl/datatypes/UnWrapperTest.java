@@ -17,19 +17,19 @@ import de.codecentric.fpl.datatypes.list.FplList;
 public class UnWrapperTest {
 
 	@Test
-	public void testInstanciateUnWrapper() {
+	public void instanciateUnWrapper() {
 		new UnWrapper(); // cover no-op constructor
 	}
 	
 	@Test
-	public void testUnwrapFplWrapper() {
+	public void unwrapFplWrapper() {
 		FplWrapper w = new FplWrapper(Integer.valueOf(42));
 		Object u = UnWrapper.unwrap(w);
 		assertEquals(Integer.valueOf(42), u);
 	}
 
 	@Test
-	public void testWrapList() throws EvaluationException {
+	public void wrapList() throws EvaluationException {
 		List<Integer> list = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
 			list.add(i);
@@ -42,14 +42,14 @@ public class UnWrapperTest {
 	}
 
 	@Test
-	public void testWrapUnknownClass() throws EvaluationException {
+	public void wrapUnknownClass() throws EvaluationException {
 		FplWrapper obj = (FplWrapper) UnWrapper.wrap(this);
 		assertTrue(this == obj.getInstance());
 	}
 	
 
 	@Test
-	public void testWrapObject() throws EvaluationException {
+	public void wrapObject() throws EvaluationException {
 		Map<Object, Object> map = new HashMap<>();
 		map.put("key", "value");
 		FplObject obj = (FplObject) UnWrapper.wrap(map);
@@ -57,7 +57,7 @@ public class UnWrapperTest {
 	}
 	
 	@Test
-	public void testWrapObjectWithEmptyKey() throws EvaluationException {
+	public void wrapObjectWithEmptyKey() throws EvaluationException {
 		Map<Object, Object> map = new HashMap<>();
 		map.put("", "value");
 		try {
@@ -69,7 +69,7 @@ public class UnWrapperTest {
 	}
 	
 	@Test
-	public void testWrapObjectWithNonStringKey() throws EvaluationException {
+	public void wrapObjectWithNonStringKey() throws EvaluationException {
 		Map<Object, Object> map = new HashMap<>();
 		map.put(Integer.valueOf(1), "one");
 		FplWrapper wrapper = (FplWrapper) UnWrapper.wrap(map);
@@ -78,7 +78,7 @@ public class UnWrapperTest {
 	}
 	
 	@Test
-	public void testWrapArray() throws EvaluationException {
+	public void wrapArray() throws EvaluationException {
 		Integer[] a = new Integer[3];
 		for (int i = 0; i < a.length; i++) {
 			a[i] = i;
@@ -91,7 +91,7 @@ public class UnWrapperTest {
 	}
 	
 	@Test
-	public void testUnwrapList() throws EvaluationException {
+	public void unwrapList() throws EvaluationException {
 		FplValue[] values = new FplValue[4];
 		for (int i = 0; i < values.length; i++) {
 			values[i] = FplInteger.valueOf(i);
@@ -104,7 +104,7 @@ public class UnWrapperTest {
 	}
 	
 	@Test
-	public void testUnwrapObject() throws Exception {
+	public void unwrapObject() throws Exception {
 		FplObject obj = new FplObject("obj");
 		obj.put("foo", new FplString("bar"));
 		Map<?, ?> map = (Map<?, ?>) UnWrapper.unwrap(obj);

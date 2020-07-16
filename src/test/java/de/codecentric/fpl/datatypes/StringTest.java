@@ -2,6 +2,7 @@ package de.codecentric.fpl.datatypes;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -9,42 +10,51 @@ import org.junit.Test;
 public class StringTest {
     
 	@Test(expected = NullPointerException.class)
-    public void testBadString() {
+    public void badString() {
         new FplString(null);
     }
     
     @Test
-    public void testHashCodeString() {
+    public void hashCodeString() {
     	assertEquals(new FplString("aaa").hashCode(), new FplString("aaa").hashCode());
     }
     
     @Test
-    public void testEqualString() {
+    public void equalString() {
     	assertTrue(new FplString("foo").equals(new FplString("foo")));
     }
 
     @Test
-    public void testEqualSameString() {
+    public void equalSameString() {
     	FplString one = new FplString("bar");
 		assertTrue(one.equals(one));
     }
 
     @Test
-    public void testNotEqualStringNull() {
+    public void notEqualStringNull() {
     	assertFalse(new FplString("x").equals(null));
     }
 
     @SuppressWarnings("unlikely-arg-type")
 	@Test
-    public void testNotEqualStringInteger() {
+    public void notEqualStringInteger() {
     	assertFalse(new FplString("foo").equals(FplInteger.valueOf(1)));
     }
 
     @Test
-    public void testToString() {
+    public void toStringWithSpecialCharacters() {
     	String test = "a\"b\t\n\r";
     	String result = "\"a\\\"b\\t\\n\\r\"";
     	assertEquals(result, new FplString(test).toString());
     }
 
+    @Test
+    public void makeWithNull() {
+    	assertNull(FplString.make(null));
+    }
+    
+    @Test
+    public void makeWithContent() {
+    	assertEquals("Huhu", FplString.make("Huhu").getContent());
+    }
 }

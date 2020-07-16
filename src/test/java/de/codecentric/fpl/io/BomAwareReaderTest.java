@@ -21,35 +21,35 @@ public class BomAwareReaderTest {
 	private static final String HELLO = "Hello, world!";
 
 	@Test
-	public void testWithoutBom() throws IOException {
-		testWithOutBom("");
-		testWithOutBom("a");
-		testWithOutBom("ab");
-		testWithOutBom("abc");
-		testWithOutBom("abcd");
+	public void withoutBom() throws IOException {
+		withOutBom("");
+		withOutBom("a");
+		withOutBom("ab");
+		withOutBom("abc");
+		withOutBom("abcd");
 	}
 	
 	@Test
 	public void bomUTF8() throws IOException {
-		testWithCharset(UTF_8, StandardCharsets.UTF_8);
+		withCharset(UTF_8, StandardCharsets.UTF_8);
 	}
 
 	@Test
 	public void bomUTF8WithHeader() throws IOException {
-		testWithCharset(UTF_8_WITH_HEADER, StandardCharsets.UTF_8);
+		withCharset(UTF_8_WITH_HEADER, StandardCharsets.UTF_8);
 	}
 
 	@Test
 	public void bomUTF16LE() throws IOException {
-		testWithCharset(UTF_16_LE, StandardCharsets.UTF_16LE);
+		withCharset(UTF_16_LE, StandardCharsets.UTF_16LE);
 	}
 
 	@Test
 	public void bomUTF16BE() throws IOException {
-		testWithCharset(UTF_16_BE, StandardCharsets.UTF_16BE);
+		withCharset(UTF_16_BE, StandardCharsets.UTF_16BE);
 	}
 
-	private void testWithCharset(int[] header, Charset charset) throws IOException {
+	private void withCharset(int[] header, Charset charset) throws IOException {
 		byte[] hello = HELLO.getBytes(charset);
 		byte[] input = new byte[header.length + hello.length];
 		for (int i = 0; i < header.length; i++) {
@@ -65,7 +65,7 @@ public class BomAwareReaderTest {
 			assertEquals(HELLO, new String(buffer, 0, got));
 		}
 	}
-	private void testWithOutBom(String text) throws IOException {
+	private void withOutBom(String text) throws IOException {
 		byte[] textAsBytes = text.getBytes("UTF-8");
 		byte[] input = new byte[textAsBytes.length];
 		for (int i = 0; i < textAsBytes.length; i++) {

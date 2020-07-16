@@ -13,7 +13,7 @@ import de.codecentric.fpl.datatypes.AbstractFunction;
 public class FplEngineTest extends AbstractFplTest {
 
 	@Test
-	public void testCommentsInBuiltinFunctions() throws EvaluationException {
+	public void commentsInBuiltinFunctions() throws EvaluationException {
 		for (Entry<String, FplValue> entry : scope) {
 			FplValue value = entry.getValue();
             if (value instanceof AbstractFunction) {

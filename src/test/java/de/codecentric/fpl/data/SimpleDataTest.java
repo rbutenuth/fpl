@@ -20,25 +20,25 @@ import de.codecentric.fpl.parser.Position;
 public class SimpleDataTest {
 
     @Test(expected = IllegalArgumentException.class)
-    public void testNullSymbol() {
+    public void nullSymbol() {
         new Symbol(null);
     }
 
     @Test
-    public void testEmptySymbol() {
+    public void emptySymbol() {
         Symbol s = new Symbol("");
         assertEquals("", s.getName());
     }
 
     @Test
-    public void testGoodSymbol1() {
+    public void goodSymbol1() {
         Symbol a = new Symbol("a");
         assertEquals("a", a.getName());
         assertEquals(Position.UNKNOWN, a.getPosition());
     }
 
     @Test
-    public void testGoodSymbol2() {
+    public void goodSymbol2() {
         Symbol a = new Symbol("a", new Position("name", 1, 1), Collections.emptyList());
         assertEquals("a", a.getName());
         assertEquals(new Position("name", 1, 1), a.getPosition());
@@ -49,29 +49,29 @@ public class SimpleDataTest {
     }
 
     @Test
-    public void testPositionEquals() {
+    public void positionEquals() {
         assertFalse(new Position("bla", 1, 1).equals(null));
         Object o = "sonstwas"; // to avoid warning "unlikely argument"
         assertFalse(new Position("bla", 1, 1).equals(o));
     }
 
     @Test(expected = NullPointerException.class)
-    public void testBadPosition1() {
+    public void badPosition1() {
         new Position(null, 1, 1);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testBadPosition2() {
+    public void badPosition2() {
         new Position("bla", -1, 1);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testBadPosition3() {
+    public void badPosition3() {
         new Position("bla", 1, -1);
     }
 
     @Test
-    public void testSymbolEquals() {
+    public void symbolEquals() {
         Symbol a = new Symbol("a");
         assertFalse(a.equals(null));
         Object obj = "sonstwas"; // to avoid warning "unlikely argument"
@@ -84,18 +84,18 @@ public class SimpleDataTest {
     }
 
     @Test
-    public void testSymbolHashCode() {
+    public void symbolHashCode() {
         Symbol a = new Symbol("a");
         assertEquals(a.hashCode(), new Symbol("a").hashCode());
     }
 
     @Test(expected = NullPointerException.class)
-    public void testBadLazyExpression() {
+    public void badLazyExpression() {
         new LazyExpression(null, null);
     }
 
     @Test
-    public void testLazyExpression() throws EvaluationException {
+    public void lazyExpression() throws EvaluationException {
         LazyExpression e = new LazyExpression(new Scope("test"), FplInteger.valueOf(42));
         assertEquals(42, ((FplInteger)e.getOriginalExpression()).getValue());
         assertEquals(42, ((FplInteger)e.evaluate(null)).getValue());

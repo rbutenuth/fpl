@@ -23,7 +23,7 @@ import de.codecentric.fpl.datatypes.list.FplList;
 public class ParserTest extends AbstractFplTest {
 
 	@Test(expected = NullPointerException.class)
-	public void testScannerNull() throws ParseException, IOException {
+	public void scannerNull() throws ParseException, IOException {
 		try (Parser p = new Parser(null)) {
 			// not reached
 		}

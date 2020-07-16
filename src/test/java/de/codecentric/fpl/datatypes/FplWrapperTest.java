@@ -104,7 +104,7 @@ public class FplWrapperTest extends AbstractFplTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void testNull() {
+	public void nullValue() {
 		new FplWrapper((Object)null);
 	}
 	

@@ -22,7 +22,7 @@ public class AccessMethods extends AbstractListTest {
 	}
 	
 	@Test(expected = NoSuchElementException.class)
-	public void testIterateTooMuchSmallList() {
+	public void iterateTooMuchSmallList() {
 		Iterator<FplValue> iter = FplList.fromValue(value(1)).iterator();
 		assertTrue(iter.hasNext());
 		assertEquals(value(1), iter.next());
@@ -31,7 +31,7 @@ public class AccessMethods extends AbstractListTest {
 	}
 
 	@Test(expected = NoSuchElementException.class)
-	public void testIterateTooMuchLargeList() {
+	public void iterateTooMuchLargeList() {
 		Iterator<FplValue> iter = create(0, 100).iterator();
 		for (int i = 0; i <= 99; i++) {
 			assertTrue(iter.hasNext());

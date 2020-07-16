@@ -15,7 +15,7 @@ import de.codecentric.fpl.parser.ParseException;
 
 public class CurryingTest extends AbstractFplTest {
     @Test
-    public void testNoArguments() throws ParseException, IOException, EvaluationException {
+    public void noArguments() throws ParseException, IOException, EvaluationException {
         // Result should be the function itself
         AbstractFunction f = (AbstractFunction) evaluate("plus", "( + )");
         assertEquals(2, f.getMinimumNumberOfParameters());
@@ -23,7 +23,7 @@ public class CurryingTest extends AbstractFplTest {
     }
 
     @Test
-    public void testOneMissingArgument() throws ParseException, IOException, EvaluationException {
+    public void oneMissingArgument() throws ParseException, IOException, EvaluationException {
         evaluate("plus", "(put plus3 ( + 3 ))");
         AbstractFunction f = (AbstractFunction)scope.get("plus3");
         assertEquals(1, f.getMinimumNumberOfParameters());
@@ -36,7 +36,7 @@ public class CurryingTest extends AbstractFplTest {
     }
 
 	@Test
-	public void testCurryingOfFplFunction() throws Exception {
+	public void curryingOfFplFunction() throws Exception {
 		ListResultCallback callback = evaluateResource("currying-of-fpl-function.fpl");
 		List<FplValue> values = callback.getResults();
 		assertEquals(3, values.size());
@@ -45,7 +45,7 @@ public class CurryingTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testCurryingOfFplFunctionWithSymbol() throws Exception {
+	public void curryingOfFplFunctionWithSymbol() throws Exception {
 		ListResultCallback callback = evaluateResource("currying-of-fpl-function-with-symbol.fpl");
 		List<FplValue> values = callback.getResults();
 		assertEquals(5, values.size());

@@ -80,17 +80,17 @@ public class ScopeTest {
 	}
 	
 	@Test
-	public void testChangeNullKey() throws ScopeException {
+	public void changeNullKey() throws ScopeException {
 		changeWithException(null, new FplString("newValue"), "nil is not a valid name");
 	}
 	
 	@Test
-	public void testChangeEmptyKey() throws ScopeException {
+	public void changeEmptyKey() throws ScopeException {
 		changeWithException("", new FplString("newValue"), "\"\" is not a valid name");
 	}
 	
 	@Test
-	public void testChangeNullValue() throws ScopeException {
+	public void changeNullValue() throws ScopeException {
 		changeWithException("someKey", null, "Change does not allow null values");
 	}
 	
@@ -104,7 +104,7 @@ public class ScopeTest {
 	}
 	
 	@Test
-	public void testChangeOuter() throws ScopeException {
+	public void changeOuter() throws ScopeException {
 		outer.put("key", new FplString("oldValue"));
 		FplValue old = inner.replace("key", new FplString("newValue"));
 		assertEquals("\"oldValue\"", old.toString());
@@ -113,7 +113,7 @@ public class ScopeTest {
 	}
 
 	@Test
-	public void testChangeInner() throws ScopeException {
+	public void changeInner() throws ScopeException {
 		inner.put("key", new FplString("oldValue"));
 		FplValue old = inner.replace("key", new FplString("newValue"));
 		assertEquals("\"oldValue\"", old.toString());
@@ -122,12 +122,12 @@ public class ScopeTest {
 	}
 
 	@Test(expected = ScopeException.class)
-	public void testChangeNotExisting() throws ScopeException {
+	public void changeNotExisting() throws ScopeException {
 		inner.replace("non-existing-key", new FplString("foo"));
 	}
 	
 	@Test
-	public void testException() {
+	public void exception() {
 		ScopeException se = new ScopeException("huhu", new Error("bäm"));
 		assertEquals("huhu", se.getMessage());
 		assertEquals("bäm", se.getCause().getMessage());

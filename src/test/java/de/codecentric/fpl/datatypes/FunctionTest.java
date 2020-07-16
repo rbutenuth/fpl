@@ -17,29 +17,29 @@ import de.codecentric.fpl.parser.Position;
 public class FunctionTest {
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testNullName() throws Exception {
+	public void nullName() throws Exception {
 		new TestFunction(null, false);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void testEmptyName() throws Exception {
+	public void emptyName() throws Exception {
 		new TestFunction("", false);
 	}
 	
 	@Test
-	public void testPositionUnknown() throws Exception {
+	public void positionUnknown() throws Exception {
 		AbstractFunction f = new TestFunction("foo", false);
 		assertEquals(Position.UNKNOWN, f.getPosition());
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
-	public void testNullComment() throws Exception {
+	public void nullComment() throws Exception {
 		AbstractFunction f = new TestFunction("foo", false);
 		f.setParameterComment(0, null);
 	}
 	
 	@Test
-	public void testPositionNull() throws Exception {
+	public void positionNull() throws Exception {
 		AbstractFunction f = new TestFunction(null, "foo", false, new String[0]);
 		assertEquals(Position.UNKNOWN, f.getPosition());
 		assertEquals("foo", f.getName());
@@ -48,13 +48,13 @@ public class FunctionTest {
 	}
 	
 	@Test
-	public void testEvaluateEmptyListToBoolean() throws Exception {
+	public void evaluateEmptyListToBoolean() throws Exception {
 		AbstractFunction f = new TestFunction(null, "foo", false, new String[0]);
 		assertFalse(f.evaluateToBoolean(null, FplList.fromValues(new FplValue[0])));
 	}
 	
 	@Test
-	public void testEvaluateNonEmptyListToBoolean() throws Exception {
+	public void evaluateNonEmptyListToBoolean() throws Exception {
 		AbstractFunction f = new TestFunction(null, "foo", false, new String[0]);
 		Scope scope = new Scope("test");
 		scope.put("x", FplList.fromValues(new FplValue[] { new FplString("baz") }));
@@ -62,7 +62,7 @@ public class FunctionTest {
 	}
 	
 	@Test
-	public void testPositionKnown() throws Exception {
+	public void positionKnown() throws Exception {
 		AbstractFunction f = new TestFunction(new Position("foo.fpl", 1, 42), "foo", false);
 		assertEquals(new Position("foo.fpl", 1, 42), f.getPosition());
 	}

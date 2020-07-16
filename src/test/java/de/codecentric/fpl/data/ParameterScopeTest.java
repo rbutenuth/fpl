@@ -31,36 +31,36 @@ public class ParameterScopeTest {
 	}
 
 	@Test
-	public void testEmptyScope() {
+	public void emptyScope() {
 		assertTrue(outer.isEmpty());
 		assertEquals(new FplString("foo"), inner.getParameter(0));
 		assertNull(outer.get("foo"));
 	}
 
 	@Test
-	public void testNesting() {
+	public void nesting() {
 		assertTrue(inner.getNext() == outer);
 	}
 
 	@Test
-	public void testPutInner() throws ScopeException {
+	public void putInner() throws ScopeException {
 		inner.put("foot", new FplString("baz"));
 		assertEquals(new FplString("baz"), inner.get("foot"));
 		assertNull(outer.get("foot"));
 	}
 
 	@Test(expected = ScopeException.class)
-	public void testPutNullKey() throws ScopeException {
+	public void putNullKey() throws ScopeException {
 		inner.put(null, new FplString("foo"));
 	}
 
 	@Test(expected = ScopeException.class)
-	public void testPutEmptyKey() throws ScopeException {
+	public void putEmptyKey() throws ScopeException {
 		inner.put("", new FplString("foot"));
 	}
 
 	@Test
-	public void testChangeInner() throws ScopeException {
+	public void changeInner() throws ScopeException {
 		outer.put("key", new FplString("oldValue"));
 		FplValue old = inner.replace("key", new FplString("newValue"));
 		assertEquals("\"oldValue\"", old.toString());
@@ -69,14 +69,14 @@ public class ParameterScopeTest {
 	}
 
 	@Test
-	public void testDefine() throws ScopeException {
+	public void define() throws ScopeException {
 		FplString euro = new FplString("€");
 		inner.define(new Symbol("euro"), euro);
 		assertEquals(euro, inner.get("euro"));
 	}
 
 	@Test
-	public void testParameterTypeName() {
+	public void parameterTypeName() {
 		Parameter p = new Parameter(new Symbol("foo"), 0);
 		assertEquals("parameter", p.typeName());
 	}

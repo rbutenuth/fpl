@@ -51,7 +51,7 @@ public class LambdaTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testLambda() throws Exception {
+	public void lambda() throws Exception {
 		assertEquals(1, lambda.getMinimumNumberOfParameters());
 		assertTrue(lambda.isVararg());
 	}

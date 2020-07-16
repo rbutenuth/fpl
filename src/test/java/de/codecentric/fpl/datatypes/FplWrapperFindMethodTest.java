@@ -101,7 +101,7 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 	}
 	
 	@Test
-	public void testConstructorNotFound() throws Exception {
+	public void constructorNotFound() throws Exception {
 		try {
 			evaluate("noarg-cons", "(java-instance \"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\" \"foo\")");
 			fail("exception missing");
@@ -111,35 +111,35 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 	}
 	
 	@Test
-	public void testNoArgs() throws Exception {
+	public void noArgs() throws Exception {
 		FplString args = (FplString) evaluate("noarg-cons", //
 				"((java-instance\"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\") getArgs)");
 		assertEquals("", args.getContent());
 	}
 	
 	@Test
-	public void testListByNull() throws Exception {
+	public void listByNull() throws Exception {
 		FplString args = (FplString) evaluate("list-cons", //
 				"((java-instance\"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\" nil) getArgs)");
 		assertEquals("List<?> list", args.getContent());
 	}
 	
 	@Test
-	public void testBooleanFalse() throws Exception {
+	public void booleanFalse() throws Exception {
 		FplString args = (FplString) evaluate("boolean-cons", //
 				"((java-instance\"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\" 0) getArgs)");
 		assertEquals("int i", args.getContent());
 	}
 	
 	@Test
-	public void testBooleanNullIsFalse() throws Exception {
+	public void booleanNullIsFalse() throws Exception {
 		FplString args = (FplString) evaluate("boolean-cons", //
 				"((java-instance\"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\" 1 nil) getArgs)");
 		assertEquals("int i, Boolean bool", args.getContent());
 	}
 	
 	@Test
-	public void testWrappedPrimitives() throws Exception {
+	public void wrappedPrimitives() throws Exception {
 		FplString args = (FplString) evaluate("wrapped-primitive-cons", //
 				"((java-instance\"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\" " 
 				+"1 2 3 4 5.0 6.0 1) getArgs)");
@@ -147,7 +147,7 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 	}
 	
 	@Test
-	public void testPrimitives() throws Exception {
+	public void primitives() throws Exception {
 		FplString args = (FplString) evaluate("primitive-cons", //
 				"((java-instance\"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\" " 
 				+"1 2 3 4 5.0 6.0) getArgs)");
@@ -155,28 +155,28 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 	}
 	
 	@Test
-	public void testCallTestMethodWithDoubleArg() throws Exception {
+	public void callTestMethodWithDoubleArg() throws Exception {
 		FplString tm = (FplString) evaluate("double", //
 				"((java-instance\"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\") testMethod 1.0)");
 		assertEquals("double arg", tm.getContent());
 	}
 	
 	@Test
-	public void testCallTestMethodWithStringArg() throws Exception {
+	public void callTestMethodWithStringArg() throws Exception {
 		FplString tm = (FplString) evaluate("primitive-cons", //
 				"((java-instance\"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\") testMethod \"foo\")");
 		assertEquals("String arg", tm.getContent());
 	}
 	
 	@Test
-	public void testCallTestMethodWithDoubleNullArg() throws Exception {
+	public void callTestMethodWithDoubleNullArg() throws Exception {
 		FplString tm = (FplString) evaluate("primitive-cons", //
 				"((java-instance de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass) testMethod 1.0 nil)");
 		assertEquals("Double d, String arg", tm.getContent());
 	}
 	
 	@Test
-	public void testFloatCall() throws Exception {
+	public void floatCall() throws Exception {
 		FplWrapper w = new FplWrapper(ConstructorTestClass.class.getName(), new FplValue[0]);
 		FplValue[] parameters = new FplValue[2];
 		parameters[0] = new FplString("testMethod"); 
@@ -186,7 +186,7 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 	}
 	
 	@Test
-	public void testBooleanCall() throws Exception {
+	public void booleanCall() throws Exception {
 		FplWrapper w = new FplWrapper(ConstructorTestClass.class.getName(), new FplValue[0]);
 		FplValue[] parameters = new FplValue[2];
 		parameters[0] = new FplString("testMethod"); 
@@ -196,7 +196,7 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 	}
 	
 	@Test
-	public void testCallBooleanMethodWithIntArg() throws Exception {
+	public void callBooleanMethodWithIntArg() throws Exception {
 		FplString tm = (FplString) evaluate("primitive-cons", //
 				"((java-instance de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass) booleanMethod 1)");
 		assertEquals("booleanMethod(boolean arg)->true", tm.getContent());
@@ -206,7 +206,7 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 	}
 	
 	@Test
-	public void testFractionalFloatCall() throws Exception {
+	public void fractionalFloatCall() throws Exception {
 		FplWrapper w = new FplWrapper(ConstructorTestClass.class.getName(), new FplValue[0]);
 		FplValue[] parameters = new FplValue[2];
 		parameters[0] = new FplString("fractionalMethod"); 
@@ -216,7 +216,7 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void testFractionalDoubleCall() throws Exception {
+	public void fractionalDoubleCall() throws Exception {
 		FplWrapper w = new FplWrapper(ConstructorTestClass.class.getName(), new FplValue[0]);
 		FplValue[] parameters = new FplValue[2];
 		parameters[0] = new FplString("fractionalMethod"); 
@@ -226,7 +226,7 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 	}
 	
 	@Test
-	public void testParentChild() throws Exception {
+	public void parentChild() throws Exception {
 		FplWrapper w = new FplWrapper(ConstructorTestClass.class.getName(), new FplValue[0]);
 		FplValue[] parameters = new FplValue[2];
 		parameters[0] = new FplString("fractionalMethod"); 

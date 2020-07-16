@@ -28,14 +28,14 @@ public class PrintTest extends AbstractFplTest {
 	}
 	
 	@Test
-	public void testPrint() throws Exception {
+	public void print() throws Exception {
 		evaluate("print", "(print 42 43)");
 		printStream.flush();
 		assertEquals("42 43", new String(stream.toByteArray(), "UTF-8"));
 	}
 	
 	@Test
-	public void testPrintLine() throws Exception {
+	public void printLine() throws Exception {
 		evaluate("print", "(println 42 43)");
 		assertEquals("42 43" + System.lineSeparator(), new String(stream.toByteArray(), "UTF-8"));
 	}

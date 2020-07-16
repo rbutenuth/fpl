@@ -20,22 +20,22 @@ import de.codecentric.fpl.parser.ParseException;
 public class ComparisonTest extends AbstractFplTest {
 
 	@Test(expected = EvaluationException.class)
-    public void testCompareNull1() throws Exception {
+    public void compareNull1() throws Exception {
         evaluateToBoolean("lt", "(lt nil 1)");
     }
 
     @Test(expected = EvaluationException.class)
-    public void testCompareNull2() throws Exception {
+    public void compareNull2() throws Exception {
         evaluateToBoolean("lt", "(lt 1 nil)");
     }
 
     @Test(expected = EvaluationException.class)
-    public void testCompareNull3() throws Exception {
+    public void compareNull3() throws Exception {
         evaluateToBoolean("lt", "(lt nil nil)");
     }
 
     @Test
-    public void testLt() throws Exception {
+    public void lt() throws Exception {
         assertTrue(evaluateToBoolean("lt", "(lt 1 2)"));
         assertTrue(evaluateToBoolean("lt", "(lt 1.0 2.0)"));
         assertTrue(evaluateToBoolean("lt", "(lt 1.0 2)"));
@@ -54,7 +54,7 @@ public class ComparisonTest extends AbstractFplTest {
     }
 
     @Test
-    public void testGt() throws Exception {
+    public void gt() throws Exception {
         assertTrue(evaluateToBoolean("gt", "(gt 3 2)"));
         assertTrue(evaluateToBoolean("gt", "(gt 3.0 2.0)"));
         assertTrue(evaluateToBoolean("gt", "(gt 3.0 2)"));
@@ -80,7 +80,7 @@ public class ComparisonTest extends AbstractFplTest {
     }
 
     @Test
-    public void testLe() throws Exception {
+    public void le() throws Exception {
         assertTrue(evaluateToBoolean("le", "(le 1 2)"));
         assertTrue(evaluateToBoolean("le", "(le 1.0 2.0)"));
         assertTrue(evaluateToBoolean("le", "(le 1.0 2)"));
@@ -103,7 +103,7 @@ public class ComparisonTest extends AbstractFplTest {
     }
 
     @Test
-    public void testGe() throws Exception {
+    public void ge() throws Exception {
         assertTrue(evaluateToBoolean("ge", "(ge 3 2)"));
         assertTrue(evaluateToBoolean("ge", "(ge 3.0 2.0)"));
         assertTrue(evaluateToBoolean("ge", "(ge 3.0 2)"));
@@ -126,7 +126,7 @@ public class ComparisonTest extends AbstractFplTest {
     }
 
     @Test
-    public void testEq() throws Exception {
+    public void eq() throws Exception {
         assertTrue(evaluateToBoolean("eq", "(eq nil nil)"));
         assertTrue(evaluateToBoolean("eq", "(eq 3 3)"));
         assertTrue(evaluateToBoolean("eq", "(eq 3.0 3)"));
@@ -152,7 +152,7 @@ public class ComparisonTest extends AbstractFplTest {
     }
 
     @Test
-    public void testNe() throws Exception {
+    public void ne() throws Exception {
         assertFalse(evaluateToBoolean("ne", "(ne nil nil)"));
         assertFalse(evaluateToBoolean("ne", "(ne 3 3)"));
         assertFalse(evaluateToBoolean("ne", "(ne 3.0 3)"));

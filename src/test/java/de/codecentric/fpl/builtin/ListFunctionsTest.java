@@ -263,7 +263,7 @@ public class ListFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test(expected = EvaluationException.class)
-	public void testTooManyParameters() throws Exception {
+	public void tooManyParameters() throws Exception {
 		evaluate("pair", "(def-function pair (a b) (list a b))");
 		FplList list = (FplList) evaluate("incorrect call", "(pair 1 2 3)");
 		assertEquals(2, list.size());
