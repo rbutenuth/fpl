@@ -16,7 +16,7 @@ public class BomAwareReader extends Reader {
 
 	public BomAwareReader(InputStream is) throws IOException {
 		byte[] header = new byte[3];
-		is.read(header);
+		int got = Math.max(is.read(header), 0);
 		int headerLength;
 		Charset charset;
 		if (matches(header, UTF_8_HEADER)) {
@@ -36,7 +36,7 @@ public class BomAwareReader extends Reader {
 		// We must have got at least "headerLength" bytes, otherwise we wouldn't have a match.
 		// So it's not necessary to check the return value of read().
 
-		InputStream isWithoutBom = new InputStreamWithPrefix(header, headerLength, 3 - headerLength, is);
+		InputStream isWithoutBom = new InputStreamWithPrefix(header, headerLength, Math.min(3 - headerLength, got), is);
 		reader = new InputStreamReader(isWithoutBom, charset);
 	}
 
