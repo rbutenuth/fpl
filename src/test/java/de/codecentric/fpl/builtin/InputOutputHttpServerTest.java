@@ -120,8 +120,8 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 
 	@Test
 	public void getRequestWithHeadersAndParamameters() throws Exception {
-		// Return the query parameters as response headers 
 		evaluate("callback-1", "(def-function callback-1 (path headers params body) (list 201 {} nil))");
+		// Return the query parameters as response headers 
 		evaluate("callback-2", "(def-function callback-2 (path headers params body) (list 200 params \"Hello world\"))");
 		evaluate("start", "(def terminate (http-server " + port + " auth nil "
 				+ "(list \"GET\" \"/foo\" callback-1)"
@@ -145,6 +145,21 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 		assertTrue(values.contains("value-1"));
 		assertTrue(values.contains("value-2"));
 		assertEquals("Hello world", res.getBodyAsString("UTF-8"));
+	}
+
+	@Test
+	public void getRequestReturnHeaderAsBody() throws Exception {
+		evaluate("callback", "(def-function callback (path headers params body) (list 200 params (dict-get headers key)))");
+		evaluate("start", "(def terminate (http-server " + port + " auth nil "
+				+ "(list \"GET\" \"/get-path\" callback)))");
+		Function terminate = (Function) evaluate("lambda", "terminate");
+		assertNotNull(terminate);
+		setCorrectUser();
+		req.setBaseUri(baseUrl + "get-path");
+		req.addHeader("key", "value-ending-in-body");
+		HttpResponse res = new HttpClient().execute(req);
+		assertEquals(200, res.getStatusCode());
+		assertEquals("value-ending-in-body", res.getBodyAsString("UTF-8"));
 	}
 
 	@Test

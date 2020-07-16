@@ -398,11 +398,11 @@ public class InputOutput implements ScopePopulator {
 		return params;
 	}
 
-	private FplObject fplHeaders(HttpEntity res) throws ScopeException {
+	private FplObject fplHeaders(HttpEntity entity) throws ScopeException {
 		FplObject headers = new FplObject("dict");
-		for (String name : res.getHeaderNames()) {
+		for (String name : entity.getHeaderNames()) {
 			if (!name.isEmpty()) {
-				List<String> values = res.getHeaders(name);
+				List<String> values = entity.getHeaders(name);
 				int count = values.size();
 				if (count == 1) {
 					headers.put(name.toLowerCase(), new FplString(values.get(0)));
