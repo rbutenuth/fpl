@@ -73,7 +73,7 @@ public class HttpServerMain {
 			}
 		};
 
-		server = new SimpleHttpServer(port, handler, authenticator);
+		server = new SimpleHttpServer(engine.getPool(), port, handler, authenticator);
 	}
 
 	public static void terminate(int delayInSeconds) {

@@ -34,14 +34,12 @@ public class InputOutputHttpRequestTest extends AbstractFplTest {
 	private String testPassword;
 	private static int nextPort = 9099;
 	private int port;
-	private String baseUrl;
 	private SimpleHttpServer server;
 	private List<HttpRequest> requests;
 
 	@Before
 	public void startServer() throws Exception {
 		port = nextPort++;
-		baseUrl = "http://localhost:" + port + "/test";
 		SecureRandom sr = new SecureRandom();
 		byte[] bytes = new byte[32];
 		sr.nextBytes(bytes);
@@ -49,7 +47,7 @@ public class InputOutputHttpRequestTest extends AbstractFplTest {
 			bytes[i] = (byte) ('0' + ((0xff & bytes[i]) % 10));
 		}
 		testPassword = new String(bytes);
-		server = new SimpleHttpServer(port, new Handler(), new BasicAuthenticator("unit-test") {
+		server = new SimpleHttpServer(engine.getPool(), port, new Handler(), new BasicAuthenticator("unit-test") {
 
 			@Override
 			public boolean checkCredentials(String username, String password) {

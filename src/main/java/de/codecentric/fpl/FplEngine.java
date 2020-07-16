@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ForkJoinPool;
 
 import de.codecentric.fpl.builtin.Arithmetic;
 import de.codecentric.fpl.builtin.Assignment;
@@ -30,12 +31,14 @@ import de.codecentric.fpl.parser.Scanner;
  * Builds the initial {@link Scope} and contains helpers for execution.
  */
 public class FplEngine {
+	private ForkJoinPool pool;
 	private PrintStream systemOut;
 	private Scope scope;
 
 	public FplEngine() throws ScopeException {
 		systemOut = System.out;
 		scope = createDefaultScope();
+		pool = ForkJoinPool.commonPool();
 	}
 	
 	/**
@@ -54,16 +57,24 @@ public class FplEngine {
 		new StringFunctions().populate(scope);
 		new Comparison().populate(scope);
 		new Conditional().populate(scope);
-		new Parallel().populate(scope);
+		new Parallel(this).populate(scope);
 		new Loop().populate(scope);
 		new Lambda().populate(scope);
 		new ClassAndObject().populate(scope);
 		new Dictionary().populate(scope);
-		new InputOutput().populate(scope);
+		new InputOutput(this).populate(scope);
 
 		return scope;
 	}
 
+	public synchronized ForkJoinPool getPool() {
+		return pool;
+	}
+	
+	public synchronized void setPool(ForkJoinPool pool) {
+		this.pool = pool;
+	}
+	
 	public PrintStream getSystemOut() {
 		return systemOut;
 	}

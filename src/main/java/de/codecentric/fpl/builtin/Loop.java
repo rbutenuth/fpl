@@ -10,8 +10,8 @@ import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
-import de.codecentric.fpl.datatypes.FplLambda;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
@@ -39,7 +39,7 @@ public class Loop implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplList list = evaluateToList(scope, parameters[1]);
-				FplLambda function = evaluateToLambda(scope, parameters[0]);
+				Function function = evaluateToFunction(scope, parameters[0]);
 				try {
 					FplValue result = null;
 					Iterator<FplValue> iter = list.lambdaIterator(scope, function);
@@ -58,7 +58,7 @@ public class Loop implements ScopePopulator {
 				"list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				FplLambda function = evaluateToLambda(scope, parameters[0]);
+				Function function = evaluateToFunction(scope, parameters[0]);
 				FplList list = evaluateToList(scope, parameters[1]);
 				try {
 					return FplList.fromIterator(list.lambdaIterator(scope, function), list.size());
@@ -74,7 +74,7 @@ public class Loop implements ScopePopulator {
 				false, "function", "accumulator", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				FplLambda function = evaluateToLambda(scope, parameters[0]);
+				Function function = evaluateToFunction(scope, parameters[0]);
 				FplValue accumulator = parameters[1].evaluate(scope);
 				FplList list = evaluateToList(scope, parameters[2]);
 				for (FplValue value : list) {
@@ -88,7 +88,7 @@ public class Loop implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplList list = evaluateToList(scope, parameters[1]);
-				FplLambda function = evaluateToLambda(scope, parameters[0]);
+				Function function = evaluateToFunction(scope, parameters[0]);
 				Iterator<FplValue> iter = list.iterator();
 				List<FplValue> results = new ArrayList<>();
 				while (iter.hasNext()) {

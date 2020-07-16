@@ -36,8 +36,35 @@ Do an HTTP-request. Input parameters:
 * password Password for basic authentication (may be nil)
 The result is a list with
 * status code
-* response headers (map with single values or list of values)
+* response headers (map with single values or list of values), header names are converted to lower case.
 * body
 ```
 (http-request url method headers query-params body user password)
 ```
+
+### http-server
+Start an HTTP server. Returns a function to terminate the server, parameter is the delay in seconds.
+```
+(http-server port authenticator logger handlers...)
+```
+Example for `handlers`:
+```
+	("GET" "/some-path/*" some-function)
+	("POST" "/other-path/" other-function)
+```
+The `logger`(may be `nil`) is a function which is called when an error in handling a call happens. 
+Parameter is the error message.
+The `authenticator` must be `nil` or a function. The function receives two parameters:
+# user
+# password
+It must return `true` when the user is valid.
+
+The callback handler functions are called with the following parameters:
+* path Complete path, including the prefix defined in `handlers`.
+* headers Request headers as map (header names converted to lower case)
+* params Request parameters as map
+* body Request body as string. May be `nil`
+The function must return a list with three elements:
+# HTTP status code
+# map with response headers
+# Body as string, may be `nil`

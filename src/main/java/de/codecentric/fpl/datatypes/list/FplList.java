@@ -1,7 +1,7 @@
 package de.codecentric.fpl.datatypes.list;
 
-import static java.lang.System.*;
-import static java.util.Arrays.*;
+import static java.lang.System.arraycopy;
+import static java.util.Arrays.copyOf;
 
 import java.util.Iterator;
 import java.util.List;
@@ -10,8 +10,6 @@ import java.util.NoSuchElementException;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
-import de.codecentric.fpl.datatypes.FplLambda;
-import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 
@@ -849,7 +847,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 * @throws TunnelException With a wrapped {@link EvaluationException} when
 	 *                         function apply fails.
 	 */
-	public Iterator<FplValue> lambdaIterator(Scope scope, FplLambda function) {
+	public Iterator<FplValue> lambdaIterator(Scope scope, Function function) {
 		return new Iterator<FplValue>() {
 			Iterator<FplValue> iter = iterator();
 

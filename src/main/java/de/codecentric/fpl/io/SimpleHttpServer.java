@@ -9,6 +9,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.concurrent.ForkJoinPool;
 
 import com.sun.net.httpserver.BasicAuthenticator;
 import com.sun.net.httpserver.Headers;
@@ -16,20 +17,19 @@ import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
-import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.builtin.Parallel;
-import de.codecentric.fpl.data.ScopeException;
-
 public class SimpleHttpServer {
+	private ForkJoinPool pool;
 	private HttpServer server;
 	private boolean running;
 
-	public SimpleHttpServer(int port, HttpRequestHandler handler, BasicAuthenticator authenticator)
-			throws IOException, EvaluationException, ScopeException {
+	public SimpleHttpServer(ForkJoinPool pool, int port, HttpRequestHandler handler, BasicAuthenticator authenticator) throws IOException {
+		this.pool = pool;
 		server = HttpServer.create(new InetSocketAddress(port), 0);
-		server.setExecutor(Parallel.fplPool());
+		server.setExecutor(pool);
 		HttpContext context = server.createContext("/");
-		context.setAuthenticator(authenticator);
+		if (authenticator != null) {
+			context.setAuthenticator(authenticator);
+		}
 		context.setHandler((he) -> {
 			HttpRequest req = new HttpRequest();
 			req.setMethod(he.getRequestMethod());
@@ -86,7 +86,7 @@ public class SimpleHttpServer {
 	 */
 	public synchronized void terminate(int delayInSeconds) {
 		if (isRunning()) {
-			Parallel.fplPool().execute(new Runnable() {
+			pool.execute(new Runnable() {
 				@Override
 				public void run() {
 					server.stop(delayInSeconds);

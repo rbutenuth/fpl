@@ -1,6 +1,5 @@
 package de.codecentric.fpl.builtin;
 
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -29,9 +28,6 @@ import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
-import de.codecentric.fpl.io.HttpClient;
-import de.codecentric.fpl.io.HttpRequest;
-import de.codecentric.fpl.io.HttpResponse;
 
 public class StringFunctions implements ScopePopulator {
 	private static final String nl = System.lineSeparator();

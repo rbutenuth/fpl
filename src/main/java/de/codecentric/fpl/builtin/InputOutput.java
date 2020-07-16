@@ -12,7 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.sun.net.httpserver.BasicAuthenticator;
+
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
@@ -21,17 +24,27 @@ import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.io.BomAwareReader;
 import de.codecentric.fpl.io.HttpClient;
+import de.codecentric.fpl.io.HttpEntity;
 import de.codecentric.fpl.io.HttpRequest;
+import de.codecentric.fpl.io.HttpRequestHandler;
 import de.codecentric.fpl.io.HttpResponse;
+import de.codecentric.fpl.io.SimpleHttpServer;
 import de.codecentric.fpl.parser.ParseException;
 import de.codecentric.fpl.parser.Parser;
 import de.codecentric.fpl.parser.Position;
 import de.codecentric.fpl.parser.Scanner;
 
 public class InputOutput implements ScopePopulator {
+	private FplEngine engine;
+
+	public InputOutput(FplEngine engine) {
+		this.engine = engine;
+	}
+
 	@Override
 	public void populate(Scope scope) throws ScopeException {
 
@@ -127,6 +140,7 @@ public class InputOutput implements ScopePopulator {
 				}
 			}
 		});
+
 		scope.define(new AbstractFunction("http-request", //
 				comment("Do an HTTP-request."), false, "url", "method", "headers", "query-params", "body", "user",
 				"password") {
@@ -142,7 +156,7 @@ public class InputOutput implements ScopePopulator {
 					FplValue body = parameters[4] == null ? null : parameters[4].evaluate(scope);
 					if (body != null) {
 						if (body instanceof FplString) {
-							req.setBody(((FplString)body).getContent(), "UTF-8");
+							req.setBody(((FplString) body).getContent(), "UTF-8");
 						} else {
 							req.setBody(body.toString(), "UTF-8");
 						}
@@ -151,7 +165,7 @@ public class InputOutput implements ScopePopulator {
 					HttpResponse res = new HttpClient().execute(req);
 					FplValue[] values = new FplValue[3];
 					values[0] = FplInteger.valueOf(res.getStatusCode());
-					values[1] = responseHeaders(res);
+					values[1] = fplHeaders(res);
 					values[2] = res.hasBody() ? new FplString(res.getBodyAsString("UTF-8")) : null;
 					return FplList.fromValues(values);
 				} catch (IOException | ScopeException e) {
@@ -159,25 +173,11 @@ public class InputOutput implements ScopePopulator {
 				}
 			}
 
-
-			private void setHeaders(HttpRequest req, FplObject dict) {
-				for (Entry<String, FplValue> entry : dict) {
-					FplValue value = entry.getValue();
-					if (value instanceof FplList) {
-						for (FplValue v : (FplList)value) {
-							req.addHeader(entry.getKey(), valueToString(v));
-						}
-					} else {
-						req.addHeader(entry.getKey(), valueToString(value));
-					}
-				}
-			}
-
 			private void setParams(HttpRequest req, FplObject dict) {
 				for (Entry<String, FplValue> entry : dict) {
 					FplValue value = entry.getValue();
 					if (value instanceof FplList) {
-						for (FplValue v : (FplList)value) {
+						for (FplValue v : (FplList) value) {
 							req.addParam(entry.getKey(), valueToString(v));
 						}
 					} else {
@@ -185,37 +185,236 @@ public class InputOutput implements ScopePopulator {
 					}
 				}
 			}
-			
-			private String valueToString(FplValue value) {
-				if (value == null) {
-					return "";
-				} if (value instanceof FplString) {
-					return ((FplString)value).getContent();
+		});
+
+		scope.define(new AbstractFunction("http-server", //
+				comment("Start an HTTP server. Returns a function to terminate the server, parameter is the delay in seconds."),
+				true, "port", "authenticator", "logger", "handlers...") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				int port = (int) evaluateToLong(scope, parameters[0]);
+				BasicAuthenticator authenticator = createAuthenticator(scope,
+						evaluateToFunctionOrNull(scope, parameters[1]));
+				Function logger = evaluateToFunctionOrNull(scope, parameters[2]);
+				HttpRequestHandler handler = new Handler(createHandlers(scope, parameters, logger));
+
+				SimpleHttpServer server;
+				try {
+					server = new SimpleHttpServer(engine.getPool(), port, handler, authenticator);
+				} catch (IOException | IllegalArgumentException e) {
+					throw new EvaluationException(e.getMessage(), e);
+				}
+
+				return new AbstractFunction("terminate-server", comment("Terminate the HTTP server"), false, "delay") {
+
+					@Override
+					protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+						int delay = (int) evaluateToLong(scope, parameters[0]);
+						server.terminate(delay);
+						server.waitForTermination();
+						return null;
+					}
+				};
+			}
+
+			private BasicAuthenticator createAuthenticator(Scope scope, Function authLambda) {
+				if (authLambda == null) {
+					return null;
 				} else {
-					return value.toString();
+					return new BasicAuthenticator("fpl-server") {
+						@Override
+						public boolean checkCredentials(String username, String password) {
+							FplValue[] parameters = new FplValue[2];
+							parameters[0] = FplString.make(username);
+							parameters[1] = FplString.make(password);
+							try {
+								return evaluateToBoolean(scope, authLambda.call(scope, parameters));
+							} catch (EvaluationException e) {
+								return false;
+							}
+						}
+					};
 				}
 			}
-			
-			private FplObject responseHeaders(HttpResponse res) throws ScopeException {
-				FplObject headers = new FplObject("dict");
-				for (String name : res.getHeaderNames()) {
-					if (!name.isEmpty()) {
-						List<String> values = res.getHeaders(name);
-						int count = values.size();
-						if (count == 1) {
-							headers.put(name.toLowerCase(), new FplString(values.get(0)));
-						} else {
-							FplValue[] array = new FplString[count];
-							for (int i = 0; i < count; i++) {
-								array[i] = new FplString(values.get(i));
-							}
-							headers.put(name.toLowerCase(), FplList.fromValues(array));
+
+			// start at parameter 3 (0 is port, 1 authenticator, 2 logger)
+			private PathHandler[] createHandlers(Scope scope, FplValue[] parameters, Function logger)
+					throws EvaluationException {
+				PathHandler[] handlers = new PathHandler[parameters.length - 3];
+				for (int i = 0; i < parameters.length - 3; i++) {
+					handlers[i] = createHandler(scope, evaluateToList(scope, parameters[i + 3]), logger);
+				}
+				return handlers;
+			}
+
+			// Example for entry: ("GET" "/some-path/*" some-function)
+			private PathHandler createHandler(Scope scope, FplList entry, Function logger) throws EvaluationException {
+				String method = ((FplString) entry.get(0)).getContent();
+				String path = ((FplString) entry.get(1)).getContent();
+				Function function = (Function) entry.get(2);
+				if (!path.startsWith("/")) {
+					path = "/" + path;
+				}
+				boolean wildcard = isWildcard(path);
+				path = withoutWildcard(path);
+
+				return new PathHandler(method.toUpperCase(), path, wildcard, scope, function, logger);
+			}
+
+			private boolean isWildcard(String path) {
+				return path.endsWith("*");
+			}
+
+			private String withoutWildcard(String path) {
+				return isWildcard(path) ? path.substring(0, path.length() - 1) : path;
+			}
+
+			class Handler implements HttpRequestHandler {
+				private PathHandler[] handlers;
+
+				public Handler(PathHandler[] handlers) {
+					this.handlers = handlers;
+				}
+
+				@Override
+				public HttpResponse handleRequest(HttpRequest req) throws Exception {
+					for (PathHandler h : handlers) {
+						if (h.isMatch(req.getMethod(), req.getBaseUri())) {
+							return h.handleRequest(req);
 						}
 					}
+					HttpResponse res = new HttpResponse();
+					res.setStatusCode(404);
+					return res;
 				}
-				return headers;
+			}
+
+			class PathHandler implements HttpRequestHandler {
+				private Function function;
+				private Scope scope;
+				private boolean wildcard;
+				private String path;
+				private String method;
+				private Function logger;
+
+				PathHandler(String method, String path, boolean wildcard, Scope scope, Function function,
+						Function logger) {
+					this.method = method;
+					this.path = path;
+					this.wildcard = wildcard;
+					this.scope = scope;
+					this.function = function;
+					this.logger = logger;
+				}
+
+				public boolean isMatch(String method, String path) {
+					if (method.equals(this.method)) {
+						if (wildcard) {
+							return path.startsWith(this.path);
+						} else {
+							return path.equals(this.path);
+						}
+					} else {
+						return false;
+					}
+				}
+
+				@Override
+				public HttpResponse handleRequest(HttpRequest req) throws EvaluationException, ScopeException, IOException {
+					HttpResponse res = new HttpResponse();
+					FplValue[] parameters = new FplValue[4];
+					// path Complete path, including the prefix defined in `handlers`.
+					parameters[0] = new FplString(req.getBaseUri());
+					// headers Request headers as map (header names converted to lower case)
+					parameters[1] = fplHeaders(req);
+					// params Request parameters as map
+					parameters[2] = fplParams(req);
+					// body Request body as string. May be `nil`
+					parameters[3] = req.hasBody() ? new FplString(req.getBodyAsString("UTF-8")) : null;
+					// FplString(req.getBodyAsString("UTF-8")) : null;
+					try {
+						FplList result = (FplList) function.call(scope, parameters);
+						// HTTP status code
+						res.setStatusCode((int) ((FplInteger) result.get(0)).getValue());
+						// map with response headers
+						setHeaders(res, (FplObject) result.get(1));
+						// Body as string, may be `nil`
+						res.setBody(valueToString(result.get(2)), "UTF-8");
+					} catch (Exception e) {
+						if (logger != null) {
+							FplValue[] loggerParameters = new FplValue[1];
+							loggerParameters[0] = new FplString(e.toString());
+							logger.call(scope, loggerParameters);
+						}
+						res.setStatusCode(500);
+						return res;
+					}
+					return res;
+				}
 			}
 		});
 	}
 
+	private void setHeaders(HttpEntity entity, FplObject dict) {
+		for (Entry<String, FplValue> entry : dict) {
+			FplValue value = entry.getValue();
+			if (value instanceof FplList) {
+				for (FplValue v : (FplList) value) {
+					entity.addHeader(entry.getKey(), valueToString(v));
+				}
+			} else {
+				entity.addHeader(entry.getKey(), valueToString(value));
+			}
+		}
+	}
+
+	private String valueToString(FplValue value) {
+		if (value == null) {
+			return "";
+		}
+		if (value instanceof FplString) {
+			return ((FplString) value).getContent();
+		} else {
+			return value.toString();
+		}
+	}
+
+	private FplObject fplParams(HttpRequest res) throws ScopeException {
+		FplObject params = new FplObject("dict");
+		for (String name : res.getParamNames()) {
+			List<String> values = res.getParams(name);
+			int count = values.size();
+			if (count == 1) {
+				params.put(name, new FplString(values.get(0)));
+			} else {
+				FplValue[] array = new FplString[count];
+				for (int i = 0; i < count; i++) {
+					array[i] = new FplString(values.get(i));
+				}
+				params.put(name, FplList.fromValues(array));
+			}
+		}
+		return params;
+	}
+
+	private FplObject fplHeaders(HttpEntity res) throws ScopeException {
+		FplObject headers = new FplObject("dict");
+		for (String name : res.getHeaderNames()) {
+			if (!name.isEmpty()) {
+				List<String> values = res.getHeaders(name);
+				int count = values.size();
+				if (count == 1) {
+					headers.put(name.toLowerCase(), new FplString(values.get(0)));
+				} else {
+					FplValue[] array = new FplString[count];
+					for (int i = 0; i < count; i++) {
+						array[i] = new FplString(values.get(i));
+					}
+					headers.put(name.toLowerCase(), FplList.fromValues(array));
+				}
+			}
+		}
+		return headers;
+	}
 }

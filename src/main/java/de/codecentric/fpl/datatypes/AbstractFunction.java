@@ -174,18 +174,41 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	}
 
 	/**
-	 * Evaluate an expression and cast the result to a {@link FplLambda}.
+	 * Evaluate an expression and cast the result to a {@link Function}.
 	 * 
 	 * @param scope      Scope used for evaluation.
 	 * @param expression Expression to evaluate.
-	 * @return A FplLambda.
+	 * @return A Function, never <code>null</code>
 	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
-	 *                             FplLambda.
+	 *                             Function.
 	 */
-	protected FplLambda evaluateToLambda(Scope scope, FplValue expression) throws EvaluationException {
+	protected Function evaluateToFunction(Scope scope, FplValue expression) throws EvaluationException {
 		FplValue value = expression.evaluate(scope);
-		if (value instanceof FplLambda) {
-			return (FplLambda) value;
+		if (value instanceof Function) {
+			return (Function) value;
+		} else {
+			throw new EvaluationException("Not a lambda: " + value);
+		}
+	}
+
+	/**
+	 * Evaluate an expression and cast the result to a {@link Function}.
+	 * 
+	 * @param scope      Scope used for evaluation.
+	 * @param expression Expression to evaluate.
+	 * @return A Function or <code>null</code>
+	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
+	 *                             Function.
+	 */
+	protected Function evaluateToFunctionOrNull(Scope scope, FplValue expression) throws EvaluationException {
+		if (expression == null) {
+			return null;
+		}
+		FplValue value = expression.evaluate(scope);
+		if (value == null) {
+			return null;
+		} else if (value instanceof Function) {
+			return (Function) value;
 		} else {
 			throw new EvaluationException("Not a lambda: " + value);
 		}
