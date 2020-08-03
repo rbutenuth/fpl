@@ -42,6 +42,16 @@ public class Conditional implements ScopePopulator {
                 }
             }
         });
-    }
+
+    	scope.define(new AbstractFunction("throw", //
+    			comment("Throw an exception."),
+    			false, "message") {
+            @Override
+            public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+                String message = evaluateToString(scope, parameters[0]);
+                throw new EvaluationException(message);
+            }
+        });
+	}
 
 }

@@ -2,10 +2,12 @@ package de.codecentric.fpl.builtin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
+import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
 
 public class ConditionalTest extends AbstractFplTest {
@@ -35,5 +37,15 @@ public class ConditionalTest extends AbstractFplTest {
         assertNull(evaluate("if", "(if \"\" 1)"));
         assertEquals(FplInteger.valueOf(1), evaluate("if", "(if (+ 1 1) 1)"));
         assertEquals(FplInteger.valueOf(1), evaluate("if", "(if (java-instance \"java.util.ArrayList\") 1)"));
+	}
+	
+	@Test
+	public void simpleThrow() throws Exception {
+		try {
+			evaluate("throw", "(throw \"test-message\")");
+			fail("Exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("test-message", e.getMessage());
+		}
 	}
 }
