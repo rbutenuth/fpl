@@ -50,7 +50,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 * @param values Array with values, the values will NOT be copied, so don't
 	 *               modify the array after calling this method!
 	 */
-	public static FplList fromValues(FplValue[] values) {
+	public static FplList fromValues(FplValue ...values) {
 		if (values.length == 0) {
 			return EMPTY_LIST;
 		} else {

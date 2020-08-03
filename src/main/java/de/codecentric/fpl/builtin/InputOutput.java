@@ -189,15 +189,14 @@ public class InputOutput implements ScopePopulator {
 
 		scope.define(new AbstractFunction("http-server", //
 				comment("Start an HTTP server. Returns a function to terminate the server, parameter is the delay in seconds."),
-				true, "port", "authenticator", "logger", "handlers...") {
+				true, "port", "authenticator", "handlers...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				int port = (int) evaluateToLong(scope, parameters[0]);
 				BasicAuthenticator authenticator = createAuthenticator(scope,
 						evaluateToFunctionOrNull(scope, parameters[1]));
-				Function logger = evaluateToFunctionOrNull(scope, parameters[2]);
-				HttpRequestHandler handler = new Handler(createHandlers(scope, parameters, logger));
+				HttpRequestHandler handler = new Handler(createHandlers(scope, parameters));
 
 				SimpleHttpServer server;
 				try {
@@ -238,18 +237,17 @@ public class InputOutput implements ScopePopulator {
 				}
 			}
 
-			// start at parameter 3 (0 is port, 1 authenticator, 2 logger)
-			private PathHandler[] createHandlers(Scope scope, FplValue[] parameters, Function logger)
-					throws EvaluationException {
-				PathHandler[] handlers = new PathHandler[parameters.length - 3];
-				for (int i = 0; i < parameters.length - 3; i++) {
-					handlers[i] = createHandler(scope, evaluateToList(scope, parameters[i + 3]), logger);
+			// start at parameter 3 (0 is port, 1 authenticator)
+			private PathHandler[] createHandlers(Scope scope, FplValue[] parameters) throws EvaluationException {
+				PathHandler[] handlers = new PathHandler[parameters.length - 2];
+				for (int i = 0; i < parameters.length - 2; i++) {
+					handlers[i] = createHandler(scope, evaluateToList(scope, parameters[i + 2]));
 				}
 				return handlers;
 			}
 
 			// Example for entry: ("GET" "/some-path/*" some-function)
-			private PathHandler createHandler(Scope scope, FplList entry, Function logger) throws EvaluationException {
+			private PathHandler createHandler(Scope scope, FplList entry) throws EvaluationException {
 				String method = ((FplString) entry.get(0)).getContent();
 				String path = ((FplString) entry.get(1)).getContent();
 				Function function = (Function) entry.get(2);
@@ -259,7 +257,7 @@ public class InputOutput implements ScopePopulator {
 				boolean wildcard = isWildcard(path);
 				path = withoutWildcard(path);
 
-				return new PathHandler(method.toUpperCase(), path, wildcard, scope, function, logger);
+				return new PathHandler(method.toUpperCase(), path, wildcard, scope, function);
 			}
 
 			private boolean isWildcard(String path) {
@@ -296,16 +294,13 @@ public class InputOutput implements ScopePopulator {
 				private boolean wildcard;
 				private String path;
 				private String method;
-				private Function logger;
 
-				PathHandler(String method, String path, boolean wildcard, Scope scope, Function function,
-						Function logger) {
+				PathHandler(String method, String path, boolean wildcard, Scope scope, Function function) {
 					this.method = method;
 					this.path = path;
 					this.wildcard = wildcard;
 					this.scope = scope;
 					this.function = function;
-					this.logger = logger;
 				}
 
 				public boolean isMatch(String method, String path) {
@@ -342,11 +337,6 @@ public class InputOutput implements ScopePopulator {
 						// Body as string, may be `nil`
 						res.setBody(valueToString(result.get(2)), "UTF-8");
 					} catch (Exception e) {
-						if (logger != null) {
-							FplValue[] loggerParameters = new FplValue[1];
-							loggerParameters[0] = new FplString(e.toString());
-							logger.call(scope, loggerParameters);
-						}
 						res.setStatusCode(500);
 						return res;
 					}

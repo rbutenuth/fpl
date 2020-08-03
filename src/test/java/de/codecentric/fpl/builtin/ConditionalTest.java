@@ -9,6 +9,8 @@ import org.junit.Test;
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
+import de.codecentric.fpl.datatypes.FplString;
+import de.codecentric.fpl.datatypes.list.FplList;
 
 public class ConditionalTest extends AbstractFplTest {
 
@@ -53,5 +55,29 @@ public class ConditionalTest extends AbstractFplTest {
 		} catch (EvaluationException e) {
 			assertEquals("test-message", e.getMessage());
 		}
+	}
+	
+
+	@Test
+	public void tryCatchSuccess() throws Exception {
+		evaluate("catcher", "(def-function catcher (message stack) (def-global log-message message)(def-global stack-trace stack))");
+		evaluate("success-source", "(def-function success (x) x)");
+		assertEquals(FplInteger.valueOf(42), evaluate("catch", "(try-catch (success 42) catcher)"));
+		assertNull(scope.get("log-message"));
+		assertNull(scope.get("stack-trace"));
+	}
+	
+	@Test
+	public void tryCatchWithException() throws Exception {
+		evaluate("catcher", "(def-function catcher (message stack) (def-global log-message message)(def-global stack-trace stack) 43)");
+		evaluate("bam-source", "(def-function bam (x) (throw \"bam-message\"))");
+		assertEquals(FplInteger.valueOf(43), evaluate("catch", "(try-catch (bam 1) catcher)"));
+		FplString logMessage = (FplString) scope.get("log-message");
+		assertEquals("bam-message", logMessage.getContent());
+		FplList stackTrace = (FplList) scope.get("stack-trace");
+		FplList entry = (FplList) stackTrace.get(1);
+		assertEquals("bam-source", ((FplString) entry.get(0)).getContent());
+		assertEquals(1, ((FplInteger) entry.get(1)).getValue());
+		assertEquals("bam", ((FplString)entry.get(2)).getContent());
 	}
 }

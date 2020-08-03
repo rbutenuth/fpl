@@ -62,3 +62,13 @@ Throw an exception.
 ```
 (throw message)
 ```
+
+### try-catch
+Evaluate the given `expression` and return the result.
+In case of an exception, call `catch-function` and return its result. The function is called
+with two parameters:
+1. The exception message
+2. A List with the stack trace. Each element is a list with three elements: Source name, line number, function name.
+```
+(try-catch expression catch-function)
+```

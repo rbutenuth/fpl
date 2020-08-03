@@ -45,15 +45,13 @@ The result is a list with
 ### http-server
 Start an HTTP server. Returns a function to terminate the server, parameter is the delay in seconds.
 ```
-(http-server port authenticator logger handlers...)
+(http-server port authenticator handlers...)
 ```
 Example for `handlers`:
 ```
 	("GET" "/some-path/*" some-function)
 	("POST" "/other-path/" other-function)
 ```
-The `logger`(may be `nil`) is a function which is called when an error in handling a call happens. 
-Parameter is the error message.
 The `authenticator` must be `nil` or a function. The function receives two parameters:
 # user
 # password

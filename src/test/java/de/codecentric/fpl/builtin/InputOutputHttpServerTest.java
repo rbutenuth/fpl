@@ -15,8 +15,6 @@ import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.datatypes.FplString;
-import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.io.HttpClient;
 import de.codecentric.fpl.io.HttpRequest;
@@ -59,7 +57,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 
 	@Test
 	public void startStopServerWithoutAuthentication() throws Exception {
-		evaluate("start", "(def terminate (http-server " + port + " nil nil))");
+		evaluate("start", "(def terminate (http-server " + port + " nil))");
 		Function terminate = (Function) evaluate("lambda", "terminate");
 		assertNotNull(terminate);
 
@@ -70,7 +68,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 	@Test
 	public void authenticatorNotALambda() throws Exception {
 		try {
-			evaluate("start", "(def terminate (http-server " + port + " 42 nil))");
+			evaluate("start", "(def terminate (http-server " + port + " 42))");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("Not a lambda: 42", e.getMessage());
@@ -80,7 +78,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 	@Test
 	public void badPort() throws Exception {
 		try {
-			evaluate("start", "(def terminate (http-server -1 auth nil))");
+			evaluate("start", "(def terminate (http-server -1 auth))");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("port out of range:-1", e.getMessage());
@@ -89,7 +87,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 
 	@Test
 	public void startStopServerWithoutAuthenticationByNullSymbol() throws Exception {
-		evaluate("start", "(def terminate (http-server " + port + " not-an-authentication-function nil))");
+		evaluate("start", "(def terminate (http-server " + port + " not-an-authentication-function))");
 		Function terminate = (Function) evaluate("lambda", "terminate");
 		assertNotNull(terminate);
 
@@ -99,7 +97,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 
 	@Test
 	public void startStopServerWithWrongAuthentication() throws Exception {
-		evaluate("start", "(def terminate (http-server " + port + " auth nil))");
+		evaluate("start", "(def terminate (http-server " + port + " auth))");
 		Function terminate = (Function) evaluate("lambda", "terminate");
 		assertNotNull(terminate);
 
@@ -110,7 +108,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 
 	@Test
 	public void startStopServerWithCorrectAuthentication() throws Exception {
-		evaluate("start", "(def terminate (http-server " + port + " auth nil))");
+		evaluate("start", "(def terminate (http-server " + port + " auth))");
 		Function terminate = (Function) evaluate("lambda", "terminate");
 		assertNotNull(terminate);
 		setCorrectUser();
@@ -123,7 +121,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 		evaluate("callback-1", "(def-function callback-1 (path headers params body) (list 201 {} nil))");
 		// Return the query parameters as response headers 
 		evaluate("callback-2", "(def-function callback-2 (path headers params body) (list 200 params \"Hello world\"))");
-		evaluate("start", "(def terminate (http-server " + port + " auth nil "
+		evaluate("start", "(def terminate (http-server " + port + " auth "
 				+ "(list \"GET\" \"/foo\" callback-1)"
 				+ "(list \"POST\" \"/get-path\" callback-1)"
 				+ "(list \"GET\" \"/get-path\" callback-2)))");
@@ -150,7 +148,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 	@Test
 	public void getRequestReturnHeaderAsBody() throws Exception {
 		evaluate("callback", "(def-function callback (path headers params body) (list 200 params (dict-get headers key)))");
-		evaluate("start", "(def terminate (http-server " + port + " auth nil "
+		evaluate("start", "(def terminate (http-server " + port + " auth "
 				+ "(list \"GET\" \"/get-path\" callback)))");
 		Function terminate = (Function) evaluate("lambda", "terminate");
 		assertNotNull(terminate);
@@ -166,7 +164,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 	public void getRequestWithWildcard() throws Exception {
 		evaluate("callback-1", "(def-function callback-1 (path headers params body) (list 201 {} nil))");
 		evaluate("callback-2", "(def-function callback-2 (path headers params body) (list 200 params \"Hello world\"))");
-		evaluate("start", "(def terminate (http-server " + port + " auth nil "
+		evaluate("start", "(def terminate (http-server " + port + " auth "
 				+ "(list \"GET\" \"/foo\" callback-1)"
 				+ "(list \"POST\" \"/get-path\" callback-1)"
 				+ "(list \"GET\" \"/get*\" callback-2)))");
@@ -183,7 +181,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 	public void getRequestLowerCaseMethodAndMissingSlashInPath() throws Exception {
 		evaluate("callback-1", "(def-function callback-1 (path headers params body) (list 201 {} nil))");
 		evaluate("callback-2", "(def-function callback-2 (path headers params body) (list 200 params \"Hello world\"))");
-		evaluate("start", "(def terminate (http-server " + port + " auth nil "
+		evaluate("start", "(def terminate (http-server " + port + " auth "
 				+ "(list \"GET\" \"/foo\" callback-1)"
 				+ "(list \"POST\" \"/get-path\" callback-1)"
 				+ "(list \"get\" \"get-path\" callback-2)))");
@@ -197,25 +195,9 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void getRequestWithExceptionInHandlerWithLogger() throws Exception {
-		evaluate("callback", "(def-function callback (path headers params body) (/ 1 0))");
-		evaluate("logger", "(def-function logger (message) (def-global log-message message))");
-		evaluate("start", "(def terminate (http-server " + port + " auth logger "
-				+ "(list \"GET\" \"/get-path\" callback)))");
-		Function terminate = (Function) evaluate("lambda", "terminate");
-		assertNotNull(terminate);
-		setCorrectUser();
-		req.setBaseUri(baseUrl + "get-path");
-		HttpResponse res = new HttpClient().execute(req);
-		assertEquals(500, res.getStatusCode());
-		FplString msg = (FplString) evaluate("extract", "log-message");
-		assertEquals("de.codecentric.fpl.EvaluationException: java.lang.ArithmeticException: / by zero", msg.getContent());
-	}
-
-	@Test
 	public void getRequestWithExceptionInHandler() throws Exception {
 		evaluate("callback", "(def-function callback (path headers params body) (/ 1 0))");
-		evaluate("start", "(def terminate (http-server " + port + " auth nil "
+		evaluate("start", "(def terminate (http-server " + port + " auth "
 				+ "(list \"GET\" \"/get-path\" callback)))");
 		Function terminate = (Function) evaluate("lambda", "terminate");
 		assertNotNull(terminate);
@@ -228,7 +210,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 	@Test
 	public void postRequestWith() throws Exception {
 		evaluate("callback", "(def-function callback (path headers params body) (list 201 {} (join \"Body: \" body)))");
-		evaluate("start", "(def terminate (http-server " + port + " auth nil "
+		evaluate("start", "(def terminate (http-server " + port + " auth "
 				+ "(list \"POST\" \"/get-path\" callback)))");
 		Function terminate = (Function) evaluate("lambda", "terminate");
 		assertNotNull(terminate);
@@ -243,7 +225,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 
 	@Test
 	public void startStopServerWithExceptionInAuthentication() throws Exception {
-		evaluate("start", "(def terminate (http-server " + port + " auth-fail nil))");
+		evaluate("start", "(def terminate (http-server " + port + " auth-fail))");
 		Function terminate = (Function) evaluate("lambda", "terminate");
 		assertNotNull(terminate);
 		setCorrectUser();
