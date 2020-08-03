@@ -40,6 +40,12 @@ public class ConditionalTest extends AbstractFplTest {
 	}
 	
 	@Test
+    public void sequential() throws Exception {
+		assertEquals(FplInteger.valueOf(2), 
+				evaluate("sequential", "(sequential (+ 3 4) (if 1 2))"));
+	}
+	
+	@Test
 	public void simpleThrow() throws Exception {
 		try {
 			evaluate("throw", "(throw \"test-message\")");

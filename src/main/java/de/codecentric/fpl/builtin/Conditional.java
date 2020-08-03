@@ -43,7 +43,18 @@ public class Conditional implements ScopePopulator {
             }
         });
 
-    	scope.define(new AbstractFunction("throw", //
+		scope.define(new AbstractFunction("sequential", comment("Evaluate the parameters, return value of last parameter."), true, "element") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				FplValue value = null;
+				for (int i = 0; i < parameters.length; i++) {
+					value = evaluateToAny(scope, parameters[i]);
+				}
+				return value;
+			}
+		});
+
+		scope.define(new AbstractFunction("throw", //
     			comment("Throw an exception."),
     			false, "message") {
             @Override

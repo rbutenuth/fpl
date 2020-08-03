@@ -50,6 +50,13 @@ The code defines a symbol with value 10. The loop is executed while the value of
 So the the lines from 10 to 0 are printed.  The last `set` assigns the value -1. The function `set` returns the 
 value of the symbol before changing it, 0 in this case. As a consequence, the return value of the loop is 0.
 
+### sequential
+Evaluate the parameters, return value of last parameter.
+This can be used to group several expressions where only one is allowed, e.g. the "if" or "else" part.
+```
+(sequential elements...)
+```
+
 ### throw
 Throw an exception.
 ```
