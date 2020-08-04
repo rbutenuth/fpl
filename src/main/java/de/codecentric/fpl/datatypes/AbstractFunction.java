@@ -16,8 +16,7 @@ import de.codecentric.fpl.parser.Position;
  */
 public abstract class AbstractFunction extends EvaluatesToThisValue implements Named, PositionHolder, Function {
 	public static final String FPL = "fpl";
-
-	private static final Symbol QUOTE = new Symbol("quote");
+	public static final Symbol QUOTE = new Symbol("quote");
 
 	/** name, not null, not empty */
 	private final String name;
@@ -144,15 +143,6 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 		return 0;
 	}
 
-	/**
-	 * Quote a parameter. Needed when parameter is a {@link FplList} and should not be evaluated.
-	 * @param value Value to be quoted.
-	 * @return Quoted value
-	 */
-	protected FplValue quote(FplValue value) {
-		return FplList.fromValues(QUOTE, value);
-	}
-	
 	/**
 	 * Evaluate an expression.
 	 * 

@@ -80,4 +80,10 @@ public class ControlStructuresTest extends AbstractFplTest {
 		assertEquals(1, ((FplInteger) entry.get(1)).getValue());
 		assertEquals("bam", ((FplString)entry.get(2)).getContent());
 	}
+	
+	@Test
+	public void tryCatchWithExceptionCatchFunctionIsNull() throws Exception {
+		evaluate("bam-source", "(def-function bam (x) (throw \"bam-message\"))");
+		assertNull(evaluate("catch", "(try-catch (bam 1) nil)"));
+	}
 }

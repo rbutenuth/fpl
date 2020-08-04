@@ -73,28 +73,38 @@ public class ControlStructures implements ScopePopulator {
 				comment("."), false, "try", "catch-function") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				Function catchFunction = evaluateToFunction(scope, parameters[1]);
+				Function catchFunction = evaluateToFunctionOrNull(scope, parameters[1]);
 				try {
 					return parameters[0].evaluate(scope);
 				} catch (EvaluationException e) {
-					StackTraceElement[] javaStackTrace = e.getStackTrace();
-					FplList[]  fplStackTrace = new FplList[javaStackTrace.length];
-					for (int i = 0; i < javaStackTrace.length; i++) {
-						if (AbstractFunction.FPL.equals(javaStackTrace[i].getClassName())) {
-							FplValue[] entry = new FplValue[3];
-							entry[0] = new FplString(javaStackTrace[i].getFileName());
-							entry[1] = FplInteger.valueOf(javaStackTrace[i].getLineNumber());
-							entry[2] = new FplString(javaStackTrace[i].getMethodName());
-							fplStackTrace[i] = FplList.fromValues(entry);
-						}
-					}
-					FplValue[] catcherParameters = new FplValue[2];
-					catcherParameters[0] = new FplString(e.getMessage());
-					catcherParameters[1] = quote(FplList.fromValues(fplStackTrace));
-					return catchFunction.call(scope, catcherParameters);
+					return callCatcher(scope, e, catchFunction);
 				}
 			}
 		});
+
+	}
+
+	private FplValue callCatcher(Scope scope, EvaluationException e, Function catchFunction)
+			throws EvaluationException {
+		if (catchFunction == null) {
+			return null;
+		} else {
+			StackTraceElement[] javaStackTrace = e.getStackTrace();
+			FplList[] fplStackTrace = new FplList[javaStackTrace.length];
+			for (int i = 0; i < javaStackTrace.length; i++) {
+				if (AbstractFunction.FPL.equals(javaStackTrace[i].getClassName())) {
+					FplValue[] entry = new FplValue[3];
+					entry[0] = new FplString(javaStackTrace[i].getFileName());
+					entry[1] = FplInteger.valueOf(javaStackTrace[i].getLineNumber());
+					entry[2] = new FplString(javaStackTrace[i].getMethodName());
+					fplStackTrace[i] = FplList.fromValues(entry);
+				}
+			}
+			FplValue[] catcherParameters = new FplValue[2];
+			catcherParameters[0] = new FplString(e.getMessage());
+			catcherParameters[1] = FplList.fromValues(AbstractFunction.QUOTE, FplList.fromValues(fplStackTrace));
+			return catchFunction.call(scope, catcherParameters);
+		}
 	}
 
 }
