@@ -63,7 +63,7 @@ Results are written to standard output.
 * [Arithmetic and comparison](doc/arithmetic-comparison.md)
 * [Variables, assignments, and scopes](doc/variables-assignments-scopes.md)
 * [Lambdas and Functions](doc/lambdas-and-funcions.md)
-* [Conditions, Loops, and Exceptions](doc/conditions-and-loops.md)
+* [Control Structures (if, loops, try-catch)](doc/control-structures.md)
 * [List functions](doc/lists.md)
 * [String functions](doc/strings.md)
 * [Dictionaries](doc/dictionaries.md)

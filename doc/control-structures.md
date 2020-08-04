@@ -1,4 +1,4 @@
-# Conditions and Loops
+# Control Structures
 
 ## Introduction
 
