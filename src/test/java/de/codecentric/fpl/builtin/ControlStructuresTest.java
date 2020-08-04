@@ -12,11 +12,11 @@ import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.list.FplList;
 
-public class ConditionalTest extends AbstractFplTest {
+public class ControlStructuresTest extends AbstractFplTest {
 
 	@Test
 	public void coverConstructor() {
-		new Conditional();
+		new ControlStructures();
 	}
 
 	@Test

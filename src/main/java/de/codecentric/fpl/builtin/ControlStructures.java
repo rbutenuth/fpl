@@ -16,7 +16,7 @@ import de.codecentric.fpl.datatypes.list.FplList;
  * <code>FplDouble(0.0)</code>, <code>()</code> and <code>nil</code> are
  * <code>false</code>, everything else is true.
  */
-public class Conditional implements ScopePopulator {
+public class ControlStructures implements ScopePopulator {
 	@Override
 	public void populate(Scope scope) throws ScopeException {
 
@@ -80,11 +80,13 @@ public class Conditional implements ScopePopulator {
 					StackTraceElement[] javaStackTrace = e.getStackTrace();
 					FplList[]  fplStackTrace = new FplList[javaStackTrace.length];
 					for (int i = 0; i < javaStackTrace.length; i++) {
-						FplValue[] entry = new FplValue[3];
-						entry[0] = new FplString(javaStackTrace[i].getFileName());
-						entry[1] = FplInteger.valueOf(javaStackTrace[i].getLineNumber());
-						entry[2] = new FplString(javaStackTrace[i].getMethodName());
-						fplStackTrace[i] = FplList.fromValues(entry);
+						if (AbstractFunction.FPL.equals(javaStackTrace[i].getClassName())) {
+							FplValue[] entry = new FplValue[3];
+							entry[0] = new FplString(javaStackTrace[i].getFileName());
+							entry[1] = FplInteger.valueOf(javaStackTrace[i].getLineNumber());
+							entry[2] = new FplString(javaStackTrace[i].getMethodName());
+							fplStackTrace[i] = FplList.fromValues(entry);
+						}
 					}
 					FplValue[] catcherParameters = new FplValue[2];
 					catcherParameters[0] = new FplString(e.getMessage());

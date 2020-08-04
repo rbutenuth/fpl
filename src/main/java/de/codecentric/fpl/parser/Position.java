@@ -6,6 +6,8 @@ package de.codecentric.fpl.parser;
 public final class Position {
     /** Constant for cases where position is not known. */
     public final static Position UNKNOWN = new Position("<unknown>", 1, 1);
+    /** Constant for internal functions */
+    public final static Position INTERNAL = new Position("<internal>", 1, 1);
 
     private final String name;
 

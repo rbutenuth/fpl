@@ -15,6 +15,8 @@ import de.codecentric.fpl.parser.Position;
  * Helper for function implementation.
  */
 public abstract class AbstractFunction extends EvaluatesToThisValue implements Named, PositionHolder, Function {
+	public static final String FPL = "fpl";
+
 	private static final Symbol QUOTE = new Symbol("quote");
 
 	/** name, not null, not empty */
@@ -73,13 +75,14 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	}
 
 	/**
+	 * This constructor should be used for internally implemented functions only.
 	 * @param name           Not null, not empty.
 	 * @param varArg         Is this a function with variable argument list?
 	 * @param parameterNames Names of the parameters. If last ends with "...",
 	 *                       function is variable argument function.
 	 */
 	protected AbstractFunction(String name, List<String> comment, boolean varArg, String... parameterNames) {
-		this(Position.UNKNOWN, comment, name, varArg, parameterNames);
+		this(Position.INTERNAL, comment, name, varArg, parameterNames);
 	}
 
 	public static List<String> comment(String... lines) {
@@ -116,7 +119,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 		try {
 			return callInternal(scope, parameters);
 		} catch (EvaluationException e) {
-			e.add(new StackTraceElement(getClass().getName(), getName(), getPosition().getName(),
+			e.add(new StackTraceElement(FPL, getName(), getPosition().getName(),
 					getPosition().getLine()));
 			throw e;
 		}
