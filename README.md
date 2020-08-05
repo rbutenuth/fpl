@@ -24,9 +24,10 @@ The syntax is the same as in Java (without the _ feature to structure numbers.
 
 ### Symbol and Strings
 
-Symbols are sequences of non whitespace characters except `"`, `(`, `)`, `:`. A symbol must not start with `'`.
+Symbols are sequences of non whitespace characters except ` `, `"`, `(`, `)`, `[`, `]`, `{`, `}`, `:`.
+A symbol must not start with `'`, as this is a shortcut for the function `qoute`.
 
-Strings are delimited by `"`. Quoting works as in Java with \.
+Strings are delimited by `"`. Quoting works as in Java with `\`.
 
 ### Keywords
 

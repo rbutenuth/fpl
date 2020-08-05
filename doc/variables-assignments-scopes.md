@@ -14,8 +14,9 @@ When you try `(set foo "bar")` without defining `foo` before, the error message 
 `No value with key foo found`.
 
 How do symbols look like? There are very few restrictions: They can't start with a digit and they can't contain any
-of the other special characters used by the fpl syntax: `"()[] {}:`. The brackets (`[]`) are reserved
-for future use. So `++` is a valid symbol.
+of the other special characters used by the fpl syntax: ` `, `"`, `(`, `)`, `[`, `]`, `{`, `}`, `:`.
+The brackets (`[]`) are reserved for future use. A symbol must not start with `'`, as this is a shortcut for the function `qoute`. 
+So `++` is a valid symbol.
 
 ## Short Cut for Functions: def-function
 
