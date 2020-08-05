@@ -10,6 +10,7 @@ import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplString;
+import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 public class ControlStructuresTest extends AbstractFplTest {
@@ -84,6 +85,90 @@ public class ControlStructuresTest extends AbstractFplTest {
 	@Test
 	public void tryCatchWithExceptionCatchFunctionIsNull() throws Exception {
 		evaluate("bam-source", "(def-function bam (x) (throw \"bam-message\"))");
-		assertNull(evaluate("catch", "(try-catch (bam 1) nil)"));
+		try {
+			evaluate("catch", "(try-catch (bam 1) nil)");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("bam-message", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void tryWithResourceNotList() throws Exception {
+		FplString message = (FplString) evaluate("try-with", //
+				"(try-with 1 (+ 3 4) (lambda (message stacktrace) message))");
+		assertEquals("Not a list: 1", message.getContent());
+	}
+
+	@Test
+	public void tryWithResourceListHasNotSizeThree() throws Exception {
+		FplString message = (FplString) evaluate("try-with", //
+				"(try-with '((a (open \"a\") )) (+ 3 4) (lambda (message stacktrace) message))");
+		assertEquals("resource must have size 3, but has size 2", message.getContent());
+	}
+
+	@Test
+	public void tryWithResourceDuplicateResourceName() throws Exception {
+		evaluate("open", "(def-function open (x) x)");
+		
+		FplString message = (FplString) evaluate("try-with", //
+				"(try-with '((a (open \"a\") (lambda (x) (close x)))\n" + 
+				"            (a (open \"b\") (lambda (x) (close x)))\n" + 
+				"           ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (+ 3 4)) (lambda (message stacktrace) message))");
+		assertEquals("Duplicate key: a", message.getContent());
+	}
+
+	@Test
+	public void tryWithNoException() throws Exception {
+		evaluate("open", "(def-function open (x) x)");
+		evaluate("close", "(def-function close (x) (put-global (symbol x) \"is closed\"))");
+		
+		FplValue result = evaluate("try-with", //
+				"(try-with '((a (open \"a\") (lambda (x) (close x)))\n" + 
+				"            (b (open \"b\") (lambda (x) (close x)))\n" + 
+				"           ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (+ 3 4)) (lambda (message stacktrace) (put-global \"message\" message)))");
+		FplInteger i = (FplInteger)result;
+		assertNull(scope.get("message"));
+		assertEquals(7, i.getValue());
+		assertEquals(new FplString("a"), scope.get("a-in-code"));
+		assertEquals(new FplString("b"), scope.get("b-in-code"));
+		assertEquals(new FplString("is closed"), scope.get("a"));
+		assertEquals(new FplString("is closed"), scope.get("b"));
+	}
+	
+	@Test
+	public void tryWithException() throws Exception {
+		evaluate("open", "(def-function open (x) x)");
+		evaluate("close", "(def-function close (x) (put-global (symbol x) \"is closed\"))");
+		
+		FplValue result = evaluate("try-with", //
+				"(try-with '((a (open \"a\") (lambda (x) (close x)))\n" + 
+				"            (b (open \"b\") (lambda (x) (close x)))\n" + 
+				"           ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (throw \"bam\")) (lambda (message stacktrace) (put-global \"message\" message) 8))");
+		FplInteger i = (FplInteger)result;
+		assertEquals(new FplString("bam"), scope.get("message"));
+		assertEquals(8, i.getValue());
+		assertEquals(new FplString("a"), scope.get("a-in-code"));
+		assertEquals(new FplString("b"), scope.get("b-in-code"));
+		assertEquals(new FplString("is closed"), scope.get("a"));
+		assertEquals(new FplString("is closed"), scope.get("b"));
+	}
+	@Test
+	public void tryWithExceptionInFinalizer() throws Exception {
+		evaluate("open", "(def-function open (x) x)");
+		evaluate("close", "(def-function close (x) (put-global (symbol x) \"is closed\"))");
+		evaluate("close-crash", "(def-function close-crash (x) (throw \"bam\"))");
+		
+		FplValue result = evaluate("try-with", //
+				"(try-with '((a (open \"a\") (lambda (x) (close x)))\n" + 
+				"            (b (open \"b\") (lambda (x) (close-crash x)))\n" + 
+				"           ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (+ 3 4)) (lambda (message stacktrace) (put-global \"message\" message)))");
+		FplInteger i = (FplInteger)result;
+		assertNull(scope.get("message"));
+		assertEquals(7, i.getValue());
+		assertEquals(new FplString("a"), scope.get("a-in-code"));
+		assertEquals(new FplString("b"), scope.get("b-in-code"));
+		assertEquals(new FplString("is closed"), scope.get("a"));
+		assertNull(scope.get("b"));
 	}
 }

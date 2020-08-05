@@ -1,5 +1,8 @@
 package de.codecentric.fpl.builtin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
@@ -9,6 +12,7 @@ import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
@@ -70,7 +74,9 @@ public class ControlStructures implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("try-catch", //
-				comment("."), false, "try", "catch-function") {
+				comment("Evaluate the given `expression` and return the result. "
+						+ "In case of an exception, call `catch-function` and return its result."),
+				false, "expression", "catch-function") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				Function catchFunction = evaluateToFunctionOrNull(scope, parameters[1]);
@@ -82,12 +88,61 @@ public class ControlStructures implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("try-with", //
+				comment("Open `resources`, evaluate (and return the value of) an `expression`, catch exceptions."), false, "resources", "expression", "catch-function") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				Scope localScope = new Scope("try-with", scope);
+				Function catchFunction = null;
+				List<Resource> resources = new ArrayList<>();
+				try {
+					catchFunction = evaluateToFunctionOrNull(scope, parameters[2]);
+					for (FplValue resource : evaluateToList(scope, parameters[0])) {
+						// Example for rl: (a (open "a") (lambda (x) (close x))
+						FplList rl = (FplList) resource;
+						if (rl.size() != 3) {
+							throw new EvaluationException("resource must have size 3, but has size " + rl.size());
+						}
+						Symbol symbol = Assignment.targetSymbol(localScope, rl.get(0));
+						FplValue value = rl.get(1).evaluate(localScope);
+						Function function = evaluateToFunction(localScope, rl.get(2));
+						localScope.define(symbol, value);
+						resources.add(new Resource(value, function));
+					}
+					return parameters[1].evaluate(localScope);
+				} catch (EvaluationException e) {
+					return callCatcher(localScope, e, catchFunction);
+				} catch (ScopeException e) {
+					return callCatcher(localScope, new EvaluationException(e.getMessage(), e), catchFunction);
+				} finally {
+					for (int i = resources.size() - 1; i >= 0; i--) {
+						Resource r = resources.get(i);
+						try {
+							r.function.call(localScope, new FplValue[] { r.value });
+						} catch (EvaluationException e) {
+							// ignore
+						}
+					}
+				}
+			}
+
+			class Resource {
+				final FplValue value;
+				final Function function;
+
+				Resource(FplValue value, Function function) {
+					this.value = value;
+					this.function = function;
+				}
+			}
+		});
+
 	}
 
 	private FplValue callCatcher(Scope scope, EvaluationException e, Function catchFunction)
 			throws EvaluationException {
 		if (catchFunction == null) {
-			return null;
+			throw e;
 		} else {
 			StackTraceElement[] javaStackTrace = e.getStackTrace();
 			FplList[] fplStackTrace = new FplList[javaStackTrace.length];

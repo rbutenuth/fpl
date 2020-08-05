@@ -69,6 +69,22 @@ In case of an exception, call `catch-function` and return its result. The functi
 with two parameters:
 1. The exception message
 2. A List with the stack trace. Each element is a list with three elements: Source name, line number, function name.
+When the `catch-function` is `nil`, then the exception is thrown again.
 ```
 (try-catch expression catch-function)
 ```
+
+### try-with
+Open `resources`, evaluate (and return the value of) an `expression`, catch exceptions.  
+```
+(try-with resources expression catch-function)
+```
+Example:
+```
+(try-with '((a (open "a) (lambda (x) (close x))) 
+            (b (open "b") (lambda (x) (close x))) 
+           ) (sequential (put-global "a-in-code" a) (put-global "b-in-code" b) (throw "bam")) (lambda (message stacktrace) (put-global "message" message) 42))");
+```
+Opens two resources with some open function, the result is stored in the local scope in `a` and `b`. Then the sequential block is executed, which stores the
+resource in open state in two global variables, before throwing an exceptions. The `catch-function` stores the exception message in a global variable and
+returns 42. So the whole example will return 42 from the `catch-function`.
