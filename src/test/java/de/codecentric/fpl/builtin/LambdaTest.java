@@ -21,7 +21,6 @@ import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplLambda;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 
@@ -117,7 +116,8 @@ public class LambdaTest extends AbstractFplTest {
 	public void argsFromSymbol() throws Exception {
 		FplList args = FplList.fromValues(new Symbol("a"), new Symbol("b)"));
 		scope.define(new Symbol("args"), args);
-		Function f = (Function)evaluate("lambda", "(lambda args (+ a b))");
+		AbstractFunction f = (AbstractFunction) evaluate("lambda", "(lambda args (+ a b))");
+		assertEquals(2, f.getMinimumNumberOfParameters());
 	}
 
 	@Test
