@@ -27,12 +27,10 @@ public class Lambda implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				if (!(parameters[0] instanceof FplList)) {
-					throw new EvaluationException("First parameter must be a list of symbols.");
-				}
+				FplList params = evaluateToListIfNotAlreadyList(scope, parameters[0]);
 				FplValue[] code = new FplValue[parameters.length - 1];
 				System.arraycopy(parameters, 1, code, 0, code.length);
-				return lambda(new Symbol("lambda"), parameters[0], code);
+				return lambda(new Symbol("lambda"), params, code);
 			}
 		});
 

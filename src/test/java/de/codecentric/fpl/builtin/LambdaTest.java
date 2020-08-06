@@ -21,6 +21,8 @@ import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplLambda;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.Function;
+import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
@@ -44,9 +46,13 @@ public class LambdaTest extends AbstractFplTest {
 		super.tearDown();
 	}
 
+	@Test
+	public void coverConstructor() {
+		new Lambda(); // just to cover default constructor
+	}
+	
 	@Test(expected = EvaluationException.class)
 	public void evaluateToList() throws Exception {
-		new Lambda(); // just to cover default constructor
 		evaluate("cons", "(add-front 1 2)");
 	}
 
@@ -105,6 +111,13 @@ public class LambdaTest extends AbstractFplTest {
 		assertEquals(2, f.getMinimumNumberOfParameters());
 		assertTrue(f.isVararg());
 		assertEquals("(lambda (a b c...) 42)", f.toString());
+	}
+
+	@Test
+	public void argsFromSymbol() throws Exception {
+		FplList args = FplList.fromValues(new Symbol("a"), new Symbol("b)"));
+		scope.define(new Symbol("args"), args);
+		Function f = (Function)evaluate("lambda", "(lambda args (+ a b))");
 	}
 
 	@Test

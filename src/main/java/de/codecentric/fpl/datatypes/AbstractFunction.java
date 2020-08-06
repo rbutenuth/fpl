@@ -178,6 +178,23 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	}
 
 	/**
+	 * Evaluate an expression and cast the result to a {@link FplList}.
+	 * 
+	 * @param scope      Scope used for evaluation.
+	 * @param expression Expression to evaluate.
+	 * @return A list.
+	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
+	 *                             list.
+	 */
+	protected FplList evaluateToListIfNotAlreadyList(Scope scope, FplValue expression) throws EvaluationException {
+		if (expression instanceof FplList) {
+			return (FplList)expression;
+		} else {
+			return evaluateToList(scope, expression);
+		}
+	}
+
+	/**
 	 * Evaluate an expression and cast the result to a {@link Function}.
 	 * 
 	 * @param scope      Scope used for evaluation.
