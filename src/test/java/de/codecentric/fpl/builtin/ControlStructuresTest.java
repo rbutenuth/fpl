@@ -103,7 +103,7 @@ public class ControlStructuresTest extends AbstractFplTest {
 	@Test
 	public void tryWithResourceListHasNotSizeThree() throws Exception {
 		FplString message = (FplString) evaluate("try-with", //
-				"(try-with '((a (open \"a\") )) (+ 3 4) (lambda (message stacktrace) message))");
+				"(try-with ((a (open \"a\") )) (+ 3 4) (lambda (message stacktrace) message))");
 		assertEquals("resource must have size 3, but has size 2", message.getContent());
 	}
 
@@ -112,9 +112,9 @@ public class ControlStructuresTest extends AbstractFplTest {
 		evaluate("open", "(def-function open (x) x)");
 		
 		FplString message = (FplString) evaluate("try-with", //
-				"(try-with '((a (open \"a\") (lambda (x) (close x)))\n" + 
-				"            (a (open \"b\") (lambda (x) (close x)))\n" + 
-				"           ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (+ 3 4)) (lambda (message stacktrace) message))");
+				"(try-with ((a (open \"a\") (lambda (x) (close x)))\n" + 
+				"           (a (open \"b\") (lambda (x) (close x)))\n" + 
+				"          ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (+ 3 4)) (lambda (message stacktrace) message))");
 		assertEquals("Duplicate key: a", message.getContent());
 	}
 
@@ -124,7 +124,7 @@ public class ControlStructuresTest extends AbstractFplTest {
 		evaluate("close", "(def-function close (x) (put-global (symbol x) \"is closed\"))");
 		
 		FplValue result = evaluate("try-with", //
-				"(try-with '((a (open \"a\") (lambda (x) (close x)))\n" + 
+				"(try-with ((a (open \"a\") (lambda (x) (close x)))\n" + 
 				"            (b (open \"b\") (lambda (x) (close x)))\n" + 
 				"           ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (+ 3 4)) (lambda (message stacktrace) (put-global \"message\" message)))");
 		FplInteger i = (FplInteger)result;
@@ -142,9 +142,9 @@ public class ControlStructuresTest extends AbstractFplTest {
 		evaluate("close", "(def-function close (x) (put-global (symbol x) \"is closed\"))");
 		
 		FplValue result = evaluate("try-with", //
-				"(try-with '((a (open \"a\") (lambda (x) (close x)))\n" + 
-				"            (b (open \"b\") (lambda (x) (close x)))\n" + 
-				"           ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (throw \"bam\")) (lambda (message stacktrace) (put-global \"message\" message) 8))");
+				"(try-with ((a (open \"a\") (lambda (x) (close x)))\n" + 
+				"           (b (open \"b\") (lambda (x) (close x)))\n" + 
+				"          ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (throw \"bam\")) (lambda (message stacktrace) (put-global \"message\" message) 8))");
 		FplInteger i = (FplInteger)result;
 		assertEquals(new FplString("bam"), scope.get("message"));
 		assertEquals(8, i.getValue());
@@ -160,9 +160,9 @@ public class ControlStructuresTest extends AbstractFplTest {
 		evaluate("close-crash", "(def-function close-crash (x) (throw \"bam\"))");
 		
 		FplValue result = evaluate("try-with", //
-				"(try-with '((a (open \"a\") (lambda (x) (close x)))\n" + 
-				"            (b (open \"b\") (lambda (x) (close-crash x)))\n" + 
-				"           ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (+ 3 4)) (lambda (message stacktrace) (put-global \"message\" message)))");
+				"(try-with ((a (open \"a\") (lambda (x) (close x)))\n" + 
+				"           (b (open \"b\") (lambda (x) (close-crash x)))\n" + 
+				"          ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (+ 3 4)) (lambda (message stacktrace) (put-global \"message\" message)))");
 		FplInteger i = (FplInteger)result;
 		assertNull(scope.get("message"));
 		assertEquals(7, i.getValue());

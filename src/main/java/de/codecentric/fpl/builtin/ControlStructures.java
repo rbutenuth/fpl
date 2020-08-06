@@ -97,7 +97,7 @@ public class ControlStructures implements ScopePopulator {
 				List<Resource> resources = new ArrayList<>();
 				try {
 					catchFunction = evaluateToFunctionOrNull(scope, parameters[2]);
-					for (FplValue resource : evaluateToList(scope, parameters[0])) {
+					for (FplValue resource : evaluateToListIfNotAlreadyList(scope, parameters[0])) {
 						// Example for rl: (a (open "a") (lambda (x) (close x))
 						FplList rl = (FplList) resource;
 						if (rl.size() != 3) {
