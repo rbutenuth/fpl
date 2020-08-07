@@ -86,8 +86,8 @@ public class HttpServerMain {
 	
 	private static void handleGet(HttpRequest req, HttpResponse res) throws IOException {
 		if ("/fpl/terminate".equals(req.getBaseUri())) {
-			terminate(2);
 			res.setBody("Good bye...", "UTF-8");
+			terminate(2);
 		} else {
 			res.setBody("Post your FPL expressions to this URL for evaluation.", "UTF-8");
 		}
