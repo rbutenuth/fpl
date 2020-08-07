@@ -53,7 +53,7 @@ public class Lambda implements ScopePopulator {
 				try {
 					scope.define(name, result);
 				} catch (ScopeException e) {
-					throw new EvaluationException(e);
+					throw new EvaluationException(e.getMessage(), e);
 				}
 				return result;
 			}
