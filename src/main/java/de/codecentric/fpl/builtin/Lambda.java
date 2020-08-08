@@ -1,5 +1,6 @@
 package de.codecentric.fpl.builtin;
 
+import java.util.Iterator;
 import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
@@ -34,28 +35,38 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		// Example:
-		// (def-function factorial (n)
-		// (if-else (le n 1)
-		// 1
-		// (* n (factorial (- n 1)))
-		// )
-		// )
+		scope.define(new AbstractFunction("lambda-dynamic", comment("Create an anonymous function."), true, //
+				"parameter-list", "code-list") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				FplList paramList = evaluateToList(scope, parameters[0]);
+				return lambda(new Symbol("lambda"), paramList, codeFromExpression(scope, parameters[1]));
+			}
+		});
+
 		scope.define(new AbstractFunction("def-function", comment("Define a function."), true, "name", "parameter-list",
 				"code...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				Symbol name = Assignment.targetSymbol(scope, parameters[0]);
+				FplList paramList = evaluateToListIfNotAlreadyList(scope, parameters[1]);
 				FplValue[] code = new FplValue[parameters.length - 2];
 				System.arraycopy(parameters, 2, code, 0, code.length);
-				FplLambda result = lambda(name, parameters[1], code);
-				try {
-					scope.define(name, result);
-				} catch (ScopeException e) {
-					throw new EvaluationException(e.getMessage(), e);
-				}
-				return result;
+				return defineFunction(scope, name, paramList, code);
+			}
+		});
+
+		scope.define(new AbstractFunction("def-function-dynamic", comment("Define a function."), true, //
+				"name", "parameter-list", "code-list") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				Symbol name = new Symbol(evaluateToString(scope, parameters[0]));
+				FplList paramList = evaluateToList(scope, parameters[1]);
+				FplValue[] code = codeFromExpression(scope, parameters[2]);
+				return defineFunction(scope, name, paramList, code);
 			}
 		});
 
@@ -121,14 +132,32 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 	}
+	
+	private FplValue[] codeFromExpression(Scope scope, FplValue codeExpression) throws EvaluationException {
+		FplList codeList = AbstractFunction.evaluateToList(scope, codeExpression);
 
-	private static FplLambda lambda(Symbol name, FplValue paramListValues, FplValue[] code) throws EvaluationException {
-		FplList paramList = createParamList(paramListValues);
+		FplValue[] code = new FplValue[codeList.size()];
+		Iterator<FplValue> codeIter = codeList.iterator();
+		int i = 0;
+		while (codeIter.hasNext()) {
+			code[i++] = codeIter.next();
+		}
+		return code;
+	}
+
+	private FplLambda lambda(Symbol name, FplList paramList, FplValue[] code) throws EvaluationException {
 		String[] paramNames = new String[paramList.size()];
-		String[] paramComments = new String[paramList.size()];
+		String[] paramComments = new String[paramNames.length];
 		int i = 0;
 		for (FplValue p : paramList) {
-			Symbol s = (Symbol) p;
+			Symbol s;
+			if (p instanceof Symbol) {
+				s = (Symbol)p;
+			} else if (p instanceof FplString) {
+				s = new Symbol(((FplString)p).getContent());
+			} else {
+				throw new EvaluationException("Parameter " + p + " is not a symbol.");
+			}
 			paramNames[i] = s.getName();
 			paramComments[i] = joinLines(s.getCommentLines());
 			i++;
@@ -140,20 +169,18 @@ public class Lambda implements ScopePopulator {
 		return result;
 	}
 
-	private static FplList createParamList(FplValue paramListValues) throws EvaluationException {
-		if (!(paramListValues instanceof FplList)) {
-			throw new EvaluationException("Expect parameter list, got: " + paramListValues);
+	private FplLambda defineFunction(Scope scope, Symbol name, FplList paramList, FplValue[] code)
+			throws EvaluationException {
+		FplLambda result = lambda(name, paramList, code);
+		try {
+			scope.define(name, result);
+		} catch (ScopeException e) {
+			throw new EvaluationException(e.getMessage(), e);
 		}
-		FplList paramList = (FplList) paramListValues;
-		for (FplValue p : paramList) {
-			if (!(p instanceof Symbol)) {
-				throw new EvaluationException("Parameter " + p + " is not a symbol.");
-			}
-		}
-		return paramList;
+		return result;
 	}
 
-	private static String joinLines(List<String> commentLines) {
+	private String joinLines(List<String> commentLines) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < commentLines.size(); i++) {
 			sb.append(commentLines.get(i).trim());

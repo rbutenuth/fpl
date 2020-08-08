@@ -10,37 +10,6 @@ import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
 
-/**
- * Code examples:
- *
- * <pre>
- * (if-else nil (list 1 2 "foo") (list 3 4 "bar"))
- * </pre>
- *
- * evaluates to
- *
- * <pre>
- * (3 4 "bar")
- * </pre>
- *
- * <pre>
- * (lambda (arg) (+ arg 1)) ((lambda (arg) (+ arg 1)) 5)
- * </pre>
- *
- * <pre>
- * (def-function should-be-constant ()
- *  '(one two three))
- * </pre>
- *
- * <pre>
- * (def-function factorial (n)
- *    (if-else (le n 1)
- *       1
- *       (* n (factorial (- n 1)))
- *    )
- * )
- * </pre>
- */
 public class FplLambda extends AbstractFunction {
 	private final FplValue[] code;
 

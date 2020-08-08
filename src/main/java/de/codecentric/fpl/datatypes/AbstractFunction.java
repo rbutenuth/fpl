@@ -151,7 +151,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * @return Evaluated expression.
 	 * @throws EvaluationException
 	 */
-	protected FplValue evaluateToAny(Scope scope, FplValue expression) throws EvaluationException {
+	public static FplValue evaluateToAny(Scope scope, FplValue expression) throws EvaluationException {
 		if (expression == null) {
 			return null;
 		} else {
@@ -168,7 +168,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
 	 *                             list.
 	 */
-	protected FplList evaluateToList(Scope scope, FplValue expression) throws EvaluationException {
+	public static FplList evaluateToList(Scope scope, FplValue expression) throws EvaluationException {
 		FplValue value = expression.evaluate(scope);
 		if (value instanceof FplList) {
 			return (FplList) value;
@@ -186,7 +186,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
 	 *                             list.
 	 */
-	protected FplList evaluateToListIfNotAlreadyList(Scope scope, FplValue expression) throws EvaluationException {
+	public static FplList evaluateToListIfNotAlreadyList(Scope scope, FplValue expression) throws EvaluationException {
 		if (expression instanceof FplList) {
 			return (FplList)expression;
 		} else {
@@ -203,7 +203,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
 	 *                             Function.
 	 */
-	protected Function evaluateToFunction(Scope scope, FplValue expression) throws EvaluationException {
+	public static Function evaluateToFunction(Scope scope, FplValue expression) throws EvaluationException {
 		FplValue value = expression.evaluate(scope);
 		if (value instanceof Function) {
 			return (Function) value;
@@ -221,7 +221,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
 	 *                             Function.
 	 */
-	protected Function evaluateToFunctionOrNull(Scope scope, FplValue expression) throws EvaluationException {
+	public static Function evaluateToFunctionOrNull(Scope scope, FplValue expression) throws EvaluationException {
 		if (expression == null) {
 			return null;
 		}
@@ -244,7 +244,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
 	 *                             FplObject.
 	 */
-	protected FplObject evaluateToDictionary(Scope scope, FplValue expression) throws EvaluationException {
+	public static FplObject evaluateToDictionary(Scope scope, FplValue expression) throws EvaluationException {
 		FplValue value = expression.evaluate(scope);
 		if (value instanceof FplObject) {
 			return (FplObject) value;
@@ -263,7 +263,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
 	 *                             FplObject.
 	 */
-	protected FplObject evaluateToDictionaryNullDefaultsToEmpty(Scope scope, FplValue expression) throws EvaluationException {
+	public static FplObject evaluateToDictionaryNullDefaultsToEmpty(Scope scope, FplValue expression) throws EvaluationException {
 		if (expression == null) {
 			return new FplObject("dict");
 		}
@@ -288,7 +288,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
 	 *                             FplObject.
 	 */
-	protected FplObject evaluateToObject(Scope scope, FplValue expression) throws EvaluationException {
+	public static FplObject evaluateToObject(Scope scope, FplValue expression) throws EvaluationException {
 		FplObject object = evaluateToDictionary(scope, expression);
 		if (object.getNext() == null) {
 			throw new EvaluationException("Not an object: " + object);
@@ -307,7 +307,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
 	 *                             boolean.
 	 */
-	protected boolean evaluateToBoolean(Scope scope, FplValue expression) throws EvaluationException {
+	public static boolean evaluateToBoolean(Scope scope, FplValue expression) throws EvaluationException {
 		if (expression == null) {
 			return false;
 		}
@@ -339,7 +339,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
 	 *                             number.
 	 */
-	protected long evaluateToLong(Scope scope, FplValue expression) throws EvaluationException {
+	public static long evaluateToLong(Scope scope, FplValue expression) throws EvaluationException {
 		if (expression == null) {
 			return 0;
 		}
@@ -363,7 +363,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * @return long value of expression.
 	 * @throws EvaluationException
 	 */
-	protected String evaluateToString(Scope scope, FplValue expression) throws EvaluationException {
+	public static String evaluateToString(Scope scope, FplValue expression) throws EvaluationException {
 		if (expression == null) {
 			return "nil";
 		}
@@ -377,7 +377,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 		}
 	}
 
-	protected FplValue makeLazy(Scope scope, FplValue e) {
+	public static FplValue makeLazy(Scope scope, FplValue e) {
 		if (e instanceof LazyExpression || e instanceof EvaluatesToThisValue) {
 			return e;
 		} else {

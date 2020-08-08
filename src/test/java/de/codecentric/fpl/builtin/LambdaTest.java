@@ -221,7 +221,25 @@ public class LambdaTest extends AbstractFplTest {
 		assertEquals(FplInteger.valueOf(6), list.get(0));
 		assertEquals(FplInteger.valueOf(7), list.get(1));
 	}
-
+	
+	@Test
+	public void lambdaDynamic() throws Exception {
+		evaluate("args", "(def args '(a b c))");
+		evaluate("code", "(def code '((+ a b c)))");
+		FplLambda f = (FplLambda)evaluate("lamda", "(lambda-dynamic args code)");
+		assertEquals(3, f.getMinimumNumberOfParameters());
+		assertEquals("(lambda (a b c) (+ a b c))", f.toString());
+	}
+	
+	@Test
+	public void functionDynamic() throws Exception {
+		evaluate("args", "(def args '(a \"b\" c))");
+		evaluate("code", "(def code '((+ a b c)))");
+		FplLambda f = (FplLambda)evaluate("def", "(def-function-dynamic \"test\" args code)");
+		assertEquals(3, f.getMinimumNumberOfParameters());
+		assertEquals("(lambda (a b c) (+ a b c))", scope.get("test").toString());
+	}
+	
 	@Test
 	public void evaluateQuotedList() throws Exception {
 		assertEquals(7, ((FplInteger) evaluate("eval", "(eval '(+ 3 4))")).getValue());

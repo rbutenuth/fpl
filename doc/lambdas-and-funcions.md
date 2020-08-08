@@ -63,6 +63,25 @@ As a shortcut for `def` and `lambda` you can use the following form:
 It combines the function definition with a lambda expression and its binding to a symbol. It fails
 (like `def`), when the symbol is already bound in the current scope. 
 
+## Dynamic definiton of lambdas and functions
+
+The two functions `lambda` and `def-function` are a little bit special: They only evaluate the parameter
+with the argument list, when it is not already a list. This is for convenience: This way you don't have to qoute
+the list of parameter names. The same holds for the code: You don't need to quote it. The downside: You are in trouble
+when you want to build code at runtime and make from it. Therefore, there are two special variants:
+
+```
+(lambda-dynamic parameter-list code-list)
+```
+
+Evaluates the first argument, the result must be a list of symbols and/or strings. The second parameter is evaluated
+to the code which has to be executed in the functions.
+
+```
+(def-function-dynamic name args code)
+```
+
+Like `lambda-dynamic`, but assigns the function to the symbol to which `name` evaluates.
 
 ## Lazy Evaluation
 
