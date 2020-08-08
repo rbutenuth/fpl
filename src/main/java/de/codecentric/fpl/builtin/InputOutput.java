@@ -337,6 +337,7 @@ public class InputOutput implements ScopePopulator {
 						// Body as string, may be `nil`
 						res.setBody(valueToString(result.get(2)), "UTF-8");
 					} catch (Exception e) {
+						res.setBody(e.getMessage(), "UTF-8");
 						res.setStatusCode(500);
 						return res;
 					}
