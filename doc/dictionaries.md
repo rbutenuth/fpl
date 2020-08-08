@@ -28,8 +28,6 @@ removed from the dictionaries.
 Define a value in the scope of an object or dictionary, symbol can be a symbol or a string,
 returns the value associated with the symbol/key, original mapping must be nil.
 
-Example:
- 
 ```
 (dict-def dictionary symbol 42)
 ```
@@ -37,8 +35,6 @@ Example:
 ### dict-get
 
 Get a value from the scope of an object or dictionary, symbol can be a symbol or a string.
-
-Example: 
 
 ```
 (dict-get dictionary symbol)
@@ -50,8 +46,6 @@ Put a value into the scope of an object or dictionary, symbol can be a symbol or
 returns the old value associated with the symbol/key. When you want to remove a mapping, 
 set the value nil.
 
-Example: 
-
 ```
 (dict-put dictionary symbol value)
 ```
@@ -61,9 +55,30 @@ Example:
 Change a value into the scope of an object or dictionary, symbol can be a symbol or a string,
 returns the old value associated with the symbol/key, new and old value must not be nil.
 
-Example: 
-
 ```
 (dict-set dictionary symbol value)
 ```
 
+### dict-keys
+
+Get all keys of an object or dictionary as a list.
+
+```
+(dict-keys dictionary)
+```
+
+### dict-values
+
+Get all values of an object or dictionary as a list.
+
+```
+(dict-values dictionary)
+```
+
+### dict-entries
+
+Get all entries of an object or dictionary as a list. Each entry is a list with two elements: key and value
+
+```
+(dict-keys entries)
+```

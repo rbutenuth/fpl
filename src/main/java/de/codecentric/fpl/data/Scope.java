@@ -1,8 +1,10 @@
 package de.codecentric.fpl.data;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -165,6 +167,18 @@ public class Scope implements Iterable<Entry<String, FplValue>> {
 		return map.isEmpty();
 	}
 	
+	public Set<String> keySet() {
+		return map.keySet();
+	}
+
+	public Collection<FplValue> values() {
+		return map.values();
+	}
+	
+	public Set<Entry<String, FplValue>> entrieSet() {
+		return map.entrySet();
+	}
+
 	private void checkKeyNotNullOrEmpty(String key) throws ScopeException {
 		if (key == null) {
 			throw new ScopeException("nil is not a valid name");
