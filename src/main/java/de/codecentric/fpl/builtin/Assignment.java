@@ -23,11 +23,7 @@ public class Assignment implements ScopePopulator {
 				"value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				try {
-					return scope.put(targetName(scope, parameters[0]), value(scope, parameters[1]));
-				} catch (ScopeException e) {
-					throw new EvaluationException(e.getMessage());
-				}
+				return put(scope,targetName(scope, parameters[0]), value(scope, parameters[1]));
 			}
 		});
 
@@ -40,11 +36,7 @@ public class Assignment implements ScopePopulator {
 				while (global.getNext() != null) {
 					global = global.getNext();
 				}
-				try {
-					return global.put(targetName(scope, parameters[0]), value(scope, parameters[1]));
-				} catch (ScopeException e) {
-					throw new EvaluationException(e.getMessage());
-				}
+				return put(global, targetName(scope, parameters[0]), value(scope, parameters[1]));
 			}
 		});
 
@@ -115,6 +107,14 @@ public class Assignment implements ScopePopulator {
 		return targetSymbol(scope, expression).getName();
 	}
 
+	public static FplValue put(Scope scope, String name, FplValue value) throws EvaluationException {
+		try {
+			return scope.put(name, value);
+		} catch (ScopeException e) {
+			throw new EvaluationException(e.getMessage(), e);
+		}
+	}
+	
 	/**
 	 * Compute the name for an assignment. For a symbol/parameter it's the
 	 * symbol/parameter name. For other expressions, evaluate it. Result must be a

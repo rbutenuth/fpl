@@ -67,11 +67,11 @@ public class FplEngine {
 		return scope;
 	}
 
-	public synchronized ForkJoinPool getPool() {
+	public ForkJoinPool getPool() {
 		return pool;
 	}
 	
-	public synchronized void setPool(ForkJoinPool pool) {
+	public void setPool(ForkJoinPool pool) {
 		this.pool = pool;
 	}
 	

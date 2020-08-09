@@ -11,7 +11,7 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.list.FplList;
 
-public class ParallelTest  extends AbstractFplTest {
+public class ParallelTest extends AbstractFplTest {
 
 	@Test
 	public void coverConstructor() {
@@ -20,17 +20,32 @@ public class ParallelTest  extends AbstractFplTest {
 
 	@Test
 	public void threadPoolSize() throws Exception {
-		FplInteger oldSize = (FplInteger)evaluate("thread-pool-size", "(thread-pool-size 17)");
+		FplInteger oldSize = (FplInteger) evaluate("thread-pool-size", "(thread-pool-size 17)");
 		assertTrue(oldSize.getValue() > 0);
 	}
 
 	@Test
 	public void parallel() throws Exception {
-		FplList list = (FplList)evaluate("parallel", "(parallel  (+ 3 4) (* 3 4) (- 3 4) )");
+		FplList list = (FplList) evaluate("parallel", "(parallel  (+ 3 4) (* 3 4) (- 3 4) )");
 		assertEquals(3, list.size());
 		assertEquals(FplInteger.valueOf(7), list.get(0));
 		assertEquals(FplInteger.valueOf(12), list.get(1));
 		assertEquals(FplInteger.valueOf(-1), list.get(2));
+	}
+
+	@Test
+	public void parallelRecursive() throws Exception {
+		evaluate("fibonacci", "(def-function par-fib (n)\n" //
+				+ "	(if-else (le n 2)\n" //
+				+ "		1\n" //
+				+ "		(reduce \n" //
+				+ "			(lambda (acc value) (+ acc value))\n" //
+				+ "			0\n" + "			(parallel (par-fib (- n 1)) (par-fib (- n 2)))\n" //
+				+ "		)\n" //
+				+ "	)\n" //
+				+ ")");
+		FplInteger fib10 = (FplInteger)evaluate("call-fib", "(par-fib 10)");
+		assertEquals(55, fib10.getValue());
 	}
 
 	@Test
@@ -42,7 +57,7 @@ public class ParallelTest  extends AbstractFplTest {
 			assertEquals("java.lang.ArithmeticException: / by zero", e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void parallelMap() throws Exception {
 		evaluate("square", "(def-function square (x) (* x x))");
@@ -85,7 +100,7 @@ public class ParallelTest  extends AbstractFplTest {
 	@Test
 	public void createFuture() throws Exception {
 		evaluate("create-future", "(put future (create-future (* 6 7)))");
-		FplInteger result = (FplInteger)evaluate("future", "(future)");
+		FplInteger result = (FplInteger) evaluate("future", "(future)");
 		assertEquals(FplInteger.valueOf(42), result);
 	}
 

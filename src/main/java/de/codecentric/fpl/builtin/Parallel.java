@@ -1,5 +1,7 @@
 package de.codecentric.fpl.builtin;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
@@ -27,11 +29,11 @@ public class Parallel implements ScopePopulator {
 	@Override
 	public void populate(Scope scope) throws ScopeException {
 
-		scope.define(new AbstractFunction("thread-pool-size",
-				comment("Create a new thread-pool with the given size."), true, "size") {
+		scope.define(new AbstractFunction("thread-pool-size", comment("Create a new thread-pool with the given size."),
+				true, "size") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				int size = (int)evaluateToLong(scope, parameters[0]);
+				int size = (int) evaluateToLong(scope, parameters[0]);
 				ForkJoinPool oldPool = engine.getPool();
 				int oldSize = oldPool.getParallelism();
 				engine.setPool(new ForkJoinPool(size));
@@ -45,11 +47,12 @@ public class Parallel implements ScopePopulator {
 				"code...") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				@SuppressWarnings("unchecked")
-				ForkJoinTask<FplValue>[] tasks = new ForkJoinTask[parameters.length];
+				ForkJoinPool pool = engine.getPool();
+
+				List<RecursiveTask<FplValue>> tasks = new ArrayList<>(parameters.length);
 				for (int i = 0; i < parameters.length; i++) {
 					final FplValue value = parameters[i];
-					tasks[i] = engine.getPool().submit(new RecursiveTask<FplValue>() {
+					tasks.add(new RecursiveTask<FplValue>() {
 						private static final long serialVersionUID = -5037994686972663758L;
 
 						@Override
@@ -62,13 +65,21 @@ public class Parallel implements ScopePopulator {
 						}
 					});
 				}
+
 				FplValue[] values = new FplValue[parameters.length];
-				for (int i = 0; i < parameters.length; i++) {
-					try {
-						values[i] = tasks[i].get();
-					} catch (InterruptedException | ExecutionException e) {
-						throw new EvaluationException(e);
+				try {
+					if (ForkJoinTask.inForkJoinPool()) {
+						ForkJoinTask.invokeAll(tasks);
+					} else {
+						for (RecursiveTask<FplValue> task : tasks) {
+							pool.execute(task);
+						}
 					}
+					for (int i = 0; i < parameters.length; i++) {
+						values[i] = tasks.get(i).get();
+					}
+				} catch (InterruptedException | ExecutionException e) {
+					throw new EvaluationException(e);
 				}
 				return FplList.fromValues(values);
 			}
@@ -112,7 +123,8 @@ public class Parallel implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("parallel-for-each",
-				comment("Apply a function parallel to all list elements, return last result"), false, "function", "list") {
+				comment("Apply a function parallel to all list elements, return last result"), false, "function",
+				"list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
@@ -151,18 +163,18 @@ public class Parallel implements ScopePopulator {
 		scope.define(new AbstractFunction("create-future", comment(""), false, "code") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-					ForkJoinTask<FplValue> task = engine.getPool().submit(new RecursiveTask<FplValue>() {
-						private static final long serialVersionUID = -5037994686972663758L;
+				ForkJoinTask<FplValue> task = engine.getPool().submit(new RecursiveTask<FplValue>() {
+					private static final long serialVersionUID = -5037994686972663758L;
 
-						@Override
-						protected FplValue compute() {
-							try {
-								return parameters[0].evaluate(scope);
-							} catch (EvaluationException e) {
-								throw new TunnelException(e);
-							}
+					@Override
+					protected FplValue compute() {
+						try {
+							return parameters[0].evaluate(scope);
+						} catch (EvaluationException e) {
+							throw new TunnelException(e);
 						}
-					});
+					}
+				});
 				return new AbstractFunction("future", comment("future"), false) {
 
 					@Override
