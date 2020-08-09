@@ -32,8 +32,10 @@ public class Parallel implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				int size = (int)evaluateToLong(scope, parameters[0]);
-				int oldSize = engine.getPool().getParallelism();
+				ForkJoinPool oldPool = engine.getPool();
+				int oldSize = oldPool.getParallelism();
 				engine.setPool(new ForkJoinPool(size));
+				oldPool.shutdown();
 				return FplInteger.valueOf(oldSize);
 			}
 		});
