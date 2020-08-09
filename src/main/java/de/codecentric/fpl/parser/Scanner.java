@@ -110,7 +110,7 @@ public class Scanner implements Closeable {
 					commentLine.append((char) ch);
 					readChar();
 				}
-				if (Character.isWhitespace(commentLine.charAt(0))) {
+				if (commentLine.length() > 0 && Character.isWhitespace(commentLine.charAt(0))) {
 					commentLine.deleteCharAt(0);
 				}
 				commentLines.add(commentLine.toString());

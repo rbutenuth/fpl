@@ -10,10 +10,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import de.codecentric.fpl.parser.ParseException;
-import de.codecentric.fpl.parser.Position;
-import de.codecentric.fpl.parser.Scanner;
-import de.codecentric.fpl.parser.Token;
 import de.codecentric.fpl.parser.Token.Id;
 
 /**
@@ -46,6 +42,39 @@ public class ScannerTest {
 	}
 
 	@Test
+	public void symbol() throws Exception {
+		try (Scanner sc = new Scanner("test", new StringReader("symbol"))) {
+			Token t = sc.next();
+			assertNotNull(t);
+			assertEquals(Id.SYMBOL, t.getId());
+			assertEquals("symbol", t.toString());
+		}
+	}
+
+	@Test
+	public void symbolAndWhitespace() throws Exception {
+		try (Scanner sc = new Scanner("test", new StringReader("symbol   "))) {
+			Token t = sc.next();
+			assertNotNull(t);
+			assertEquals(Id.SYMBOL, t.getId());
+			assertEquals("symbol", t.toString());
+		}
+	}
+
+	@Test
+	public void symbolAndLeftParenthesis() throws Exception {
+		try (Scanner sc = new Scanner("test", new StringReader("symbol("))) {
+			Token t = sc.next();
+			assertNotNull(t);
+			assertEquals(Id.SYMBOL, t.getId());
+			assertEquals("symbol", t.toString());
+			t = sc.next();
+			assertNotNull(t);
+			assertEquals(Id.LEFT_PAREN, t.getId());
+		}
+	}
+
+	@Test
 	public void commentsAndSymbol() throws Exception {
 		try (Scanner sc = new Scanner("test",
 				new StringReader(";   commentLine1\n; commentLine2\n;commentLine3\n symbol"))) {
@@ -58,6 +87,34 @@ public class ScannerTest {
 			assertEquals("  commentLine1", comments.get(0));
 			assertEquals("commentLine2", comments.get(1));
 			assertEquals("commentLine3", comments.get(2));
+		}
+	}
+
+	@Test
+	public void commentAtEndOfFile() throws Exception {
+		try (Scanner sc = new Scanner("test", new StringReader("symbol\n; xxx"))) {
+			Token t = sc.next();
+			assertNotNull(t);
+			assertEquals(Id.SYMBOL, t.getId());
+			assertEquals("symbol", t.toString());
+			t = sc.next();
+			assertEquals(Id.EOF, t.getId());
+		}
+	}
+
+	@Test
+	public void symbolEmptyCommentSymbol() throws Exception {
+		try (Scanner sc = new Scanner("test", new StringReader("bla\n;\rblubber"))) {
+			Token t = sc.next();
+			assertNotNull(t);
+			assertEquals(Id.SYMBOL, t.getId());
+			assertEquals("bla", t.toString());
+			List<String> comments = t.getCommentLines();
+			assertEquals(0, comments.size());
+			t = sc.next();
+			assertNotNull(t);
+			assertEquals(Id.SYMBOL, t.getId());
+			assertEquals("blubber", t.toString());
 		}
 	}
 
@@ -123,7 +180,7 @@ public class ScannerTest {
 	@Test
 	public void number() throws Exception {
 		try (Scanner sc = new Scanner("test",
-				new StringReader("123\t-456 ;comment \n1.23e4\n-31.4e-1\n2.78E+0\n3.14"))) {
+				new StringReader("123\t-456 ;comment \n1.23e4\n-31.4e-1\n2.78E+0\n3.14\n3E2\n-.5"))) {
 			Token t = sc.next();
 			assertNotNull(t);
 			assertEquals(Id.INTEGER, t.getId());
@@ -156,9 +213,19 @@ public class ScannerTest {
 			assertEquals(Id.DOUBLE, t.getId());
 			assertEquals(3.14, t.getDoubleValue(), 0.001);
 
+			t = sc.next();
+			assertNotNull(t);
+			assertEquals(Id.DOUBLE, t.getId());
+			assertEquals(300, t.getDoubleValue(), 0.001);
+
+			t = sc.next();
+			assertNotNull(t);
+			assertEquals(Id.DOUBLE, t.getId());
+			assertEquals(-0.5, t.getDoubleValue(), 0.001);
+
 			Position p = t.getPosition();
 			assertEquals("test", p.getName());
-			assertEquals(5, p.getLine());
+			assertEquals(7, p.getLine());
 			assertEquals(1, p.getColumn());
 		}
 	}
