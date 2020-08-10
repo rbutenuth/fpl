@@ -48,16 +48,13 @@ NPP_SAVE
 )
 
 
-(parallel
-	(+ 3 4)
-	(* 3 4)
-	(- 3 4)
-)
 
 (put future (create-future ((java-class java.lang.Thread) sleep 5000)))
 (future)
 
+
 (http-request "https://www.spiegel.de" "GET" nil nil nil nil nil)
+
 
 (def-function auth (user password)
 	(and (eq "fred" user) (eq "secret" password))
@@ -74,11 +71,25 @@ NPP_SAVE
 		(+ (fib (- n 1)) (fib (- n 2)))
 	)
 )
-;
-;(fib 35)
-;
-;(thread-pool-size 30)
-;
+
+(fib 35) ; retunrs 9227465 in 11.8 s
+
+(thread-pool-size 30)
+(put par-fib nil)
+(def-function par-fib (n)
+	(if-else (le n 2)
+		1
+		(reduce 
+			(lambda (acc value) (+ acc value)) 
+			0 
+			(parallel (par-fib (- n 1)) (par-fib (- n 2)))
+		)
+	)
+)
+
+(par-fib 35) ; 4.2 s
+
+
 (put par-fib nil)
 (def-function par-fib (n)
 	(if-else (le n 2)
@@ -93,5 +104,27 @@ NPP_SAVE
 		)
 	)
 )
-(par-fib 16)
+
+(par-fib 35) ; 2.5 s
+
+(put fast-fib nil)
+(def-function fast-fib (n)
+	(if-else (le n 2)
+		1
+		(sequential 
+			(def fib-2 1)
+			(def fib-1 1)
+			(def i 3)
+			(def fib 0)
+			(while (le i n)
+				(set fib (+ fib-2 fib-1))
+				(set fib-2 fib-1)
+				(set fib-1 fib)
+				(set i (+ i 1))
+			)
+			fib
+		)
+	)
+)
+(fast-fib 35) ; 4 ms (including http call)
 
