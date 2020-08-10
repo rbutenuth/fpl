@@ -47,7 +47,6 @@ public class Parallel implements ScopePopulator {
 				"code...") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				ForkJoinPool pool = engine.getPool();
 
 				List<RecursiveTask<FplValue>> tasks = new ArrayList<>(parameters.length);
 				for (int i = 0; i < parameters.length; i++) {
@@ -72,7 +71,7 @@ public class Parallel implements ScopePopulator {
 						ForkJoinTask.invokeAll(tasks);
 					} else {
 						for (RecursiveTask<FplValue> task : tasks) {
-							pool.execute(task);
+							engine.getPool().execute(task);
 						}
 					}
 					for (int i = 0; i < parameters.length; i++) {
