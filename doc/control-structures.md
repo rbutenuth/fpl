@@ -46,6 +46,30 @@ Example:
 	(set counter (- counter 1))
 )
 ```
+
+Or an efficient way to compute Fibonacci numbers: 
+```
+(def-function fib (n)
+	(if-else (le n 2)
+		1
+		(sequential 
+			(def fib-2 1)
+			(def fib-1 1)
+			(def i 3)
+			(def fib 0)
+			(while (le i n)
+				(set fib (+ fib-2 fib-1))
+				(set fib-2 fib-1)
+				(set fib-1 fib)
+				(set i (+ i 1))
+			)
+			fib
+		)
+	)
+)
+```
+
+
 The code defines a symbol with value 10. The loop is executed while the value of the symbol `counter` is >= 0. 
 So the the lines from 10 to 0 are printed.  The last `set` assigns the value -1. The function `set` returns the 
 value of the symbol before changing it, 0 in this case. As a consequence, the return value of the loop is 0.

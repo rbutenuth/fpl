@@ -13,6 +13,25 @@ Evaluate the parameters (`code`) in parallel and return a list with the evaluati
 (parallel code...)
 ```
 
+This can be used to implement fork-join algorithms, e.g. to compute Fibonacci numbers:
+
+```
+(def-function par-fib (n)
+	(if-else (le n 2)
+		1
+		(reduce 
+			(lambda (acc value) (+ acc value)) 
+			0 
+			(parallel (par-fib (- n 1)) (par-fib (- n 2)))
+		)
+	)
+)
+```
+
+The two predecessor numbers are computed in parallel, the result is stored in a list.
+The `reduce` on the list adds the two numbers. (I know: It's far more efficient to
+compute Fibonacci numbers without recursion, this is just an example.)
+
 ### parallel-for-each
 Apply a function parallel to all list elements, return last result
 ```
