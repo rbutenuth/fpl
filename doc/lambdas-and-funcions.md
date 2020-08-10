@@ -129,7 +129,30 @@ endless recursion. Lazy evaluation makes this function possible!
 
 ## Optional Arguments and Variable Argument Lists
 
-TODO
+Functions with a variable number of arguments work similar as in Java: Just append a `...` to the last 
+parameter name, example:
+
+```
+(def-function varargs (a b...)
+	(println "a:" (type-of a) a)
+	(println "b:" (type-of b) b)
+)
+```
+
+This defines a function where `a` is the first parameter, followed by an arbitrary number arguments
+(including null). These are assigned as a list to `b`. So the call 
+
+```
+(varargs 3 4 5)
+```
+ 
+Creates the following output:
+
+```
+a: integer 3
+b: list (4 5)
+```
+
 
 ## Currying
 
@@ -163,14 +186,12 @@ So another name for this technique is 'Schönfinkeln'. See [Wikipedia](https://e
 
 ## Tricks with `quote` and Lazy Evaluation
 
+Lazy evaluation allows some crazy tricks, here an example of the implementiation of `++`, as known from C and Java:
 
+```
 (def-function ++ (x) (set (quote x) (+ x 1)))
+```
 
-(def foo 3)
+Defining `foo` as `(def foo 3)` and calling `(++ foo)` increements `foo` by one, so the new value is 4.
 
-foo ; returns 3
-
-(++ foo)
-
-foo ; returns 4
-
+Why this works is left as an excercise for the reader. :-)
