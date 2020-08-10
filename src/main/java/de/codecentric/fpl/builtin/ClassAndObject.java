@@ -23,7 +23,7 @@ public class ClassAndObject implements ScopePopulator {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				Position position = determinePosition(parameters[0]);
+				Position position = FplValue.determinePosition(parameters[0]);
 				return makeClass("class", position, skipParameterScopes(scope), parameters, 0);
 			}
 
@@ -53,15 +53,15 @@ public class ClassAndObject implements ScopePopulator {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				Position position = determinePosition(parameters[0]);
+				Position position = FplValue.determinePosition(parameters[0]);
 				FplObject parent = evaluateToObject(scope, parameters[0]);
 				return makeClass("sub-class-of-" + parent.getName(), position, parent, parameters, 1);
 			}
 
 		});
 
-		// (def-sub-class name parent [one or more code blocks to define it])
-		scope.define(new AbstractFunction("def-sub-class", comment("TODO"), true, "name", "parent", "code...") {
+		scope.define(new AbstractFunction("def-sub-class", comment("Define a class and set the parent of the class."),
+				true, "name", "parent", "code...") {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
@@ -149,9 +149,5 @@ public class ClassAndObject implements ScopePopulator {
 				throw new EvaluationException(e.getMessage());
 			}
 		}
-	}
-
-	private static Position determinePosition(FplValue value) {
-		return Position.UNKNOWN; // // TODO try to determine better value (search for Symbol)
 	}
 }

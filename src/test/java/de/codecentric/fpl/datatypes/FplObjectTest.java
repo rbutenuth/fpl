@@ -14,12 +14,37 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ListResultCallback;
 import de.codecentric.fpl.builtin.ClassAndObject;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.parser.Position;
 
 public class FplObjectTest extends AbstractFplTest {
 	private static String NL = System.lineSeparator();
 
 	public FplObjectTest() {
 		super(FplObjectTest.class);
+	}
+	
+	@Test
+	public void positionEmptyList() throws Exception {
+		Position p = FplValue.determinePosition(evaluate("empty-list", "()"));
+		assertEquals(Position.UNKNOWN, p);
+	}
+	
+	@Test
+	public void positionEmptyDictionary() throws Exception {
+		Position p = FplValue.determinePosition(evaluate("empty-dict", "{}"));
+		assertEquals(Position.UNKNOWN, p);
+	}
+	
+	@Test
+	public void positionListWithSymbol() throws Exception {
+		Position p = FplValue.determinePosition(evaluate("list", "'( foo )"));
+		assertEquals(new Position("list", 1, 4), p);
+	}
+	
+	@Test
+	public void positionListWithEmptyList() throws Exception {
+		Position p = FplValue.determinePosition(evaluate("list", "'( () )"));
+		assertEquals(Position.UNKNOWN, p);
 	}
 	
 	@Test

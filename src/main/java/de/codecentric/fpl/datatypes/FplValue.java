@@ -2,6 +2,8 @@ package de.codecentric.fpl.datatypes;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.datatypes.list.FplList;
+import de.codecentric.fpl.parser.Position;
 
 /**
  * The base for all data types.
@@ -19,4 +21,19 @@ public interface FplValue {
      * @return Readable type, e.g. "string".
      */
     public String typeName();
+
+	public static Position determinePosition(FplValue value) {
+		if (value instanceof Symbol) {
+			return ((Symbol)value).getPosition();
+		}
+		if (value instanceof FplList) {
+			for (FplValue v : (FplList)value) {
+				Position p = determinePosition(v);
+				if (!Position.UNKNOWN.equals(p)) {
+					return p;
+				}
+			}
+		}
+		return Position.UNKNOWN;
+	}
 }

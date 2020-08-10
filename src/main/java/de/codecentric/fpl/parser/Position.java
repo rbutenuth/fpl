@@ -10,9 +10,7 @@ public final class Position {
     public final static Position INTERNAL = new Position("<internal>", 1, 1);
 
     private final String name;
-
     private final int line;
-
     private final int column;
 
     /**
