@@ -85,7 +85,47 @@ Like `lambda-dynamic`, but assigns the function to the symbol to which `name` ev
 
 ## Lazy Evaluation
 
-TODO
+When calling a function, you can pass parameters. Parameters can be any expression, for example a 
+constant value (e.g. 42), a symbol (e.g. `foo`), or a function call. The expression is passed to the
+function "as is", together with the scope where it occurs. It is _not_ evaluated on calling the function,
+the evaluation is delayed until its value is really needed.   
+
+So the parameter may never be evaluated. Have a look at the following example:
+
+```
+(def-function print-and-return (n)
+	(println "n:" n)
+	n
+)
+;
+(def-function not-all-used (a b c)
+	(+ a b)
+)
+;
+(not-all-used 
+	(print-and-return 5)
+	(print-and-return 6)
+	(print-and-return 7)
+)
+```
+
+The function `not-all-used` is called with three parameters, but only the first two are used. So
+the third will never be evaluated and only the values 5 and 6 will be printed. 
+
+This may look like a minor detail, but it is essential: Without this, functions like `if` and `if-else`
+would not be possible. Let's see another example:
+
+```
+(def-function factorial (n)
+   (if-else (le n 1)
+       1
+       (* n (factorial (- n 1)))
+   )
+)
+```
+
+Computing the `if` and the `else` part and then deciding wich one will be returned would result in an
+endless recursion. Lazy evaluation makes this function possible!
 
 ## Optional Arguments and Variable Argument Lists
 
@@ -93,7 +133,33 @@ TODO
 
 ## Currying
 
-TODO
+What happens when you call a function with less parameters then specified in the function definition? In most
+programming languages the result would be an error or the remaining parameters would be set to `null`. In
+FPL, you get a new function as result, which is combined from the given parameters and the initial function.
+You can call it with the missing parameters. Let's see an example:
+
+```
+(def-function plus (a b)
+	(+ a b)
+)
+
+(def plus3 (plus 3))
+
+
+(plus3 1)
+```
+
+`plus` takes two parameters, when called with only one, it will result in a new function with one parameter.
+It will add the number given in the first call to the parameter. So here `plus3` is the same as
+
+```
+(def-function plus3 ( b)
+	(+ 3 b)
+)
+```
+
+It was introduced by Gottlob Frege, developed by Moses Schönfinkel, and further developed by Haskell Curry.
+So another name for this technique is 'Schönfinkeln'. See [Wikipedia](https://en.wikipedia.org/wiki/Currying) for more details.
 
 ## Tricks with `quote` and Lazy Evaluation
 
