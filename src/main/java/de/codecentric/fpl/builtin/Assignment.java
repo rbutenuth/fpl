@@ -58,7 +58,7 @@ public class Assignment implements ScopePopulator {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				try {
-					return scope.define(targetSymbol(scope, parameters[0]), value(scope, parameters[1]));
+					return scope.define(targetName(scope, parameters[0]), value(scope, parameters[1]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}
@@ -78,7 +78,7 @@ public class Assignment implements ScopePopulator {
 					if (s == null) {
 						throw new EvaluationException("No object found");
 					}
-					return s.define(targetSymbol(scope, parameters[0]), value(scope, parameters[1]));
+					return s.define(targetName(scope, parameters[0]), value(scope, parameters[1]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}
@@ -95,16 +95,12 @@ public class Assignment implements ScopePopulator {
 					while (s.getNext() != null) {
 						s = s.getNext();
 					}
-					return s.define(targetSymbol(scope, parameters[0]), value(scope, parameters[1]));
+					return s.define(targetName(scope, parameters[0]), value(scope, parameters[1]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}
 			}
 		});
-	}
-
-	static public String targetName(Scope scope, FplValue expression) throws EvaluationException {
-		return targetSymbol(scope, expression).getName();
 	}
 
 	public static FplValue put(Scope scope, String name, FplValue value) throws EvaluationException {
@@ -125,9 +121,9 @@ public class Assignment implements ScopePopulator {
 	 * @return see description.
 	 * @throws EvaluationException
 	 */
-	static public Symbol targetSymbol(Scope scope, FplValue expression) throws EvaluationException {
+	static public String targetName(Scope scope, FplValue expression) throws EvaluationException {
 		if (expression instanceof Symbol) {
-			return (Symbol) expression;
+			return ((Symbol) expression).getName();
 		} else if (expression instanceof Parameter) {
 			throw new EvaluationException("Parameter " + expression + " can't be a target.");
 		} else {
@@ -136,10 +132,9 @@ public class Assignment implements ScopePopulator {
 			}
 			FplValue value = expression.evaluate(scope);
 			if (value instanceof Symbol) {
-				return (Symbol) value;
+				return ((Symbol) value).getName();
 			} else if (value instanceof FplString) {
-				String s = ((FplString) value).getContent();
-				return new Symbol(s);
+				return ((FplString) value).getContent();
 			} else {
 				throw new EvaluationException("Not a symbol or string: " + value);
 			}

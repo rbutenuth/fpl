@@ -8,7 +8,6 @@ import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.parser.Position;
 
 /**
@@ -23,7 +22,7 @@ public class ClassAndObject implements ScopePopulator {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				Position position = FplValue.determinePosition(parameters[0]);
+				Position position = FplValue.position(parameters[0]);
 				return makeClass("class", position, skipParameterScopes(scope), parameters, 0);
 			}
 
@@ -35,8 +34,8 @@ public class ClassAndObject implements ScopePopulator {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				Symbol target = Assignment.targetSymbol(scope, parameters[0]);
-				FplObject obj = makeClass(target.getName(), target.getPosition(), skipParameterScopes(scope), parameters, 1);
+				String target = Assignment.targetName(scope, parameters[0]);
+				FplObject obj = makeClass(target, FplValue.position(parameters[0]), skipParameterScopes(scope), parameters, 1);
 				try {
 					scope.define(target, obj);
 				} catch (ScopeException e) {
@@ -53,7 +52,7 @@ public class ClassAndObject implements ScopePopulator {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				Position position = FplValue.determinePosition(parameters[0]);
+				Position position = FplValue.position(parameters[0]);
 				FplObject parent = evaluateToObject(scope, parameters[0]);
 				return makeClass("sub-class-of-" + parent.getName(), position, parent, parameters, 1);
 			}
@@ -65,9 +64,9 @@ public class ClassAndObject implements ScopePopulator {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				Symbol target = Assignment.targetSymbol(scope, parameters[0]);
+				String target = Assignment.targetName(scope, parameters[0]);
 				FplObject parent = evaluateToObject(scope, parameters[1]);
-				FplObject obj = makeClass(target.getName(), target.getPosition(), parent, parameters, 2);
+				FplObject obj = makeClass(target, FplValue.position(parameters[0]), parent, parameters, 2);
 				try {
 					scope.define(target, obj);
 				} catch (ScopeException e) {

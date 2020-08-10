@@ -25,25 +25,25 @@ public class FplObjectTest extends AbstractFplTest {
 	
 	@Test
 	public void positionEmptyList() throws Exception {
-		Position p = FplValue.determinePosition(evaluate("empty-list", "()"));
+		Position p = FplValue.position(evaluate("empty-list", "()"));
 		assertEquals(Position.UNKNOWN, p);
 	}
 	
 	@Test
 	public void positionEmptyDictionary() throws Exception {
-		Position p = FplValue.determinePosition(evaluate("empty-dict", "{}"));
+		Position p = FplValue.position(evaluate("empty-dict", "{}"));
 		assertEquals(Position.UNKNOWN, p);
 	}
 	
 	@Test
 	public void positionListWithSymbol() throws Exception {
-		Position p = FplValue.determinePosition(evaluate("list", "'( foo )"));
+		Position p = FplValue.position(evaluate("list", "'( foo )"));
 		assertEquals(new Position("list", 1, 4), p);
 	}
 	
 	@Test
 	public void positionListWithEmptyList() throws Exception {
-		Position p = FplValue.determinePosition(evaluate("list", "'( () )"));
+		Position p = FplValue.position(evaluate("list", "'( () )"));
 		assertEquals(Position.UNKNOWN, p);
 	}
 	

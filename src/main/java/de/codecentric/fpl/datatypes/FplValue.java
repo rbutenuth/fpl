@@ -1,5 +1,8 @@
 package de.codecentric.fpl.datatypes;
 
+import java.util.Collections;
+import java.util.List;
+
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.list.FplList;
@@ -22,13 +25,13 @@ public interface FplValue {
      */
     public String typeName();
 
-	public static Position determinePosition(FplValue value) {
+	public static Position position(FplValue value) {
 		if (value instanceof Symbol) {
 			return ((Symbol)value).getPosition();
 		}
 		if (value instanceof FplList) {
 			for (FplValue v : (FplList)value) {
-				Position p = determinePosition(v);
+				Position p = position(v);
 				if (!Position.UNKNOWN.equals(p)) {
 					return p;
 				}
@@ -36,4 +39,12 @@ public interface FplValue {
 		}
 		return Position.UNKNOWN;
 	}
+	
+	public static List<String> comments(FplValue value) {
+		if (value instanceof Symbol) {
+			return ((Symbol)value).getCommentLines();
+		}
+		return Collections.emptyList();
+	}
+
 }

@@ -376,9 +376,9 @@ public class StringFunctions implements ScopePopulator {
 						for (Map.Entry<String, Any> entry : map.entrySet()) {
 							String key = entry.getKey();
 							if (key.equals("nil")) {
-								obj.define(new Symbol("<nil>"), deserialize(entry.getValue()));
+								obj.define("<nil>", deserialize(entry.getValue()));
 							} else {
-								obj.define(new Symbol(key), deserialize(entry.getValue()));
+								obj.define(key, deserialize(entry.getValue()));
 							}
 						}
 						return obj;

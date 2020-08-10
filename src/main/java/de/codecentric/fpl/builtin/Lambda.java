@@ -14,6 +14,7 @@ import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.FplWrapper;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
+import de.codecentric.fpl.parser.Position;
 
 /**
  * The functional part of FPL.
@@ -29,9 +30,10 @@ public class Lambda implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplList params = evaluateToListIfNotAlreadyList(scope, parameters[0]);
+				Position position = FplValue.position(parameters[0]);
 				FplValue[] code = new FplValue[parameters.length - 1];
 				System.arraycopy(parameters, 1, code, 0, code.length);
-				return lambda(new Symbol("lambda"), params, code);
+				return lambda("lambda", position, FplValue.comments(parameters[0]), params, code);
 			}
 		});
 
@@ -41,7 +43,8 @@ public class Lambda implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				FplList paramList = evaluateToList(scope, parameters[0]);
-				return lambda(new Symbol("lambda"), paramList, codeFromExpression(scope, parameters[1]));
+				Position position = FplValue.position(parameters[0]);
+				return lambda("lambda", position, FplValue.comments(parameters[0]), paramList, codeFromExpression(scope, parameters[1]));
 			}
 		});
 
@@ -50,11 +53,12 @@ public class Lambda implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				Symbol name = Assignment.targetSymbol(scope, parameters[0]);
+				String name = Assignment.targetName(scope, parameters[0]);
+				Position position = FplValue.position(parameters[0]);
 				FplList paramList = evaluateToListIfNotAlreadyList(scope, parameters[1]);
 				FplValue[] code = new FplValue[parameters.length - 2];
 				System.arraycopy(parameters, 2, code, 0, code.length);
-				return defineFunction(scope, name, paramList, code);
+				return defineFunction(scope, name, position, FplValue.comments(parameters[0]), paramList, code);
 			}
 		});
 
@@ -63,10 +67,11 @@ public class Lambda implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
-				Symbol name = new Symbol(evaluateToString(scope, parameters[0]));
+				String name = evaluateToString(scope, parameters[0]);
+				Position position = FplValue.position(parameters[0]);
 				FplList paramList = evaluateToList(scope, parameters[1]);
 				FplValue[] code = codeFromExpression(scope, parameters[2]);
-				return defineFunction(scope, name, paramList, code);
+				return defineFunction(scope, name, position, FplValue.comments(parameters[0]), paramList, code);
 			}
 		});
 
@@ -145,7 +150,7 @@ public class Lambda implements ScopePopulator {
 		return code;
 	}
 
-	private FplLambda lambda(Symbol name, FplList paramList, FplValue[] code) throws EvaluationException {
+	private FplLambda lambda(String name, Position position, List<String> commentLines, FplList paramList, FplValue[] code) throws EvaluationException {
 		String[] paramNames = new String[paramList.size()];
 		String[] paramComments = new String[paramNames.length];
 		int i = 0;
@@ -162,16 +167,16 @@ public class Lambda implements ScopePopulator {
 			paramComments[i] = joinLines(s.getCommentLines());
 			i++;
 		}
-		FplLambda result = new FplLambda(name.getPosition(), name.getCommentLines(), name.getName(), paramNames, code);
+		FplLambda result = new FplLambda(position, commentLines, name, paramNames, code);
 		for (i = 0; i < paramComments.length; i++) {
 			result.setParameterComment(i, paramComments[i]);
 		}
 		return result;
 	}
 
-	private FplLambda defineFunction(Scope scope, Symbol name, FplList paramList, FplValue[] code)
+	private FplLambda defineFunction(Scope scope, String name, Position position, List<String> commentLines, FplList paramList, FplValue[] code)
 			throws EvaluationException {
-		FplLambda result = lambda(name, paramList, code);
+		FplLambda result = lambda(name, position, commentLines, paramList, code);
 		try {
 			scope.define(name, result);
 		} catch (ScopeException e) {

@@ -44,7 +44,7 @@ public class Dictionary implements ScopePopulator {
 			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
 				try {
 					FplObject o = evaluateToDictionary(scope, parameters[0]);
-					return o.define(Assignment.targetSymbol(scope, parameters[1]),
+					return o.define(Assignment.targetName(scope, parameters[1]),
 							Assignment.value(scope, parameters[2]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());

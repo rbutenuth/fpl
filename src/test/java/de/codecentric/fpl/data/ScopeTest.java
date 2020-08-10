@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Symbol;
 
 public class ScopeTest {
 	Scope outer;
@@ -71,12 +70,12 @@ public class ScopeTest {
 	
 	@Test(expected = ScopeException.class)
 	public void assertDefineNullValueFails() throws ScopeException {
-		outer.define(new Symbol("foo"), null);
+		outer.define("foo", null);
 	}
 	
 	@Test(expected = ScopeException.class)
 	public void assertDefineNullKeyFails() throws ScopeException {
-		outer.define(new Symbol(""), new FplString("bar"));
+		outer.define("", new FplString("bar"));
 	}
 	
 	@Test

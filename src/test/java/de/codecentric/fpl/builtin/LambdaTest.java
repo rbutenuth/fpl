@@ -115,7 +115,7 @@ public class LambdaTest extends AbstractFplTest {
 	@Test
 	public void argsFromSymbol() throws Exception {
 		FplList args = FplList.fromValues(new Symbol("a"), new Symbol("b)"));
-		scope.define(new Symbol("args"), args);
+		scope.define("args", args);
 		AbstractFunction f = (AbstractFunction) evaluate("lambda", "(lambda args (+ a b))");
 		assertEquals(2, f.getMinimumNumberOfParameters());
 	}

@@ -12,7 +12,6 @@ import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
-import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
@@ -103,10 +102,10 @@ public class ControlStructures implements ScopePopulator {
 						if (rl.size() != 3) {
 							throw new EvaluationException("resource must have size 3, but has size " + rl.size());
 						}
-						Symbol symbol = Assignment.targetSymbol(localScope, rl.get(0));
+						String target = Assignment.targetName(localScope, rl.get(0));
 						FplValue value = rl.get(1).evaluate(localScope);
 						Function function = evaluateToFunction(localScope, rl.get(2));
-						localScope.define(symbol, value);
+						localScope.define(target, value);
 						resources.add(new Resource(value, function));
 					}
 					return parameters[1].evaluate(localScope);

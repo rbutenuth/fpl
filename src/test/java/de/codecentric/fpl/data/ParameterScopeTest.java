@@ -71,7 +71,7 @@ public class ParameterScopeTest {
 	@Test
 	public void define() throws ScopeException {
 		FplString euro = new FplString("€");
-		inner.define(new Symbol("euro"), euro);
+		inner.define("euro", euro);
 		assertEquals(euro, inner.get("euro"));
 	}
 

@@ -184,7 +184,7 @@ public class Parser implements Closeable {
 			throw new ParseException(lastToken.getPosition(), "Null no allowed as value.");
 		}
 		try {
-			obj.define(new Symbol(key), v);
+			obj.define(key, v);
 		} catch (ScopeException e) {
 			throw new ParseException(lastToken.getPosition(), e.getMessage(), e);
 		}
