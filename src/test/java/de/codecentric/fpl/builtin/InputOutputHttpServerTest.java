@@ -196,7 +196,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 
 	@Test
 	public void getRequestWithExceptionInHandler() throws Exception {
-		evaluate("callback", "(def-function callback (path headers params body) (/ 1 0))");
+		evaluate("callback", "(def-function callback (path headers params body) (throw \"bam\"))");
 		evaluate("start", "(def terminate (http-server " + port + " auth "
 				+ "(list \"GET\" \"/get-path\" callback)))");
 		Function terminate = (Function) evaluate("lambda", "terminate");
@@ -208,7 +208,33 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void postRequestWith() throws Exception {
+	public void getRequestHandlerDoesNotReturnList() throws Exception {
+		evaluate("callback", "(def-function callback (path headers params body) 42)");
+		evaluate("start", "(def terminate (http-server " + port + " auth "
+				+ "(list \"GET\" \"/get-path\" callback)))");
+		Function terminate = (Function) evaluate("lambda", "terminate");
+		assertNotNull(terminate);
+		setCorrectUser();
+		req.setBaseUri(baseUrl + "get-path");
+		HttpResponse res = new HttpClient().execute(req);
+		assertEquals(500, res.getStatusCode());
+	}
+
+	@Test
+	public void getRequestWithExceptionWithIdInHandler() throws Exception {
+		evaluate("callback", "(def-function callback (path headers params body) (throw-with-id \"bam\" 404))");
+		evaluate("start", "(def terminate (http-server " + port + " auth "
+				+ "(list \"GET\" \"/get-path\" callback)))");
+		Function terminate = (Function) evaluate("lambda", "terminate");
+		assertNotNull(terminate);
+		setCorrectUser();
+		req.setBaseUri(baseUrl + "get-path");
+		HttpResponse res = new HttpClient().execute(req);
+		assertEquals(404, res.getStatusCode());
+	}
+
+	@Test
+	public void postRequest() throws Exception {
 		evaluate("callback", "(def-function callback (path headers params body) (list 201 {} (join \"Body: \" body)))");
 		evaluate("start", "(def terminate (http-server " + port + " auth "
 				+ "(list \"POST\" \"/get-path\" callback)))");

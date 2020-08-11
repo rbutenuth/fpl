@@ -41,7 +41,7 @@ public class HttpClient {
 				res.addHeader(key, value);
 			}
 		}
-		if (status < 300) {
+		if (status < 400) {
 			try (InputStream is = con.getInputStream()) {
 				res.setBody(StreamUtil.readStreamToBytes(is));
 			}

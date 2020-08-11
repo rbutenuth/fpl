@@ -336,6 +336,11 @@ public class InputOutput implements ScopePopulator {
 						setHeaders(res, (FplObject) result.get(1));
 						// Body as string, may be `nil`
 						res.setBody(valueToString(result.get(2)), "UTF-8");
+					} catch (EvaluationException e) {
+						res.setBody(e.getMessage(), "UTF-8");
+						int id = e.getId();
+						res.setStatusCode(id == 0 ? 500 : id);
+						return res;
 					} catch (Exception e) {
 						res.setBody(e.getMessage(), "UTF-8");
 						res.setStatusCode(500);
