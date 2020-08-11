@@ -44,6 +44,7 @@ The result is a list with
 
 ### http-server
 Start an HTTP server. Returns a function to terminate the server, parameter is the delay in seconds.
+The termination function always returns `nil`.
 ```
 (http-server port authenticator handlers...)
 ```
