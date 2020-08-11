@@ -72,6 +72,16 @@ public class ControlStructures implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("throw-with-id", //
+				comment("Throw an exception."), false, "message", "id") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				String message = evaluateToString(scope, parameters[0]);
+				long id = evaluateToLong(scope, parameters[1]);
+				throw new EvaluationException(message, (int)id);
+			}
+		});
+
 		scope.define(new AbstractFunction("try-catch", //
 				comment("Evaluate the given `expression` and return the result. "
 						+ "In case of an exception, call `catch-function` and return its result."),
@@ -154,9 +164,10 @@ public class ControlStructures implements ScopePopulator {
 					fplStackTrace[i] = FplList.fromValues(entry);
 				}
 			}
-			FplValue[] catcherParameters = new FplValue[2];
+			FplValue[] catcherParameters = new FplValue[3];
 			catcherParameters[0] = new FplString(e.getMessage());
-			catcherParameters[1] = FplList.fromValues(AbstractFunction.QUOTE, FplList.fromValues(fplStackTrace));
+			catcherParameters[1] = FplInteger.valueOf(e.getId());
+			catcherParameters[2] = FplList.fromValues(AbstractFunction.QUOTE, FplList.fromValues(fplStackTrace));
 			return catchFunction.call(scope, catcherParameters);
 		}
 	}

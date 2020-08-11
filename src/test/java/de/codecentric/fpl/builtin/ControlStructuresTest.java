@@ -61,7 +61,7 @@ public class ControlStructuresTest extends AbstractFplTest {
 
 	@Test
 	public void tryCatchSuccess() throws Exception {
-		evaluate("catcher", "(def-function catcher (message stack) (def-global log-message message)(def-global stack-trace stack))");
+		evaluate("catcher", "(def-function catcher (message id stack) (def-global log-message message)(def-global stack-trace stack))");
 		evaluate("success-source", "(def-function success (x) x)");
 		assertEquals(FplInteger.valueOf(42), evaluate("catch", "(try-catch (success 42) catcher)"));
 		assertNull(scope.get("log-message"));
@@ -70,7 +70,7 @@ public class ControlStructuresTest extends AbstractFplTest {
 	
 	@Test
 	public void tryCatchWithException() throws Exception {
-		evaluate("catcher", "(def-function catcher (message stack) (def-global log-message message)(def-global stack-trace stack) 43)");
+		evaluate("catcher", "(def-function catcher (message id stack) (def-global log-message message)(def-global stack-trace stack) 43)");
 		evaluate("bam-source", "(def-function bam (x) (throw \"bam-message\"))");
 		assertEquals(FplInteger.valueOf(43), evaluate("catch", "(try-catch (bam 1) catcher)"));
 		FplString logMessage = (FplString) scope.get("log-message");
@@ -80,6 +80,22 @@ public class ControlStructuresTest extends AbstractFplTest {
 		assertEquals("bam-source", ((FplString) entry.get(0)).getContent());
 		assertEquals(1, ((FplInteger) entry.get(1)).getValue());
 		assertEquals("bam", ((FplString)entry.get(2)).getContent());
+	}
+	
+	@Test
+	public void tryCatchWithExceptionWithId() throws Exception {
+		evaluate("catcher", "(def-function catcher (message id stack) (def-global log-message message)(def-global stack-trace stack)(def-global log-id id) 43)");
+		evaluate("bam-source", "(def-function bam (x) (throw-with-id \"bam-message\" 404))");
+		assertEquals(FplInteger.valueOf(43), evaluate("catch", "(try-catch (bam 1) catcher)"));
+		FplString logMessage = (FplString) scope.get("log-message");
+		assertEquals("bam-message", logMessage.getContent());
+		FplList stackTrace = (FplList) scope.get("stack-trace");
+		FplList entry = (FplList) stackTrace.get(1);
+		assertEquals("bam-source", ((FplString) entry.get(0)).getContent());
+		assertEquals(1, ((FplInteger) entry.get(1)).getValue());
+		assertEquals("bam", ((FplString)entry.get(2)).getContent());
+		FplInteger id = (FplInteger) scope.get("log-id");
+		assertEquals(404, id.getValue());
 	}
 	
 	@Test
@@ -96,14 +112,14 @@ public class ControlStructuresTest extends AbstractFplTest {
 	@Test
 	public void tryWithResourceNotList() throws Exception {
 		FplString message = (FplString) evaluate("try-with", //
-				"(try-with 1 (+ 3 4) (lambda (message stacktrace) message))");
+				"(try-with 1 (+ 3 4) (lambda (message id stacktrace) message))");
 		assertEquals("Not a list: 1", message.getContent());
 	}
 
 	@Test
 	public void tryWithResourceListHasNotSizeThree() throws Exception {
 		FplString message = (FplString) evaluate("try-with", //
-				"(try-with ((a (open \"a\") )) (+ 3 4) (lambda (message stacktrace) message))");
+				"(try-with ((a (open \"a\") )) (+ 3 4) (lambda (message id stacktrace) message))");
 		assertEquals("resource must have size 3, but has size 2", message.getContent());
 	}
 
@@ -114,7 +130,7 @@ public class ControlStructuresTest extends AbstractFplTest {
 		FplString message = (FplString) evaluate("try-with", //
 				"(try-with ((a (open \"a\") (lambda (x) (close x)))\n" + 
 				"           (a (open \"b\") (lambda (x) (close x)))\n" + 
-				"          ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (+ 3 4)) (lambda (message stacktrace) message))");
+				"          ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (+ 3 4)) (lambda (message id stacktrace) message))");
 		assertEquals("Duplicate key: a", message.getContent());
 	}
 
@@ -126,7 +142,7 @@ public class ControlStructuresTest extends AbstractFplTest {
 		FplValue result = evaluate("try-with", //
 				"(try-with ((a (open \"a\") (lambda (x) (close x)))\n" + 
 				"            (b (open \"b\") (lambda (x) (close x)))\n" + 
-				"           ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (+ 3 4)) (lambda (message stacktrace) (put-global \"message\" message)))");
+				"           ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (+ 3 4)) (lambda (message id stacktrace) (put-global \"message\" message)))");
 		FplInteger i = (FplInteger)result;
 		assertNull(scope.get("message"));
 		assertEquals(7, i.getValue());
@@ -144,7 +160,7 @@ public class ControlStructuresTest extends AbstractFplTest {
 		FplValue result = evaluate("try-with", //
 				"(try-with ((a (open \"a\") (lambda (x) (close x)))\n" + 
 				"           (b (open \"b\") (lambda (x) (close x)))\n" + 
-				"          ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (throw \"bam\")) (lambda (message stacktrace) (put-global \"message\" message) 8))");
+				"          ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (throw \"bam\")) (lambda (message id stacktrace) (put-global \"message\" message) 8))");
 		FplInteger i = (FplInteger)result;
 		assertEquals(new FplString("bam"), scope.get("message"));
 		assertEquals(8, i.getValue());
@@ -162,7 +178,7 @@ public class ControlStructuresTest extends AbstractFplTest {
 		FplValue result = evaluate("try-with", //
 				"(try-with ((a (open \"a\") (lambda (x) (close x)))\n" + 
 				"           (b (open \"b\") (lambda (x) (close-crash x)))\n" + 
-				"          ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (+ 3 4)) (lambda (message stacktrace) (put-global \"message\" message)))");
+				"          ) (sequential (put-global \"a-in-code\" a) (put-global \"b-in-code\" b) (+ 3 4)) (lambda (message id stacktrace) (put-global \"message\" message)))");
 		FplInteger i = (FplInteger)result;
 		assertNull(scope.get("message"));
 		assertEquals(7, i.getValue());

@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 public class EvaluationException extends Exception {
 	private static final long serialVersionUID = 6161879115582780204L;
 	private int added;
+	private int id;
 
 	/**
 	 * @param message Error message.
@@ -18,10 +19,29 @@ public class EvaluationException extends Exception {
 
 	/**
 	 * @param message Error message.
+	 * @param id Id
+	 */
+	public EvaluationException(String message, int id) {
+		super(message);
+		this.id = id;
+	}
+
+	/**
+	 * @param message Error message.
 	 * @param cause Root cause for this exception.
 	 */
 	public EvaluationException(String message, Throwable cause) {
 		this(determineMessage(message, cause));
+		initCause(cause);
+	}
+
+	/**
+	 * @param message Error message.
+	 * @param id Id
+	 * @param cause Root cause for this exception.
+	 */
+	public EvaluationException(String message, int id, Throwable cause) {
+		this(determineMessage(message, cause), id);
 		initCause(cause);
 	}
 
@@ -66,6 +86,13 @@ public class EvaluationException extends Exception {
 		System.arraycopy(st, added, newSt, added + 1, st.length - added);
 		setStackTrace(newSt);
 		added++;
+	}
+
+	/**
+	 * @return Exception id, defaults to 0.
+	 */
+	public int getId() {
+		return id;
 	}
 
 	/**

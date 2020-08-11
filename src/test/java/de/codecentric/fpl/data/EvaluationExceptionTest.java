@@ -11,10 +11,19 @@ import de.codecentric.fpl.TunnelException;
 public class EvaluationExceptionTest {
 
 	@Test
-	public void withFunction() {
+	public void withMessageAndCause() {
 		EvaluationException ee = new EvaluationException("foo", new NullPointerException("baz"));
 		assertEquals("foo", ee.getMessage());
 		assertEquals("baz", ee.getCause().getMessage());
+		assertEquals(0, ee.getId());
+	}
+
+	@Test
+	public void withId() {
+		EvaluationException ee = new EvaluationException("foo", 42, new NullPointerException("baz"));
+		assertEquals("foo", ee.getMessage());
+		assertEquals("baz", ee.getCause().getMessage());
+		assertEquals(42, ee.getId());
 	}
 
 	@Test
@@ -25,10 +34,11 @@ public class EvaluationExceptionTest {
 	}
 
 	@Test
-	public void withMessageAndCause() {
-		EvaluationException ee = new EvaluationException("foo", new NullPointerException("baz"));
+	public void withMessageAndCauseAndId() {
+		EvaluationException ee = new EvaluationException("foo", 42, new NullPointerException("baz"));
 		assertEquals("foo", ee.getMessage());
 		assertEquals("baz", ee.getCause().getMessage());
+		assertEquals(42, ee.getId());
 	}
 
 	@Test
