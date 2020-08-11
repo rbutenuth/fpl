@@ -1,6 +1,6 @@
 # Arithmetic and Comparison
 
-# Arithmetic functions
+## Arithmetic functions
 
 ### +
 Add values.
@@ -38,7 +38,7 @@ Exponentiation of first value by following values.
 (** op1 op2 ops...)
 ```
 
-# Comparison functions
+## Comparison functions
 
 ### eq
 Compare for equal.
@@ -102,7 +102,7 @@ Logic xor of parameters.
 (xor expression)
 ```
 
-# Type checking functions
+## Type checking functions
 
 ### is-double
 Is expression a double?
@@ -146,3 +146,16 @@ Is expression a string?
 (is-string expression)
 ```
 
+## Conversion
+
+### round
+Round a double to a integer. `nil` is converted to 0.
+```
+(round double-value)
+```
+
+### to-integer
+Cast (truncate) a double to a integer. `nil` is converted to 0.
+```
+(to-integer double-value)
+```

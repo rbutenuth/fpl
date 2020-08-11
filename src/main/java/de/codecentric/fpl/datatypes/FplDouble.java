@@ -3,7 +3,7 @@ package de.codecentric.fpl.datatypes;
 /**
  * An FPL double.
  */
-public class FplDouble extends EvaluatesToThisValue {
+public class FplDouble extends EvaluatesToThisValue implements FplNumber {
     private double value;
 
     /**

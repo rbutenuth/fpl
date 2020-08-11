@@ -6,10 +6,11 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
+import de.codecentric.fpl.datatypes.FplNumber;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.AbstractFunction;
 
 /**
  * Basic arithmetic functions.
@@ -24,6 +25,32 @@ public class Arithmetic implements ScopePopulator {
 		scope.define(new ArithmeticFunction(ArithmeticOperator.DIVIDE));
 		scope.define(new ArithmeticFunction(ArithmeticOperator.MODULO));
 		scope.define(new ArithmeticFunction(ArithmeticOperator.EXP));
+
+		scope.define(new AbstractFunction("round", //
+				comment("Round a double to a integer. `nil` is converted to 0."), false, "number") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				FplNumber number = evaluateToNumber(scope, parameters[0]);
+				if (number instanceof FplInteger) {
+					return number;
+				} else { // must be FplDouble
+					return FplInteger.valueOf(Math.round(((FplDouble)number).getValue()));
+				}
+			}
+		});
+		
+		scope.define(new AbstractFunction("to-integer", //
+				comment("Cast (truncate) a double to a integer. `nil` is converted to 0."), false, "number") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+				FplNumber number = evaluateToNumber(scope, parameters[0]);
+				if (number instanceof FplInteger) {
+					return number;
+				} else { // must be FplDouble
+					return FplInteger.valueOf((long)((FplDouble)number).getValue());
+				}
+			}
+		});
 	}
 
 	private enum ArithmeticOperator {

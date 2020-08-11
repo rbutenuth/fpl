@@ -340,16 +340,35 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 *                             number.
 	 */
 	public static long evaluateToLong(Scope scope, FplValue expression) throws EvaluationException {
+		FplNumber value = evaluateToNumber(scope, expression);
+		if (value instanceof FplInteger) {
+			return ((FplInteger) value).getValue();
+		} else { // must be FplDouble
+			return (long) ((FplDouble) value).getValue();
+		}
+	}
+
+	/**
+	 * Evaluate an expression, convert the result - if possible - to {@link FplNumber}.
+	 * <code>nil</code> evaluates to {@link FplInteger} with value 0.
+	 * 
+	 * @param scope      Scope used for evaluation.
+	 * @param expression Expression to evaluate.
+	 * @return Value of expression.
+	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
+	 *                             number.
+	 */
+	public static FplNumber evaluateToNumber(Scope scope, FplValue expression) throws EvaluationException {
 		if (expression == null) {
-			return 0;
+			return FplInteger.valueOf(0);
 		}
 		FplValue value = expression.evaluate(scope);
 		if (value == null) {
-			return 0;
+			return FplInteger.valueOf(0);
 		} else if (value instanceof FplInteger) {
-			return ((FplInteger) value).getValue();
+			return (FplInteger) value;
 		} else if (value instanceof FplDouble) {
-			return (long) ((FplDouble) value).getValue();
+			return (FplDouble) value;
 		} else {
 			throw new EvaluationException("Does not evaluate to number: " + expression);
 		}

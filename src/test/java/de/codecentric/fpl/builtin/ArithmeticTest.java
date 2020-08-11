@@ -8,12 +8,35 @@ import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
+import de.codecentric.fpl.datatypes.FplValue;
 
 /**
  * Tests for the function interpreter.
  */
 public class ArithmeticTest extends AbstractFplTest {
 
+    @Test
+    public void round() throws Exception {
+    	assertLongEquals(0, evaluate("nil", "(round nil)"));
+    	assertLongEquals(0, evaluate("nil", "(round 0.3)"));
+    	assertLongEquals(1, evaluate("nil", "(round 0.5)"));
+    	assertLongEquals(0, evaluate("nil", "(round -0.3)"));
+    	assertLongEquals(4, evaluate("nil", "(round 4)"));
+    }
+    
+    @Test
+    public void toInteger() throws Exception {
+    	assertLongEquals(0, evaluate("nil", "(to-integer nil)"));
+    	assertLongEquals(0, evaluate("nil", "(to-integer 0.3)"));
+    	assertLongEquals(0, evaluate("nil", "(to-integer 0.9)"));
+    	assertLongEquals(0, evaluate("nil", "(to-integer -0.3)"));
+    	assertLongEquals(4, evaluate("nil", "(to-integer 4)"));
+    }
+
+    private void assertLongEquals(long expected, FplValue actual) throws Exception {
+    	assertEquals(expected, ((FplInteger)actual).getValue());
+    }
+    
     @Test
     public void unaryMinusInteger() throws Exception {
         FplInteger i = (FplInteger)evaluate("minus", "( - 3)");
