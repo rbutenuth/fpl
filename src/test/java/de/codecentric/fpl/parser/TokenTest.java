@@ -73,6 +73,18 @@ public class TokenTest {
 	}
 
 	@Test
+	public void colon() {
+		Token t = new Token(Position.UNKNOWN, Id.COLON);
+		assertEquals(":", t.toString());
+	}
+	
+	@Test
+	public void leftCurlyBacket() {
+		Token t = new Token(Position.UNKNOWN, Id.LEFT_CURLY_BRACKET);
+		assertEquals("{", t.toString());
+	}
+	
+	@Test
 	public void eof() {
 		Token t = new Token(Position.UNKNOWN, Id.EOF);
 		assertEquals("end of file", t.toString());

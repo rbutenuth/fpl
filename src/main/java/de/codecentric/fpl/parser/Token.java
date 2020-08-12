@@ -13,27 +13,82 @@ public final class Token {
 	 */
 	public enum Id {
 		/** ( */
-		LEFT_PAREN(true),
+		LEFT_PAREN(true) {
+			@Override
+			public String toString(Token t) {
+				return "(";
+			}
+		},
 		/** ) */
-		RIGHT_PAREN(true),
+		RIGHT_PAREN(true) {
+			@Override
+			public String toString(Token t) {
+				return "}";
+			}
+		},
 		/** { */
-		LEFT_CURLY_BRACKET(true),
+		LEFT_CURLY_BRACKET(true) {
+			@Override
+			public String toString(Token t) {
+				return "{";
+			}
+		},
 		/** } */
-		RIGHT_CURLY_BRACKET(true),
+		RIGHT_CURLY_BRACKET(true) {
+			@Override
+			public String toString(Token t) {
+				return "}";
+			}
+		},
 		/** : */
-		COLON(true),
+		COLON(true) {
+			@Override
+			public String toString(Token t) {
+				return ":";
+			}
+		},
 		/** 'x, short for (qoute x) */
-		QUOTE(true),
+		QUOTE(true) {
+			@Override
+			public String toString(Token t) {
+				return "'";
+			}
+		},
 		/** Integral number (stored as {@link BigInteger} */
-		INTEGER(false),
+		INTEGER(false) {
+			@Override
+			public String toString(Token t) {
+				return Long.toString(t.integerValue);
+			}
+		},
 		/** Double precision number */
-		DOUBLE(false),
+		DOUBLE(false) {
+			@Override
+			public String toString(Token t) {
+				return Double.toString(t.doubleValue);
+			}
+		},
 		/** Symbol */
-		SYMBOL(false),
+		SYMBOL(false) {
+			@Override
+			public String toString(Token t) {
+				return t.stringValue;
+			}
+		},
 		/** String */
-		STRING(false),
-		/** String */
-		EOF(true);
+		STRING(false) {
+			@Override
+			public String toString(Token t) {
+				return '"' + t.stringValue + '"';
+			}
+		},
+		/** end of file */
+		EOF(true) {
+			@Override
+			public String toString(Token t) {
+				return "end of file";
+			}
+		};
 
 		private Id(boolean primitive) {
 			this.primitive = primitive;
@@ -44,6 +99,8 @@ public final class Token {
 		public boolean isPrimitive() {
 			return primitive;
 		}
+		
+		abstract public String toString(Token t);
 	}
 
 	private final Position position;
@@ -218,42 +275,6 @@ public final class Token {
 
 	@Override
 	public String toString() {
-		String s = null;
-		switch (id) {
-		case COLON:
-			s = ":";
-			break;
-		case DOUBLE:
-			s = Double.toString(doubleValue);
-			break;
-		case INTEGER:
-			s = Long.toString(integerValue);
-			break;
-		case LEFT_PAREN:
-			s = "(";
-			break;
-		case LEFT_CURLY_BRACKET:
-			s = "{";
-			break;
-		case QUOTE:
-			s = "'";
-			break;
-		case RIGHT_PAREN:
-			s = ")";
-			break;
-		case RIGHT_CURLY_BRACKET:
-			s = "}";
-			break;
-		case STRING:
-			s = '"' + stringValue + '"';
-			break;
-		case SYMBOL:
-			s = stringValue;
-			break;
-		case EOF:
-			s = "end of file";
-			break;
-		}
-		return s;
+		return id.toString(this);
 	}
 }
