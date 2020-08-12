@@ -297,7 +297,7 @@ public class LambdaTest extends AbstractFplTest {
 		ListResultCallback callback = evaluateResource(resourceName);
 		List<FplValue> values = callback.getResults();
 		assertEquals(3, values.size());
-		FplValue message = scope.get("message");
+		assertNull(scope.get("message"));
 		FplString value = (FplString) values.get(2);
 		assertEquals("Normal (healthy weight)", value.getContent());
 	}
