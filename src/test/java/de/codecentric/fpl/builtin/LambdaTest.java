@@ -277,22 +277,27 @@ public class LambdaTest extends AbstractFplTest {
 		FplValue value = values.get(3);
 		assertEquals(FplInteger.valueOf(2), value);
 	}
-	
+
 	@Test
 	public void lambdaInFunctionWalksUpScopeToAccessParameter() throws Exception {
-		ListResultCallback callback = evaluateResource("walk-up-scope-chain.fpl");
-		List<FplValue> values = callback.getResults();
-		assertEquals(3, values.size());
-		FplString value = (FplString) values.get(2);
-		assertEquals("Normal (healthy weight)", value.getContent());
-		
+		lambdaInFunction("walk-up-scope-chain.fpl");
 	}
 
 	@Test
 	public void lambdaInFunctionWalksUpScopeToAccessParameterWithShadowing() throws Exception {
-		ListResultCallback callback = evaluateResource("walk-up-scope-chain-with-shadowing.fpl");
+		lambdaInFunction("walk-up-scope-chain-with-shadowing.fpl");
+	}
+	
+	@Test
+	public void lambdaInFunctionWalksUpWithIntermediateScope() throws Exception {
+		lambdaInFunction("walk-up-with-intermediate-scope.fpl");
+	}
+	
+	private void lambdaInFunction(String resourceName) throws Exception {
+		ListResultCallback callback = evaluateResource(resourceName);
 		List<FplValue> values = callback.getResults();
 		assertEquals(3, values.size());
+		FplValue message = scope.get("message");
 		FplString value = (FplString) values.get(2);
 		assertEquals("Normal (healthy weight)", value.getContent());
 	}

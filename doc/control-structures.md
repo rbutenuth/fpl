@@ -112,9 +112,9 @@ Open `resources`, evaluate (and return the value of) an `expression`, catch exce
 ```
 Example:
 ```
-(try-with ((a (open "a) (lambda (x) (close x))) 
+(try-with ((a (open "a") (lambda (x) (close x))) 
             (b (open "b") (lambda (x) (close x))) 
-          ) (sequential (put-global "a-in-code" a) (put-global "b-in-code" b) (throw "bam")) (lambda (message id stacktrace) (put-global "message" message) 42))");
+          ) (sequential (put-global "a-in-code" a) (put-global "b-in-code" b) (throw "bam")) (lambda (message id stacktrace) (put-global "message" message) 42)) 
 ```
 Opens two resources with some open function, the result is stored in the local scope in `a` and `b`. Then the sequential block is executed, which stores the
 resource in open state in two global variables, before throwing an exceptions. The `catch-function` stores the exception message in a global variable and

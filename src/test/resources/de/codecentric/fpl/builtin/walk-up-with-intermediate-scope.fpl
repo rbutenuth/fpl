@@ -1,0 +1,21 @@
+(def us-bmi-ranges '(
+	(0 "Very severely underweight")
+	(15 "Severely underweight")
+	(16 "Underweight")
+	(18.5 "Normal (healthy weight)")
+	(25 "Overweight")
+	(30 "Obese Class I (Moderately obese)")
+	(35 "Obese Class II (Severely obese)")
+	(40 "Obese Class III (Very severely obese)")
+  )
+)
+
+(def-function bmi-to-us-description (bmi)
+	(try-with 
+		() 
+		(get-element (last (filter (lambda (range) (ge bmi (first range)) ) us-bmi-ranges)) 1)
+		(lambda (message id stacktrace) (put-global "message" message) 42)
+    )
+)
+
+(bmi-to-us-description 22)
