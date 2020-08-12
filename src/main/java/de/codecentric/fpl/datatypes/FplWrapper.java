@@ -66,7 +66,7 @@ public class FplWrapper extends AbstractFunction {
 	}
 
 	@Override
-	protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+	protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 		FplValue first = parameters[0];
 		String name = null;
 		if (first instanceof Symbol) {

@@ -43,7 +43,7 @@ public class HttpServerMain {
 		scope.define(new AbstractFunction("stop-server", comment("Stop HTTP server."), false) {
 
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				terminate(2);
 				return new FplString("Stopping HTTP server...");
 			}

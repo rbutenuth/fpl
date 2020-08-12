@@ -29,7 +29,7 @@ public class Arithmetic implements ScopePopulator {
 		scope.define(new AbstractFunction("round", //
 				comment("Round a double to a integer. `nil` is converted to 0."), false, "number") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplNumber number = evaluateToNumber(scope, parameters[0]);
 				if (number instanceof FplInteger) {
 					return number;
@@ -42,7 +42,7 @@ public class Arithmetic implements ScopePopulator {
 		scope.define(new AbstractFunction("to-integer", //
 				comment("Cast (truncate) a double to a integer. `nil` is converted to 0."), false, "number") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplNumber number = evaluateToNumber(scope, parameters[0]);
 				if (number instanceof FplInteger) {
 					return number;
@@ -156,7 +156,7 @@ public class Arithmetic implements ScopePopulator {
 		 *      FplValue.data.LObject[])
 		 */
 		@Override
-		public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+		public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 			try {
 				FplValue value = parameters[0] == null ? null : parameters[0].evaluate(scope);
 				boolean isDouble;

@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 
@@ -859,7 +860,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			@Override
 			public FplValue next() {
 				try {
-					return function.call(scope, new FplValue[] { iter.next() });
+					return function.call(scope, new FplValue[] { AbstractFunction.quote(iter.next()) });
 				} catch (EvaluationException e) {
 					throw new TunnelException(e);
 				}

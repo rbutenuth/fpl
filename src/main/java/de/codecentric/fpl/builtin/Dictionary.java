@@ -25,7 +25,7 @@ public class Dictionary implements ScopePopulator {
 						"symbol can be a symbol or a string,", "returns the old value associated with the symbol/key."),
 				false, "dict", "symbol", "value") {
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
 					FplObject o = evaluateToDictionary(scope, parameters[0]);
 					return o.put(Assignment.targetName(scope, parameters[1]), Assignment.value(scope, parameters[2]));
@@ -41,7 +41,7 @@ public class Dictionary implements ScopePopulator {
 						"returns the value associated with the symbol/key, original mapping must be nil."),
 				false, "dict", "symbol", "value") {
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
 					FplObject o = evaluateToDictionary(scope, parameters[0]);
 					return o.define(Assignment.targetName(scope, parameters[1]),
@@ -58,7 +58,7 @@ public class Dictionary implements ScopePopulator {
 						"returns the old value associated with the symbol/key, new and old value must not be nil."),
 				false, "dict", "symbol", "value") {
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
 					FplObject o = evaluateToDictionary(scope, parameters[0]);
 					return o.replace(Assignment.targetName(scope, parameters[1]),
@@ -72,7 +72,7 @@ public class Dictionary implements ScopePopulator {
 		scope.define(new AbstractFunction("dict-get", comment("Get a value from the scope of an object or dictionary,",
 				"symbol can be a symbol or a string."), false, "dict", "symbol") {
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplObject o = evaluateToDictionary(scope, parameters[0]);
 				return o.get(Assignment.targetName(scope, parameters[1]));
 			}
@@ -81,7 +81,7 @@ public class Dictionary implements ScopePopulator {
 		scope.define(new AbstractFunction("dict-keys", comment("Get all keys of an object or dictionary as a list."),
 				false, "dict") {
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplObject o = evaluateToDictionary(scope, parameters[0]);
 				return FplList.fromIterator(new Iterator<FplValue>() {
 					Iterator<String> iter = o.keySet().iterator();
@@ -102,7 +102,7 @@ public class Dictionary implements ScopePopulator {
 		scope.define(new AbstractFunction("dict-values",
 				comment("Get all values of an object or dictionary as a list."), false, "dict") {
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplObject o = evaluateToDictionary(scope, parameters[0]);
 				return FplList.fromIterator(o.values().iterator());
 			}
@@ -112,7 +112,7 @@ public class Dictionary implements ScopePopulator {
 				"Get all entries of an object or dictionary as a list. Each entry is a list with two elements: key and value"),
 				false, "dict") {
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplObject o = evaluateToDictionary(scope, parameters[0]);
 				return FplList.fromIterator(new Iterator<FplValue>() {
 					Iterator<Entry<String, FplValue>> iter = o.entrieSet().iterator();

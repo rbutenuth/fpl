@@ -23,9 +23,15 @@ public class LoopTest extends AbstractFplTest {
 
 	@Test
 	public void forEachOfList() throws Exception {
-		evaluate("for-each", "(def-function fun (x) (+ x x))");
-		FplInteger result = (FplInteger) evaluate("for-each", "(for-each fun '(1 2 3 4))");
-		assertEquals(FplInteger.valueOf(8), result);
+		evaluate("result", "(def result '())");
+		evaluate("for-each", "(def-function fun (x) (set result (add-end result x)))");
+		evaluate("for-each", "(for-each fun '(1 2 nil 4))");
+		FplList result = (FplList) scope.get("result");
+		assertEquals(4, result.size());
+		assertEquals(1, ((FplInteger)result.get(0)).getValue());
+		assertEquals(2, ((FplInteger)result.get(1)).getValue());
+		assertNull(result.get(2));
+		assertEquals(4, ((FplInteger)result.get(3)).getValue());
 	}
 
 	@Test

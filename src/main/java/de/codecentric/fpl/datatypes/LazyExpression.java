@@ -31,7 +31,7 @@ public class LazyExpression implements FplValue {
     public synchronized FplValue evaluate(Scope unusedScope) throws EvaluationException {
     	if (!evaluated) {
     		evaluated = true;
-    		value = originalExpression.evaluate(scope);
+    		value = originalExpression == null ? null : originalExpression.evaluate(scope);
     	}
     	return value;
     }

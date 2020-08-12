@@ -28,7 +28,7 @@ public class Lambda implements ScopePopulator {
 				"code...") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplList params = evaluateToListIfNotAlreadyList(scope, parameters[0]);
 				Position position = FplValue.position(parameters[0]);
 				FplValue[] code = new FplValue[parameters.length - 1];
@@ -41,7 +41,7 @@ public class Lambda implements ScopePopulator {
 				"parameter-list", "code-list") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplList paramList = evaluateToList(scope, parameters[0]);
 				Position position = FplValue.position(parameters[0]);
 				return lambda("lambda", position, FplValue.comments(parameters[0]), paramList, codeFromExpression(scope, parameters[1]));
@@ -52,7 +52,7 @@ public class Lambda implements ScopePopulator {
 				"code...") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String name = Assignment.targetName(scope, parameters[0]);
 				Position position = FplValue.position(parameters[0]);
 				FplList paramList = evaluateToListIfNotAlreadyList(scope, parameters[1]);
@@ -66,7 +66,7 @@ public class Lambda implements ScopePopulator {
 				"name", "parameter-list", "code-list") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String name = evaluateToString(scope, parameters[0]);
 				Position position = FplValue.position(parameters[0]);
 				FplList paramList = evaluateToList(scope, parameters[1]);
@@ -78,7 +78,7 @@ public class Lambda implements ScopePopulator {
 		scope.define(new AbstractFunction("eval", comment("Evaluate expression."), false, "expression") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplValue expression = parameters[0].evaluate(scope);
 				return Assignment.value(scope, expression);
 			}
@@ -87,7 +87,7 @@ public class Lambda implements ScopePopulator {
 		scope.define(new AbstractFunction("type-of", comment("Return type of argument as string"), false, "value") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplValue expression = Assignment.value(scope, parameters[0]);
 				return expression == null ? null : new FplString(expression.typeName());
 			}
@@ -97,7 +97,7 @@ public class Lambda implements ScopePopulator {
 				true, "class...") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String name;
 				if (parameters[0] instanceof Symbol) {
 					name = ((Symbol) parameters[0]).getName();
@@ -121,7 +121,7 @@ public class Lambda implements ScopePopulator {
 				false, "class") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String name;
 				if (parameters[0] instanceof Symbol) {
 					name = ((Symbol) parameters[0]).getName();

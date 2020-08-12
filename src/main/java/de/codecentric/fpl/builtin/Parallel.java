@@ -32,7 +32,7 @@ public class Parallel implements ScopePopulator {
 		scope.define(new AbstractFunction("thread-pool-size", comment("Create a new thread-pool with the given size."),
 				true, "size") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				int size = (int) evaluateToLong(scope, parameters[0]);
 				ForkJoinPool oldPool = engine.getPool();
 				int oldSize = oldPool.getParallelism();
@@ -46,7 +46,7 @@ public class Parallel implements ScopePopulator {
 				comment("Evaluate the code in parallel and return a list with the evaluation results."), true,
 				"code...") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 
 				List<RecursiveTask<FplValue>> tasks = new ArrayList<>(parameters.length);
 				for (int i = 0; i < parameters.length; i++) {
@@ -88,7 +88,7 @@ public class Parallel implements ScopePopulator {
 				comment("Apply a function parallel to all list elements and return list with applied elements"), false,
 				"function", "list") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplList list = evaluateToList(scope, parameters[1]);
 				int size = list.size();
@@ -125,7 +125,7 @@ public class Parallel implements ScopePopulator {
 				comment("Apply a function parallel to all list elements, return last result"), false, "function",
 				"list") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplList list = evaluateToList(scope, parameters[1]);
 				int size = list.size();
@@ -161,7 +161,7 @@ public class Parallel implements ScopePopulator {
 
 		scope.define(new AbstractFunction("create-future", comment(""), false, "code") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				ForkJoinTask<FplValue> task = engine.getPool().submit(new RecursiveTask<FplValue>() {
 					private static final long serialVersionUID = -5037994686972663758L;
 
@@ -177,7 +177,7 @@ public class Parallel implements ScopePopulator {
 				return new AbstractFunction("future", comment("future"), false) {
 
 					@Override
-					protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+					protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 						try {
 							return task.get();
 						} catch (InterruptedException | ExecutionException e) {

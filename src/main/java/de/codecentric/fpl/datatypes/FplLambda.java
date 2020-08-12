@@ -54,7 +54,7 @@ public class FplLambda extends AbstractFunction {
 	 *      FplValue.data.LObject[])
 	 */
 	@Override
-	public FplValue callInternal(final Scope scope, final FplValue[] parameters) throws EvaluationException {
+	public FplValue callInternal(final Scope scope, final FplValue... parameters) throws EvaluationException {
 		FplValue[] scopeParameters = new FplValue[getNumberOfParameterNames()];
 		if (parameters.length > 0) {
 			int lastNamedIndex = getNumberOfParameterNames() - 1;

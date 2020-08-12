@@ -19,7 +19,7 @@ public class TestFunction extends AbstractFunction {
 	}
 	
 	@Override
-	public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+	public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 		return null;
 	}
 	

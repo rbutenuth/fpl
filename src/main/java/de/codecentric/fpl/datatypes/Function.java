@@ -17,5 +17,5 @@ public interface Function {
 	 * @throws EvaluationException
 	 *             If execution fails.
 	 */
-	public FplValue call(Scope scope, FplValue[] parameters) throws EvaluationException;
+	public FplValue call(Scope scope, FplValue... parameters) throws EvaluationException;
 }

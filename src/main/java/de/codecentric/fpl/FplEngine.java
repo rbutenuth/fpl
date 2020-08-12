@@ -100,7 +100,7 @@ public class FplEngine {
 						}
 						continueEvaluation = callback.handleSuccess(expression);
 					} else {
-						break;
+						continueEvaluation = false;
 					}
 				} catch (Exception e) {
 					continueEvaluation = callback.handleException(e);

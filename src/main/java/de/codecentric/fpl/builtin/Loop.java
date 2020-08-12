@@ -23,7 +23,7 @@ public class Loop implements ScopePopulator {
 		scope.define(new AbstractFunction("while", comment("Execute code while condition returns true."), true,
 				"condition", "code...") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplValue result = null;
 				while (evaluateToBoolean(scope, parameters[0])) {
 					for (int i = 1; i < parameters.length; i++) {
@@ -37,7 +37,7 @@ public class Loop implements ScopePopulator {
 		scope.define(new AbstractFunction("for-each",
 				comment("Apply a lambda to all list elements, return last result"), false, "function", "list") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplList list = evaluateToList(scope, parameters[1]);
 				Function function = evaluateToFunction(scope, parameters[0]);
 				try {
@@ -57,7 +57,7 @@ public class Loop implements ScopePopulator {
 				comment("Apply a lambda to all list elements and return list with applied elements"), false, "function",
 				"list") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplList list = evaluateToList(scope, parameters[1]);
 				try {
@@ -73,12 +73,12 @@ public class Loop implements ScopePopulator {
 						+ "accumulator and value. It must return the \"reduction\" of accumulator and value."),
 				false, "function", "accumulator", "list") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplValue accumulator = parameters[1].evaluate(scope);
 				FplList list = evaluateToList(scope, parameters[2]);
 				for (FplValue value : list) {
-					accumulator = function.call(scope, new FplValue[] { accumulator, value });
+					accumulator = function.call(scope, accumulator, AbstractFunction.quote(value));
 				}
 				return accumulator;
 			}
@@ -86,24 +86,19 @@ public class Loop implements ScopePopulator {
 
 		scope.define(new AbstractFunction("filter", comment("Filter a list elements."), false, "func", "list") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplList list = evaluateToList(scope, parameters[1]);
 				Function function = evaluateToFunction(scope, parameters[0]);
 				Iterator<FplValue> iter = list.iterator();
 				List<FplValue> results = new ArrayList<>();
 				while (iter.hasNext()) {
 					FplValue value = iter.next();
-					if (evaluateToBoolean(scope, function.call(scope, new FplValue[] { value }))) {
+					if (evaluateToBoolean(scope, function.call(scope, AbstractFunction.quote(value)))) {
 						results.add(value);
 					}
 				}
 				return FplList.fromValues(results);
 			}
 		});
-
-		// flatten
-		// reduce
-		// map-object
-		// not here: sequential, parallel
 	}
 }

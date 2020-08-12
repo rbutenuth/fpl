@@ -53,7 +53,7 @@ public class InputOutput implements ScopePopulator {
 						+ "The resource must be UTF-8 encoded."),
 				false, "uri", "evaluate") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String uriAsString = evaluateToString(scope, parameters[0]);
 				boolean evaluate = evaluateToBoolean(scope, parameters[1]);
 				try {
@@ -87,7 +87,7 @@ public class InputOutput implements ScopePopulator {
 				comment("Parse or evaluate all expressions within the string. Return a list which contains the results."),
 				false, "string", "evaluate") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String str = evaluateToString(scope, parameters[0]);
 				boolean evaluate = evaluateToBoolean(scope, parameters[1]);
 				try (Parser p = new Parser(new Scanner(str, new StringReader(str)))) {
@@ -114,7 +114,7 @@ public class InputOutput implements ScopePopulator {
 		scope.define(new AbstractFunction("to-string", //
 				comment("Write the content of a string to a file. Use UTF-8 as encoding."), false, "expression") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				if (parameters[0] == null) {
 					return new FplString("nil");
 				} else {
@@ -128,7 +128,7 @@ public class InputOutput implements ScopePopulator {
 				comment("Write the content of a string to a file. Use UTF-8 as encoding."), false, "filename",
 				"content") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String filename = evaluateToString(scope, parameters[0]);
 				String content = evaluateToString(scope, parameters[1]);
 				try (FileOutputStream fos = new FileOutputStream(filename);
@@ -146,7 +146,7 @@ public class InputOutput implements ScopePopulator {
 				"password") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
 					HttpRequest req = new HttpRequest();
 					req.setBaseUri(evaluateToString(scope, parameters[0]));
@@ -192,7 +192,7 @@ public class InputOutput implements ScopePopulator {
 				true, "port", "authenticator", "handlers...") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				int port = (int) evaluateToLong(scope, parameters[0]);
 				BasicAuthenticator authenticator = createAuthenticator(scope,
 						evaluateToFunctionOrNull(scope, parameters[1]));
@@ -208,7 +208,7 @@ public class InputOutput implements ScopePopulator {
 				return new AbstractFunction("terminate-server", comment("Terminate the HTTP server"), false, "delay") {
 
 					@Override
-					protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+					protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 						int delay = (int) evaluateToLong(scope, parameters[0]);
 						server.terminate(delay);
 						server.waitForTermination();
@@ -238,7 +238,7 @@ public class InputOutput implements ScopePopulator {
 			}
 
 			// start at parameter 3 (0 is port, 1 authenticator)
-			private PathHandler[] createHandlers(Scope scope, FplValue[] parameters) throws EvaluationException {
+			private PathHandler[] createHandlers(Scope scope, FplValue... parameters) throws EvaluationException {
 				PathHandler[] handlers = new PathHandler[parameters.length - 2];
 				for (int i = 0; i < parameters.length - 2; i++) {
 					handlers[i] = createHandler(scope, evaluateToList(scope, parameters[i + 2]));

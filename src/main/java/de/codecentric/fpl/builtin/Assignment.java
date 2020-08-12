@@ -22,7 +22,7 @@ public class Assignment implements ScopePopulator {
 				comment("Assign symbol to evluated value in current scope, deletes if value is null"), false, "symbol",
 				"value") {
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return put(scope,targetName(scope, parameters[0]), value(scope, parameters[1]));
 			}
 		});
@@ -31,7 +31,7 @@ public class Assignment implements ScopePopulator {
 				comment("Assign symbol to evluated value in global scope, deletes if value is null"), false, "symbol",
 				"value") {
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Scope global = scope;
 				while (global.getNext() != null) {
 					global = global.getNext();
@@ -43,7 +43,7 @@ public class Assignment implements ScopePopulator {
 		scope.define(new AbstractFunction("set", comment("Reassign value in scope chain. nil as value not allowed"),
 				false, "symbol", "value") {
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
 					return scope.replace(targetName(scope, parameters[0]), value(scope, parameters[1]));
 				} catch (ScopeException e) {
@@ -56,7 +56,7 @@ public class Assignment implements ScopePopulator {
 				comment("Assign value in current scope, it must be unassigned before. nil as value not allowed"), false,
 				"symbol", "value") {
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
 					return scope.define(targetName(scope, parameters[0]), value(scope, parameters[1]));
 				} catch (ScopeException e) {
@@ -69,7 +69,7 @@ public class Assignment implements ScopePopulator {
 				"Assign value in the next object scope, it must be unassigned before. nil as value not allowed"), false,
 				"symbol", "value") {
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
 					Scope s = scope;
 					while (!(s instanceof FplObject) && s != null) {
@@ -89,7 +89,7 @@ public class Assignment implements ScopePopulator {
 				comment("Assign value in global scope, it must be unassigned before. nil as value not allowed"), false,
 				"symbol", "value") {
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
 					Scope s = scope;
 					while (s.getNext() != null) {

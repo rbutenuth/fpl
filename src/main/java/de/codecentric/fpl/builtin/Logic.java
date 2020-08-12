@@ -33,7 +33,7 @@ public class Logic implements ScopePopulator {
 		scope.define(new AbstractFunction("is-symbol", comment("Is expression a symbol?"), false, "expression") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return parameters[0].evaluate(scope) instanceof Symbol ? L_TRUE : null;
 			}
 		});
@@ -41,7 +41,7 @@ public class Logic implements ScopePopulator {
 		scope.define(new AbstractFunction("is-integer", comment("Is expression an integer?"), false, "expression") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return parameters[0].evaluate(scope) instanceof FplInteger ? L_TRUE : null;
 			}
 		});
@@ -49,7 +49,7 @@ public class Logic implements ScopePopulator {
 		scope.define(new AbstractFunction("is-double", comment("Is expression a double?"), false, "expression") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return parameters[0].evaluate(scope) instanceof FplDouble ? L_TRUE : null;
 			}
 		});
@@ -57,7 +57,7 @@ public class Logic implements ScopePopulator {
 		scope.define(new AbstractFunction("is-string", comment("Is expression a string?"), false, "expression") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return parameters[0].evaluate(scope) instanceof FplString ? L_TRUE : null;
 			}
 		});
@@ -65,7 +65,7 @@ public class Logic implements ScopePopulator {
 		scope.define(new AbstractFunction("is-list", comment("Is expression a list?"), false, "expression") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return parameters[0].evaluate(scope) instanceof FplList ? L_TRUE : null;
 			}
 		});
@@ -73,7 +73,7 @@ public class Logic implements ScopePopulator {
 		scope.define(new AbstractFunction("is-object", comment("Is expression an object?"), false, "expression") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return parameters[0].evaluate(scope) instanceof FplObject ? L_TRUE : null;
 			}
 		});
@@ -81,7 +81,7 @@ public class Logic implements ScopePopulator {
 		scope.define(new AbstractFunction("is-function", comment("Is expression a function?"), false, "expression") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return parameters[0].evaluate(scope) instanceof AbstractFunction ? L_TRUE : null;
 			}
 		});
@@ -101,7 +101,7 @@ public class Logic implements ScopePopulator {
 		 *      FplValue.data.LObject[])
 		 */
 		@Override
-		public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+		public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 			if (getName().equals("not")) {
 				return evaluateToBoolean(scope, parameters[0]) ? null : L_TRUE;
 			}

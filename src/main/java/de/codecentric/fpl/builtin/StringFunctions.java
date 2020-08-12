@@ -37,7 +37,7 @@ public class StringFunctions implements ScopePopulator {
 		scope.define(new AbstractFunction("describe", comment("Create a description in markdown format for a function"),
 				false, "expression") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplValue value = parameters[0].evaluate(scope);
 				if (value instanceof AbstractFunction) {
 					StringBuilder sb = new StringBuilder();
@@ -65,7 +65,7 @@ public class StringFunctions implements ScopePopulator {
 		scope.define(new AbstractFunction("join", comment("join strings"), true, "string...") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				StringBuilder result = new StringBuilder();
 				for (FplValue value : parameters) {
 					result.append(evaluateToString(scope, value));
@@ -79,7 +79,7 @@ public class StringFunctions implements ScopePopulator {
 				false, "format", "locale", "number") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				DecimalFormatSymbols symbols = new DecimalFormatSymbols(
 						new Locale(evaluateToString(scope, parameters[1])));
 				NumberFormat format = new DecimalFormat(evaluateToString(scope, parameters[0]), symbols);
@@ -99,7 +99,7 @@ public class StringFunctions implements ScopePopulator {
 				false, "format", "locale", "string") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				DecimalFormatSymbols symbols = new DecimalFormatSymbols(
 						new Locale(evaluateToString(scope, parameters[1])));
 				NumberFormat format = new DecimalFormat(evaluateToString(scope, parameters[0]), symbols);
@@ -121,7 +121,7 @@ public class StringFunctions implements ScopePopulator {
 				false, "string") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return FplInteger.valueOf(evaluateToString(scope, parameters[0]).length());
 			}
 		});
@@ -130,7 +130,7 @@ public class StringFunctions implements ScopePopulator {
 				comment("Return the code (integer) of the character at position index."), false, "string", "index") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return FplInteger.valueOf(
 						evaluateToString(scope, parameters[0]).charAt((int) evaluateToLong(scope, parameters[1])));
 			}
@@ -140,7 +140,7 @@ public class StringFunctions implements ScopePopulator {
 				false, "list-of-chars") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplList list = evaluateToList(scope, parameters[0]);
 				char[] chars = new char[list.size()];
 				int i = 0;
@@ -160,7 +160,7 @@ public class StringFunctions implements ScopePopulator {
 				"pattern") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return FplInteger.valueOf(
 						evaluateToString(scope, parameters[0]).indexOf(evaluateToString(scope, parameters[1])));
 			}
@@ -171,7 +171,7 @@ public class StringFunctions implements ScopePopulator {
 				"pattern") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return FplInteger.valueOf(
 						evaluateToString(scope, parameters[0]).lastIndexOf(evaluateToString(scope, parameters[1])));
 			}
@@ -182,7 +182,7 @@ public class StringFunctions implements ScopePopulator {
 				false, "string", "begin-index", "end-index") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				int beginIndex = (int) evaluateToLong(scope, parameters[1]);
 				int endIndex = (int) evaluateToLong(scope, parameters[2]);
 				return new FplString(evaluateToString(scope, parameters[0]).substring(beginIndex, endIndex));
@@ -197,7 +197,7 @@ public class StringFunctions implements ScopePopulator {
 				false, "string", "regex") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Pattern pattern = Pattern.compile(evaluateToString(scope, parameters[1]));
 				Matcher m = pattern.matcher(evaluateToString(scope, parameters[0]));
 				if (m.find()) {
@@ -220,7 +220,7 @@ public class StringFunctions implements ScopePopulator {
 				false, "string", "regex", "replacement") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String str = evaluateToString(scope, parameters[0]);
 				String regex = evaluateToString(scope, parameters[1]);
 				String replacement = evaluateToString(scope, parameters[2]);
@@ -232,7 +232,7 @@ public class StringFunctions implements ScopePopulator {
 				new AbstractFunction("to-lower-case", comment("Convert the string to lower case."), false, "string") {
 
 					@Override
-					public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 						return new FplString(evaluateToString(scope, parameters[0]).toLowerCase());
 					}
 				});
@@ -241,7 +241,7 @@ public class StringFunctions implements ScopePopulator {
 				new AbstractFunction("to-upper-case", comment("Convert the string to upper case."), false, "string") {
 
 					@Override
-					public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 						return new FplString(evaluateToString(scope, parameters[0]).toUpperCase());
 					}
 				});
@@ -249,7 +249,7 @@ public class StringFunctions implements ScopePopulator {
 		scope.define(new AbstractFunction("symbol", comment("Create a symbol."), false, "string") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return new Symbol(evaluateToString(scope, parameters[0]));
 			}
 		});
@@ -258,7 +258,7 @@ public class StringFunctions implements ScopePopulator {
 				new AbstractFunction("name-of-symbol", comment("Determine the name of a symbol."), false, "symbol") {
 
 					@Override
-					public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 						return new FplString(((Symbol) parameters[0].evaluate(scope)).getName());
 					}
 				});
@@ -267,7 +267,7 @@ public class StringFunctions implements ScopePopulator {
 				new AbstractFunction("serialize-to-json", comment("Convert value to JSON string."), false, "value") {
 
 					@Override
-					public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 						FplValue value = parameters[0].evaluate(scope);
 						StringBuilder sb = new StringBuilder();
 						serialize(sb, value);
@@ -335,7 +335,7 @@ public class StringFunctions implements ScopePopulator {
 						false, "string") {
 
 					@Override
-					public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 						String str = evaluateToString(scope, parameters[0]);
 						Any parsed = JsonIterator.deserialize(str);
 						try {

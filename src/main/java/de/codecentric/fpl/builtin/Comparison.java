@@ -178,7 +178,7 @@ public class Comparison implements ScopePopulator {
 		 *      FplValue.data.LObject[])
 		 */
 		@Override
-		public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+		public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 			FplValue left = parameters[0] == null ? null : parameters[0].evaluate(scope);
 			FplValue right = parameters[1] == null ? null : parameters[1].evaluate(scope);
 

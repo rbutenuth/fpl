@@ -75,6 +75,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 
 	/**
 	 * This constructor should be used for internally implemented functions only.
+	 * 
 	 * @param name           Not null, not empty.
 	 * @param varArg         Is this a function with variable argument list?
 	 * @param parameterNames Names of the parameters. If last ends with "...",
@@ -103,10 +104,10 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * @return The result of the function.
 	 * @throws EvaluationException If execution fails.
 	 */
-	protected abstract FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException;
+	protected abstract FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException;
 
 	@Override
-	public FplValue call(Scope scope, FplValue[] parameters) throws EvaluationException {
+	public FplValue call(Scope scope, FplValue... parameters) throws EvaluationException {
 		int missing = checkNumberOfParameters(parameters);
 		if (missing > 0) {
 			if (parameters.length == 0) {
@@ -118,8 +119,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 		try {
 			return callInternal(scope, parameters);
 		} catch (EvaluationException e) {
-			e.add(new StackTraceElement(FPL, getName(), getPosition().getName(),
-					getPosition().getLine()));
+			e.add(new StackTraceElement(FPL, getName(), getPosition().getName(), getPosition().getLine()));
 			throw e;
 		}
 	}
@@ -188,7 +188,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 */
 	public static FplList evaluateToListIfNotAlreadyList(Scope scope, FplValue expression) throws EvaluationException {
 		if (expression instanceof FplList) {
-			return (FplList)expression;
+			return (FplList) expression;
 		} else {
 			return evaluateToList(scope, expression);
 		}
@@ -263,7 +263,8 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
 	 *                             FplObject.
 	 */
-	public static FplObject evaluateToDictionaryNullDefaultsToEmpty(Scope scope, FplValue expression) throws EvaluationException {
+	public static FplObject evaluateToDictionaryNullDefaultsToEmpty(Scope scope, FplValue expression)
+			throws EvaluationException {
 		if (expression == null) {
 			return new FplObject("dict");
 		}
@@ -349,8 +350,9 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	}
 
 	/**
-	 * Evaluate an expression, convert the result - if possible - to {@link FplNumber}.
-	 * <code>nil</code> evaluates to {@link FplInteger} with value 0.
+	 * Evaluate an expression, convert the result - if possible - to
+	 * {@link FplNumber}. <code>nil</code> evaluates to {@link FplInteger} with
+	 * value 0.
 	 * 
 	 * @param scope      Scope used for evaluation.
 	 * @param expression Expression to evaluate.
@@ -394,6 +396,16 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 		} else {
 			return value.toString();
 		}
+	}
+
+	public static FplValue quote(FplValue value) throws EvaluationException {
+		FplValue result;
+		if (value == null || value instanceof EvaluatesToThisValue) {
+			result = value;
+		} else {
+			result = FplList.fromValues(AbstractFunction.QUOTE, value);
+		}
+		return result;
 	}
 
 	public static FplValue makeLazy(Scope scope, FplValue e) {
@@ -497,7 +509,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 		}
 
 		@Override
-		public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+		public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 			FplValue[] allParams = new FplValue[givenParameters.length + parameters.length];
 			System.arraycopy(givenParameters, 0, allParams, 0, givenParameters.length);
 			System.arraycopy(parameters, 0, allParams, givenParameters.length, parameters.length);

@@ -25,7 +25,12 @@ public class InterpreterTest extends AbstractFplTest {
 
 	@Test
 	public void oneArg() throws Exception {
-		assertEquals("42" + sep + sep, execute(new String[] { "(* 6 7)" }));
+		assertEquals("42" + sep + sep, execute("(* 6 7)"));
+	}
+
+	@Test
+	public void TwoExpressions() throws Exception {
+		assertEquals("42" + sep + sep + "7" + sep + sep, execute("(* 6 7) (+ 3 4)"));
 	}
 
 	@Test

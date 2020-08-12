@@ -49,7 +49,7 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 	}
 
 	@Override
-	public FplValue call(Scope scope, FplValue[] parameters) throws EvaluationException {
+	public FplValue call(Scope scope, FplValue... parameters) throws EvaluationException {
 		Scope callScope;
 		if (scope instanceof ParameterScope) {
 			callScope = new ParameterScope(getName(), this, (ParameterScope) scope);

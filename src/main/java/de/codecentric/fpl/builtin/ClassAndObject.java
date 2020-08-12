@@ -21,7 +21,7 @@ public class ClassAndObject implements ScopePopulator {
 				true, "code...") {
 
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Position position = FplValue.position(parameters[0]);
 				return makeClass("class", position, skipParameterScopes(scope), parameters, 0);
 			}
@@ -33,7 +33,7 @@ public class ClassAndObject implements ScopePopulator {
 				true, "name", "code...") {
 
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String target = Assignment.targetName(scope, parameters[0]);
 				FplObject obj = makeClass(target, FplValue.position(parameters[0]), skipParameterScopes(scope), parameters, 1);
 				try {
@@ -51,7 +51,7 @@ public class ClassAndObject implements ScopePopulator {
 				"parent", "code...") {
 
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Position position = FplValue.position(parameters[0]);
 				FplObject parent = evaluateToObject(scope, parameters[0]);
 				return makeClass("sub-class-of-" + parent.getName(), position, parent, parameters, 1);
@@ -63,7 +63,7 @@ public class ClassAndObject implements ScopePopulator {
 				true, "name", "parent", "code...") {
 
 			@Override
-			protected FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String target = Assignment.targetName(scope, parameters[0]);
 				FplObject parent = evaluateToObject(scope, parameters[1]);
 				FplObject obj = makeClass(target, FplValue.position(parameters[0]), parent, parameters, 2);
@@ -81,7 +81,7 @@ public class ClassAndObject implements ScopePopulator {
 				"key-value-pair...") {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				if (parameters.length % 2 != 0) {
 					throw new EvaluationException("Number of parameters must be even.");
 				}
@@ -101,7 +101,7 @@ public class ClassAndObject implements ScopePopulator {
 				comment("The next object in the scope chain, can be nil when not within an object context."), false) {
 
 			@Override
-			public FplValue callInternal(Scope scope, FplValue[] parameters) throws EvaluationException {
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return thisFromScope(scope);
 			}
 		});
