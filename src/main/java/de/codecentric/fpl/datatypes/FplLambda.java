@@ -120,6 +120,14 @@ public class FplLambda extends AbstractFunction {
 				} else {
 					return new Parameter(s, index);
 				}
+			} else if (code instanceof Parameter) {
+				Parameter p = (Parameter) code;
+				Integer index = parameterMap.get(p.getName());
+				if (index == null) {
+					return new Parameter(p);
+				} else {
+					return new Parameter(new Symbol(p.getName()), index);
+				}
 			} else {
 				return code;
 			}

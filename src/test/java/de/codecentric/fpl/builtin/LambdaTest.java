@@ -28,7 +28,6 @@ import de.codecentric.fpl.datatypes.list.FplList;
  * Tests for the function interpreter.
  */
 public class LambdaTest extends AbstractFplTest {
-
 	private AbstractFunction lambda;
 
 	@Before
@@ -274,7 +273,27 @@ public class LambdaTest extends AbstractFplTest {
 	public void duplicateUsedParameterIsEvalulatedOnlyOnce() throws Exception {
 		ListResultCallback callback = evaluateResource("duplicate-used-parameter.fpl");
 		List<FplValue> values = callback.getResults();
+		assertEquals(4, values.size());
 		FplValue value = values.get(3);
 		assertEquals(FplInteger.valueOf(2), value);
+	}
+	
+	@Test
+	public void lambdaInFunctionWalksUpScopeToAccessParameter() throws Exception {
+		ListResultCallback callback = evaluateResource("walk-up-scope-chain.fpl");
+		List<FplValue> values = callback.getResults();
+		assertEquals(3, values.size());
+		FplString value = (FplString) values.get(2);
+		assertEquals("Normal (healthy weight)", value.getContent());
+		
+	}
+
+	@Test
+	public void lambdaInFunctionWalksUpScopeToAccessParameterWithShadowing() throws Exception {
+		ListResultCallback callback = evaluateResource("walk-up-scope-chain-with-shadowing.fpl");
+		List<FplValue> values = callback.getResults();
+		assertEquals(3, values.size());
+		FplString value = (FplString) values.get(2);
+		assertEquals("Normal (healthy weight)", value.getContent());
 	}
 }
