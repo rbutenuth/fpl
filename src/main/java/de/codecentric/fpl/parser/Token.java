@@ -23,7 +23,7 @@ public final class Token {
 		RIGHT_PAREN(true) {
 			@Override
 			public String toString(Token t) {
-				return "}";
+				return ")";
 			}
 		},
 		/** { */
