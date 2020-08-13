@@ -301,4 +301,15 @@ public class LambdaTest extends AbstractFplTest {
 		FplString value = (FplString) values.get(2);
 		assertEquals("Normal (healthy weight)", value.getContent());
 	}
+	
+	@Test
+	public void scopeNestingWithFunctions() throws Exception {
+		ListResultCallback callback = evaluateResource("sope-nesting-with-functions.fpl");
+		List<FplValue> values = callback.getResults();
+		assertEquals(3, values.size());
+		FplList result = (FplList) values.get(2);
+		assertEquals("outer-param", ((FplString)result.get(0)).getContent());
+		assertEquals("outer-param", ((FplString)result.get(1)).getContent());
+		assertEquals("outer-variable", ((FplString)result.get(2)).getContent());
+	}
 }

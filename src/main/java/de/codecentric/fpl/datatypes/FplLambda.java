@@ -74,7 +74,7 @@ public class FplLambda extends AbstractFunction {
 				}
 			}
 		}
-		ParameterScope callScope = new ParameterScope(getName(), scope, scopeParameters);
+		ParameterScope callScope = new ParameterScope(getName(), scope, getParameterNames(), scopeParameters);
 		FplValue result = null;
 		for (int i = 0; i < code.length; i++) {
 			result = code[i].evaluate(callScope);

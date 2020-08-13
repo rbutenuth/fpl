@@ -461,10 +461,11 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 
 	/**
 	 * @return Parameter names, last one does not end with "...", even when this is
-	 *         a variable argument function
+	 *         a variable argument function. For performance reasons, the array is not
+	 *         clones. Don't change the content!
 	 */
 	public String[] getParameterNames() {
-		return parameterNames.clone();
+		return parameterNames;
 	}
 
 	public String getParameterName(int index) {
