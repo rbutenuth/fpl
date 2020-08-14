@@ -3,7 +3,7 @@ package de.codecentric.fpl.datatypes;
 /**
  * An FPL integer.
  */
-public class FplInteger extends EvaluatesToThisValue implements FplNumber {
+public class FplInteger implements EvaluatesToThisValue, FplNumber {
 	private static FplInteger[] cache;
 	private static final int low = -128;
 	private static final int high = 127;

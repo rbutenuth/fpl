@@ -24,6 +24,7 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 	}
 
 	/**
+	 * Create an object which is not in the scope chain: A simple dictcionary.
 	 * @param position Where it is defined in the source
 	 */
 	public FplObject(String name, Position position) throws IllegalArgumentException {
@@ -35,6 +36,7 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 	}
 
 	/**
+	 * Create a "real" object, with predecessor scope.
 	 * @param position Where it is defined in the source
 	 * @param next     Next outer {@link Scope}
 	 */

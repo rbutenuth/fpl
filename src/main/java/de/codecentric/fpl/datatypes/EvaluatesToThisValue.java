@@ -6,10 +6,10 @@ import de.codecentric.fpl.data.Scope;
 /**
  * An object which evaluates to itself.
  */
-public abstract class EvaluatesToThisValue implements FplValue {
+public interface EvaluatesToThisValue extends FplValue {
 
 	@Override
-	public FplValue evaluate(Scope scope) throws EvaluationException {
+	public default FplValue evaluate(Scope scope) throws EvaluationException {
 		return this;
 	}
 

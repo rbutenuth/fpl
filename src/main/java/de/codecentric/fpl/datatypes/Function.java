@@ -3,7 +3,7 @@ package de.codecentric.fpl.datatypes;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 
-public interface Function {
+public interface Function extends EvaluatesToThisValue {
 
 	/**
 	 * Call a function (with parameters). When there are not enough parameters for

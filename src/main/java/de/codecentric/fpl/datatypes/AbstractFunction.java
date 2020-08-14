@@ -16,7 +16,7 @@ import de.codecentric.fpl.parser.Position;
 /**
  * Helper for function implementation.
  */
-public abstract class AbstractFunction extends EvaluatesToThisValue implements Named, PositionHolder, Function {
+public abstract class AbstractFunction implements Named, PositionHolder, Function {
 	public static final String FPL = "fpl";
 	public static final Symbol QUOTE = new Symbol("quote");
 
