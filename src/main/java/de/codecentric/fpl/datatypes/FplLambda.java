@@ -1,7 +1,6 @@
 package de.codecentric.fpl.datatypes;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import de.codecentric.fpl.EvaluationException;
@@ -14,19 +13,14 @@ public class FplLambda extends AbstractFunction {
 	private final FplValue[] code;
 
 	/**
-	 * @param position
-	 *            Position in source code.
-	 * @param comment
-	 *            A list of lines with comment in markdown syntax
-	 * @param name
-	 *            Name of the function.
-	 * @param paramNames
-	 *            Names of parameters, if last one ends with "...", this is a
-	 *            variable list function.
-	 * @param code
-	 *            The Lisp code.
+	 * @param position   Position in source code.
+	 * @param comment    A list of lines with comment in markdown syntax
+	 * @param name       Name of the function.
+	 * @param paramNames Names of parameters, if last one ends with "...", this is a
+	 *                   variable list function.
+	 * @param code       The Lisp code.
 	 */
-	public FplLambda(Position position, List<String> comment, String name, String[] paramNames, FplValue[] code)
+	public FplLambda(Position position, String comment, String name, String[] paramNames, FplValue[] code)
 			throws EvaluationException {
 		super(position, name, comment, varArgs(paramNames), convertedParamNames(paramNames));
 		Map<String, Integer> parameterMap = createParameterMap();
@@ -37,16 +31,18 @@ public class FplLambda extends AbstractFunction {
 		return paramNames.length > 0 && paramNames[paramNames.length - 1].endsWith("...");
 	}
 
-	private static String[] convertedParamNames(String[] paramNames) {
+	private static String[] convertedParamNames(String[] paramNames) throws EvaluationException {
+		String[] result;
 		if (varArgs(paramNames)) {
 			String[] converted = new String[paramNames.length];
 			int last = paramNames.length - 1;
 			System.arraycopy(paramNames, 0, converted, 0, last);
 			converted[last] = paramNames[last].substring(0, paramNames[last].length() - 3);
-			return converted;
+			result = converted;
 		} else {
-			return paramNames;
+			result = paramNames;
 		}
+		return result;
 	}
 
 	/**
@@ -84,12 +80,9 @@ public class FplLambda extends AbstractFunction {
 
 	private Map<String, Integer> createParameterMap() throws EvaluationException {
 		Map<String, Integer> parameterMap = new HashMap<>();
-		for (int i = 0; i < getNumberOfParameterNames(); i++) {
-			String name = getParameterName(i);
-			if (parameterMap.containsKey(name)) {
-				throw new EvaluationException("Duplicate parameter name: " + name);
-			}
-			parameterMap.put(name, i);
+		int i = 0;
+		for (String name : getParameterNames()) {
+			parameterMap.put(name, i++);
 		}
 		return parameterMap;
 	}
@@ -101,7 +94,7 @@ public class FplLambda extends AbstractFunction {
 		}
 		return compiled;
 	}
-	
+
 	private FplValue compile(FplValue code, Map<String, Integer> parameterMap) {
 		if (code instanceof FplList) {
 			FplList list = (FplList) code;
@@ -122,11 +115,12 @@ public class FplLambda extends AbstractFunction {
 				}
 			} else if (code instanceof Parameter) {
 				Parameter p = (Parameter) code;
-				Integer index = parameterMap.get(p.getName());
+				String name = p.getName();
+				Integer index = parameterMap.get(name);
 				if (index == null) {
-					return new Parameter(p);
+					return p.getSymbol();
 				} else {
-					return new Parameter(new Symbol(p.getName()), index);
+					return new Parameter(p.getSymbol(), index);
 				}
 			} else {
 				return code;
@@ -138,8 +132,9 @@ public class FplLambda extends AbstractFunction {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("(lambda (");
-		for (int i = 0; i < getNumberOfParameterNames(); i++) {
-			sb.append(getParameterName(i));
+		int i = 0;
+		for (String name : getParameterNames()) {
+			sb.append(name);
 			if (i < getNumberOfParameterNames() - 1) {
 				sb.append(' ');
 			} else {
@@ -147,9 +142,10 @@ public class FplLambda extends AbstractFunction {
 					sb.append("...");
 				}
 			}
+			i++;
 		}
 		sb.append(") ");
-		for (int i = 0; i < code.length; i++) {
+		for (i = 0; i < code.length; i++) {
 			sb.append(code[i].toString());
 			if (i < code.length - 1) {
 				sb.append(' ');

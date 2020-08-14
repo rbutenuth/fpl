@@ -1,7 +1,5 @@
 package de.codecentric.fpl.builtin;
 
-import java.util.List;
-
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
@@ -23,14 +21,14 @@ public class Logic implements ScopePopulator {
 	private final static FplInteger L_TRUE = FplInteger.valueOf(1);
 
 	@Override
-	public void populate(Scope scope) throws ScopeException {
+	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
-		scope.define(new LogicFunction("and", comment("Logic and of parameters.")));
-		scope.define(new LogicFunction("or", comment("Logic or of parameters.")));
-		scope.define(new LogicFunction("xor", comment("Logic xor of parameters.")));
-		scope.define(new LogicFunction("not", comment("Logic not of parameter.")));
+		scope.define(new LogicFunction("and", "Logic and of parameters."));
+		scope.define(new LogicFunction("or", "Logic or of parameters."));
+		scope.define(new LogicFunction("xor", "Logic xor of parameters."));
+		scope.define(new LogicFunction("not", "Logic not of parameter."));
 
-		scope.define(new AbstractFunction("is-symbol", comment("Is expression a symbol?"), false, "expression") {
+		scope.define(new AbstractFunction("is-symbol", "Is expression a symbol?", false, "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -38,7 +36,7 @@ public class Logic implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("is-integer", comment("Is expression an integer?"), false, "expression") {
+		scope.define(new AbstractFunction("is-integer", "Is expression an integer?", false, "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -46,7 +44,7 @@ public class Logic implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("is-double", comment("Is expression a double?"), false, "expression") {
+		scope.define(new AbstractFunction("is-double", "Is expression a double?", false, "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -54,7 +52,7 @@ public class Logic implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("is-string", comment("Is expression a string?"), false, "expression") {
+		scope.define(new AbstractFunction("is-string", "Is expression a string?", false, "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -62,7 +60,7 @@ public class Logic implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("is-list", comment("Is expression a list?"), false, "expression") {
+		scope.define(new AbstractFunction("is-list", "Is expression a list?", false, "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -70,7 +68,7 @@ public class Logic implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("is-object", comment("Is expression an object?"), false, "expression") {
+		scope.define(new AbstractFunction("is-object", "Is expression an object?", false, "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -78,7 +76,7 @@ public class Logic implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("is-function", comment("Is expression a function?"), false, "expression") {
+		scope.define(new AbstractFunction("is-function", "Is expression a function?", false, "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -92,7 +90,7 @@ public class Logic implements ScopePopulator {
 		/**
 		 * @param op Operator: "and", "or", etc.
 		 */
-		private LogicFunction(String op, List<String> comment) {
+		private LogicFunction(String op, String comment) throws EvaluationException {
 			super(op, comment, !op.equals("not"), "expression");
 		}
 

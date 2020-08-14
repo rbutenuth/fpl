@@ -22,7 +22,7 @@ public class UnWrapperTest {
 	}
 	
 	@Test
-	public void unwrapFplWrapper() {
+	public void unwrapFplWrapper() throws EvaluationException {
 		FplWrapper w = new FplWrapper(Integer.valueOf(42));
 		Object u = UnWrapper.unwrap(w);
 		assertEquals(Integer.valueOf(42), u);

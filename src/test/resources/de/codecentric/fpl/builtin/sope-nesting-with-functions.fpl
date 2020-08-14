@@ -4,7 +4,7 @@
 )
 
 (def-function inner (inner-param)
-	(list inner-param outer-param outer-variable)
+	(list inner-param outer-param outer-variable unknown-symbol)
 )
 
-(outer "outer-param") ; expect: ("outer-param" "outer-param" "outer-variable")
+(outer "outer-param") ; expect: ("outer-param" "outer-param" "outer-variable" nil)

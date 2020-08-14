@@ -1,7 +1,5 @@
 package de.codecentric.fpl.io;
 
-import static de.codecentric.fpl.datatypes.AbstractFunction.comment;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
@@ -40,7 +38,7 @@ public class HttpServerMain {
 
 		engine = new FplEngine();
 		Scope scope = engine.getScope();
-		scope.define(new AbstractFunction("stop-server", comment("Stop HTTP server."), false) {
+		scope.define(new AbstractFunction("stop-server", "Stop HTTP server.", false) {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {

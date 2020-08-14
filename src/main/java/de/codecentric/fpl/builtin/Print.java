@@ -1,14 +1,12 @@
 package de.codecentric.fpl.builtin;
 
-import java.util.List;
-
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
-import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplValue;
 
 /**
  * FPL "print".
@@ -21,16 +19,16 @@ public class Print implements ScopePopulator {
 	}
 
 	@Override
-	public void populate(Scope scope) throws ScopeException {
-		scope.define(new PrintFunction(false, comment("Print parameters."), engine));
-		scope.define(new PrintFunction(true, comment("Print parameters, followed by line break."), engine));
+	public void populate(Scope scope) throws ScopeException, EvaluationException {
+		scope.define(new PrintFunction(false, "Print parameters.", engine));
+		scope.define(new PrintFunction(true, "Print parameters, followed by line break.", engine));
 	}
 
 	private static class PrintFunction extends AbstractFunction {
 		private boolean newline;
 		private FplEngine engine;
 
-		private PrintFunction(boolean newline, List<String> comment, FplEngine engine) {
+		private PrintFunction(boolean newline, String comment, FplEngine engine) throws EvaluationException {
         super(newline ? "println" : "print", comment, true, "expression");
         this.newline = newline;
         this.engine = engine;

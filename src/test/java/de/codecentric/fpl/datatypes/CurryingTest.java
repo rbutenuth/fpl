@@ -1,10 +1,13 @@
 package de.codecentric.fpl.datatypes;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -27,10 +30,14 @@ public class CurryingTest extends AbstractFplTest {
         evaluate("plus", "(put plus3 ( + 3 ))");
         AbstractFunction f = (AbstractFunction)scope.get("plus3");
         assertEquals(1, f.getMinimumNumberOfParameters());
-        String[] pn = f.getParameterNames();
-        assertEquals(2, pn.length);
-        assertEquals("op2", pn[0]);
-        assertEquals("ops...", pn[1]);
+        Set<String> pn = f.getParameterNames();
+        assertEquals(2, pn.size());
+        Iterator<String> pnIter = pn.iterator();
+        assertTrue(pnIter.hasNext());
+        assertEquals("op2", pnIter.next());
+        assertTrue(pnIter.hasNext());
+        assertEquals("ops...", pnIter.next());
+        assertFalse(pnIter.hasNext());
         FplInteger i = (FplInteger)evaluate("plus3", "(plus3 4)");
         assertEquals(7, i.getValue());
     }

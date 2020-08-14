@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,8 +23,11 @@ public class ParameterScopeTest {
 	@Before
 	public void before() {
 		outer = new Scope("outer");
+		Set<String> parameterNames = new LinkedHashSet<>();
+		parameterNames.add("a");
+		parameterNames.add("b");
 		FplValue[] parameters = { new FplString("foo"), new Symbol("bar") };
-		inner = new ParameterScope("inner", outer, new String[] { "a", "b" }, parameters);
+		inner = new ParameterScope("inner", outer, parameterNames, parameters);
 	}
 
 	@After

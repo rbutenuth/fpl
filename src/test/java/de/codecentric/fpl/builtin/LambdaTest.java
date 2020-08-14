@@ -122,7 +122,7 @@ public class LambdaTest extends AbstractFplTest {
 	@Test
 	public void parameterWithComment() throws Exception {
 		FplLambda test = (FplLambda) evaluate("duplicate", "(def-function test (\n; nonsense comment\n a b) a)");
-		assertEquals("nonsense comment", test.getParameterComment(0));
+		assertEquals("nonsense comment", test.getParameterComment("a"));
 	}
 
 	@Test(expected = EvaluationException.class)
@@ -184,8 +184,8 @@ public class LambdaTest extends AbstractFplTest {
 		assertEquals(1, f.getMinimumNumberOfParameters());
 		assertFalse(f.isVararg());
 		assertEquals("factorial", f.getName());
-		assertEquals("compute n!", f.getComment().get(0));
-		assertEquals("input", f.getParameterComment(0));
+		assertEquals("compute n!", f.getComment());
+		assertEquals("input", f.getParameterComment("n"));
 		assertTrue(f == scope.get("factorial"));
 		FplInteger i = (FplInteger) evaluate("factorial 5", "(factorial 5)");
 		assertEquals(120, i.getValue());
@@ -308,8 +308,10 @@ public class LambdaTest extends AbstractFplTest {
 		List<FplValue> values = callback.getResults();
 		assertEquals(3, values.size());
 		FplList result = (FplList) values.get(2);
+		assertEquals(4, result.size());
 		assertEquals("outer-param", ((FplString)result.get(0)).getContent());
 		assertEquals("outer-param", ((FplString)result.get(1)).getContent());
 		assertEquals("outer-variable", ((FplString)result.get(2)).getContent());
+		assertNull(result.get(3));
 	}
 }

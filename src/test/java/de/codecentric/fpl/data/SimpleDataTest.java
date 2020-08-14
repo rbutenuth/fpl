@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
-
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
@@ -25,6 +23,16 @@ public class SimpleDataTest {
     }
 
     @Test
+    public void symbolComment() {
+    	Symbol symbol = new Symbol("sym", Position.UNKNOWN, "comment");
+    	assertEquals("comment", symbol.getComment());
+    	symbol = new Symbol("sym", Position.UNKNOWN, "");
+    	assertEquals("", symbol.getComment());
+    	symbol = new Symbol("sym", Position.UNKNOWN, null);
+    	assertEquals("", symbol.getComment());
+    }
+    
+    @Test
     public void emptySymbol() {
         Symbol s = new Symbol("");
         assertEquals("", s.getName());
@@ -39,7 +47,7 @@ public class SimpleDataTest {
 
     @Test
     public void goodSymbol2() {
-        Symbol a = new Symbol("a", new Position("name", 1, 1), Collections.emptyList());
+        Symbol a = new Symbol("a", new Position("name", 1, 1), "");
         assertEquals("a", a.getName());
         assertEquals(new Position("name", 1, 1), a.getPosition());
         assertEquals(new Position("name", 1, 1).hashCode(), a.getPosition().hashCode());
@@ -80,7 +88,7 @@ public class SimpleDataTest {
         assertTrue(a.equals(a));
         assertTrue(a.equals(new Symbol("a")));
         // position is not part of equals
-        assertTrue(a.equals(new Symbol("a", new Position("bla", 1, 1), Collections.emptyList())));
+        assertTrue(a.equals(new Symbol("a", new Position("bla", 1, 1), "")));
     }
 
     @Test

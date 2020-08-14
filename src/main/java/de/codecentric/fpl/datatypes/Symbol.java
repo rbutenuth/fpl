@@ -1,9 +1,5 @@
 package de.codecentric.fpl.datatypes;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
@@ -15,27 +11,27 @@ import de.codecentric.fpl.parser.Position;
 public class Symbol implements Named, PositionHolder {
     private final String name;
     private final Position position;
-    private final List<String> commentLines;
+    private final String comment;
 
     /**
      * @param name Name of the symbol, not null, not empty String.
      */
     public Symbol(String name) {
-        this(name, null, Collections.emptyList());
+        this(name, null, "");
     }
 
     /**
      * @param name Name of the symbol, not null, not empty String.
      * @param position Position, <code>null</code> will be replaced with {@link Position#UNKNOWN}.
-     * @param commentLines The comments found in the source before this symbol
+     * @param comment The comments found in the source before this symbol
      */
-    public Symbol(String name, Position position, List<String> commentLines) {
+    public Symbol(String name, Position position, String comment) {
         if (name == null) {
             throw new IllegalArgumentException("name null");
         }
         this.name = name;
         this.position = position == null ? Position.UNKNOWN : position;
-        this.commentLines = new ArrayList<>(commentLines);
+        this.comment = comment == null ? "" : comment;
     }
 
     @Override
@@ -48,8 +44,8 @@ public class Symbol implements Named, PositionHolder {
         return position;
     }
 
-    public List<String> getCommentLines() {
-    	return Collections.unmodifiableList(commentLines);
+    public String getComment() {
+    	return comment;
     }
     
     /**

@@ -33,8 +33,8 @@ public class StringFunctions implements ScopePopulator {
 	private static final String nl = System.lineSeparator();
 
 	@Override
-	public void populate(Scope scope) throws ScopeException {
-		scope.define(new AbstractFunction("describe", comment("Create a description in markdown format for a function"),
+	public void populate(Scope scope) throws ScopeException, EvaluationException {
+		scope.define(new AbstractFunction("describe", "Create a description in markdown format for a function",
 				false, "expression") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -43,13 +43,10 @@ public class StringFunctions implements ScopePopulator {
 					StringBuilder sb = new StringBuilder();
 					AbstractFunction f = (AbstractFunction) value;
 					sb.append("Function ").append(f.getName()).append(nl);
-					for (String line : f.getComment()) {
-						sb.append(line).append(nl);
-					}
-					String[] params = f.getParameterNames();
-					for (int i = 0; i < params.length; i++) {
-						sb.append("* ").append(params[i]);
-						String c = f.getParameterComment(i);
+					sb.append(f.getComment()).append(nl);
+					for (String param : f.getParameterNames()) {
+						sb.append("* ").append(param);
+						String c = f.getParameterComment(param);
 						if (c.trim().length() > 0) {
 							sb.append(" ").append(c);
 						}
@@ -62,7 +59,7 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("join", comment("join strings"), true, "string...") {
+		scope.define(new AbstractFunction("join", "join strings", true, "string...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -74,8 +71,8 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("format-number", comment(
-				"Format a number to string format. The format is a Java DecimalFormat string. The locale a two letter locale."),
+		scope.define(new AbstractFunction("format-number", 
+				"Format a number to string format. The format is a Java DecimalFormat string. The locale a two letter locale.",
 				false, "format", "locale", "number") {
 
 			@Override
@@ -94,8 +91,8 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("parse-number", comment(
-				"Parse a string to a number. The format is a Java NumberFormat string. The locale a two letter locale."),
+		scope.define(new AbstractFunction("parse-number", 
+				"Parse a string to a number. The format is a Java NumberFormat string. The locale a two letter locale.",
 				false, "format", "locale", "string") {
 
 			@Override
@@ -117,7 +114,7 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("length", comment("Determine the length (number of characters) of a string."),
+		scope.define(new AbstractFunction("length", "Determine the length (number of characters) of a string.",
 				false, "string") {
 
 			@Override
@@ -127,7 +124,7 @@ public class StringFunctions implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("char-at",
-				comment("Return the code (integer) of the character at position index."), false, "string", "index") {
+				"Return the code (integer) of the character at position index.", false, "string", "index") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -136,7 +133,7 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("from-chars", comment("Build a string from a list of characters (integers)."),
+		scope.define(new AbstractFunction("from-chars", "Build a string from a list of characters (integers).",
 				false, "list-of-chars") {
 
 			@Override
@@ -156,7 +153,7 @@ public class StringFunctions implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("index-of",
-				comment("Determine the first index of pattern in a string. Return -1 for not found."), false, "string",
+				"Determine the first index of pattern in a string. Return -1 for not found.", false, "string",
 				"pattern") {
 
 			@Override
@@ -167,7 +164,7 @@ public class StringFunctions implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("last-index-of",
-				comment("Determine the last index of pattern in a string. Return -1 for not found."), false, "string",
+				"Determine the last index of pattern in a string. Return -1 for not found.", false, "string",
 				"pattern") {
 
 			@Override
@@ -178,7 +175,7 @@ public class StringFunctions implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("substring",
-				comment("Returns a substring starting at begin-index (including) and ending at end-index (excluding)."),
+				"Returns a substring starting at begin-index (including) and ending at end-index (excluding).",
 				false, "string", "begin-index", "end-index") {
 
 			@Override
@@ -190,10 +187,10 @@ public class StringFunctions implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("match",
-				comment("Matches a string against a regular expression. Returns a list where the first element "
+				"Matches a string against a regular expression. Returns a list where the first element "
 						+ "contains the position of the match, followed by the matches. The second entry in the list"
 						+ "is the complete match, followed by the partial matches (marked by parentheses in the pattern). Empty list"
-						+ "if no match found."),
+						+ "if no match found.",
 				false, "string", "regex") {
 
 			@Override
@@ -214,9 +211,9 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("replace-all", comment(
+		scope.define(new AbstractFunction("replace-all", 
 				"Replaces each substring of this string that matches the given regex with the given replacement. "
-						+ "(See String.replaceAll for more details.)"),
+						+ "(See String.replaceAll for more details.)",
 				false, "string", "regex", "replacement") {
 
 			@Override
@@ -229,7 +226,7 @@ public class StringFunctions implements ScopePopulator {
 		});
 
 		scope.define(
-				new AbstractFunction("to-lower-case", comment("Convert the string to lower case."), false, "string") {
+				new AbstractFunction("to-lower-case", "Convert the string to lower case.", false, "string") {
 
 					@Override
 					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -238,7 +235,7 @@ public class StringFunctions implements ScopePopulator {
 				});
 
 		scope.define(
-				new AbstractFunction("to-upper-case", comment("Convert the string to upper case."), false, "string") {
+				new AbstractFunction("to-upper-case", "Convert the string to upper case.", false, "string") {
 
 					@Override
 					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -246,7 +243,7 @@ public class StringFunctions implements ScopePopulator {
 					}
 				});
 
-		scope.define(new AbstractFunction("symbol", comment("Create a symbol."), false, "string") {
+		scope.define(new AbstractFunction("symbol", "Create a symbol.", false, "string") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -255,7 +252,7 @@ public class StringFunctions implements ScopePopulator {
 		});
 
 		scope.define(
-				new AbstractFunction("name-of-symbol", comment("Determine the name of a symbol."), false, "symbol") {
+				new AbstractFunction("name-of-symbol", "Determine the name of a symbol.", false, "symbol") {
 
 					@Override
 					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -264,7 +261,7 @@ public class StringFunctions implements ScopePopulator {
 				});
 
 		scope.define(
-				new AbstractFunction("serialize-to-json", comment("Convert value to JSON string."), false, "value") {
+				new AbstractFunction("serialize-to-json", "Convert value to JSON string.", false, "value") {
 
 					@Override
 					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -330,8 +327,8 @@ public class StringFunctions implements ScopePopulator {
 
 		scope.define(
 				new AbstractFunction("parse-json",
-						comment("Convert a JSON string to list/object. In case the JSON contain a key \"nil\","
-								+ " it is converted to \"<nil>\", as \"nil\" is not a valid symbol in FPL."),
+						"Convert a JSON string to list/object. In case the JSON contain a key \"nil\","
+								+ " it is converted to \"<nil>\", as \"nil\" is not a valid symbol in FPL.",
 						false, "string") {
 
 					@Override

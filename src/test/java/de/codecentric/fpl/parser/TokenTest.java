@@ -3,15 +3,11 @@ package de.codecentric.fpl.parser;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.Collections;
 
 import org.junit.Test;
 
 import de.codecentric.fpl.parser.Token.Id;
 
-/**
- * Tests for {@link Token}
- */
 public class TokenTest {
 
 	@Test(expected = NullPointerException.class)
@@ -31,12 +27,12 @@ public class TokenTest {
 
 	@Test(expected = NullPointerException.class)
 	public void positionNull4() throws IOException {
-		new Token(null, Id.STRING, "str", Collections.emptyList());
+		new Token(null, Id.STRING, "str", "");
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void positionNull5() throws IOException {
-		new Token(null, Id.SYMBOL, "symbol", Collections.emptyList());
+		new Token(null, Id.SYMBOL, "symbol", "");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -46,12 +42,12 @@ public class TokenTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void positionBadId2() throws IOException {
-		new Token(Position.UNKNOWN, Id.DOUBLE, "symbol", Collections.emptyList());
+		new Token(Position.UNKNOWN, Id.DOUBLE, "symbol", "");
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void positionBadString() throws IOException {
-		new Token(Position.UNKNOWN, Id.STRING, null, Collections.emptyList());
+		new Token(Position.UNKNOWN, Id.STRING, null, "");
 	}
 
 	@Test(expected = IllegalStateException.class)

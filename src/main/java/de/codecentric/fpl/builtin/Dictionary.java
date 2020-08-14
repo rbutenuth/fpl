@@ -18,11 +18,11 @@ import de.codecentric.fpl.datatypes.list.FplList;
  */
 public class Dictionary implements ScopePopulator {
 	@Override
-	public void populate(Scope scope) throws ScopeException {
+	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
 		scope.define(new AbstractFunction(
-				"dict-put", comment("Put a value into the scope of an object or dictionary,",
-						"symbol can be a symbol or a string,", "returns the old value associated with the symbol/key."),
+				"dict-put", "Put a value into the scope of an object or dictionary, " +
+						"symbol can be a symbol or a string, returns the old value associated with the symbol/key.",
 				false, "dict", "symbol", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -36,9 +36,8 @@ public class Dictionary implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("dict-def",
-				comment("Define a value in the scope of an object or dictionary,",
-						"symbol can be a symbol or a string,",
-						"returns the value associated with the symbol/key, original mapping must be nil."),
+				"Define a value in the scope of an object or dictionary, " +
+						"symbol can be a symbol or a string, returns the value associated with the symbol/key, original mapping must be nil.",
 				false, "dict", "symbol", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -53,9 +52,9 @@ public class Dictionary implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("dict-set",
-				comment("Change a value into the scope of an object or dictionary,",
-						"symbol can be a symbol or a string,",
-						"returns the old value associated with the symbol/key, new and old value must not be nil."),
+				"Change a value into the scope of an object or dictionary, " +
+						"symbol can be a symbol or a string," +
+						"returns the old value associated with the symbol/key, new and old value must not be nil.",
 				false, "dict", "symbol", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -69,8 +68,8 @@ public class Dictionary implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("dict-get", comment("Get a value from the scope of an object or dictionary,",
-				"symbol can be a symbol or a string."), false, "dict", "symbol") {
+		scope.define(new AbstractFunction("dict-get", "Get a value from the scope of an object or dictionary, " +
+				"symbol can be a symbol or a string.", false, "dict", "symbol") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplObject o = evaluateToDictionary(scope, parameters[0]);
@@ -78,7 +77,7 @@ public class Dictionary implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("dict-keys", comment("Get all keys of an object or dictionary as a list."),
+		scope.define(new AbstractFunction("dict-keys", "Get all keys of an object or dictionary as a list.",
 				false, "dict") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -100,7 +99,7 @@ public class Dictionary implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("dict-values",
-				comment("Get all values of an object or dictionary as a list."), false, "dict") {
+				"Get all values of an object or dictionary as a list.", false, "dict") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplObject o = evaluateToDictionary(scope, parameters[0]);
@@ -108,8 +107,8 @@ public class Dictionary implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("dict-entries", comment(
-				"Get all entries of an object or dictionary as a list. Each entry is a list with two elements: key and value"),
+		scope.define(new AbstractFunction("dict-entries", 
+				"Get all entries of an object or dictionary as a list. Each entry is a list with two elements: key and value",
 				false, "dict") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {

@@ -18,7 +18,7 @@ import de.codecentric.fpl.datatypes.FplValue;
 public class Arithmetic implements ScopePopulator {
 
 	@Override
-	public void populate(Scope scope) throws ScopeException {
+	public void populate(Scope scope) throws ScopeException, EvaluationException {
 		scope.define(new ArithmeticFunction(ArithmeticOperator.PLUS));
 		scope.define(new ArithmeticFunction(ArithmeticOperator.MINUS));
 		scope.define(new ArithmeticFunction(ArithmeticOperator.TIMES));
@@ -27,7 +27,7 @@ public class Arithmetic implements ScopePopulator {
 		scope.define(new ArithmeticFunction(ArithmeticOperator.EXP));
 
 		scope.define(new AbstractFunction("round", //
-				comment("Round a double to a integer. `nil` is converted to 0."), false, "number") {
+				"Round a double to a integer. `nil` is converted to 0.", false, "number") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplNumber number = evaluateToNumber(scope, parameters[0]);
@@ -40,7 +40,7 @@ public class Arithmetic implements ScopePopulator {
 		});
 		
 		scope.define(new AbstractFunction("to-integer", //
-				comment("Cast (truncate) a double to a integer. `nil` is converted to 0."), false, "number") {
+				"Cast (truncate) a double to a integer. `nil` is converted to 0.", false, "number") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplNumber number = evaluateToNumber(scope, parameters[0]);
@@ -145,8 +145,8 @@ public class Arithmetic implements ScopePopulator {
 		/**
 		 * @param op Operator: +, -, *, /, %, **
 		 */
-		ArithmeticFunction(ArithmeticOperator op) {
-			super(op.name, comment(op.comment), true,
+		ArithmeticFunction(ArithmeticOperator op) throws EvaluationException {
+			super(op.name, op.comment, true,
 					op == ArithmeticOperator.MINUS ? new String[] { "op" } : new String[] { "op1", "op2", "ops..." });
 			this.op = op;
 		}

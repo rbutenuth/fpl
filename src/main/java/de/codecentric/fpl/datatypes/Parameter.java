@@ -4,33 +4,18 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.data.Scope;
 
-public class Parameter implements FplValue {
+public class Parameter implements FplValue, Named {
 	private Symbol symbol;
 	private int index;
-	private int depth;
 
 	public Parameter(Symbol symbol, int index) {
 		this.symbol = symbol;
 		this.index = index;
 	}
 
-	public Parameter(Parameter parameter) {
-		this.symbol = parameter.symbol;
-		this.index = parameter.index;
-		depth = parameter.depth + 1;
-	}
-
 	@Override
 	public FplValue evaluate(Scope scope) throws EvaluationException {
-		int walkDistance = depth;
-		Scope workScope = scope;
-		while (walkDistance > 0) {
-			workScope = workScope.getNext();
-			if (workScope instanceof ParameterScope) {
-				walkDistance--;
-			}
-		}
-		ParameterScope paramScope = (ParameterScope) workScope;
+		ParameterScope paramScope = (ParameterScope) scope;
 		FplValue value = paramScope.getParameter(index);
 		if (value instanceof LazyExpression) {
 			value = value.evaluate(scope);
@@ -52,6 +37,7 @@ public class Parameter implements FplValue {
 		return symbol;
 	}
 
+	@Override
 	public String getName() {
 		return symbol.getName();
 	}

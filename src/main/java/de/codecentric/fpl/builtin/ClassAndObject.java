@@ -15,9 +15,9 @@ import de.codecentric.fpl.parser.Position;
  */
 public class ClassAndObject implements ScopePopulator {
 	@Override
-	public void populate(Scope scope) throws ScopeException {
+	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
-		scope.define(new AbstractFunction("class", comment("Create a new scope and execute the given code within it."),
+		scope.define(new AbstractFunction("class", "Create a new scope and execute the given code within it.",
 				true, "code...") {
 
 			@Override
@@ -28,8 +28,8 @@ public class ClassAndObject implements ScopePopulator {
 
 		});
 
-		scope.define(new AbstractFunction("def-class", comment(
-				"Create a new scope and execute the given code within it. Assign the resulting class to \"name\""),
+		scope.define(new AbstractFunction("def-class", 
+				"Create a new scope and execute the given code within it. Assign the resulting class to \"name\"",
 				true, "name", "code...") {
 
 			@Override
@@ -47,7 +47,7 @@ public class ClassAndObject implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("sub-class",
-				comment("Create a new scope and execute the given code within it, set parent to parameter."), true,
+				"Create a new scope and execute the given code within it, set parent to parameter.", true,
 				"parent", "code...") {
 
 			@Override
@@ -59,7 +59,7 @@ public class ClassAndObject implements ScopePopulator {
 
 		});
 
-		scope.define(new AbstractFunction("def-sub-class", comment("Define a class and set the parent of the class."),
+		scope.define(new AbstractFunction("def-sub-class", "Define a class and set the parent of the class.",
 				true, "name", "parent", "code...") {
 
 			@Override
@@ -77,7 +77,7 @@ public class ClassAndObject implements ScopePopulator {
 
 		});
 
-		scope.define(new AbstractFunction("new-instance", comment("Create an instance of an object."), true,
+		scope.define(new AbstractFunction("new-instance", "Create an instance of an object.", true,
 				"key-value-pair...") {
 
 			@Override
@@ -98,7 +98,7 @@ public class ClassAndObject implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("this",
-				comment("The next object in the scope chain, can be nil when not within an object context."), false) {
+				"The next object in the scope chain, can be nil when not within an object context.", false) {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {

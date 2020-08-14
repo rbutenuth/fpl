@@ -35,7 +35,13 @@ public class FunctionTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void nullComment() throws Exception {
 		AbstractFunction f = new TestFunction("foo", false);
-		f.setParameterComment(0, null);
+		f.setParameterComment("bam", null);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void commentForNonExistingParameter() throws Exception {
+		AbstractFunction f = new TestFunction("foo", false);
+		f.setParameterComment("bam", "boh");
 	}
 	
 	@Test
@@ -44,7 +50,7 @@ public class FunctionTest {
 		assertEquals(Position.UNKNOWN, f.getPosition());
 		assertEquals("foo", f.getName());
 		assertEquals(0, f.getMinimumNumberOfParameters());
-		assertEquals(0, f.getParameterNames().length);
+		assertTrue(f.getParameterNames().isEmpty());
 	}
 	
 	@Test

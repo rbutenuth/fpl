@@ -5,7 +5,6 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,14 +28,14 @@ public class FplWrapper extends AbstractFunction {
 	private final Class<?> clazz;
 	private final Object instance;
 
-	public FplWrapper(Object value) {
-		super(value.getClass().getName(), Collections.emptyList(), true, "args...");
+	public FplWrapper(Object value) throws EvaluationException {
+		super(value.getClass().getName(), "", true, "args...");
 		clazz = value.getClass();
 		instance = value;
 	}
 
 	public FplWrapper(String className) throws EvaluationException {
-		super(className, Collections.emptyList(), true, "args...");
+		super(className, "", true, "args...");
 		try {
 			clazz = Class.forName(className);
 		} catch (ClassNotFoundException e) {
@@ -46,7 +45,7 @@ public class FplWrapper extends AbstractFunction {
 	}
 
 	public FplWrapper(String className, Object[] methodParams) throws EvaluationException {
-		super(className, Collections.emptyList(), true, "args...");
+		super(className, "", true, "args...");
 		unwrap(methodParams);
 		try {
 			clazz = Class.forName(className);

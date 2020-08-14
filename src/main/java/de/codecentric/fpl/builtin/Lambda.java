@@ -1,7 +1,6 @@
 package de.codecentric.fpl.builtin;
 
 import java.util.Iterator;
-import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
@@ -23,9 +22,9 @@ import de.codecentric.fpl.parser.Position;
 public class Lambda implements ScopePopulator {
 
 	@Override
-	public void populate(Scope scope) throws ScopeException {
+	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
-		scope.define(new AbstractFunction("lambda", comment("Create an anonymous function."), true, "parameter-list",
+		scope.define(new AbstractFunction("lambda", "Create an anonymous function.", true, "parameter-list",
 				"code...") {
 
 			@Override
@@ -38,7 +37,7 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("lambda-dynamic", comment("Create an anonymous function."), true, //
+		scope.define(new AbstractFunction("lambda-dynamic", "Create an anonymous function.", true, //
 				"parameter-list", "code-list") {
 
 			@Override
@@ -49,7 +48,7 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("def-function", comment("Define a function."), true, "name", "parameter-list",
+		scope.define(new AbstractFunction("def-function", "Define a function.", true, "name", "parameter-list",
 				"code...") {
 
 			@Override
@@ -63,7 +62,7 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("def-function-dynamic", comment("Define a function."), true, //
+		scope.define(new AbstractFunction("def-function-dynamic", "Define a function.", true, //
 				"name", "parameter-list", "code-list") {
 
 			@Override
@@ -76,7 +75,7 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("eval", comment("Evaluate expression."), false, "expression") {
+		scope.define(new AbstractFunction("eval", "Evaluate expression.", false, "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -85,7 +84,7 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("type-of", comment("Return type of argument as string"), false, "value") {
+		scope.define(new AbstractFunction("type-of", "Return type of argument as string", false, "value") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -94,7 +93,7 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("java-instance", comment("Create an instance of a Java wrapper object by calling a constructor."), //
+		scope.define(new AbstractFunction("java-instance", "Create an instance of a Java wrapper object by calling a constructor.", //
 				true, "class...") {
 
 			@Override
@@ -118,7 +117,7 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("java-class", comment("Create a handle to call static methods of a Java class."), //
+		scope.define(new AbstractFunction("java-class", "Create a handle to call static methods of a Java class.", //
 				false, "class") {
 
 			@Override
@@ -151,7 +150,7 @@ public class Lambda implements ScopePopulator {
 		return code;
 	}
 
-	private FplLambda lambda(String name, Position position, List<String> commentLines, FplList paramList, FplValue[] code) throws EvaluationException {
+	private FplLambda lambda(String name, Position position, String comment, FplList paramList, FplValue[] code) throws EvaluationException {
 		String[] paramNames = new String[paramList.size()];
 		String[] paramComments = new String[paramNames.length];
 		int i = 0;
@@ -167,35 +166,28 @@ public class Lambda implements ScopePopulator {
 				throw new EvaluationException("Parameter " + v + " is not a symbol.");
 			}
 			paramNames[i] = s.getName();
-			paramComments[i] = joinLines(s.getCommentLines());
+			paramComments[i] = s.getComment();
 			i++;
 		}
-		FplLambda result = new FplLambda(position, commentLines, name, paramNames, code);
+		FplLambda result = new FplLambda(position, comment, name, paramNames, code);
 		for (i = 0; i < paramComments.length; i++) {
-			result.setParameterComment(i, paramComments[i]);
+			result.setParameterComment(withoutVarArgsPostfix(paramNames[i]), paramComments[i]);
 		}
 		return result;
 	}
 
-	private FplLambda defineFunction(Scope scope, String name, Position position, List<String> commentLines, FplList paramList, FplValue[] code)
+	private String withoutVarArgsPostfix(String name) {
+		return name.endsWith("...") ? name.substring(0, name.length() - 3) : name;
+	}
+
+	private FplLambda defineFunction(Scope scope, String name, Position position, String comment, FplList paramList, FplValue[] code)
 			throws EvaluationException {
-		FplLambda result = lambda(name, position, commentLines, paramList, code);
+		FplLambda result = lambda(name, position, comment, paramList, code);
 		try {
 			scope.define(name, result);
 		} catch (ScopeException e) {
 			throw new EvaluationException(e.getMessage(), e);
 		}
 		return result;
-	}
-
-	private String joinLines(List<String> commentLines) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < commentLines.size(); i++) {
-			sb.append(commentLines.get(i).trim());
-			if (i < commentLines.size() - 1) {
-				sb.append(' ');
-			}
-		}
-		return sb.toString();
 	}
 }

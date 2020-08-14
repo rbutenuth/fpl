@@ -1,8 +1,6 @@
 package de.codecentric.fpl.parser;
 
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Tokens, immutable class.
@@ -108,7 +106,7 @@ public final class Token {
 	private final long integerValue;
 	private final double doubleValue;
 	private final String stringValue;
-	private final List<String> commentLines;
+	private final String comment;
 
 	/**
 	 * Create a token without a value.
@@ -131,7 +129,7 @@ public final class Token {
 		doubleValue = 0;
 		integerValue = 0;
 		stringValue = null;
-		commentLines = Collections.emptyList();
+		comment = "";
 	}
 
 	/**
@@ -150,7 +148,7 @@ public final class Token {
 		this.doubleValue = doubleValue;
 		integerValue = 0;
 		stringValue = null;
-		commentLines = Collections.emptyList();
+		comment = "";
 	}
 
 	/**
@@ -169,7 +167,7 @@ public final class Token {
 		this.integerValue = integerValue;
 		doubleValue = 0;
 		stringValue = null;
-		commentLines = Collections.emptyList();
+		comment = "";
 	}
 
 	/**
@@ -179,11 +177,11 @@ public final class Token {
 	 *                     (not null).
 	 * @param id           Token id, not null.
 	 * @param stringValue  String, not null.
-	 * @param commentLines Comments preceding this symbol or string.
+	 * @param comment      Comments preceding this symbol or string.
 	 * @throws IllegalArgumentException If id is not {@link Id#SYMBOL} or
 	 *                                  {@link Id#STRING}.
 	 */
-	public Token(Position position, Id id, String stringValue, List<String> commentLines) {
+	public Token(Position position, Id id, String stringValue, String comment) {
 		if (position == null) {
 			throw new NullPointerException("position");
 		}
@@ -198,7 +196,7 @@ public final class Token {
 		doubleValue = 0;
 		integerValue = 0;
 		this.stringValue = stringValue;
-		this.commentLines = Collections.unmodifiableList(commentLines);
+		this.comment = comment;
 	}
 
 	/**
@@ -269,8 +267,8 @@ public final class Token {
 		return stringValue;
 	}
 
-	public List<String> getCommentLines() {
-		return Collections.unmodifiableList(commentLines);
+	public String getComment() {
+		return comment;
 	}
 
 	@Override

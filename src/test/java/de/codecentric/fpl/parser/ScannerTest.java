@@ -6,16 +6,13 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.List;
 
 import org.junit.Test;
 
 import de.codecentric.fpl.parser.Token.Id;
 
-/**
- * Tests for {@link Scanner}
- */
 public class ScannerTest {
+	private static String NL = System.lineSeparator();
 
 	@Test(expected = NullPointerException.class)
 	public void nameNull() throws IOException {
@@ -76,17 +73,13 @@ public class ScannerTest {
 
 	@Test
 	public void commentsAndSymbol() throws Exception {
-		try (Scanner sc = new Scanner("test",
-				new StringReader(";   commentLine1\n; commentLine2\n;commentLine3\n symbol"))) {
+		String COMMENT = "commentLine1" + NL + "; commentLine2" + NL + ";commentLine3";
+		try (Scanner sc = new Scanner("test", new StringReader(";   " + COMMENT + NL + " symbol"))) {
 			Token t = sc.next();
 			assertNotNull(t);
 			assertEquals(Id.SYMBOL, t.getId());
 			assertEquals("symbol", t.toString());
-			List<String> comments = t.getCommentLines();
-			assertEquals(3, comments.size());
-			assertEquals("  commentLine1", comments.get(0));
-			assertEquals("commentLine2", comments.get(1));
-			assertEquals("commentLine3", comments.get(2));
+			assertEquals(COMMENT.replace(";", "").replace(" ", ""), t.getComment());
 		}
 	}
 
@@ -109,8 +102,8 @@ public class ScannerTest {
 			assertNotNull(t);
 			assertEquals(Id.SYMBOL, t.getId());
 			assertEquals("bla", t.toString());
-			List<String> comments = t.getCommentLines();
-			assertEquals(0, comments.size());
+			String comment = t.getComment();
+			assertEquals(0, comment.length());
 			t = sc.next();
 			assertNotNull(t);
 			assertEquals(Id.SYMBOL, t.getId());

@@ -1,14 +1,13 @@
 package de.codecentric.fpl.builtin;
 
-import java.util.List;
 import java.util.Map.Entry;
 
 import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplValue;
 
 public class FplEngineTest extends AbstractFplTest {
 
@@ -18,13 +17,13 @@ public class FplEngineTest extends AbstractFplTest {
 			FplValue value = entry.getValue();
             if (value instanceof AbstractFunction) {
                 AbstractFunction f = (AbstractFunction)value;
-                checkForComments(f);
+                checkForComment(f);
             }
         }
 	}
 
-	private void checkForComments(AbstractFunction f) throws EvaluationException {
-		List<String> comment = f.getComment();
+	private void checkForComment(AbstractFunction f) throws EvaluationException {
+		String comment = f.getComment();
 		if (comment.isEmpty()) {
 			throw new EvaluationException("missing comment in function " + f.getName());
 		}

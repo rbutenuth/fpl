@@ -1,9 +1,11 @@
 package de.codecentric.fpl.datatypes;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.PositionHolder;
@@ -25,8 +27,10 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 * Parameter names, last one does not end with "...", even when this is a
 	 * variable argument function
 	 */
-	private final String[] parameterNames;
+	private final Set<String> parameterNameSet;
 
+	private Map<String, String> parameterComments;
+	
 	/** Minimum number of parameters, &gt;= 0 */
 	private final int minimumNumberOfParameters;
 
@@ -35,62 +39,48 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 
 	private Position position;
 
-	private List<String> comment;
-
-	private final String[] parameterComments;
+	private String comment;
 
 	/**
 	 * @param position       Position in source code.
-	 * @param comment        A list of lines with comments in markdown syntax
 	 * @param name           Not null, not empty.
+	 * @param comment        Comment in markdown syntax
 	 * @param parameterNames Names of the parameters. If last ends with "...",
 	 *                       function is variable argument function.
+	 * @throws IllegalArgumentException When a name is empty/null or in case of duplicate parameter names.
 	 */
-	protected AbstractFunction(Position position, List<String> comment, String name, boolean varArg,
-			String... parameterNames) {
+	protected AbstractFunction(Position position, String name, String comment, boolean varArg,
+			String... parameterNames) throws EvaluationException {
 		if (name == null || name.length() == 0) {
 			throw new IllegalArgumentException("empty or null name");
 		}
 		setPosition(position);
-		this.comment = new ArrayList<>(comment);
+		this.comment = comment;
 		this.name = name;
-		this.parameterNames = parameterNames.clone();
-		parameterComments = new String[parameterNames.length];
-		Arrays.fill(parameterComments, "");
+		Set<String> set = new LinkedHashSet<>();
+		for (String param: parameterNames) {
+			if (set.contains(param)) {
+				throw new EvaluationException("Duplicate parameter name: " + param);
+			}
+			set.add(param);
+		}
+		parameterNameSet = Collections.unmodifiableSet(set);
+		parameterComments = new HashMap<>();
 		this.varArg = varArg;
 		minimumNumberOfParameters = varArg ? parameterNames.length - 1 : parameterNames.length;
-	}
-
-	/**
-	 * @param position       Position in source code.
-	 * @param name           Not null, not empty.
-	 * @param varArg         Is this a function with variable argument list?
-	 * @param parameterNames Names of the parameters. If last ends with "...",
-	 *                       function is variable argument function.
-	 */
-	protected AbstractFunction(Position position, String name, List<String> comment, boolean varArg,
-			String... parameterNames) {
-		this(position, comment, name, varArg, parameterNames);
 	}
 
 	/**
 	 * This constructor should be used for internally implemented functions only.
 	 * 
 	 * @param name           Not null, not empty.
+	 * @param comment        Comment in markdown syntax
 	 * @param varArg         Is this a function with variable argument list?
 	 * @param parameterNames Names of the parameters. If last ends with "...",
 	 *                       function is variable argument function.
 	 */
-	protected AbstractFunction(String name, List<String> comment, boolean varArg, String... parameterNames) {
-		this(Position.INTERNAL, comment, name, varArg, parameterNames);
-	}
-
-	public static List<String> comment(String... lines) {
-		List<String> result = new ArrayList<>();
-		for (String line : lines) {
-			result.add(line);
-		}
-		return result;
+	protected AbstractFunction(String name, String comment, boolean varArg, String... parameterNames) throws EvaluationException {
+		this(Position.INTERNAL, name, comment, varArg, parameterNames);
 	}
 
 	/**
@@ -426,8 +416,8 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 		return "function";
 	}
 
-	public List<String> getComment() {
-		return Collections.unmodifiableList(comment);
+	public String getComment() {
+		return comment;
 	}
 
 	/**
@@ -464,23 +454,22 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	 *         a variable argument function. For performance reasons, the array is not
 	 *         clones. Don't change the content!
 	 */
-	public String[] getParameterNames() {
-		return parameterNames;
+	public Set<String> getParameterNames() {
+		return parameterNameSet;
 	}
 
-	public String getParameterName(int index) {
-		return parameterNames[index];
+	public String getParameterComment(String name) {
+		return parameterComments.get(name);
 	}
 
-	public String getParameterComment(int index) {
-		return parameterComments[index];
-	}
-
-	public void setParameterComment(int index, String comment) {
+	public void setParameterComment(String name, String comment) {
 		if (comment == null) {
 			throw new IllegalArgumentException("null comment not allowed");
 		}
-		parameterComments[index] = comment;
+		if (!parameterNameSet.contains(name)) {
+			throw new IllegalArgumentException("Unknown parameter: "  + name);
+		}
+		parameterComments.put(name, comment);
 	}
 
 	/**
@@ -493,10 +482,19 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	public CurryFunction makeCurryFunction(Scope scope, FplValue[] parameters, int missing) throws EvaluationException {
 		String curryName = name + "-curry-" + Integer.toString(missing);
 		String[] curryParameterNames = new String[missing + (varArg ? 1 : 0)];
-		System.arraycopy(parameterNames, parameters.length, curryParameterNames, 0, curryParameterNames.length);
+		Iterator<String> iter = parameterNameSet.iterator();
+		// Skip the parameters where we have the values
+		for (int i = 0; i < parameters.length; i++) {
+			iter.next();
+		}
+		// Copy the names of parameters where we don't have values
+		int j = 0;
+		while (iter.hasNext()) {
+			curryParameterNames[j++] = iter.next();
+		}
 		FplValue[] givenParameters = new FplValue[parameters.length];
-		for (int i = 0; i < givenParameters.length; i++) {
-			givenParameters[i] = makeLazy(scope, parameters[i]);
+		for (int k = 0; k < givenParameters.length; k++) {
+			givenParameters[k] = makeLazy(scope, parameters[k]);
 		}
 		return new CurryFunction(curryName, givenParameters, curryParameterNames, varArg);
 	}
@@ -504,7 +502,7 @@ public abstract class AbstractFunction extends EvaluatesToThisValue implements N
 	private class CurryFunction extends AbstractFunction {
 		private FplValue[] givenParameters;
 
-		private CurryFunction(String name, FplValue[] lazies, String[] parameterNames, boolean varArg) {
+		private CurryFunction(String name, FplValue[] lazies, String[] parameterNames, boolean varArg) throws EvaluationException {
 			super(name, AbstractFunction.this.getComment(), AbstractFunction.this.varArg, parameterNames);
 			this.givenParameters = lazies;
 		}

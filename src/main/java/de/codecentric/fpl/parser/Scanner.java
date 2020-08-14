@@ -3,9 +3,6 @@ package de.codecentric.fpl.parser;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import de.codecentric.fpl.parser.Token.Id;
 
@@ -13,6 +10,7 @@ import de.codecentric.fpl.parser.Token.Id;
  * A simple scanner. The reader is closed implicitly when EOF is reached.
  */
 public class Scanner implements Closeable {
+	private static String NL = System.lineSeparator();
 	private Reader rd;
 	private String name;
 	private int line;
@@ -20,7 +18,7 @@ public class Scanner implements Closeable {
 	private boolean eof;
 	private int ch = -1;
 	private int nextCh = -2;
-	private List<String> commentLines;
+	private StringBuilder comment;
 
 	/**
 	 * Create scanner with default start line 1.
@@ -42,7 +40,7 @@ public class Scanner implements Closeable {
 		this.line = line;
 		column = 0;
 		readChar();
-		commentLines = new ArrayList<>();
+		comment = new StringBuilder();
 	}
 
 	/**
@@ -97,23 +95,23 @@ public class Scanner implements Closeable {
 		return Character.isDigit(nextCh) || nextCh == '.';
 	}
 
-	public void clearCommentLines() {
-		commentLines = new ArrayList<>();
+	public void clearComment() {
+		comment = new StringBuilder();
 	}
 
 	private void skipComment() throws IOException {
 		while (ch == ';' || Character.isWhitespace(ch)) {
 			if (ch == ';') {
+				if (comment.length() > 0) {
+					comment.append(NL);
+				}
 				StringBuilder commentLine = new StringBuilder();
 				readChar(); // skip ';'
 				while (ch != '\n' && ch != '\r' && ch != -1) {
 					commentLine.append((char) ch);
 					readChar();
 				}
-				if (commentLine.length() > 0 && Character.isWhitespace(commentLine.charAt(0))) {
-					commentLine.deleteCharAt(0);
-				}
-				commentLines.add(commentLine.toString());
+				comment.append(commentLine.toString().trim());
 			} else {
 				while (Character.isWhitespace(ch)) {
 					readChar();
@@ -173,7 +171,7 @@ public class Scanner implements Closeable {
 			sb.append((char) ch);
 			readChar();
 		}
-		Token t = new Token(position, Id.SYMBOL, sb.toString(), commentLines);
+		Token t = new Token(position, Id.SYMBOL, sb.toString(), comment.toString());
 		return t;
 	}
 
@@ -212,7 +210,7 @@ public class Scanner implements Closeable {
 			}
 		}
 		readChar(); // skip "
-		return new Token(position, Id.STRING, sb.toString(), Collections.emptyList());
+		return new Token(position, Id.STRING, sb.toString(), "");
 	}
 
 	private char readHexadecimalCharacter(Position position) throws IOException, ParseException {

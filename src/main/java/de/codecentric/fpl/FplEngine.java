@@ -35,7 +35,7 @@ public class FplEngine {
 	private PrintStream systemOut;
 	private Scope scope;
 
-	public FplEngine() throws ScopeException {
+	public FplEngine() throws ScopeException, EvaluationException {
 		systemOut = System.out;
 		scope = createDefaultScope();
 		pool = ForkJoinPool.commonPool();
@@ -46,7 +46,7 @@ public class FplEngine {
 	 * @throws ScopeException
 	 *             Should not happen on initialization.
 	 */
-	public Scope createDefaultScope() throws ScopeException {
+	public Scope createDefaultScope() throws ScopeException, EvaluationException {
 		Scope scope = new Scope("global");
 
 		new Print(this).populate(scope);

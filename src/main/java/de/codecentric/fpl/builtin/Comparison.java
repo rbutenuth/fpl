@@ -1,7 +1,5 @@
 package de.codecentric.fpl.builtin;
 
-import java.util.List;
-
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
@@ -19,13 +17,13 @@ public class Comparison implements ScopePopulator {
 	private static FplInteger TRUE = FplInteger.valueOf(1);
 
 	@Override
-	public void populate(Scope scope) throws ScopeException {
-		scope.define(new ComparisonFunction(CompareOperator.EQ, comment("Compare for equal.")));
-		scope.define(new ComparisonFunction(CompareOperator.NE, comment("Compare for not equal.")));
-		scope.define(new ComparisonFunction(CompareOperator.LT, comment("Compare left less than right.")));
-		scope.define(new ComparisonFunction(CompareOperator.LE, comment("Compare lest less or equal than right.")));
-		scope.define(new ComparisonFunction(CompareOperator.GT, comment("Compare left greater than right.")));
-		scope.define(new ComparisonFunction(CompareOperator.GE, comment("Compare left greater or equal than right.")));
+	public void populate(Scope scope) throws ScopeException, EvaluationException {
+		scope.define(new ComparisonFunction(CompareOperator.EQ, "Compare for equal."));
+		scope.define(new ComparisonFunction(CompareOperator.NE, "Compare for not equal."));
+		scope.define(new ComparisonFunction(CompareOperator.LT, "Compare left less than right."));
+		scope.define(new ComparisonFunction(CompareOperator.LE, "Compare lest less or equal than right."));
+		scope.define(new ComparisonFunction(CompareOperator.GT, "Compare left greater than right."));
+		scope.define(new ComparisonFunction(CompareOperator.GE, "Compare left greater or equal than right."));
 	}
 
 	private enum CompareOperator {
@@ -168,7 +166,7 @@ public class Comparison implements ScopePopulator {
 	private static class ComparisonFunction extends AbstractFunction {
 		private CompareOperator operator;
 
-		private ComparisonFunction(CompareOperator operator, List<String> comment) {
+		private ComparisonFunction(CompareOperator operator, String comment) throws EvaluationException {
 			super(operator.symbol(), comment, false, "left", "right");
 			this.operator = operator;
 		}

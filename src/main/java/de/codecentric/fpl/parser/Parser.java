@@ -95,11 +95,11 @@ public class Parser implements Closeable {
 			Symbol s;
 			if ("nil".equals(nextToken.getStringValue())) {
 				s = null;
-				scanner.clearCommentLines();
+				scanner.clearComment();
 			} else {
-				s = new Symbol(nextToken.getStringValue(), nextToken.getPosition(), nextToken.getCommentLines());
+				s = new Symbol(nextToken.getStringValue(), nextToken.getPosition(), nextToken.getComment());
 				if (!keepCommentSymbols.contains(s.getName())) {
-					scanner.clearCommentLines();
+					scanner.clearComment();
 				}
 			}
 			fetchNextToken();
@@ -114,7 +114,7 @@ public class Parser implements Closeable {
 
 	private FplValue quote() throws ParseException, IOException {
 		List<FplValue> elements = new ArrayList<FplValue>();
-		elements.add(new Symbol("quote", nextToken.getPosition(), nextToken.getCommentLines()));
+		elements.add(new Symbol("quote", nextToken.getPosition(), nextToken.getComment()));
 		fetchNextToken(); // skip '
 		elements.add(value());
 		return FplList.fromValues(elements);
