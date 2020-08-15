@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Map.Entry;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.parser.Position;
@@ -52,12 +51,7 @@ public class FplObject extends Scope implements PositionHolder, FplValue, Functi
 
 	@Override
 	public FplValue call(Scope scope, FplValue... parameters) throws EvaluationException {
-		Scope callScope;
-		if (scope instanceof ParameterScope) {
-			callScope = new ParameterScope(getName(), this, (ParameterScope) scope);
-		} else {
-			callScope = this;
-		}
+		Scope callScope = this;
 		FplValue firstElement = parameters[0].evaluate(callScope);
 
 		if (firstElement instanceof Function) {

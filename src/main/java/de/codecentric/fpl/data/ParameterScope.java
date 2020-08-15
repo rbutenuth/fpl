@@ -14,12 +14,6 @@ public class ParameterScope extends Scope {
 		this.parameters = parameters;
 	}
 
-	public ParameterScope(String name, Scope next, ParameterScope scope) {
-		super(name, next);
-		parameterNames = scope.parameterNames;
-		this.parameters = scope.parameters;
-	}
-
 	public FplValue getParameter(int index) {
 		return parameters[index];
 	}
