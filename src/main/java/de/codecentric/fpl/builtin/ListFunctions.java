@@ -75,7 +75,7 @@ public class ListFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("add-front",
+		scope.define(new AbstractFunction("add-front", 
 				"Return a new list with expression added in front of the given list.", false, "expression",
 				"list") {
 			@Override
@@ -84,7 +84,7 @@ public class ListFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("add-end",
+		scope.define(new AbstractFunction("add-end", 
 				"Return a new list with expression added at the end of the given list.", false, "list",
 				"expression") {
 			@Override

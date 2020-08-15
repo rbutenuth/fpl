@@ -35,7 +35,7 @@ public class Dictionary implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("dict-def",
+		scope.define(new AbstractFunction("dict-def", 
 				"Define a value in the scope of an object or dictionary, " +
 						"symbol can be a symbol or a string, returns the value associated with the symbol/key, original mapping must be nil.",
 				false, "dict", "symbol", "value") {
@@ -51,7 +51,7 @@ public class Dictionary implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("dict-set",
+		scope.define(new AbstractFunction("dict-set", 
 				"Change a value into the scope of an object or dictionary, " +
 						"symbol can be a symbol or a string," +
 						"returns the old value associated with the symbol/key, new and old value must not be nil.",
@@ -98,7 +98,7 @@ public class Dictionary implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("dict-values",
+		scope.define(new AbstractFunction("dict-values", 
 				"Get all values of an object or dictionary as a list.", false, "dict") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {

@@ -34,7 +34,7 @@ public class Loop implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("for-each",
+		scope.define(new AbstractFunction("for-each", 
 				"Apply a lambda to all list elements, return last result", false, "function", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -53,7 +53,7 @@ public class Loop implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("map",
+		scope.define(new AbstractFunction("map", 
 				"Apply a lambda to all list elements and return list with applied elements", false, "function",
 				"list") {
 			@Override
@@ -68,7 +68,7 @@ public class Loop implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("reduce",
+		scope.define(new AbstractFunction("reduce", 
 				"Reduce a list to one value. The function must accept two parameters: "
 						+ "accumulator and value. It must return the \"reduction\" of accumulator and value.",
 				false, "function", "accumulator", "list") {

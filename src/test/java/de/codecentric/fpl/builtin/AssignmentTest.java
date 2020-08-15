@@ -142,6 +142,7 @@ public class AssignmentTest extends AbstractFplTest {
 	@Test
 	public void simpleSet() throws Exception {
 		assertNull(evaluate("put", "(put key 10)"));
+		assertEquals(FplInteger.valueOf(10), scope.get("key"));
 		assertEquals(FplInteger.valueOf(10), evaluate("set", "(set key 20)"));
 		assertEquals(FplInteger.valueOf(20), scope.get("key"));
 	}

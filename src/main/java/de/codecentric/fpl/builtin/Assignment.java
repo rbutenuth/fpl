@@ -18,7 +18,7 @@ public class Assignment implements ScopePopulator {
 	@Override
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
-		scope.define(new AbstractFunction("put",
+		scope.define(new AbstractFunction("put", 
 				"Assign symbol to evluated value in current scope, deletes if value is null", false, "symbol",
 				"value") {
 			@Override
@@ -27,7 +27,7 @@ public class Assignment implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("put-global",
+		scope.define(new AbstractFunction("put-global", 
 				"Assign symbol to evluated value in global scope, deletes if value is null", false, "symbol",
 				"value") {
 			@Override
@@ -52,7 +52,7 @@ public class Assignment implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("def",
+		scope.define(new AbstractFunction("def", 
 				"Assign value in current scope, it must be unassigned before. nil as value not allowed", false,
 				"symbol", "value") {
 			@Override
@@ -65,7 +65,7 @@ public class Assignment implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("def-field", 
+		scope.define(new AbstractFunction("def-field",  
 				"Assign value in the next object scope, it must be unassigned before. nil as value not allowed", false,
 				"symbol", "value") {
 			@Override
@@ -85,7 +85,7 @@ public class Assignment implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("def-global",
+		scope.define(new AbstractFunction("def-global", 
 				"Assign value in global scope, it must be unassigned before. nil as value not allowed", false,
 				"symbol", "value") {
 			@Override

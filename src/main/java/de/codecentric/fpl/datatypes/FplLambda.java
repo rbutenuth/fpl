@@ -20,7 +20,7 @@ public class FplLambda extends AbstractFunction {
 	 *                   variable list function.
 	 * @param code       The Lisp code.
 	 */
-	public FplLambda(Position position, String comment, String name, String[] paramNames, FplValue[] code)
+	public FplLambda(Position position, String name, String comment, String[] paramNames, FplValue[] code)
 			throws EvaluationException {
 		super(position, name, comment, varArgs(paramNames), convertedParamNames(paramNames));
 		Map<String, Integer> parameterMap = createParameterMap();

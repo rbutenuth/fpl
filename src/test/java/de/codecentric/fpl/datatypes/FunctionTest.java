@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
@@ -14,7 +15,7 @@ import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
 
-public class FunctionTest {
+public class FunctionTest extends AbstractFplTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void nullName() throws Exception {

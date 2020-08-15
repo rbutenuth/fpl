@@ -21,7 +21,7 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	public static final Symbol QUOTE = new Symbol("quote");
 
 	/** name, not null, not empty */
-	private final String name;
+	protected final String name;
 
 	/**
 	 * Parameter names, last one does not end with "...", even when this is a
@@ -87,10 +87,10 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	 * Call a function (with parameters). When this method is called, the number of
 	 * parameters has already been checked. When there are not enough parameters,
 	 * the method is not called, instead Currying takes place.
-	 * 
-	 * @param scope      Evaluation scope.
+	 * @param scope TODO
 	 * @param parameters The parameters of the function. Do not change the array
 	 *                   elements!
+	 * 
 	 * @return The result of the function.
 	 * @throws EvaluationException If execution fails.
 	 */
@@ -416,6 +416,24 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 		return "function";
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("(").append(name).append(" (");
+		for (String p : parameterNameSet) {
+			sb.append(p).append(" ");
+		}
+		// remove the space at end
+		if (!parameterNameSet.isEmpty()) {
+			sb.deleteCharAt(sb.length() - 1);
+		}
+		if (varArg) {
+			sb.append("...");
+		}
+		sb.append(") <code>)");
+		return sb.toString();
+	}
+	
 	public String getComment() {
 		return comment;
 	}

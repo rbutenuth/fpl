@@ -169,7 +169,7 @@ public class Lambda implements ScopePopulator {
 			paramComments[i] = s.getComment();
 			i++;
 		}
-		FplLambda result = new FplLambda(position, comment, name, paramNames, code);
+		FplLambda result = new FplLambda(position, name, comment, paramNames, code);
 		for (i = 0; i < paramComments.length; i++) {
 			result.setParameterComment(withoutVarArgsPostfix(paramNames[i]), paramComments[i]);
 		}
