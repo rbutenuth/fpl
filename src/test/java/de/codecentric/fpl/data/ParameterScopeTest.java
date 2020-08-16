@@ -4,22 +4,28 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Parameter;
 import de.codecentric.fpl.datatypes.Symbol;
+import de.codecentric.fpl.datatypes.TestFunction;
 
 public class ParameterScopeTest {
 	Scope outer;
 	ParameterScope inner;
-
+	
 	@Before
 	public void before() {
 		outer = new MapScope("outer");
@@ -65,6 +71,11 @@ public class ParameterScopeTest {
 		inner.put("", new FplString("foot"));
 	}
 
+	@Test(expected = ScopeException.class)
+	public void tryToChangeParameterValue() throws ScopeException {
+		inner.put("a", new FplString("foot"));
+	}
+
 	@Test
 	public void changeInner() throws ScopeException {
 		outer.put("key", new FplString("oldValue"));
@@ -81,6 +92,70 @@ public class ParameterScopeTest {
 		assertEquals(euro, inner.get("euro"));
 	}
 
+	@Test
+	public void defineNamed() throws ScopeException, EvaluationException {
+		TestFunction tf = new TestFunction("test-fun", false, "a", "b");
+		inner.define(tf);
+		assertTrue(tf == inner.get("test-fun"));
+	}
+
+	@Test
+	public void entrySet() throws ScopeException{
+		outer.put("d", new FplString("d"));
+		inner.put("c", new FplString("c"));
+		Set<Entry<String, FplValue>> set = inner.entrieSet();
+		Iterator<Entry<String, FplValue>> iterator = set.iterator();
+		checkIteratorContent(iterator);
+	}
+	
+	@Test
+	public void entryIterator() throws ScopeException{
+		outer.put("d", new FplString("d"));
+		inner.put("c", new FplString("c"));
+		Iterator<Entry<String, FplValue>> iterator = inner.iterator();
+		checkIteratorContent(iterator);
+	}
+	
+	private void checkIteratorContent(Iterator<Entry<String, FplValue>> iterator) {
+		int count = 0;
+		while (iterator.hasNext()) {
+			Entry<String, FplValue> entry = iterator.next();
+			if (entry.getKey().equals("a")) {
+				assertEquals("foo", ((FplString)entry.getValue()).getContent());
+			}
+			if (entry.getKey().equals("b")) {
+				assertEquals(new Symbol("bar"), entry.getValue());
+			}
+			if (entry.getKey().equals("c")) {
+				assertEquals("c", ((FplString)entry.getValue()).getContent());
+			}
+			count++;
+		}
+		assertEquals(3, count);
+	}
+	
+	@Test
+	public void keySet() throws ScopeException{
+		outer.put("d", new FplString("d"));
+		inner.put("c", new FplString("c"));
+		Set<String> set = inner.keySet();
+		assertEquals(3, set.size());
+		assertTrue(set.contains("a"));
+		assertTrue(set.contains("b"));
+		assertTrue(set.contains("c"));
+	}
+	
+	@Test
+	public void values() throws ScopeException{
+		outer.put("d", new FplString("d"));
+		inner.put("c", new FplString("c"));
+		Collection<FplValue> values = inner.values();
+		assertEquals(3, values.size());
+		assertTrue(values.contains(new FplString("foo")));
+		assertTrue(values.contains(new Symbol("bar")));
+		assertTrue(values.contains(new FplString("c")));
+	}
+	
 	@Test
 	public void parameterTypeName() {
 		Parameter p = new Parameter(new Symbol("foo"), 0);
