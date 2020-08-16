@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map.Entry;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.parser.Position;
@@ -13,7 +14,7 @@ import de.codecentric.fpl.parser.Position;
  * of {@link Scope} with {@link Named}. The rest are some built in functions for
  * linking and executing methods on objects.
  */
-public class FplObject extends Scope implements PositionHolder, FplValue, Function {
+public class FplObject extends MapScope implements PositionHolder, FplValue, Function {
 	private static String NL = System.lineSeparator();
 	private Position position;
 

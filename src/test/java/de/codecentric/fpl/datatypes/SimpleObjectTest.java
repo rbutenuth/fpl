@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.parser.Position;
@@ -20,7 +21,7 @@ public class SimpleObjectTest {
 
 	@Before
 	public void before() throws EvaluationException {
-		outer = new Scope("outer");
+		outer = new MapScope("outer");
 		object = new FplObject("obj", new Position("object-test", 2, 3));
 	}
 
@@ -32,7 +33,6 @@ public class SimpleObjectTest {
 
 	@Test
 	public void emptyObject() throws EvaluationException {
-		assertTrue(outer.isEmpty());
 		assertNull(object.get("foo"));
 		assertEquals("object-test", object.getPosition().getName());
 		object.evaluate(outer);
@@ -76,7 +76,7 @@ public class SimpleObjectTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void nullPositionTwo() {
-		new FplObject("scope-name", null, new Scope("test"));
+		new FplObject("scope-name", null, new MapScope("test"));
 	}
 
 	@Test(expected = ScopeException.class)

@@ -1,0 +1,10 @@
+(def-function outer (outer-param)
+	(def-function inner (inner-param)
+		(list inner-param outer-param outer-variable unknown-symbol)
+	)
+	(def outer-variable "outer-variable")
+	(inner outer-param)
+)
+
+
+(outer "outer-param") ; expect: ("outer-param" "outer-param" "outer-variable" nil)

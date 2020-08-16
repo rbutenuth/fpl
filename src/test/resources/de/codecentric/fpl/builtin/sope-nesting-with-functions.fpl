@@ -7,4 +7,4 @@
 	(list inner-param outer-param outer-variable unknown-symbol)
 )
 
-(outer "outer-param") ; expect: ("outer-param" "outer-param" "outer-variable" nil)
+(outer "outer-param") ; expect: ("outer-param" nil nil nil)

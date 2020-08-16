@@ -1,16 +1,25 @@
 package de.codecentric.fpl.data;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.Named;
 
-public class ParameterScope extends Scope {
-	private Set<String> parameterNames;
+public class ParameterScope extends MapScope {
+	private Map<String, Integer> nameToIndex;
 	private FplValue[] parameters;
 
-	public ParameterScope(String name, Scope next, Set<String> parameterNames, FplValue[] parameters) {
+	public ParameterScope(String name, Scope next, Map<String, Integer> nameToIndex, FplValue[] parameters) {
 		super(name, next);
-		this.parameterNames = parameterNames;
+		this.nameToIndex = nameToIndex;
 		this.parameters = parameters;
 	}
 
@@ -19,26 +28,86 @@ public class ParameterScope extends Scope {
 	}
 
 	/**
-	 * Lookup a symbol, first in <code>map</code>, then in list of parameters. If
-	 * not found in this scope, walk chain of scopes.
+	 * Lookup a symbol, first in list of parameters. 
+	 * If not found in this scope, walk chain of scopes.
 	 * 
 	 * @param key Name of value to lookup
 	 * @return The found expression, may be null.
 	 */
 	public FplValue get(String key) {
-		FplValue value = map.get(key);
-		if (value != null) {
-			return value;
+		Integer index = nameToIndex.get(key);
+		if (index != null) {
+			return parameters[index];
 		}
-		if (parameterNames.contains(key)) {
-			int i = 0;
-			for (String name: parameterNames) {
-				if (key.equals(name)) {
-					return parameters[i];
-				}
-				i++;
-			}
+		return super.get(key);
+	}
+
+	@Override
+	public FplValue put(String key, FplValue value) throws ScopeException {
+		checkNotParameterName(key);
+		return super.put(key,  value);
+	}
+
+	@Override
+	public FplValue replace(String key, FplValue newValue) throws ScopeException {
+		checkNotParameterName(key);
+		return super.replace(key, newValue);
+	}
+
+	@Override
+	public FplValue replaceLocal(String key, FplValue newValue) throws ScopeException {
+		checkNotParameterName(key);
+		return super.replaceLocal(key, newValue);
+	}
+
+	@Override
+	public FplValue define(String key, FplValue value) throws ScopeException {
+		checkNotParameterName(key);
+		return super.define(key, value);
+	}
+
+	@Override
+	public void define(Named value) throws ScopeException {
+		checkNotParameterName(value.getName());
+		super.define(value);
+	}
+
+	@Override
+	public Iterator<Entry<String, FplValue>> iterator() {
+		return entrieSet().iterator();
+	}
+
+	@Override
+	public Set<String> keySet() {
+		Set<String> result = new HashSet<>();
+		result.addAll(nameToIndex.keySet());
+		result.addAll(map.keySet());
+		return Collections.unmodifiableSet(result);
+	}
+
+	@Override
+	public Collection<FplValue> values() {
+		Collection<FplValue> result = new ArrayList<>();
+		for (int i = 0; i < parameters.length; i++) {
+			result.add(parameters[i]);
 		}
-		return next.get(key);
+		result.addAll(map.values());
+		return Collections.unmodifiableCollection(result);
+	}
+
+	@Override
+	public Set<Entry<String, FplValue>> entrieSet() {
+		Map<String, FplValue> result = new HashMap<>();
+		for (Entry<String, Integer> entry : nameToIndex.entrySet()) {
+			result.put(entry.getKey(), parameters[entry.getValue()]);
+		}
+		result.putAll(map);;
+		return Collections.unmodifiableSet(result.entrySet());
+	}
+
+	private void checkNotParameterName(String key) throws ScopeException {
+		if (nameToIndex.containsKey(key)) {
+			throw new ScopeException("Change of parameters not allowed");
+		}
 	}
 }

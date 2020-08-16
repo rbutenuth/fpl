@@ -44,7 +44,7 @@ public class StringFunctions implements ScopePopulator {
 					AbstractFunction f = (AbstractFunction) value;
 					sb.append("Function ").append(f.getName()).append(nl);
 					sb.append(f.getComment()).append(nl);
-					for (String param : f.getParameterNames()) {
+					for (String param : f.getParameterNameToIndex().keySet()) {
 						sb.append("* ").append(param);
 						String c = f.getParameterComment(param);
 						if (c.trim().length() > 0) {

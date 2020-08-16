@@ -3,9 +3,8 @@ package de.codecentric.fpl.datatypes;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.PositionHolder;
@@ -25,9 +24,9 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 
 	/**
 	 * Parameter names, last one does not end with "...", even when this is a
-	 * variable argument function
+	 * variable argument function, with mapping to parameter index
 	 */
-	private final Set<String> parameterNameSet;
+	private Map<String, Integer> parameterNameToIndex;
 
 	private Map<String, String> parameterComments;
 	
@@ -57,14 +56,15 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 		setPosition(position);
 		this.comment = comment;
 		this.name = name;
-		Set<String> set = new LinkedHashSet<>();
+		Map<String, Integer> map = new LinkedHashMap<>();
+		int i = 0;
 		for (String param: parameterNames) {
-			if (set.contains(param)) {
+			if (map.containsKey(param)) {
 				throw new EvaluationException("Duplicate parameter name: " + param);
 			}
-			set.add(param);
+			map.put(param, i++);
 		}
-		parameterNameSet = Collections.unmodifiableSet(set);
+		parameterNameToIndex = Collections.unmodifiableMap(map);
 		parameterComments = new HashMap<>();
 		this.varArg = varArg;
 		minimumNumberOfParameters = varArg ? parameterNames.length - 1 : parameterNames.length;
@@ -420,11 +420,11 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("(").append(name).append(" (");
-		for (String p : parameterNameSet) {
+		for (String p : parameterNameToIndex.keySet()) {
 			sb.append(p).append(" ");
 		}
 		// remove the space at end
-		if (!parameterNameSet.isEmpty()) {
+		if (!parameterNameToIndex.isEmpty()) {
 			sb.deleteCharAt(sb.length() - 1);
 		}
 		if (varArg) {
@@ -472,8 +472,8 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	 *         a variable argument function. For performance reasons, the array is not
 	 *         clones. Don't change the content!
 	 */
-	public Set<String> getParameterNames() {
-		return parameterNameSet;
+	public Map<String, Integer> getParameterNameToIndex() {
+		return parameterNameToIndex;
 	}
 
 	public String getParameterComment(String name) {
@@ -484,7 +484,7 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 		if (comment == null) {
 			throw new IllegalArgumentException("null comment not allowed");
 		}
-		if (!parameterNameSet.contains(name)) {
+		if (!parameterNameToIndex.containsKey(name)) {
 			throw new IllegalArgumentException("Unknown parameter: "  + name);
 		}
 		parameterComments.put(name, comment);
@@ -500,7 +500,7 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	public CurryFunction makeCurryFunction(Scope scope, FplValue[] parameters, int missing) throws EvaluationException {
 		String curryName = name + "-curry-" + Integer.toString(missing);
 		String[] curryParameterNames = new String[missing + (varArg ? 1 : 0)];
-		Iterator<String> iter = parameterNameSet.iterator();
+		Iterator<String> iter = parameterNameToIndex.keySet().iterator();
 		// Skip the parameters where we have the values
 		for (int i = 0; i < parameters.length; i++) {
 			iter.next();

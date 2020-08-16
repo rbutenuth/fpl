@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
+import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
@@ -102,7 +103,7 @@ public class ControlStructures implements ScopePopulator {
 				"resources", "expression", "catch-function") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				Scope localScope = new Scope("try-with", scope);
+				Scope localScope = new MapScope("try-with", scope);
 				Function catchFunction = null;
 				List<Resource> resources = new ArrayList<>();
 				try {

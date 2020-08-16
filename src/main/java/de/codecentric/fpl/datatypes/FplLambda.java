@@ -1,6 +1,5 @@
 package de.codecentric.fpl.datatypes;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import de.codecentric.fpl.EvaluationException;
@@ -10,6 +9,7 @@ import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
 
 public class FplLambda extends AbstractFunction {
+	private final Scope definitionScope;
 	private final FplValue[] code;
 
 	/**
@@ -19,12 +19,14 @@ public class FplLambda extends AbstractFunction {
 	 * @param paramNames Names of parameters, if last one ends with "...", this is a
 	 *                   variable list function.
 	 * @param code       The Lisp code.
+	 * @param scope		The scope in which this function is defined. This is the <code>next</code> when the function is called.
 	 */
-	public FplLambda(Position position, String name, String comment, String[] paramNames, FplValue[] code)
+	public FplLambda(Position position, String name, String comment, String[] paramNames, FplValue[] code, Scope scope)
 			throws EvaluationException {
 		super(position, name, comment, varArgs(paramNames), convertedParamNames(paramNames));
-		Map<String, Integer> parameterMap = createParameterMap();
+		Map<String, Integer> parameterMap = getParameterNameToIndex();
 		this.code = compile(code, parameterMap);
+		definitionScope = scope;
 	}
 
 	private static boolean varArgs(String[] paramNames) {
@@ -70,21 +72,12 @@ public class FplLambda extends AbstractFunction {
 				}
 			}
 		}
-		ParameterScope callScope = new ParameterScope(getName(), scope, getParameterNames(), scopeParameters);
+		ParameterScope callScope = new ParameterScope(getName(), definitionScope, getParameterNameToIndex(), scopeParameters);
 		FplValue result = null;
 		for (int i = 0; i < code.length; i++) {
 			result = code[i].evaluate(callScope);
 		}
 		return result;
-	}
-
-	private Map<String, Integer> createParameterMap() throws EvaluationException {
-		Map<String, Integer> parameterMap = new HashMap<>();
-		int i = 0;
-		for (String name : getParameterNames()) {
-			parameterMap.put(name, i++);
-		}
-		return parameterMap;
 	}
 
 	private FplValue[] compile(FplValue[] code, Map<String, Integer> parameterMap) {
@@ -133,7 +126,7 @@ public class FplLambda extends AbstractFunction {
 		StringBuilder sb = new StringBuilder();
 		sb.append("(lambda (");
 		int i = 0;
-		for (String name : getParameterNames()) {
+		for (String name : getParameterNameToIndex().keySet()) {
 			sb.append(name);
 			if (i < getNumberOfParameterNames() - 1) {
 				sb.append(' ');

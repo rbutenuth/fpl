@@ -30,7 +30,7 @@ public class CurryingTest extends AbstractFplTest {
         evaluate("plus", "(put plus3 ( + 3 ))");
         AbstractFunction f = (AbstractFunction)scope.get("plus3");
         assertEquals(1, f.getMinimumNumberOfParameters());
-        Set<String> pn = f.getParameterNames();
+        Set<String> pn = f.getParameterNameToIndex().keySet();
         assertEquals(2, pn.size());
         Iterator<String> pnIter = pn.iterator();
         assertTrue(pnIter.hasNext());

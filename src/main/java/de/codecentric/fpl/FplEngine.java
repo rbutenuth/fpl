@@ -21,6 +21,7 @@ import de.codecentric.fpl.builtin.Loop;
 import de.codecentric.fpl.builtin.Parallel;
 import de.codecentric.fpl.builtin.Print;
 import de.codecentric.fpl.builtin.StringFunctions;
+import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.FplValue;
@@ -47,7 +48,7 @@ public class FplEngine {
 	 *             Should not happen on initialization.
 	 */
 	public Scope createDefaultScope() throws ScopeException, EvaluationException {
-		Scope scope = new Scope("global");
+		Scope scope = new MapScope("global");
 
 		new Print(this).populate(scope);
 		new Assignment().populate(scope);

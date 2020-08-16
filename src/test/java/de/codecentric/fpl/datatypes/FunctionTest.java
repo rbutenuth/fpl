@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
+import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
@@ -51,7 +52,7 @@ public class FunctionTest extends AbstractFplTest {
 		assertEquals(Position.UNKNOWN, f.getPosition());
 		assertEquals("foo", f.getName());
 		assertEquals(0, f.getMinimumNumberOfParameters());
-		assertTrue(f.getParameterNames().isEmpty());
+		assertTrue(f.getParameterNameToIndex().isEmpty());
 	}
 	
 	@Test
@@ -61,7 +62,7 @@ public class FunctionTest extends AbstractFplTest {
 	
 	@Test
 	public void evaluateNonEmptyListToBoolean() throws Exception {
-		Scope scope = new Scope("test");
+		Scope scope = new MapScope("test");
 		scope.put("x", FplList.fromValues(new FplValue[] { new FplString("baz") }));
 		assertTrue(AbstractFunction.evaluateToBoolean(scope, new Symbol("x")));
 	}

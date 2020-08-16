@@ -12,14 +12,14 @@ import org.junit.Test;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 
-public class ScopeTest {
-	Scope outer;
-	Scope inner;
+public class MapScopeTest {
+	private MapScope outer;
+	private MapScope inner;
 	
 	@Before
 	public void before() {
-		outer = new Scope("outer");
-		inner = new Scope("inner", outer);
+		outer = new MapScope("outer");
+		inner = new MapScope("inner", outer);
 	}
 
 	@After
@@ -30,10 +30,8 @@ public class ScopeTest {
 	
 	@Test
 	public void emptyScope() {
-		assertTrue(outer.isEmpty());
 		assertNull(inner.get("foo"));
 		assertNull(outer.get("foo"));
-		assertEquals(0, inner.size());
 		assertEquals("Scope<outer>", outer.toString());
 	}
 
@@ -43,11 +41,6 @@ public class ScopeTest {
 		outer.put("foo", new FplString("bar"));
 		assertEquals(new FplString("bar"), inner.get("foo"));
 		assertEquals(new FplString("bar"), outer.get("foo"));
-	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void checkNestingWithNullParentThrowsException() throws ScopeException {
-		new Scope("name", null);
 	}
 	
 	@Test
@@ -90,7 +83,7 @@ public class ScopeTest {
 	
 	@Test
 	public void changeNullValue() throws ScopeException {
-		changeWithException("someKey", null, "Change does not allow null values");
+		changeWithException("someKey", null, "value is nil");
 	}
 	
 	private void changeWithException(String key, FplValue value, String expected) {

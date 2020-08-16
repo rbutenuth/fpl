@@ -1,6 +1,9 @@
 package de.codecentric.fpl.parser;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -204,7 +207,7 @@ public class ParserTest extends AbstractFplTest {
 		Parser p = parser("empty object", "{}");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
-		assertTrue(object.isEmpty());
+		assertTrue(object.keySet().isEmpty());
 	}
 
 	@Test
@@ -299,7 +302,7 @@ public class ParserTest extends AbstractFplTest {
 		Parser p = parser("one pair", "{ foo: 2}");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
-		assertFalse(object.isEmpty());
+		assertFalse(object.keySet().isEmpty());
 	}
 
 	@Test
@@ -307,7 +310,7 @@ public class ParserTest extends AbstractFplTest {
 		Parser p = parser("two pairs", "{ foo: 2 bar: 4}");
 		assertTrue(p.hasNext());
 		FplObject object = (FplObject) p.next();
-		assertFalse(object.isEmpty());
+		assertFalse(object.keySet().isEmpty());
 	}
 
 	@Test

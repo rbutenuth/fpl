@@ -104,7 +104,7 @@ public class SimpleDataTest {
 
     @Test
     public void lazyExpression() throws EvaluationException {
-        LazyExpression e = new LazyExpression(new Scope("test"), FplInteger.valueOf(42));
+        LazyExpression e = new LazyExpression(new MapScope("test"), FplInteger.valueOf(42));
         assertEquals(42, ((FplInteger)e.getOriginalExpression()).getValue());
         assertEquals(42, ((FplInteger)e.evaluate(null)).getValue());
         assertEquals("integer", e.typeName());

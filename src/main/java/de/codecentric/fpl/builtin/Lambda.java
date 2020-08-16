@@ -33,7 +33,7 @@ public class Lambda implements ScopePopulator {
 				Position position = FplValue.position(parameters[0]);
 				FplValue[] code = new FplValue[parameters.length - 1];
 				System.arraycopy(parameters, 1, code, 0, code.length);
-				return lambda("lambda", position, FplValue.comments(parameters[0]), params, code);
+				return lambda("lambda", position, FplValue.comments(parameters[0]), params, code, scope);
 			}
 		});
 
@@ -44,7 +44,7 @@ public class Lambda implements ScopePopulator {
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplList paramList = evaluateToList(scope, parameters[0]);
 				Position position = FplValue.position(parameters[0]);
-				return lambda("lambda", position, FplValue.comments(parameters[0]), paramList, codeFromExpression(scope, parameters[1]));
+				return lambda("lambda", position, FplValue.comments(parameters[0]), paramList, codeFromExpression(scope, parameters[1]), scope);
 			}
 		});
 
@@ -150,7 +150,7 @@ public class Lambda implements ScopePopulator {
 		return code;
 	}
 
-	private FplLambda lambda(String name, Position position, String comment, FplList paramList, FplValue[] code) throws EvaluationException {
+	private FplLambda lambda(String name, Position position, String comment, FplList paramList, FplValue[] code, Scope scope) throws EvaluationException {
 		String[] paramNames = new String[paramList.size()];
 		String[] paramComments = new String[paramNames.length];
 		int i = 0;
@@ -169,7 +169,7 @@ public class Lambda implements ScopePopulator {
 			paramComments[i] = s.getComment();
 			i++;
 		}
-		FplLambda result = new FplLambda(position, name, comment, paramNames, code);
+		FplLambda result = new FplLambda(position, name, comment, paramNames, code, scope);
 		for (i = 0; i < paramComments.length; i++) {
 			result.setParameterComment(withoutVarArgsPostfix(paramNames[i]), paramComments[i]);
 		}
@@ -182,7 +182,7 @@ public class Lambda implements ScopePopulator {
 
 	private FplLambda defineFunction(Scope scope, String name, Position position, String comment, FplList paramList, FplValue[] code)
 			throws EvaluationException {
-		FplLambda result = lambda(name, position, comment, paramList, code);
+		FplLambda result = lambda(name, position, comment, paramList, code, scope);
 		try {
 			scope.define(name, result);
 		} catch (ScopeException e) {

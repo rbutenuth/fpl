@@ -35,7 +35,7 @@ public class ScopeFactoryDump {
 				}
 				System.out.println("```");
 				System.out.print("(" + f.getName());
-				for (String pn : f.getParameterNames()) {
+				for (String pn : f.getParameterNameToIndex().keySet()) {
 					System.out.print(" " + pn);
 				}
 				System.out.println(")");
