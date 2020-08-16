@@ -12,6 +12,8 @@ import org.junit.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplObject;
@@ -223,6 +225,25 @@ public class StringFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void toStringofBuiltin() throws Exception {
+		assertEquals("(quote (expression) <code>)", scope.get("quote").toString());
+		assertEquals("(list (element...) <code>)", scope.get("list").toString());
+		//String name, String comment, boolean varArg, String... parameterNames
+		assertEquals("(test-function () <code>)", new AbstractFunction("test-function", "", false) {
+			
+			@Override
+			public FplValue evaluate(Scope scope) throws EvaluationException {
+				return null;
+			}
+			
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				return null;
+			}
+		}.toString());
+	}
+
+	@Test
 	public void serializeToJson() throws Exception {
 		FplString s = (FplString) evaluate("serialize-to-json",
 				"(serialize-to-json '(\"abcdef\" 42 3.14 { key: 44 } nil))");
@@ -298,6 +319,7 @@ public class StringFunctionsTest extends AbstractFplTest {
 		}
 		assertEquals(1, count);
 	}
+	
 	@Test
 	public void parseJsonObjectInvalidKey() throws Exception {
 		try {

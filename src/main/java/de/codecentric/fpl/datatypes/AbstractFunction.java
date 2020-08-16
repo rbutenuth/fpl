@@ -87,7 +87,7 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	 * Call a function (with parameters). When this method is called, the number of
 	 * parameters has already been checked. When there are not enough parameters,
 	 * the method is not called, instead Currying takes place.
-	 * @param scope TODO
+	 * @param scope Scope for evaluation.
 	 * @param parameters The parameters of the function. Do not change the array
 	 *                   elements!
 	 * 
