@@ -196,13 +196,14 @@ public class StringFunctionsTest extends AbstractFplTest {
 
 	@Test
 	public void matchEmptyGroup() throws Exception {
-		FplList list = (FplList) evaluate("match", "(match \"/api/bmi/80/1.88\" \"^/api/bmi/([0-9]+(\\\\.[0-9]*)?)/(.*)$\")");
-		assertEquals(5, list.size());
-		assertEquals(5, ((FplInteger) list.get(0)).getValue());
+		FplList list = (FplList) evaluate("match", "(match \"/api/bmi/80/1.88\" \"^/api/bmi/([0-9]+(\\.[0-9]*)?)/([0-9]+(\\.[0-9]*)?)$\")");
+		assertEquals(6, list.size());
+		assertEquals(0, ((FplInteger) list.get(0)).getValue());
 		assertEquals("/api/bmi/80/1.88", ((FplString) list.get(1)).getContent());
 		assertEquals("80", ((FplString) list.get(2)).getContent());
 		assertEquals("", ((FplString) list.get(3)).getContent());
 		assertEquals("1.88", ((FplString) list.get(4)).getContent());
+		assertEquals(".88", ((FplString) list.get(5)).getContent());
 	}
 
 	@Test
