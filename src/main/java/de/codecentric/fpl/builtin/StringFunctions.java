@@ -202,7 +202,8 @@ public class StringFunctions implements ScopePopulator {
 					FplValue[] values = new FplValue[2 + m.groupCount()];
 					values[0] = FplInteger.valueOf(m.start());
 					for (int i = 1; i < values.length; i++) {
-						values[i] = new FplString(m.group(i - 1));
+						String group  = m.group(i - 1);
+						values[i] = new FplString(group == null ? "" : group);
 					}
 					return FplList.fromValues(values);
 				} else {

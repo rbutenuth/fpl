@@ -182,16 +182,27 @@ public class StringFunctionsTest extends AbstractFplTest {
 	@Test
 	public void matchFound() throws Exception {
 		FplList list = (FplList) evaluate("match", "(match \"abcdefghij\" \"d(ef)g\")");
+		assertEquals(3, list.size());
 		assertEquals(3, ((FplInteger) list.get(0)).getValue());
 		assertEquals("defg", ((FplString) list.get(1)).getContent());
 		assertEquals("ef", ((FplString) list.get(2)).getContent());
-		assertEquals(3, list.size());
 	}
 
 	@Test
 	public void matchNotFound() throws Exception {
 		FplList list = (FplList) evaluate("match", "(match \"abcdefghij\" \"xx\")");
 		assertEquals(0, list.size());
+	}
+
+	@Test
+	public void matchEmptyGroup() throws Exception {
+		FplList list = (FplList) evaluate("match", "(match \"/api/bmi/80/1.88\" \"^/api/bmi/([0-9]+(\\\\.[0-9]*)?)/(.*)$\")");
+		assertEquals(5, list.size());
+		assertEquals(5, ((FplInteger) list.get(0)).getValue());
+		assertEquals("/api/bmi/80/1.88", ((FplString) list.get(1)).getContent());
+		assertEquals("80", ((FplString) list.get(2)).getContent());
+		assertEquals("", ((FplString) list.get(3)).getContent());
+		assertEquals("1.88", ((FplString) list.get(4)).getContent());
 	}
 
 	@Test
