@@ -66,6 +66,58 @@ public class ListFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void isEmptyOnFilledList() throws Exception {
+		FplInteger i = (FplInteger) evaluate("is-empty", "(is-empty '(1 2 3))");
+		assertEquals(0, i.getValue());
+	}
+
+	@Test
+	public void isEmptyOnEmptyList() throws Exception {
+		FplInteger i = (FplInteger) evaluate("is-empty", "(is-empty '())");
+		assertEquals(1, i.getValue());
+	}
+
+	@Test
+	public void isEmptyOnFilledString() throws Exception {
+		FplInteger i = (FplInteger) evaluate("is-empty", "(is-empty \"foo\")");
+		assertEquals(0, i.getValue());
+	}
+
+	@Test
+	public void isEmptyOnEmptyString() throws Exception {
+		FplInteger i = (FplInteger) evaluate("is-empty", "(is-empty \"\")");
+		assertEquals(1, i.getValue());
+	}
+
+	@Test
+	public void isEmptyOnFilledObject() throws Exception {
+		FplInteger i = (FplInteger) evaluate("is-empty", "(is-empty { a: 3 })");
+		assertEquals(0, i.getValue());
+	}
+
+	@Test
+	public void isEmptyOnEmptyObject() throws Exception {
+		FplInteger i = (FplInteger) evaluate("is-empty", "(is-empty {})");
+		assertEquals(1, i.getValue());
+	}
+
+	@Test
+	public void isEmptyOnNil() throws Exception {
+		FplInteger i = (FplInteger) evaluate("is-empty", "(is-empty nil)");
+		assertEquals(1, i.getValue());
+	}
+
+	@Test
+	public void isEmptyOnInteger() throws Exception {
+		try {
+			evaluate("is-empty", "(is-empty 42)");
+			fail("Exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("is-empty is not defined for type integer", e.getMessage());
+		}
+	}
+
+	@Test
 	public void emptyListFromFunctionCall() throws Exception {
 		FplList l = (FplList) evaluate("list", "(list)");
 		assertEquals(0, l.size());

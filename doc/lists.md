@@ -97,6 +97,12 @@ Number of elements in a list.
 (size list)
 ```
 
+### is-empty
+Is this list empty? (Works also on strings and objects.) `nil` is empty, too.
+```
+(is-empty list)
+```
+
 ### sub-list
 Return a part from the given list, including start, excluding end (counted from 0).
 ```

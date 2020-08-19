@@ -6,6 +6,8 @@ import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplInteger;
+import de.codecentric.fpl.datatypes.FplObject;
+import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Parameter;
 import de.codecentric.fpl.datatypes.list.FplList;
@@ -17,22 +19,43 @@ public class ListFunctions implements ScopePopulator {
 	@Override
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
-		scope.define(new AbstractFunction("quote", "Don't evaluate the argument, return it as is.", false,
-				"expression") {
-			@Override
-			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				if (parameters[0] instanceof Parameter) {
-					return ((Parameter) parameters[0]).quote(scope);
-				} else {
-					return parameters[0];
-				}
-			}
-		});
+		scope.define(
+				new AbstractFunction("quote", "Don't evaluate the argument, return it as is.", false, "expression") {
+					@Override
+					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+						if (parameters[0] instanceof Parameter) {
+							return ((Parameter) parameters[0]).quote(scope);
+						} else {
+							return parameters[0];
+						}
+					}
+				});
 
 		scope.define(new AbstractFunction("size", "Number of elements in a list.", false, "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return FplInteger.valueOf(evaluateToList(scope, parameters[0]).size());
+			}
+		});
+
+		scope.define(new AbstractFunction("is-empty",
+				"Is the list/string/object empty? (nil is considered as empty, too)", false, "list") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				boolean empty;
+				FplValue value = evaluateToAny(scope, parameters[0]);
+				if (value == null) {
+					empty = true;
+				} else if (value instanceof FplList) {
+					empty = ((FplList) value).isEmpty();
+				} else if (value instanceof FplString) {
+					empty = ((FplString) value).getContent().isEmpty();
+				} else if (value instanceof FplObject) {
+					empty = ((FplObject) value).keySet().isEmpty();
+				} else {
+					throw new EvaluationException("is-empty is not defined for type " + value.typeName());
+				}
+				return FplInteger.valueOf(empty ? 1 : 0);
 			}
 		});
 
@@ -75,18 +98,16 @@ public class ListFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("add-front", 
-				"Return a new list with expression added in front of the given list.", false, "expression",
-				"list") {
+		scope.define(new AbstractFunction("add-front",
+				"Return a new list with expression added in front of the given list.", false, "expression", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return evaluateToList(scope, parameters[1]).addAtStart(parameters[0].evaluate(scope));
 			}
 		});
 
-		scope.define(new AbstractFunction("add-end", 
-				"Return a new list with expression added at the end of the given list.", false, "list",
-				"expression") {
+		scope.define(new AbstractFunction("add-end",
+				"Return a new list with expression added at the end of the given list.", false, "list", "expression") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return evaluateToList(scope, parameters[0]).addAtEnd(parameters[1].evaluate(scope));
@@ -99,15 +120,17 @@ public class ListFunctions implements ScopePopulator {
 				return evaluateToList(scope, parameters[0]).append(evaluateToList(scope, parameters[1]));
 			}
 		});
-		
-		scope.define(new AbstractFunction("lower-half", "Return the lower half of a list (opposite to upper-half).", false, "list") {
+
+		scope.define(new AbstractFunction("lower-half", "Return the lower half of a list (opposite to upper-half).",
+				false, "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return evaluateToList(scope, parameters[0]).lowerHalf();
 			}
 		});
 
-		scope.define(new AbstractFunction("upper-half", "Return the upper half of a list (opposite to lower-half).", false, "list") {
+		scope.define(new AbstractFunction("upper-half", "Return the upper half of a list (opposite to lower-half).",
+				false, "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return evaluateToList(scope, parameters[0]).upperHalf();
@@ -118,15 +141,17 @@ public class ListFunctions implements ScopePopulator {
 				"Return the element at position pos (counted from 0 ) from the given list.", false, "list", "pos") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return evaluateToList(scope, parameters[0]).get((int)evaluateToLong(scope, parameters[1]));
+				return evaluateToList(scope, parameters[0]).get((int) evaluateToLong(scope, parameters[1]));
 			}
 		});
 
 		scope.define(new AbstractFunction("sub-list",
-				"Return a part from the given list, including start, excluding end (counted from 0).", false, "list", "start", "end") {
+				"Return a part from the given list, including start, excluding end (counted from 0).", false, "list",
+				"start", "end") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return evaluateToList(scope, parameters[0]).subList(((int)evaluateToLong(scope, parameters[1])), ((int)evaluateToLong(scope, parameters[2])));
+				return evaluateToList(scope, parameters[0]).subList(((int) evaluateToLong(scope, parameters[1])),
+						((int) evaluateToLong(scope, parameters[2])));
 			}
 		});
 
