@@ -87,8 +87,8 @@ public class Loop implements ScopePopulator {
 		scope.define(new AbstractFunction("filter", "Filter a list elements.", false, "func", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				FplList list = evaluateToList(scope, parameters[1]);
 				Function function = evaluateToFunction(scope, parameters[0]);
+				FplList list = evaluateToList(scope, parameters[1]);
 				Iterator<FplValue> iter = list.iterator();
 				List<FplValue> results = new ArrayList<>();
 				while (iter.hasNext()) {

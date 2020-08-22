@@ -28,10 +28,10 @@ public class LoopTest extends AbstractFplTest {
 		evaluate("for-each", "(for-each fun '(1 2 nil 4))");
 		FplList result = (FplList) scope.get("result");
 		assertEquals(4, result.size());
-		assertEquals(1, ((FplInteger)result.get(0)).getValue());
-		assertEquals(2, ((FplInteger)result.get(1)).getValue());
+		assertEquals(1, ((FplInteger) result.get(0)).getValue());
+		assertEquals(2, ((FplInteger) result.get(1)).getValue());
 		assertNull(result.get(2));
-		assertEquals(4, ((FplInteger)result.get(3)).getValue());
+		assertEquals(4, ((FplInteger) result.get(3)).getValue());
 	}
 
 	@Test
@@ -52,6 +52,18 @@ public class LoopTest extends AbstractFplTest {
 		assertEquals(2, filtered.size());
 		for (int i = 1; i <= 2; i++) {
 			assertEquals(FplInteger.valueOf(i), filtered.get(i - 1));
+		}
+	}
+
+	@Test
+	public void filterWithLayzSymbol() throws Exception {
+		evaluate("filter", "(def-function ge-filter (t src)\r\n" + //
+				"	(filter (lambda (x) (ge x t)) src)\r\n" + //
+				")");
+		FplList filtered = (FplList) evaluate("filter", "(ge-filter (+ 3 2) '( 1 2 3 4 5 6 7 8 9 10))");
+		assertEquals(6, filtered.size());
+		for (int i = 5; i <= 10; i++) {
+			assertEquals(FplInteger.valueOf(i), filtered.get(i - 5));
 		}
 	}
 
@@ -135,11 +147,10 @@ public class LoopTest extends AbstractFplTest {
 			assertEquals(FplInteger.valueOf(i), list.get(9 - i));
 		}
 	}
-	
+
 	@Test
 	public void reduce() throws Exception {
 		FplValue sum = evaluate("reduce", "(reduce (lambda (acc value) (+ acc value)) 0 '(1 2 3 4 5 6))");
 		assertEquals(FplInteger.valueOf(21), sum);
 	}
 }
-

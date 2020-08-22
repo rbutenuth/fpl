@@ -55,7 +55,12 @@ public class Symbol implements Named, PositionHolder {
      */
     @Override
     public FplValue evaluate(Scope scope) throws EvaluationException {
-        return scope.get(name);
+        FplValue value = scope.get(name);
+        if (value instanceof LazyExpression) {
+        	return value.evaluate(scope);
+        } else {
+        	return value;
+        }
     }
 
     @Override
