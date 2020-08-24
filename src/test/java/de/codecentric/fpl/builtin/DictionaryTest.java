@@ -1,6 +1,7 @@
 package de.codecentric.fpl.builtin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
@@ -19,6 +20,36 @@ import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 public class DictionaryTest extends AbstractFplTest {
+	@Test
+	public void dict() throws Exception {
+		FplObject dict = (FplObject) evaluate("dict", "(dict a 1 b (+ 1 1) c 3)");
+		assertNotNull(dict);
+		assertEquals(1, ((FplInteger)dict.get("a")).getValue());
+		assertEquals(2, ((FplInteger)dict.get("b")).getValue());
+		assertEquals(3, ((FplInteger)dict.get("c")).getValue());
+	}
+
+	@Test
+	public void dictNumberOfParametersMustBeEven() throws Exception {
+		try {
+			evaluate("dict", "(dict a 1 b c c)");
+			fail("Exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("Number of parameters must be even", e.getMessage());
+		}
+		
+	}
+
+	@Test
+	public void dictBadName() throws Exception {
+		try {
+			evaluate("dict", "(dict \"\" 1 b 2)");
+			fail("Exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("\"\" is not a valid name", e.getMessage());
+		}
+	}
+
 	@Test
 	public void dictionaryPutAndGet() throws Exception {
 		FplObject obj = (FplObject) evaluate("create", "(def obj { })");
@@ -84,7 +115,7 @@ public class DictionaryTest extends AbstractFplTest {
 	@Test
 	public void dictionaryKeys() throws Exception {
 		createDictionary();
-		FplList keys = (FplList) evaluate("keys", "(dict-keys dict)");
+		FplList keys = (FplList) evaluate("keys", "(dict-keys test-dict)");
 		assertEquals(3, keys.size());
 		Set<String> keysAsSet = new HashSet<>();
 		for (FplValue key : keys) {
@@ -96,7 +127,7 @@ public class DictionaryTest extends AbstractFplTest {
 	@Test
 	public void dictionaryValues() throws Exception {
 		createDictionary();
-		FplList values = (FplList) evaluate("values", "(dict-values dict)");
+		FplList values = (FplList) evaluate("values", "(dict-values test-dict)");
 		assertEquals(3, values.size());
 		Set<Long> valuesAsSet = new HashSet<>();
 		for (FplValue value : values) {
@@ -108,7 +139,7 @@ public class DictionaryTest extends AbstractFplTest {
 	@Test
 	public void dictionaryEntries() throws Exception {
 		createDictionary();
-		FplList entries = (FplList) evaluate("entries", "(dict-entries dict)");
+		FplList entries = (FplList) evaluate("entries", "(dict-entries test-dict)");
 		assertEquals(3, entries.size());
 		for (FplValue entry : entries) {
 			FplList list = (FplList)entry;
@@ -120,6 +151,6 @@ public class DictionaryTest extends AbstractFplTest {
 	}
 	
 	private void createDictionary() throws Exception {
-		evaluate("create", "(def dict { a: 1 b: 2 c: 3 })");
+		evaluate("create", "(def test-dict { a: 1 b: 2 c: 3 })");
 	}
 }

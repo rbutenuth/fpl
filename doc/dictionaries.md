@@ -23,6 +23,14 @@ removed from the dictionaries.
 
 ## Functions
 
+### dict
+
+Create a new dictionary from symbol value pairs. The number of parameters must be even.
+
+```
+(dict pairs...)
+```
+
 ### dict-def
 
 Define a value in the scope of an object or dictionary, symbol can be a symbol or a string,

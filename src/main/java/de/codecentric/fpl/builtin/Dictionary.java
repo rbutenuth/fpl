@@ -21,6 +21,28 @@ public class Dictionary implements ScopePopulator {
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
 		scope.define(new AbstractFunction(
+				"dict", "Create a new dictionary from symbol value pairs.",
+				true, "pairs") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				if (parameters.length % 2 != 0) {
+					throw new EvaluationException("Number of parameters must be even");
+				}
+				FplObject dict = new FplObject("dict");
+				for (int i = 0; i < parameters.length; i += 2) {
+					String key = Assignment.targetName(scope, parameters[i]);
+					FplValue value = evaluateToAny(scope, parameters[i+1]);
+					try {
+						dict.put(key, value);
+					} catch (ScopeException e) {
+						throw new EvaluationException(e.getMessage(), e);
+					}
+				}
+				return dict;
+			}
+		});
+
+		scope.define(new AbstractFunction(
 				"dict-put", "Put a value into the scope of an object or dictionary, " +
 						"symbol can be a symbol or a string, returns the old value associated with the symbol/key.",
 				false, "dict", "symbol", "value") {
