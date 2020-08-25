@@ -304,11 +304,16 @@ public class StringFunctions implements ScopePopulator {
 					}
 
 					private void serializeObject(StringBuilder sb, FplObject object) throws EvaluationException {
+						boolean first = true;
 						sb.append("{");
 						for (Entry<String, FplValue> entry : object) {
+							if (!first) {
+								sb.append(",");
+							}
 							sb.append(JsonStream.serialize(entry.getKey()));
 							sb.append(":");
 							serialize(sb, entry.getValue());
+							first = false;
 						}
 						sb.append("}");
 					}

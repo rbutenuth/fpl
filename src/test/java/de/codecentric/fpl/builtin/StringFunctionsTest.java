@@ -263,6 +263,13 @@ public class StringFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void serializeObjectWithSeveralKeysToJson() throws Exception {
+		FplString s = (FplString) evaluate("serialize-to-json",
+				"(serialize-to-json { key1: 44 key2: 45 })");
+		assertEquals("{\"key1\":44,\"key2\":45}", s.getContent());
+	}
+
+	@Test
 	public void serializeToJsonWithException() throws Exception {
 		try {
 			evaluate("serialize-to-json", "(serialize-to-json (lambda (x) (* x x)))");
