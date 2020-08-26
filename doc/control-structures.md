@@ -90,7 +90,7 @@ Throw an exception.
 ### throw-with-id
 Throw an exception, together with an integer `id` and a `message`
 ```
-(throw-with-id id message)
+(throw-with-id message id)
 ```
 
 ### try-catch
