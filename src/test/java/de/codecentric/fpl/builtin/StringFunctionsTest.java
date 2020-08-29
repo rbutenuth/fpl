@@ -258,8 +258,8 @@ public class StringFunctionsTest extends AbstractFplTest {
 	@Test
 	public void serializeToJson() throws Exception {
 		FplString s = (FplString) evaluate("serialize-to-json",
-				"(serialize-to-json '(\"abcdef\" 42 3.14 { key: 44 } nil))");
-		assertEquals("[\"abcdef\",42,3.14,{\"key\":44},null]", s.getContent());
+				"(serialize-to-json '(\"abcdef\" 42 3.14 { key: 44 } nil true false foo))");
+		assertEquals("[\"abcdef\",42,3.14,{\"key\":44},null,true,false,\"foo\"]", s.getContent());
 	}
 
 	@Test

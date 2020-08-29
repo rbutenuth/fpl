@@ -95,13 +95,15 @@ Determine the name of a symbol.
 ```
 
 ### serialize-to-json
-Convert value to JSON string.
+Convert value to JSON string. When the value contains symbols, `true` and `false` will be converted to
+JSON boolean values. All other symbols are converted to JSON strings.
 ```
 (serialize-to-json value)
 ```
 
 ### parse-json
 Convert a JSON string to list/object. In case the JSON contain a key "nil", it is converted to "<nil>", as "nil" is not a valid symbol in FPL.
+`true` and `false` are converted to 1 and 0.
 ```
 (parse-json string)
 ```

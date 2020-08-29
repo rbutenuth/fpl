@@ -285,6 +285,8 @@ public class StringFunctions implements ScopePopulator {
 							serializeInteger(sb, (FplInteger) value);
 						} else if (value instanceof FplString) {
 							serializeString(sb, (FplString) value);
+						} else if (value instanceof Symbol) {
+							serializeSymbol(sb, (Symbol) value);
 						} else {
 							throw new EvaluationException("Can't serialize " + value.typeName() + " to json");
 						}
@@ -328,6 +330,17 @@ public class StringFunctions implements ScopePopulator {
 
 					private void serializeString(StringBuilder sb, FplString str) throws EvaluationException {
 						sb.append(JsonStream.serialize(str.getContent()));
+					}
+					
+					private void serializeSymbol(StringBuilder sb, Symbol symbol) throws EvaluationException {
+						String name = symbol.getName();
+						if (name.equalsIgnoreCase("true")) {
+							sb.append("true");
+						} else if (name.equalsIgnoreCase("false")) {
+							sb.append("false");
+						} else {
+							sb.append(JsonStream.serialize(name));
+						}
 					}
 				});
 
