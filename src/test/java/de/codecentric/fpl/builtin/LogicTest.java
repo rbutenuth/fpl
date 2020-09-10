@@ -90,6 +90,13 @@ public class LogicTest extends AbstractFplTest {
     }
 
     @Test
+    public void isNumber() throws Exception {
+        assertEquals(1, ((FplInteger) evaluate("is-number", "(is-number 1.5)")).getValue());
+        assertEquals(1, ((FplInteger) evaluate("is-number", "(is-number 2)")).getValue());
+        assertNull(evaluate("is-number", "(is-number \"bla\")"));
+    }
+
+    @Test
     public void isList() throws Exception {
         assertEquals(1, ((FplInteger) evaluate("is-list", "(is-list (list 1 2 3))")).getValue());
         assertNull(evaluate("is-list", "(is-list 1)"));

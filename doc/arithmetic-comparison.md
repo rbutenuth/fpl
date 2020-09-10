@@ -110,22 +110,34 @@ Is expression a double?
 (is-double expression)
 ```
 
-### is-function
-Is expression a function?
-```
-(is-function expression)
-```
-
 ### is-integer
 Is expression an integer?
 ```
 (is-integer expression)
 ```
 
+### is-number
+Is expression an integer or double?
+```
+(is-number expression)
+```
+
 ### is-list
 Is expression a list?
 ```
 (is-list expression)
+```
+
+### is-string
+Is expression a string?
+```
+(is-string expression)
+```
+
+### is-function
+Is expression a function?
+```
+(is-function expression)
 ```
 
 ### is-object
@@ -138,12 +150,6 @@ Is expression an object?
 Is expression a symbol?
 ```
 (is-symbol expression)
-```
-
-### is-string
-Is expression a string?
-```
-(is-string expression)
 ```
 
 ## Conversion

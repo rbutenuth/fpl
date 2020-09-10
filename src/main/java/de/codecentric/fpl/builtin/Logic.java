@@ -32,7 +32,7 @@ public class Logic implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return parameters[0].evaluate(scope) instanceof Symbol ? L_TRUE : null;
+				return evaluateToAny(scope, parameters[0]) instanceof Symbol ? L_TRUE : null;
 			}
 		});
 
@@ -40,7 +40,7 @@ public class Logic implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return parameters[0].evaluate(scope) instanceof FplInteger ? L_TRUE : null;
+				return evaluateToAny(scope, parameters[0]) instanceof FplInteger ? L_TRUE : null;
 			}
 		});
 
@@ -48,7 +48,16 @@ public class Logic implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return parameters[0].evaluate(scope) instanceof FplDouble ? L_TRUE : null;
+				return evaluateToAny(scope, parameters[0]) instanceof FplDouble ? L_TRUE : null;
+			}
+		});
+
+		scope.define(new AbstractFunction("is-number", "Is expression an integer or double?", false, "expression") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				FplValue value = evaluateToAny(scope, parameters[0]);
+				return (value instanceof FplInteger || value instanceof FplDouble) ? L_TRUE : null;
 			}
 		});
 
@@ -56,7 +65,7 @@ public class Logic implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return parameters[0].evaluate(scope) instanceof FplString ? L_TRUE : null;
+				return evaluateToAny(scope, parameters[0]) instanceof FplString ? L_TRUE : null;
 			}
 		});
 
@@ -64,7 +73,7 @@ public class Logic implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return parameters[0].evaluate(scope) instanceof FplList ? L_TRUE : null;
+				return evaluateToAny(scope, parameters[0]) instanceof FplList ? L_TRUE : null;
 			}
 		});
 
@@ -72,7 +81,7 @@ public class Logic implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return parameters[0].evaluate(scope) instanceof FplObject ? L_TRUE : null;
+				return evaluateToAny(scope, parameters[0]) instanceof FplObject ? L_TRUE : null;
 			}
 		});
 
@@ -80,7 +89,7 @@ public class Logic implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return parameters[0].evaluate(scope) instanceof AbstractFunction ? L_TRUE : null;
+				return evaluateToAny(scope, parameters[0]) instanceof AbstractFunction ? L_TRUE : null;
 			}
 		});
 	}
