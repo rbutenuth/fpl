@@ -88,5 +88,5 @@ Get all values of an object or dictionary as a list.
 Get all entries of an object or dictionary as a list. Each entry is a list with two elements: key and value
 
 ```
-(dict-keys entries)
+(dict-entries entries)
 ```
