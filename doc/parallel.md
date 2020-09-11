@@ -57,3 +57,12 @@ Example:
 ```
 Creates a future which will wait for 5 seconds, then wait until it completes. Between that
 two lines, you could execute other code in parallel with the code spawned by `create-future`.
+
+### synchronized
+Evaluate the parameters, return value of last parameter. This happens within a `synchronized` controlled
+by the `monitor`. Be what you choose as monitor. Some values (e.g. small integers, empty list) may be
+implemented as singletons. Objects (dictionaries) and strings are safe.
+
+```
+(synchronized monitor elements...)
+```

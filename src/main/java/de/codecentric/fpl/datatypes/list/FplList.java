@@ -11,6 +11,7 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToFunction;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 
@@ -902,13 +903,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		if (isEmpty()) {
 			return this; // empty list evaluates to empty list
 		}
-		FplValue firstElement = first().evaluate(scope);
-
-		if (firstElement instanceof Function) {
-			return ((Function) firstElement).call(scope, createParameterArray());
-		} else {
-			throw new EvaluationException("Not a function: " + firstElement);
-		}
+		return evaluateToFunction(scope, first()).call(scope, createParameterArray());
 	}
 
 	@Override

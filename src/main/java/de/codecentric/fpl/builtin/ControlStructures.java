@@ -76,6 +76,21 @@ public class ControlStructures implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("synchronized", "Evaluate the parameters, return value of last parameter.",
+				true, "monitor", "element") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				FplValue monitor = evaluateToAny(scope, parameters[0]);
+				FplValue value = null;
+				synchronized (monitor) {
+					for (int i = 1; i < parameters.length; i++) {
+						value = evaluateToAny(scope, parameters[i]);
+					}
+				}
+				return value;
+			}
+		});
+
 		scope.define(new AbstractFunction("throw", //
 				"Throw an exception.", false, "message") {
 			@Override

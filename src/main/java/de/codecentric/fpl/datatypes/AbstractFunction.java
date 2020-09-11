@@ -198,7 +198,7 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 		if (value instanceof Function) {
 			return (Function) value;
 		} else {
-			throw new EvaluationException("Not a lambda: " + value);
+			throw new EvaluationException("Not a function: " + value);
 		}
 	}
 

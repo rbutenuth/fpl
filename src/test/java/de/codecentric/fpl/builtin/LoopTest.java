@@ -107,7 +107,7 @@ public class LoopTest extends AbstractFplTest {
 			evaluate("map-test", "(map square input)");
 			fail("should not be reached.");
 		} catch (EvaluationException expected) {
-			assertEquals("Not a lambda: 4", expected.getMessage());
+			assertEquals("Not a function: 4", expected.getMessage());
 		}
 	}
 

@@ -49,6 +49,12 @@ public class ControlStructuresTest extends AbstractFplTest {
 	}
 	
 	@Test
+    public void synchronizedNotReallyParallel() throws Exception {
+		assertEquals(FplInteger.valueOf(7), 
+				evaluate("synchronized", "(synchronized \"monitor\" (+ 3 4))"));
+	}
+	
+	@Test
     public void scope() throws Exception {
 		assertEquals(FplInteger.valueOf(2), 
 				evaluate("scope", "(scope (def foo 42) (if 1 2))"));
