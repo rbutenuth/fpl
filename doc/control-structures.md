@@ -81,6 +81,12 @@ This can be used to group several expressions where only one is allowed, e.g. th
 (sequential elements...)
 ```
 
+### scope
+Evaluate the parameters within a new scope, return value of last parameter.
+```
+(scope elements...)
+```
+
 ### throw
 Throw an exception.
 ```

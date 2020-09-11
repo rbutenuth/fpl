@@ -5,7 +5,6 @@ import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
-import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
@@ -64,6 +63,19 @@ public class ControlStructures implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("scope", "Evaluate the parameters within a new scope, return value of last parameter.",
+				true, "element") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				Scope localScope = scope.createNested("scope");
+				FplValue value = null;
+				for (int i = 0; i < parameters.length; i++) {
+					value = evaluateToAny(localScope, parameters[i]);
+				}
+				return value;
+			}
+		});
+
 		scope.define(new AbstractFunction("throw", //
 				"Throw an exception.", false, "message") {
 			@Override
@@ -103,7 +115,7 @@ public class ControlStructures implements ScopePopulator {
 				"resources", "expression", "catch-function") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				Scope localScope = new MapScope("try-with", scope);
+				Scope localScope = scope.createNested("try-with");
 				Function catchFunction = null;
 				List<Resource> resources = new ArrayList<>();
 				try {

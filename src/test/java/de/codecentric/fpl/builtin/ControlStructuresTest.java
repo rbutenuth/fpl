@@ -49,6 +49,29 @@ public class ControlStructuresTest extends AbstractFplTest {
 	}
 	
 	@Test
+    public void scope() throws Exception {
+		assertEquals(FplInteger.valueOf(2), 
+				evaluate("scope", "(scope (def foo 42) (if 1 2))"));
+		assertNull(scope.get("foo"));
+	}
+	
+	@Test
+	public void sequnetialRecursive() throws Exception {
+		evaluate("fibonacci", "(def-function fibonacci (n)\n" //
+				+ "	(if-else (le n 2)\n" //
+				+ "		1\n" //
+				+ "		(reduce \n" //
+				+ "			(lambda (acc value) (+ acc value))\n" //
+				+ "			0\n" // 
+				+ "			(list (fibonacci (- n 1)) (fibonacci (- n 2)))\n" //
+				+ "		)\n" //
+				+ "	)\n" //
+				+ ")");
+		FplInteger fib10 = (FplInteger)evaluate("call-fib", "(fibonacci 10)");
+		assertEquals(55, fib10.getValue());
+	}
+
+	@Test
 	public void simpleThrow() throws Exception {
 		try {
 			evaluate("throw", "(throw \"test-message\")");
