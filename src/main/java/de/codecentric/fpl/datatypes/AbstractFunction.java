@@ -195,7 +195,9 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	 */
 	public static Function evaluateToFunction(Scope scope, FplValue expression) throws EvaluationException {
 		FplValue value = expression.evaluate(scope);
-		if (value instanceof Function) {
+		if (value == null) {
+			throw new EvaluationException("Not a function: " + expression);
+		} else if (value instanceof Function) { 
 			return (Function) value;
 		} else {
 			throw new EvaluationException("Not a function: " + value);

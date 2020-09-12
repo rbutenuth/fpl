@@ -253,7 +253,7 @@ public class LambdaTest extends AbstractFplTest {
 		try {
 			evaluate("bam", "(fun1 42)");
 		} catch (EvaluationException e) {
-			assertEquals("Not a function: null", e.getMessage());
+			assertEquals("Not a function: x", e.getMessage());
 			assertEquals(4, e.getAdded());
 			StackTraceElement[] st = e.getStackTrace();
 			assertEquals("fun4", st[0].getMethodName());
