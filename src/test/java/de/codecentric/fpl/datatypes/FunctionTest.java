@@ -1,7 +1,6 @@
 package de.codecentric.fpl.datatypes;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -9,10 +8,6 @@ import org.junit.Test;
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
-import de.codecentric.fpl.datatypes.FplString;
-import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.AbstractFunction;
-import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
 
@@ -53,11 +48,6 @@ public class FunctionTest extends AbstractFplTest {
 		assertEquals("foo", f.getName());
 		assertEquals(0, f.getMinimumNumberOfParameters());
 		assertTrue(f.getParameterNameToIndex().isEmpty());
-	}
-	
-	@Test
-	public void evaluateEmptyListToBoolean() throws Exception {
-		assertFalse(AbstractFunction.evaluateToBoolean(null, FplList.fromValues(new FplValue[0])));
 	}
 	
 	@Test

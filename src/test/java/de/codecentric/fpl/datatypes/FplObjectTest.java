@@ -25,7 +25,7 @@ public class FplObjectTest extends AbstractFplTest {
 	
 	@Test
 	public void positionEmptyList() throws Exception {
-		Position p = FplValue.position(evaluate("empty-list", "()"));
+		Position p = FplValue.position(evaluate("empty-list", "'()"));
 		assertEquals(Position.UNKNOWN, p);
 	}
 	

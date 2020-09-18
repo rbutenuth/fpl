@@ -900,9 +900,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	@Override
 	public FplValue evaluate(Scope scope) throws EvaluationException {
-		if (isEmpty()) {
-			return this; // empty list evaluates to empty list
-		}
 		return evaluateToFunction(scope, first()).call(scope, createParameterArray());
 	}
 
