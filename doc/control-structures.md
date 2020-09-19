@@ -32,6 +32,14 @@ Evaluate condition, if true, return evaluated if-part, otherwise evaluated else-
 (if-else condition if-part else-part)
 ```
 
+### cond
+Handle condition expression pairs. When the first condition is true, the first expression is executed and
+the evaluation result is returned. When not, continue with next condition.
+When the number of parameters is not even, the last one is evaluated when all conditions are false.
+```
+(cond condition expression...)
+```
+
 ### while
 Execute code while condition returns true. Return value is the value of the last evaluated expression.
 `code` can be one or more expressions. 

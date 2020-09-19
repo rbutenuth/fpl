@@ -30,9 +30,9 @@ public class ControlStructures implements ScopePopulator {
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				if (evaluateToBoolean(scope, parameters[0])) {
 					// The "if" clause
-					return parameters[1] == null ? null : parameters[1].evaluate(scope);
+					return evaluateToAny(scope, parameters[1]);
 				} else {
-					return parameters[2] == null ? null : parameters[2].evaluate(scope);
+					return evaluateToAny(scope, parameters[2]);
 				}
 			}
 		});
@@ -44,10 +44,27 @@ public class ControlStructures implements ScopePopulator {
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				if (evaluateToBoolean(scope, parameters[0])) {
 					// The "if" clause
-					return parameters[1] == null ? null : parameters[1].evaluate(scope);
+					return evaluateToAny(scope, parameters[1]);
 				} else {
 					return null;
 				}
+			}
+		});
+
+		scope.define(new AbstractFunction("cond", //
+				"Handle condition expression pairs. When condition is true, expression is executed and result returned. "
+				+ "When number of parameters is not even, last one is an expression which is evaluated if all conditions are false.", true,
+				"condition", "expression...") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				int i = 0;
+				while (i < parameters.length - 1) {
+					if (evaluateToBoolean(scope, parameters[i])) {
+						return evaluateToAny(scope, parameters[i + 1]);
+					}
+					i += 2;
+				}
+				return evaluateToAny(scope, parameters[i]);
 			}
 		});
 

@@ -43,6 +43,13 @@ public class ControlStructuresTest extends AbstractFplTest {
 	}
 	
 	@Test
+    public void cond() throws Exception {
+        assertEquals(FplInteger.valueOf(2), evaluate("cond", "(cond 1 2 3)"));
+        assertEquals(FplInteger.valueOf(3), evaluate("cond", "(cond 0 2 1 3)"));
+        assertEquals(FplInteger.valueOf(4), evaluate("cond", "(cond 0 2 0 3 4)"));
+    }
+
+	@Test
     public void sequential() throws Exception {
 		assertEquals(FplInteger.valueOf(2), 
 				evaluate("sequential", "(sequential (+ 3 4) (if 1 2))"));
