@@ -100,8 +100,8 @@ public class InputOutputHttpRequestTest extends AbstractFplTest {
 
 	@Test
 	public void getRequestWithHeadersAndQueryParams() throws Exception {
-		String headers = "{ h1: \"value1\" h2: (1 2) h3: (nil)}";
-		String params = "{ p1: \"p-value1\" p2: (3 4)}";
+		String headers = "(dict \"h1\" \"value1\" \"h2\" '(1 2) \"h3\" '(nil))";
+		String params = "(dict \"p1\" \"p-value1\" \"p2\" '(3 4))";
 		FplList list = execute("/hello", "GET", headers, params, "nil");
 		assertEquals(3, list.size());
 		assertEquals(200, ((FplInteger) list.get(0)).getValue());

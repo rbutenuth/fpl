@@ -21,7 +21,7 @@ public class Dictionary implements ScopePopulator {
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
 		scope.define(new AbstractFunction(
-				"dict", "Create a new dictionary from symbol value pairs.",
+				"dict", "Create a new dictionary from string value pairs.",
 				true, "pairs") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -30,7 +30,7 @@ public class Dictionary implements ScopePopulator {
 				}
 				FplObject dict = new FplObject("dict");
 				for (int i = 0; i < parameters.length; i += 2) {
-					String key = Assignment.targetName(scope, parameters[i]);
+					String key = evaluateToString(scope, parameters[i]);
 					FplValue value = evaluateToAny(scope, parameters[i+1]);
 					try {
 						dict.put(key, value);
@@ -44,13 +44,13 @@ public class Dictionary implements ScopePopulator {
 
 		scope.define(new AbstractFunction(
 				"dict-put", "Put a value into the scope of an object or dictionary, " +
-						"symbol can be a symbol or a string, returns the old value associated with the symbol/key.",
-				false, "dict", "symbol", "value") {
+						"key must be a string, returns the old value associated with the key.",
+				false, "dict", "key", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
 					FplObject o = evaluateToDictionary(scope, parameters[0]);
-					return o.put(Assignment.targetName(scope, parameters[1]), Assignment.value(scope, parameters[2]));
+					return o.put(evaluateToString(scope, parameters[1]), Assignment.value(scope, parameters[2]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}
@@ -59,13 +59,13 @@ public class Dictionary implements ScopePopulator {
 
 		scope.define(new AbstractFunction("dict-def", 
 				"Define a value in the scope of an object or dictionary, " +
-						"symbol can be a symbol or a string, returns the value associated with the symbol/key, original mapping must be nil.",
-				false, "dict", "symbol", "value") {
+						"key must be a string, returns the value associated with the key, original mapping must be nil.",
+				false, "dict", "key", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
 					FplObject o = evaluateToDictionary(scope, parameters[0]);
-					return o.define(Assignment.targetName(scope, parameters[1]),
+					return o.define(evaluateToString(scope, parameters[1]),
 							Assignment.value(scope, parameters[2]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
@@ -75,14 +75,14 @@ public class Dictionary implements ScopePopulator {
 
 		scope.define(new AbstractFunction("dict-set", 
 				"Change a value into the scope of an object or dictionary, " +
-						"symbol can be a symbol or a string," +
-						"returns the old value associated with the symbol/key, new and old value must not be nil.",
-				false, "dict", "symbol", "value") {
+						"key must be a string," +
+						"returns the old value associated with the key, new and old value must not be nil.",
+				false, "dict", "key", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
 					FplObject o = evaluateToDictionary(scope, parameters[0]);
-					return o.replace(Assignment.targetName(scope, parameters[1]),
+					return o.replace(evaluateToString(scope, parameters[1]),
 							Assignment.value(scope, parameters[2]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
@@ -91,11 +91,11 @@ public class Dictionary implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("dict-get", "Get a value from the scope of an object or dictionary, " +
-				"symbol can be a symbol or a string.", false, "dict", "symbol") {
+				"key must be a string.", false, "dict", "key") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplObject o = evaluateToDictionary(scope, parameters[0]);
-				return o.get(Assignment.targetName(scope, parameters[1]));
+				return o.get(evaluateToString(scope, parameters[1]));
 			}
 		});
 

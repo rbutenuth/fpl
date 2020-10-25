@@ -258,14 +258,35 @@ public class StringFunctionsTest extends AbstractFplTest {
 	@Test
 	public void serializeToJson() throws Exception {
 		FplString s = (FplString) evaluate("serialize-to-json",
-				"(serialize-to-json '(\"abcdef\" 42 3.14 { key: 44 } nil true false foo))");
-		assertEquals("[\"abcdef\",42,3.14,{\"key\":44},null,true,false,\"foo\"]", s.getContent());
+				"(serialize-to-json (list \"abcdef\" 42 3.14 (dict \"key\" 44 \"other\" \"foo\") nil))");
+		assertEquals("[\"abcdef\",42,3.14,{\"other\":\"foo\",\"key\":44},null]", s.getContent());
+	}
+
+	@Test
+	public void serializeSymbolValueToJson() throws Exception {
+		FplString s = (FplString) evaluate("serialize-to-json",
+				"(serialize-to-json (dict \"key\" 'symbol))");
+		assertEquals("{\"key\":\"symbol\"}", s.getContent());
+	}
+
+	@Test
+	public void serializeSymbolValueTrueToJson() throws Exception {
+		FplString s = (FplString) evaluate("serialize-to-json",
+				"(serialize-to-json (dict \"key\" 'true))");
+		assertEquals("{\"key\":true}", s.getContent());
+	}
+
+	@Test
+	public void serializeSymbolValueFalseToJson() throws Exception {
+		FplString s = (FplString) evaluate("serialize-to-json",
+				"(serialize-to-json (dict \"key\" 'false))");
+		assertEquals("{\"key\":false}", s.getContent());
 	}
 
 	@Test
 	public void serializeObjectWithSeveralKeysToJson() throws Exception {
 		FplString s = (FplString) evaluate("serialize-to-json",
-				"(serialize-to-json { key1: 44 key2: 45 })");
+				"(serialize-to-json (dict \"key1\" 44 \"key2\" 45))");
 		assertEquals("{\"key1\":44,\"key2\":45}", s.getContent());
 	}
 

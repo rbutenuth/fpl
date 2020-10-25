@@ -104,7 +104,7 @@ public class LogicTest extends AbstractFplTest {
 
     @Test
     public void isObject() throws Exception {
-        assertEquals(1, ((FplInteger) evaluate("is-object", "(is-object { foo : bar })")).getValue());
+        assertEquals(1, ((FplInteger) evaluate("is-object", "(is-object (dict foo bar))")).getValue());
         assertNull(evaluate("is-object", "(is-object 1)"));
     }
 

@@ -10,7 +10,8 @@ import de.codecentric.fpl.parser.Token.Id;
  * A simple scanner. The reader is closed implicitly when EOF is reached.
  */
 public class Scanner implements Closeable {
-	private static String NL = System.lineSeparator();
+	private static final String NON_SYMBOL_CHARS = "\"()[] {}:";
+	private static final String NL = System.lineSeparator();
 	private Reader rd;
 	private String name;
 	private int line;
@@ -70,15 +71,6 @@ public class Scanner implements Closeable {
 		} else if (ch == ')') {
 			readChar();
 			return new Token(position, Id.RIGHT_PAREN);
-		} else if (ch == '{') {
-			readChar();
-			return new Token(position, Id.LEFT_CURLY_BRACKET);
-		} else if (ch == '}') {
-			readChar();
-			return new Token(position, Id.RIGHT_CURLY_BRACKET);
-		} else if (ch == ':') {
-			readChar();
-			return new Token(position, Id.COLON);
 		} else if (ch == '\'') {
 			readChar();
 			return new Token(position, Id.QUOTE);
@@ -86,6 +78,8 @@ public class Scanner implements Closeable {
 			return number(position);
 		} else if (ch == '"') {
 			return string(position);
+		} else if (NON_SYMBOL_CHARS.indexOf(ch) != -1) {
+			throw new ParseException(position, "Illegal character for symbol: " + (char) ch);
 		} else {
 			return symbol(position);
 		}
@@ -165,7 +159,6 @@ public class Scanner implements Closeable {
 	}
 
 	private Token symbol(Position position) throws IOException {
-		final String NON_SYMBOL_CHARS = "\"()[] {}:";
 		StringBuilder sb = new StringBuilder();
 		while (ch != -1 && !Character.isWhitespace(ch) && NON_SYMBOL_CHARS.indexOf(ch) == -1) {
 			sb.append((char) ch);

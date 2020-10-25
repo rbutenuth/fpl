@@ -3,29 +3,23 @@
 ## Introduction
 
 There are two builtin data structures in FPL: Immutable lists and mutable dictonaries. 
-The syntax for a dictionary is similar to a JSON object: 
+A dictionary is created with the function `dict`  
 
 ```
-{
-   key: 42
+(dict
+   "key" 42
    "another-key": bar
-}
+)
 ```
-
-What are the differences? 
-- Keys can be symbols or strings
-- There is no comma (,) to separate the key value pairs
-
-The values are _not_ evaluated. So you can place a list or a symbol into a dictionary without quoting.
 
 There can't be nil values in a dictionary: When you put a nil value, the mapping for that key is simply
-removed from the dictionaries. 
+removed from the dictionary. 
 
 ## Functions
 
 ### dict
 
-Create a new dictionary from symbol value pairs. The number of parameters must be even.
+Create a new dictionary from key value pairs. The number of parameters must be even, keys must be strings.
 
 ```
 (dict pairs...)
@@ -33,38 +27,38 @@ Create a new dictionary from symbol value pairs. The number of parameters must b
 
 ### dict-def
 
-Define a value in the scope of an object or dictionary, symbol can be a symbol or a string,
-returns the value associated with the symbol/key, original mapping must be nil.
+Define a value in the scope of an object or dictionary, key must be a string,
+returns the value associated with the key, original mapping must be nil.
 
 ```
-(dict-def dictionary symbol 42)
+(dict-def dictionary key 42)
 ```
 
 ### dict-get
 
-Get a value from the scope of an object or dictionary, symbol can be a symbol or a string.
+Get a value from the scope of an object or dictionary, key must be a string,
 
 ```
-(dict-get dictionary symbol)
+(dict-get dictionary key)
 ```
 
 ### dict-put
 
-Put a value into the scope of an object or dictionary, symbol can be a symbol or a string,
-returns the old value associated with the symbol/key. When you want to remove a mapping, 
+Put a value into the scope of an object or dictionary, key must be a string,
+returns the old value associated with the key. When you want to remove a mapping, 
 set the value nil.
 
 ```
-(dict-put dictionary symbol value)
+(dict-put dictionary key value)
 ```
 
 ### dict-set
 
-Change a value into the scope of an object or dictionary, symbol can be a symbol or a string,
-returns the old value associated with the symbol/key, new and old value must not be nil.
+Change a value into the scope of an object or dictionary, key must be a string,
+returns the old value associated with the key, new and old value must not be nil.
 
 ```
-(dict-set dictionary symbol value)
+(dict-set dictionary key value)
 ```
 
 ### dict-keys

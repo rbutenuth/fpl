@@ -22,7 +22,7 @@ import de.codecentric.fpl.datatypes.list.FplList;
 public class DictionaryTest extends AbstractFplTest {
 	@Test
 	public void dict() throws Exception {
-		FplObject dict = (FplObject) evaluate("dict", "(dict a 1 b (+ 1 1) c 3)");
+		FplObject dict = (FplObject) evaluate("dict", "(dict \"a\" 1 \"b\" (+ 1 1) \"c\" 3)");
 		assertNotNull(dict);
 		assertEquals(1, ((FplInteger)dict.get("a")).getValue());
 		assertEquals(2, ((FplInteger)dict.get("b")).getValue());
@@ -32,7 +32,7 @@ public class DictionaryTest extends AbstractFplTest {
 	@Test
 	public void dictNumberOfParametersMustBeEven() throws Exception {
 		try {
-			evaluate("dict", "(dict a 1 b c c)");
+			evaluate("dict", "(dict \"a\" 1 \"b\" 2 \"c\")");
 			fail("Exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("Number of parameters must be even", e.getMessage());
@@ -43,7 +43,7 @@ public class DictionaryTest extends AbstractFplTest {
 	@Test
 	public void dictBadName() throws Exception {
 		try {
-			evaluate("dict", "(dict \"\" 1 b 2)");
+			evaluate("dict", "(dict \"\" 1 \"b\" 2)");
 			fail("Exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("\"\" is not a valid name", e.getMessage());
@@ -52,28 +52,28 @@ public class DictionaryTest extends AbstractFplTest {
 
 	@Test
 	public void dictionaryPutAndGet() throws Exception {
-		FplObject obj = (FplObject) evaluate("create", "(def obj { })");
-		assertNull(evaluate("put", "(dict-put obj name 42)"));
+		FplObject obj = (FplObject) evaluate("create", "(def obj (dict))");
+		assertNull(evaluate("put", "(dict-put obj \"name\" 42)"));
 		assertEquals(FplInteger.valueOf(42), obj.get("name"));
-		assertEquals(FplInteger.valueOf(42), evaluate("get", "(dict-get obj name)"));
+		assertEquals(FplInteger.valueOf(42), evaluate("get", "(dict-get obj \"name\")"));
 	}
 
 	@Test
 	public void dictionaryDefineAndSetAndGet() throws Exception {
-		FplObject obj = (FplObject) evaluate("create", "(def obj { })");
-		assertEquals(FplInteger.valueOf(42), evaluate("def", "(dict-def obj name 42)"));
+		FplObject obj = (FplObject) evaluate("create", "(def obj (dict))");
+		assertEquals(FplInteger.valueOf(42), evaluate("def", "(dict-def obj \"name\" 42)"));
 		assertEquals(FplInteger.valueOf(42), obj.get("name"));
-		assertEquals(FplInteger.valueOf(42), evaluate("set", "(dict-set obj name 43)"));
+		assertEquals(FplInteger.valueOf(42), evaluate("set", "(dict-set obj \"name\" 43)"));
 		assertEquals(FplInteger.valueOf(43), obj.get("name"));
-		assertEquals(FplInteger.valueOf(43), evaluate("get", "(dict-get obj name)"));
+		assertEquals(FplInteger.valueOf(43), evaluate("get", "(dict-get obj \"name\")"));
 	}
 
 	@Test
 	public void redefineFails() throws Exception {
-		evaluate("create", "(def obj { })");
-		evaluate("def", "(dict-def obj name 42)");
+		evaluate("create", "(def obj (dict))");
+		evaluate("def", "(dict-def obj \"name\" 42)");
 		try {
-			evaluate("def", "(dict-def obj name 43)");
+			evaluate("def", "(dict-def obj \"name\" 43)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("Duplicate key: name", e.getMessage());
@@ -82,9 +82,9 @@ public class DictionaryTest extends AbstractFplTest {
 	
 	@Test
 	public void setOnNotExistingKeyFails() throws Exception {
-		evaluate("create", "(def obj { })");
+		evaluate("create", "(def obj (dict))");
 		try {
-			evaluate("set", "(dict-set obj name 43)");
+			evaluate("set", "(dict-set obj \"name\" 43)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("No value with key name found", e.getMessage());
@@ -94,7 +94,7 @@ public class DictionaryTest extends AbstractFplTest {
 	@Test
 	public void objectPutWithEmptyNameFails() throws Exception {
 		try {
-			evaluate("create", "(def obj { })");
+			evaluate("create", "(def obj (dict))");
 			evaluate("put", "(dict-put obj \"\" 42)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
@@ -151,6 +151,6 @@ public class DictionaryTest extends AbstractFplTest {
 	}
 	
 	private void createDictionary() throws Exception {
-		evaluate("create", "(def test-dict { a: 1 b: 2 c: 3 })");
+		evaluate("create", "(def test-dict (dict \"a\" 1 \"b\" 2 \"c\" 3 ))");
 	}
 }

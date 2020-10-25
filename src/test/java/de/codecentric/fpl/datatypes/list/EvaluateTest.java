@@ -23,7 +23,7 @@ public class EvaluateTest extends AbstractFplTest {
 
 	@Test
 	public void listToStringObjectAndNil() throws Exception {
-		FplValue list = evaluate("list", "(list nil 1 {})");
+		FplValue list = evaluate("list", "(list nil 1 (dict))");
 		assertEquals("(nil 1 {" + NL + "}" + NL + ")", list.toString());
 	}
 

@@ -31,7 +31,7 @@ public class FplObjectTest extends AbstractFplTest {
 	
 	@Test
 	public void positionEmptyDictionary() throws Exception {
-		Position p = FplValue.position(evaluate("empty-dict", "{}"));
+		Position p = FplValue.position(evaluate("empty-dict", "(dict)"));
 		assertEquals(Position.UNKNOWN, p);
 	}
 	
@@ -67,14 +67,14 @@ public class FplObjectTest extends AbstractFplTest {
 
 	@Test
 	public void createEmptyObject() throws Exception {
-		FplObject object = (FplObject) evaluate("empty", "{ }");
+		FplObject object = (FplObject) evaluate("empty", "(dict)");
 		assertEquals("{" + NL + "}" + NL, object.toString());
 		assertEquals("dictionary", object.typeName());
 	}
 
 	@Test
 	public void createObjectWithTwoMembers() throws Exception {
-		FplObject object = (FplObject) evaluate("members", "{ a0: 1 a1: 2 }");
+		FplObject object = (FplObject) evaluate("members", "(dict \"a0\" 1 \"a1\" 2)");
 		checkObject(object, 2);
 		assertNull(object.getNext());
 	}
@@ -173,7 +173,7 @@ public class FplObjectTest extends AbstractFplTest {
 
 	@Test
 	public void defSubClassFailsWhenParentIsDictionary() throws Exception {
-		evaluate("def-class", "(def my-class { } )");
+		evaluate("def-class", "(def my-class (dict) )");
 		try {
 			evaluate("sub-class", "(def-sub-class my-sub-class my-class (def-field a2 3) (def-field a3 4))");
 			fail("exception missing");

@@ -91,13 +91,13 @@ public class ListFunctionsTest extends AbstractFplTest {
 
 	@Test
 	public void isEmptyOnFilledObject() throws Exception {
-		FplInteger i = (FplInteger) evaluate("is-empty", "(is-empty { a: 3 })");
+		FplInteger i = (FplInteger) evaluate("is-empty", "(is-empty (dict a 3))");
 		assertEquals(0, i.getValue());
 	}
 
 	@Test
 	public void isEmptyOnEmptyObject() throws Exception {
-		FplInteger i = (FplInteger) evaluate("is-empty", "(is-empty {})");
+		FplInteger i = (FplInteger) evaluate("is-empty", "(is-empty (dict))");
 		assertEquals(1, i.getValue());
 	}
 

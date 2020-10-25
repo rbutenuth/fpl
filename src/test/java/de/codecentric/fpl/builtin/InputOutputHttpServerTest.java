@@ -118,7 +118,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 
 	@Test
 	public void getRequestWithHeadersAndParamameters() throws Exception {
-		evaluate("callback-1", "(def-function callback-1 (path headers params body) (list 201 {} nil))");
+		evaluate("callback-1", "(def-function callback-1 (path headers params body) (list 201 (dict) nil))");
 		// Return the query parameters as response headers 
 		evaluate("callback-2", "(def-function callback-2 (path headers params body) (list 200 params \"Hello world\"))");
 		evaluate("start", "(def terminate (http-server " + port + " auth "
@@ -147,7 +147,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 
 	@Test
 	public void getRequestReturnHeaderAsBody() throws Exception {
-		evaluate("callback", "(def-function callback (path headers params body) (list 200 params (dict-get headers key)))");
+		evaluate("callback", "(def-function callback (path headers params body) (list 200 params (dict-get headers \"key\")))");
 		evaluate("start", "(def terminate (http-server " + port + " auth "
 				+ "(list \"GET\" \"/get-path\" callback)))");
 		Function terminate = (Function) evaluate("lambda", "terminate");
@@ -162,7 +162,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 
 	@Test
 	public void getRequestWithWildcard() throws Exception {
-		evaluate("callback-1", "(def-function callback-1 (path headers params body) (list 201 {} nil))");
+		evaluate("callback-1", "(def-function callback-1 (path headers params body) (list 201 (dict) nil))");
 		evaluate("callback-2", "(def-function callback-2 (path headers params body) (list 200 params \"Hello world\"))");
 		evaluate("start", "(def terminate (http-server " + port + " auth "
 				+ "(list \"GET\" \"/foo\" callback-1)"
@@ -179,7 +179,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 
 	@Test
 	public void getRequestLowerCaseMethodAndMissingSlashInPath() throws Exception {
-		evaluate("callback-1", "(def-function callback-1 (path headers params body) (list 201 {} nil))");
+		evaluate("callback-1", "(def-function callback-1 (path headers params body) (list 201 (dict) nil))");
 		evaluate("callback-2", "(def-function callback-2 (path headers params body) (list 200 params \"Hello world\"))");
 		evaluate("start", "(def terminate (http-server " + port + " auth "
 				+ "(list \"GET\" \"/foo\" callback-1)"
@@ -235,7 +235,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 
 	@Test
 	public void postRequest() throws Exception {
-		evaluate("callback", "(def-function callback (path headers params body) (list 201 {} (join \"Body: \" body)))");
+		evaluate("callback", "(def-function callback (path headers params body) (list 201 (dict) (join \"Body: \" body)))");
 		evaluate("start", "(def terminate (http-server " + port + " auth "
 				+ "(list \"POST\" \"/get-path\" callback)))");
 		Function terminate = (Function) evaluate("lambda", "terminate");

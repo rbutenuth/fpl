@@ -124,7 +124,7 @@ public class ScannerTest {
 
 	@Test
 	public void parenthesisAndSymbol() throws Exception {
-		try (Scanner sc = new Scanner("test", new StringReader("'( bla \n\r) ; sinnfrei\n\r;leer\n{:}"))) {
+		try (Scanner sc = new Scanner("test", new StringReader("'( bla \n\r) ; sinnfrei\n\r;leer\n"))) {
 			Token t = sc.next();
 			assertNotNull(t);
 			assertEquals(Id.QUOTE, t.getId());
@@ -149,21 +149,6 @@ public class ScannerTest {
 			assertNotNull(t);
 			assertEquals(Id.RIGHT_PAREN, t.getId());
 			assertEquals(")", t.toString());
-
-			t = sc.next();
-			assertNotNull(t);
-			assertEquals(Id.LEFT_CURLY_BRACKET, t.getId());
-			assertEquals("{", t.toString());
-
-			t = sc.next();
-			assertNotNull(t);
-			assertEquals(Id.COLON, t.getId());
-			assertEquals(":", t.toString());
-
-			t = sc.next();
-			assertNotNull(t);
-			assertEquals(Id.RIGHT_CURLY_BRACKET, t.getId());
-			assertEquals("}", t.toString());
 
 			t = sc.next();
 			assertEquals(Id.EOF, t.getId());
@@ -320,6 +305,16 @@ public class ScannerTest {
 			fail("missing exception");
 		} catch (ParseException pe) {
 			assertEquals("Unterminated string at end of input", pe.getMessage());
+		}
+	}
+
+	@Test
+	public void illegalSymbolCharacter() throws Exception {
+		try (Scanner sc = new Scanner("test", new StringReader("{"))) {
+			sc.next();
+			fail("missing exception");
+		} catch (ParseException pe) {
+			assertEquals("Illegal character for symbol: {", pe.getMessage());
 		}
 	}
 }

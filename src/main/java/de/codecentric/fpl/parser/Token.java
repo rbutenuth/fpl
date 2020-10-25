@@ -24,27 +24,6 @@ public final class Token {
 				return ")";
 			}
 		},
-		/** { */
-		LEFT_CURLY_BRACKET(true) {
-			@Override
-			public String toString(Token t) {
-				return "{";
-			}
-		},
-		/** } */
-		RIGHT_CURLY_BRACKET(true) {
-			@Override
-			public String toString(Token t) {
-				return "}";
-			}
-		},
-		/** : */
-		COLON(true) {
-			@Override
-			public String toString(Token t) {
-				return ":";
-			}
-		},
 		/** 'x, short for (qoute x) */
 		QUOTE(true) {
 			@Override
