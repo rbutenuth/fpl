@@ -291,12 +291,22 @@ public class StringFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void serializeToJsonWithException() throws Exception {
+	public void serializeToJsonOfFunctionThrowsException() throws Exception {
 		try {
 			evaluate("serialize-to-json", "(serialize-to-json (lambda (x) (* x x)))");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("Can't serialize function to json", e.getMessage());
+		}
+	}
+
+	@Test
+	public void serializeToJsonOfJavaWrapperThrossException() throws Exception {
+		try {
+			evaluate("serialize-to-json", "(serialize-to-json (java-instance \"java.util.ArrayList\" 10))");
+			fail("exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("Can't serialize wrapper(java.util.ArrayList) to json", e.getMessage());
 		}
 	}
 
