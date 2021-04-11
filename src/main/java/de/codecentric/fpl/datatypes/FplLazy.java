@@ -6,7 +6,7 @@ import de.codecentric.fpl.data.Scope;
 /**
  * A lazy expression, which will be evaluated on demand.
  */
-public class LazyExpression implements FplValue {
+public class FplLazy implements FplValue {
     private Scope scope;
     private FplValue originalExpression;
     private boolean evaluated;
@@ -16,7 +16,7 @@ public class LazyExpression implements FplValue {
      * @param scope Scope for evaluation, not null.
      * @param originalExpression The expression to be evaluated, may be null.
      */
-    public LazyExpression(Scope scope, FplValue originalExpression) {
+    public FplLazy(Scope scope, FplValue originalExpression) {
         if (scope == null) {
             throw new NullPointerException("scope");
         }

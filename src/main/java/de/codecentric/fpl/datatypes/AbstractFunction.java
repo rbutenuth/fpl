@@ -401,10 +401,10 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	}
 
 	public static FplValue makeLazy(Scope scope, FplValue e) {
-		if (e instanceof LazyExpression || e instanceof EvaluatesToThisValue) {
+		if (e instanceof FplLazy || e instanceof EvaluatesToThisValue) {
 			return e;
 		} else {
-			return new LazyExpression(scope, e);
+			return new FplLazy(scope, e);
 		}
 	}
 

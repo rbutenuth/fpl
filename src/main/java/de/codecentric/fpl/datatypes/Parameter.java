@@ -4,7 +4,7 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.data.Scope;
 
-public class Parameter implements FplValue, Named {
+public class Parameter implements Named {
 	private Symbol symbol;
 	private int index;
 
@@ -17,7 +17,7 @@ public class Parameter implements FplValue, Named {
 	public FplValue evaluate(Scope scope) throws EvaluationException {
 		ParameterScope paramScope = (ParameterScope) scope;
 		FplValue value = paramScope.getParameter(index);
-		if (value instanceof LazyExpression) {
+		if (value instanceof FplLazy) {
 			value = value.evaluate(scope);
 		}
 		return value;
@@ -26,8 +26,8 @@ public class Parameter implements FplValue, Named {
 	public FplValue quote(Scope scope) throws EvaluationException {
 		ParameterScope paramScope = (ParameterScope) scope;
 		FplValue parameter = paramScope.getParameter(index);
-		if (parameter instanceof LazyExpression) {
-			return ((LazyExpression) parameter).getOriginalExpression();
+		if (parameter instanceof FplLazy) {
+			return ((FplLazy) parameter).getOriginalExpression();
 		} else {
 			return parameter;
 		}

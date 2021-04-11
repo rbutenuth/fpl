@@ -10,7 +10,7 @@ import de.codecentric.fpl.parser.Token.Id;
  * A simple scanner. The reader is closed implicitly when EOF is reached.
  */
 public class Scanner implements Closeable {
-	private static final String NON_SYMBOL_CHARS = "\"()[] {}:";
+	private static final String NON_SYMBOL_CHARS = "'\"()[] {}:;";
 	private static final String NL = System.lineSeparator();
 	private Reader rd;
 	private String name;

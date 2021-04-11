@@ -24,7 +24,7 @@ The syntax is the same as in Java (without the _ feature to structure numbers.
 
 ### Symbol and Strings
 
-Symbols are sequences of non whitespace characters except ` `, `"`, `(`, `)`, `[`, `]`, `{`, `}`, `:`.
+Symbols are sequences of non whitespace characters except ` `, `"`, `'`, `(`, `)`, `[`, `]`, `{`, `}`, `:`, `;`.
 A symbol must not start with `'`, as this is a shortcut for the function `qoute`.
 
 Strings are delimited by `"`. Quoting works as in Java with `\`.
@@ -36,11 +36,6 @@ There is only one keyword: `nil`. It stands for "nothing", like null in Java.
 ### Lists
 
 A List starts with `(`, followed by the elements of the list, followed by `)`. A List may be empty: `()`.
-
-### Objects / Dictionaries
-
-Objects are delimited by `{` and `}`. Inside that you can define zero to n mappings, consisting of a  symbol (key), `:` and a value.
-Don't confuse it with JSON syntax: The keys are not surrounded by `"` and there is no `,` between the key pairs.
 
 ### Quote
 

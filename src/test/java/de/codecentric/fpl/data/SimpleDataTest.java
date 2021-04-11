@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
-import de.codecentric.fpl.datatypes.LazyExpression;
+import de.codecentric.fpl.datatypes.FplLazy;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.parser.Position;
 
@@ -99,12 +99,12 @@ public class SimpleDataTest {
 
     @Test(expected = NullPointerException.class)
     public void badLazyExpression() {
-        new LazyExpression(null, null);
+        new FplLazy(null, null);
     }
 
     @Test
     public void lazyExpression() throws EvaluationException {
-        LazyExpression e = new LazyExpression(new MapScope("test"), FplInteger.valueOf(42));
+        FplLazy e = new FplLazy(new MapScope("test"), FplInteger.valueOf(42));
         assertEquals(42, ((FplInteger)e.getOriginalExpression()).getValue());
         assertEquals(42, ((FplInteger)e.evaluate(null)).getValue());
         assertEquals("integer", e.typeName());

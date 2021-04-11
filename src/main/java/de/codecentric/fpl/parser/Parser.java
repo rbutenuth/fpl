@@ -54,9 +54,10 @@ public class Parser implements Closeable {
 	}
 
 	/**
-	 * @return The next object in the input, <code>null</code> for end of input.
-	 * @throws ParseException On Syntax problems.
-	 * @throws IOException    I/O problems.
+	 * @return The next object in the input.
+	 * @throws NoSuchElementException On end of input
+	 * @throws ParseException On Syntax problems
+	 * @throws IOException I/O problems.
 	 */
 	public FplValue next() throws ParseException, IOException {
 		if (!hasNext()) {
