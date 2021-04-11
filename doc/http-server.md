@@ -1,6 +1,6 @@
 # The Built-in HTTP Server
 
-Part of fpl is a simple HTTP server. It is started by the main method of the class `de.codecentric.fpl.io.SimpleHttpServer.server`. 
+Part of fpl is a simple HTTP server. It is started by the main method of the class `de.codecentric.fpl.io.HttpServerMain`. 
 The main method has to be started with three arguments:
 
 1. The HTTP server port (e.g. 8080)
