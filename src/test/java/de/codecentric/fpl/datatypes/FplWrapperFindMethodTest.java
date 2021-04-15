@@ -171,7 +171,7 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 	@Test
 	public void callTestMethodWithDoubleNullArg() throws Exception {
 		FplString tm = (FplString) evaluate("primitive-cons", //
-				"((java-instance de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass) testMethod 1.0 nil)");
+				"((java-instance \"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\") \"testMethod\" 1.0 nil)");
 		assertEquals("Double d, String arg", tm.getContent());
 	}
 	
@@ -198,10 +198,10 @@ public class FplWrapperFindMethodTest extends AbstractFplTest {
 	@Test
 	public void callBooleanMethodWithIntArg() throws Exception {
 		FplString tm = (FplString) evaluate("primitive-cons", //
-				"((java-instance de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass) booleanMethod 1)");
+				"((java-instance \"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\") \"booleanMethod\" 1)");
 		assertEquals("booleanMethod(boolean arg)->true", tm.getContent());
 		tm = (FplString) evaluate("primitive-cons", //
-				"((java-instance de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass) booleanMethod 0)");
+				"((java-instance \"de.codecentric.fpl.datatypes.FplWrapperFindMethodTest$ConstructorTestClass\") \"booleanMethod\" 0)");
 		assertEquals("booleanMethod(boolean arg)->false", tm.getContent());
 	}
 	

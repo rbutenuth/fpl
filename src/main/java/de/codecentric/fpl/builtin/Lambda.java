@@ -98,17 +98,7 @@ public class Lambda implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				String name;
-				if (parameters[0] instanceof Symbol) {
-					name = ((Symbol) parameters[0]).getName();
-				} else {
-					FplValue fplClass = parameters[0].evaluate(scope);
-					if (fplClass instanceof FplString) {
-						name = ((FplString) fplClass).getContent();
-					} else {
-						throw new EvaluationException("Expect string or symbol, but got " + fplClass.typeName());
-					}
-				}
+				String name = evaluateToString(scope, parameters[0]);
 				Object[] methodParams = new Object[parameters.length - 1];
 				for (int i = 0; i < methodParams.length; i++) {
 					methodParams[i] = Assignment.value(scope, parameters[i + 1]);
@@ -122,18 +112,7 @@ public class Lambda implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				String name;
-				if (parameters[0] instanceof Symbol) {
-					name = ((Symbol) parameters[0]).getName();
-				} else {
-					FplValue fplClass = parameters[0].evaluate(scope);
-					if (fplClass instanceof FplString) {
-						name = ((FplString) fplClass).getContent();
-					} else {
-						throw new EvaluationException("Expect string or symbol, but got " + fplClass.typeName());
-					}
-				}
-				return new FplWrapper(name);
+				return new FplWrapper(evaluateToString(scope, parameters[0]));
 			}
 		});
 	}

@@ -151,16 +151,6 @@ public class FplWrapperTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void notString() throws Exception {
-		try {
-			evaluate("not-list", "(java-instance 42)");
-			fail("exception missing");
-		} catch (EvaluationException e) {
-			assertEquals("Expect string or symbol, but got integer", e.getMessage());
-		}
-	}
-
-	@Test
 	public void unknownClass() throws Exception {
 		try {
 			evaluate("unknown", "(java-instance \"i.hope.nobody.creates.this.class\")");
@@ -223,7 +213,7 @@ public class FplWrapperTest extends AbstractFplTest {
 	@Test
 	public void methodWithException() throws Exception {
 		try {
-			evaluate("method-with-exception", "((java-instance de.codecentric.fpl.datatypes.FplWrapperTest$Inner) methodWithException)");
+			evaluate("method-with-exception", "((java-instance \"de.codecentric.fpl.datatypes.FplWrapperTest$Inner\") methodWithException)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("nil", e.getMessage());
@@ -238,24 +228,14 @@ public class FplWrapperTest extends AbstractFplTest {
 	
 	@Test
 	public void staticCallSymbol() throws Exception {
-		FplInteger i = (FplInteger) evaluate("static", "((java-class java.lang.Integer) valueOf 10)");
+		FplInteger i = (FplInteger) evaluate("static", "((java-class \"java.lang.Integer\") valueOf 10)");
 		assertEquals(FplInteger.valueOf(10), i);
-	}
-	
-	@Test
-	public void staticNeitherStringNotSymbol() throws Exception {
-		try {
-			evaluate("static-with-exception", "(java-class 42)");
-			fail("exception missing");
-		} catch (EvaluationException e) {
-			assertEquals("Expect string or symbol, but got integer", e.getMessage());
-		}
 	}
 	
 	@Test
 	public void staticClassNotFound() throws Exception {
 		try {
-			evaluate("static-with-exception", "(java-class foo.bar.UknownClass)");
+			evaluate("static-with-exception", "(java-class \"foo.bar.UknownClass\")");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("unknown class: foo.bar.UknownClass", e.getMessage());
@@ -264,7 +244,7 @@ public class FplWrapperTest extends AbstractFplTest {
 	
 	@Test
 	public void wrapperToString() throws Exception {
-		FplValue value = evaluate("wrapper-to-string", "(java-instance java.util.ArrayList)");
+		FplValue value = evaluate("wrapper-to-string", "(java-instance \"java.util.ArrayList\")");
 		assertEquals("FplWrapper(\"java.util.ArrayList\")", value.toString());
 	}
 }
