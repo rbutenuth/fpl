@@ -1,20 +1,20 @@
 package de.codecentric.fpl.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
-import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Symbol;
@@ -25,11 +25,13 @@ import de.codecentric.fpl.datatypes.list.FplList;
  */
 public class ParserTest extends AbstractFplTest {
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void scannerNull() throws ParseException, IOException {
-		try (Parser p = new Parser(null)) {
-			// not reached
-		}
+		assertThrows(NullPointerException.class, () -> {
+			try (Parser p = new Parser(null)) {
+				// not reached
+			}
+		});
 	}
 
 	@Test
@@ -177,14 +179,15 @@ public class ParserTest extends AbstractFplTest {
 		}
 	}
 
-	@Test(expected = NoSuchElementException.class)
+	@Test
 	public void nextAtEndOfSourceThrowsException() throws Exception {
 		Parser p = parser("symbol", "symbol");
 		assertTrue(p.hasNext());
 		FplValue symbol = p.next();
 		assertEquals("symbol", symbol.typeName());
-		p.next();
-		fail("Exception missing");
+		assertThrows(NoSuchElementException.class, () -> {
+			p.next();
+		});
 	}
 
 	@Test

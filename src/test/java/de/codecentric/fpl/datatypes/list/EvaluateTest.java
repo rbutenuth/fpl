@@ -1,8 +1,8 @@
 package de.codecentric.fpl.datatypes.list;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;

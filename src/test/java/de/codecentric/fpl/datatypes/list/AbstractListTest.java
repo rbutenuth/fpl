@@ -1,13 +1,12 @@
 package de.codecentric.fpl.datatypes.list;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Iterator;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.list.FplList;
 
 public class AbstractListTest {
 
@@ -18,7 +17,7 @@ public class AbstractListTest {
 	 * @param to   Last element in list (excluding)
 	 */
 	public static void check(FplList list, int from, int to) throws EvaluationException {
-		assertEquals("List size", to - from, list.size());
+		assertEquals(to - from, list.size(), "List size");
 		Iterator<FplValue> iter = list.iterator();
 		int value = from;
 		while (iter.hasNext()) {
@@ -31,9 +30,9 @@ public class AbstractListTest {
 
 	public static void checkSizes(FplList list, int... sizes) throws EvaluationException {
 		int[] listSizes = list.bucketSizes();
-		assertEquals("Wrong number of buckets", sizes.length, listSizes.length);
+		assertEquals(sizes.length, listSizes.length, "Wrong number of buckets");
 		for (int i = 0; i < listSizes.length; i++) {
-			assertEquals("Size of bucket " + i, sizes[i], listSizes[i]);
+			assertEquals(sizes[i], listSizes[i], "Size of bucket " + i);
 		}
 	}
 	

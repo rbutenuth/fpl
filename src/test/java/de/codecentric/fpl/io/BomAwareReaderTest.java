@@ -1,6 +1,6 @@
 package de.codecentric.fpl.io;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -8,9 +8,7 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Test;
-
-import de.codecentric.fpl.io.BomAwareReader;
+import org.junit.jupiter.api.Test;
 
 public class BomAwareReaderTest {
 	private static final int[] UTF_8 = new int[] {};

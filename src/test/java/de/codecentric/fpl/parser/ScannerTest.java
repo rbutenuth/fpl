@@ -1,41 +1,48 @@
 package de.codecentric.fpl.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.StringReader;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.parser.Token.Id;
 
 public class ScannerTest {
 	private static String NL = System.lineSeparator();
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void nameNull() throws IOException {
-		try (Scanner s = new Scanner(null, new StringReader(""))) {
-			// not reached
-		}
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void badLineNumber() throws IOException {
-		try (Scanner s = new Scanner("bla", 0, new StringReader(""))) {
-			// not reached
-		}
-	}
-
-	@Test(expected = ParseException.class)
-	public void unterminatedString() throws Exception {
-		try (Scanner sc = new Scanner("test", new StringReader("'( bla \") ; sinnfrei"))) {
-			Token t = sc.next();
-			while (t != null) {
-				t = sc.next();
+		assertThrows(NullPointerException.class, () -> {
+			try (Scanner s = new Scanner(null, new StringReader(""))) {
+				// not reached
 			}
-		}
+		});
+	}
+
+	@Test
+	public void badLineNumber() throws IOException {
+		assertThrows(IllegalArgumentException.class, () -> {
+			try (Scanner s = new Scanner("bla", 0, new StringReader(""))) {
+				// not reached
+			}
+		});
+	}
+
+	@Test
+	public void unterminatedString() throws Exception {
+		assertThrows(ParseException.class, () -> {
+			try (Scanner sc = new Scanner("test", new StringReader("'( bla \") ; sinnfrei"))) {
+				Token t = sc.next();
+				while (t != null) {
+					t = sc.next();
+				}
+			}
+		});
 	}
 
 	@Test

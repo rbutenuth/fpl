@@ -1,9 +1,9 @@
 package de.codecentric.fpl.builtin;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.sun.net.httpserver.BasicAuthenticator;
 
@@ -37,7 +37,7 @@ public class InputOutputHttpRequestTest extends AbstractFplTest {
 	private SimpleHttpServer server;
 	private List<HttpRequest> requests;
 
-	@Before
+	@BeforeEach
 	public void startServer() throws Exception {
 		port = nextPort++;
 		SecureRandom sr = new SecureRandom();
@@ -66,7 +66,7 @@ public class InputOutputHttpRequestTest extends AbstractFplTest {
 		requests = new ArrayList<HttpRequest>();
 	}
 
-	@After
+	@AfterEach
 	public void stopServer() throws Exception {
 		server.terminate(0);
 		server.waitForTermination();

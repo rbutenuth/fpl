@@ -1,12 +1,13 @@
 package de.codecentric.fpl.builtin;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Iterator;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
@@ -314,10 +315,12 @@ public class ListFunctionsTest extends AbstractFplTest {
 		AbstractListTest.check(list, 1, 3);
 	}
 
-	@Test(expected = EvaluationException.class)
+	@Test
 	public void tooManyParameters() throws Exception {
+		assertThrows(EvaluationException.class, () -> {
 		evaluate("pair", "(def-function pair (a b) (list a b))");
 		FplList list = (FplList) evaluate("incorrect call", "(pair 1 2 3)");
 		assertEquals(2, list.size());
+		});
 	}
 }

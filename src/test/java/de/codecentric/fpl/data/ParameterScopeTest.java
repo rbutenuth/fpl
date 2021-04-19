@@ -1,8 +1,9 @@
 package de.codecentric.fpl.data;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -11,9 +12,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplString;
@@ -25,8 +26,8 @@ import de.codecentric.fpl.datatypes.TestFunction;
 public class ParameterScopeTest {
 	Scope outer;
 	ParameterScope inner;
-	
-	@Before
+
+	@BeforeEach
 	public void before() {
 		outer = new MapScope("outer");
 		int i = 0;
@@ -37,7 +38,7 @@ public class ParameterScopeTest {
 		inner = new ParameterScope("inner", outer, parameterNames, parameters);
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		outer = null;
 		inner = null;
@@ -61,19 +62,25 @@ public class ParameterScopeTest {
 		assertNull(outer.get("foot"));
 	}
 
-	@Test(expected = ScopeException.class)
+	@Test
 	public void putNullKey() throws ScopeException {
-		inner.put(null, new FplString("foo"));
+		assertThrows(ScopeException.class, () -> {
+			inner.put(null, new FplString("foo"));
+		});
 	}
 
-	@Test(expected = ScopeException.class)
+	@Test
 	public void putEmptyKey() throws ScopeException {
-		inner.put("", new FplString("foot"));
+		assertThrows(ScopeException.class, () -> {
+			inner.put("", new FplString("foot"));
+		});
 	}
 
-	@Test(expected = ScopeException.class)
+	@Test
 	public void tryToChangeParameterValue() throws ScopeException {
-		inner.put("a", new FplString("foot"));
+		assertThrows(ScopeException.class, () -> {
+			inner.put("a", new FplString("foot"));
+		});
 	}
 
 	@Test
@@ -100,42 +107,42 @@ public class ParameterScopeTest {
 	}
 
 	@Test
-	public void entrySet() throws ScopeException{
+	public void entrySet() throws ScopeException {
 		outer.put("d", new FplString("d"));
 		inner.put("c", new FplString("c"));
 		Set<Entry<String, FplValue>> set = inner.entrieSet();
 		Iterator<Entry<String, FplValue>> iterator = set.iterator();
 		checkIteratorContent(iterator);
 	}
-	
+
 	@Test
-	public void entryIterator() throws ScopeException{
+	public void entryIterator() throws ScopeException {
 		outer.put("d", new FplString("d"));
 		inner.put("c", new FplString("c"));
 		Iterator<Entry<String, FplValue>> iterator = inner.iterator();
 		checkIteratorContent(iterator);
 	}
-	
+
 	private void checkIteratorContent(Iterator<Entry<String, FplValue>> iterator) {
 		int count = 0;
 		while (iterator.hasNext()) {
 			Entry<String, FplValue> entry = iterator.next();
 			if (entry.getKey().equals("a")) {
-				assertEquals("foo", ((FplString)entry.getValue()).getContent());
+				assertEquals("foo", ((FplString) entry.getValue()).getContent());
 			}
 			if (entry.getKey().equals("b")) {
 				assertEquals(new Symbol("bar"), entry.getValue());
 			}
 			if (entry.getKey().equals("c")) {
-				assertEquals("c", ((FplString)entry.getValue()).getContent());
+				assertEquals("c", ((FplString) entry.getValue()).getContent());
 			}
 			count++;
 		}
 		assertEquals(3, count);
 	}
-	
+
 	@Test
-	public void keySet() throws ScopeException{
+	public void keySet() throws ScopeException {
 		outer.put("d", new FplString("d"));
 		inner.put("c", new FplString("c"));
 		Set<String> set = inner.keySet();
@@ -144,9 +151,9 @@ public class ParameterScopeTest {
 		assertTrue(set.contains("b"));
 		assertTrue(set.contains("c"));
 	}
-	
+
 	@Test
-	public void values() throws ScopeException{
+	public void values() throws ScopeException {
 		outer.put("d", new FplString("d"));
 		inner.put("c", new FplString("c"));
 		Collection<FplValue> values = inner.values();
@@ -155,7 +162,7 @@ public class ParameterScopeTest {
 		assertTrue(values.contains(new Symbol("bar")));
 		assertTrue(values.contains(new FplString("c")));
 	}
-	
+
 	@Test
 	public void parameterTypeName() {
 		Parameter p = new Parameter(new Symbol("foo"), 0);

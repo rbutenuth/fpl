@@ -1,7 +1,7 @@
 package de.codecentric.fpl.io;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -13,9 +13,9 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.sun.net.httpserver.BasicAuthenticator;
 
@@ -30,7 +30,7 @@ public class SimpleHttpServerTest {
 	private List<HttpRequest> requests;
 	private HttpRequest req;
 
-	@Before
+	@BeforeEach
 	public void startServer() throws Exception {
 		port = nextPort++;
 		baseUrl = "http://localhost:" + port + "/test";
@@ -63,7 +63,7 @@ public class SimpleHttpServerTest {
 		req.setBasicAuth(testUser, testPassword);
 	}
 
-	@After
+	@AfterEach
 	public void stopServer() throws Exception {
 		server.terminate(0);
 		server.waitForTermination();

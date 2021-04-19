@@ -1,6 +1,6 @@
 package de.codecentric.fpl.datatypes.list;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.EvaluationException;
 

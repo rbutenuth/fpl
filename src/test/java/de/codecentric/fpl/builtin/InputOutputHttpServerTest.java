@@ -1,17 +1,17 @@
 package de.codecentric.fpl.builtin;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
@@ -28,7 +28,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 	private String baseUrl;
 	private HttpRequest req;
 
-	@Before
+	@BeforeEach
 	public void prepareForServerStart() throws Exception {
 		port = nextPort++;
 		baseUrl = "http://localhost:" + port + "/";
@@ -49,7 +49,7 @@ public class InputOutputHttpServerTest extends AbstractFplTest {
 		evaluate("auth-fail", "(def-function auth-fail (user password) " + "(/ 1 0))");
 	}
 
-	@After
+	@AfterEach
 	public void stopServer() throws Exception {
 		// Don't try to terminate when the start failed. :-)
 		evaluate("terminate", "(if (ne terminate nil) (terminate 0))");

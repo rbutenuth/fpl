@@ -1,10 +1,13 @@
 package de.codecentric.fpl.builtin;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
@@ -113,10 +116,12 @@ public class AssignmentTest extends AbstractFplTest {
 		assertNull(local.get("local"));
 	}
 
-	@Test(expected = EvaluationException.class)
+	@Test
 	public void putWithTargetNotSymbolFails() throws Exception {
-		Scope local = new MapScope("local", scope);
-		assertEquals(20, ((FplInteger) evaluate(local, "put", "(put 10 20)")).getValue());
+		assertThrows(EvaluationException.class, () -> {
+			Scope local = new MapScope("local", scope);
+			assertEquals(20, ((FplInteger) evaluate(local, "put", "(put 10 20)")).getValue());
+		});
 	}
 
 	@Test
@@ -201,7 +206,7 @@ public class AssignmentTest extends AbstractFplTest {
 			assertEquals("value is nil", e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void assignmentToParameterFails() throws Exception {
 		evaluate("def-function", "(def-function f (a) (put a 2))");

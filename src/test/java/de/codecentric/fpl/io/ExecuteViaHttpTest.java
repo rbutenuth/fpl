@@ -1,7 +1,7 @@
 package de.codecentric.fpl.io;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,9 +19,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Base64;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ExecuteViaHttpTest {
 	private final static String user = "fred";
@@ -32,7 +32,7 @@ public class ExecuteViaHttpTest {
 	private String baseUrl;
 	private String password;
 
-	@Before
+	@BeforeEach
 	public void startServer() throws Exception {
 		port = nextPort++;
 		baseUrl = "http://localhost:" + port + "/fpl";
@@ -55,7 +55,7 @@ public class ExecuteViaHttpTest {
 		}
 	}
 
-	@After
+	@AfterEach
 	public void stopServer() throws Exception {
 		HttpServerMain.terminate(0);
 		HttpServerMain.waitForTermination();

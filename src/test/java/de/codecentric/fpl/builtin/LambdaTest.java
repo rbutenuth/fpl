@@ -1,15 +1,16 @@
 package de.codecentric.fpl.builtin;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
@@ -30,14 +31,14 @@ import de.codecentric.fpl.datatypes.list.FplList;
 public class LambdaTest extends AbstractFplTest {
 	private AbstractFunction lambda;
 
-	@Before
+	@BeforeEach
 	@Override
 	public void setUp() throws ScopeException, EvaluationException {
 		super.setUp();
 		lambda = (AbstractFunction) scope.get("lambda");
 	}
 
-	@After
+	@AfterEach
 	@Override
 	public void tearDown() {
 		lambda = null;
@@ -48,10 +49,12 @@ public class LambdaTest extends AbstractFplTest {
 	public void coverConstructor() {
 		new Lambda(); // just to cover default constructor
 	}
-	
-	@Test(expected = EvaluationException.class)
+
+	@Test
 	public void evaluateToList() throws Exception {
-		evaluate("cons", "(add-front 1 2)");
+		assertThrows(EvaluationException.class, () -> {
+			evaluate("cons", "(add-front 1 2)");
+		});
 	}
 
 	@Test
@@ -60,15 +63,19 @@ public class LambdaTest extends AbstractFplTest {
 		assertTrue(lambda.isVararg());
 	}
 
-	@Test(expected = EvaluationException.class)
+	@Test
 	public void duplicateParameterName() throws Exception {
-		evaluate("duplicate", "(def-function test (a a) a)");
+		assertThrows(EvaluationException.class, () -> {
+			evaluate("duplicate", "(def-function test (a a) a)");
+		});
 	}
 
-	@Test(expected = EvaluationException.class)
+	@Test
 	public void duplicateDefinition() throws Exception {
-		evaluate("duplicate", "(def-function test (a b) a)");
-		evaluate("duplicate", "(def-function test (a b) b)");
+		assertThrows(EvaluationException.class, () -> {
+			evaluate("duplicate", "(def-function test (a b) a)");
+			evaluate("duplicate", "(def-function test (a b) b)");
+		});
 	}
 
 	@Test
@@ -125,19 +132,25 @@ public class LambdaTest extends AbstractFplTest {
 		assertEquals("nonsense comment", test.getParameterComment("a"));
 	}
 
-	@Test(expected = EvaluationException.class)
+	@Test
 	public void lambdaStringInsteadArgumentList() throws Exception {
-		evaluate("no args", "(lambda \"foo\" 42)");
+		assertThrows(EvaluationException.class, () -> {
+			evaluate("no args", "(lambda \"foo\" 42)");
+		});
 	}
 
-	@Test(expected = EvaluationException.class)
+	@Test
 	public void defFunctionStringInsteadArgumentList() throws Exception {
-		evaluate("no args", "(def-function bad \"foo\" 42)");
+		assertThrows(EvaluationException.class, () -> {
+			evaluate("no args", "(def-function bad \"foo\" 42)");
+		});
 	}
 
-	@Test(expected = EvaluationException.class)
+	@Test
 	public void lambdaArgumentNotSymbol() throws Exception {
-		evaluate("no args", "(lambda (40) 42)");
+		assertThrows(EvaluationException.class, () -> {
+			evaluate("no args", "(lambda (40) 42)");
+		});
 	}
 
 	@Test
@@ -220,25 +233,25 @@ public class LambdaTest extends AbstractFplTest {
 		assertEquals(FplInteger.valueOf(6), list.get(0));
 		assertEquals(FplInteger.valueOf(7), list.get(1));
 	}
-	
+
 	@Test
 	public void lambdaDynamic() throws Exception {
 		evaluate("args", "(def args '(a b c))");
 		evaluate("code", "(def code '((+ a b c)))");
-		FplLambda f = (FplLambda)evaluate("lamda", "(lambda-dynamic args code)");
+		FplLambda f = (FplLambda) evaluate("lamda", "(lambda-dynamic args code)");
 		assertEquals(3, f.getMinimumNumberOfParameters());
 		assertEquals("(lambda (a b c) (+ a b c))", f.toString());
 	}
-	
+
 	@Test
 	public void functionDynamic() throws Exception {
 		evaluate("args", "(def args '(a \"b\" c))");
 		evaluate("code", "(def code '((+ a b c)))");
-		FplLambda f = (FplLambda)evaluate("def", "(def-function-dynamic \"test\" args code)");
+		FplLambda f = (FplLambda) evaluate("def", "(def-function-dynamic \"test\" args code)");
 		assertEquals(3, f.getMinimumNumberOfParameters());
 		assertEquals("(lambda (a b c) (+ a b c))", scope.get("test").toString());
 	}
-	
+
 	@Test
 	public void evaluateQuotedList() throws Exception {
 		assertEquals(7, ((FplInteger) evaluate("eval", "(eval '(+ 3 4))")).getValue());
@@ -287,12 +300,12 @@ public class LambdaTest extends AbstractFplTest {
 	public void lambdaInFunctionWalksUpScopeToAccessParameterWithShadowing() throws Exception {
 		lambdaInFunction("walk-up-scope-chain-with-shadowing.fpl");
 	}
-	
+
 	@Test
 	public void lambdaInFunctionWalksUpWithIntermediateScope() throws Exception {
 		lambdaInFunction("walk-up-with-intermediate-scope.fpl");
 	}
-	
+
 	private void lambdaInFunction(String resourceName) throws Exception {
 		ListResultCallback callback = evaluateResource(resourceName);
 		List<FplValue> values = callback.getResults();
@@ -301,7 +314,7 @@ public class LambdaTest extends AbstractFplTest {
 		FplString value = (FplString) values.get(2);
 		assertEquals("Normal (healthy weight)", value.getContent());
 	}
-	
+
 	@Test
 	public void scopeNestingWithFunctions() throws Exception {
 		ListResultCallback callback = evaluateResource("sope-nesting-with-functions.fpl");
@@ -309,12 +322,12 @@ public class LambdaTest extends AbstractFplTest {
 		assertEquals(3, values.size());
 		FplList result = (FplList) values.get(2);
 		assertEquals(4, result.size());
-		assertEquals("outer-param", ((FplString)result.get(0)).getContent());
+		assertEquals("outer-param", ((FplString) result.get(0)).getContent());
 		assertNull(result.get(1));
 		assertNull(result.get(2));
 		assertNull(result.get(3));
 	}
-	
+
 	@Test
 	public void scopeNestingWithNestedFunctions() throws Exception {
 		ListResultCallback callback = evaluateResource("sope-nesting-with-nested-functions.fpl");
@@ -323,9 +336,9 @@ public class LambdaTest extends AbstractFplTest {
 		FplList result = (FplList) values.get(1);
 		// expect: ("outer-param" "outer-param" "outer-variable" nil)
 		assertEquals(4, result.size());
-		assertEquals("outer-param", ((FplString)result.get(0)).getContent());
-		assertEquals("outer-param", ((FplString)result.get(1)).getContent());
-		assertEquals("outer-variable", ((FplString)result.get(2)).getContent());
+		assertEquals("outer-param", ((FplString) result.get(0)).getContent());
+		assertEquals("outer-param", ((FplString) result.get(1)).getContent());
+		assertEquals("outer-variable", ((FplString) result.get(2)).getContent());
 		assertNull(result.get(3));
 	}
 }

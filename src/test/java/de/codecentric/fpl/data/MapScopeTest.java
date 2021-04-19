@@ -1,13 +1,14 @@
 package de.codecentric.fpl.data;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
@@ -15,19 +16,19 @@ import de.codecentric.fpl.datatypes.FplValue;
 public class MapScopeTest {
 	private MapScope outer;
 	private MapScope inner;
-	
-	@Before
+
+	@BeforeEach
 	public void before() {
 		outer = new MapScope("outer");
 		inner = new MapScope("inner", outer);
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		outer = null;
 		inner = null;
 	}
-	
+
 	@Test
 	public void emptyScope() {
 		assertNull(inner.get("foo"));
@@ -42,7 +43,7 @@ public class MapScopeTest {
 		assertEquals(new FplString("bar"), inner.get("foo"));
 		assertEquals(new FplString("bar"), outer.get("foo"));
 	}
-	
+
 	@Test
 	public void nestingOtherDirection() throws ScopeException {
 		assertTrue(inner.getNext() == outer);
@@ -50,42 +51,50 @@ public class MapScopeTest {
 		assertEquals(new FplString("bar"), inner.get("foo"));
 		assertNull(outer.get("foo"));
 	}
-	
-	@Test(expected = ScopeException.class)
+
+	@Test
 	public void assertPutNullKeyFails() throws ScopeException {
-		outer.put(null, new FplString("foo"));
+		assertThrows(ScopeException.class, () -> {
+			outer.put(null, new FplString("foo"));
+		});
 	}
-	
-	@Test(expected = ScopeException.class)
+
+	@Test
 	public void assertPutEmptyKeyFails() throws ScopeException {
-		outer.put("", new FplString("foo"));
+		assertThrows(ScopeException.class, () -> {
+			outer.put("", new FplString("foo"));
+		});
 	}
-	
-	@Test(expected = ScopeException.class)
+
+	@Test
 	public void assertDefineNullValueFails() throws ScopeException {
-		outer.define("foo", null);
+		assertThrows(ScopeException.class, () -> {
+			outer.define("foo", null);
+		});
 	}
-	
-	@Test(expected = ScopeException.class)
+
+	@Test
 	public void assertDefineNullKeyFails() throws ScopeException {
-		outer.define("", new FplString("bar"));
+		assertThrows(ScopeException.class, () -> {
+			outer.define("", new FplString("bar"));
+		});
 	}
-	
+
 	@Test
 	public void changeNullKey() throws ScopeException {
 		changeWithException(null, new FplString("newValue"), "nil is not a valid name");
 	}
-	
+
 	@Test
 	public void changeEmptyKey() throws ScopeException {
 		changeWithException("", new FplString("newValue"), "\"\" is not a valid name");
 	}
-	
+
 	@Test
 	public void changeNullValue() throws ScopeException {
 		changeWithException("someKey", null, "value is nil");
 	}
-	
+
 	private void changeWithException(String key, FplValue value, String expected) {
 		try {
 			inner.replace(key, value);
@@ -94,7 +103,7 @@ public class MapScopeTest {
 			assertEquals(expected, e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void changeOuter() throws ScopeException {
 		outer.put("key", new FplString("oldValue"));
@@ -113,11 +122,13 @@ public class MapScopeTest {
 		assertNull(outer.get("key"));
 	}
 
-	@Test(expected = ScopeException.class)
+	@Test
 	public void changeNotExisting() throws ScopeException {
-		inner.replace("non-existing-key", new FplString("foo"));
+		assertThrows(ScopeException.class, () -> {
+			inner.replace("non-existing-key", new FplString("foo"));
+		});
 	}
-	
+
 	@Test
 	public void exception() {
 		ScopeException se = new ScopeException("huhu", new Error("bäm"));

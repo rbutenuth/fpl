@@ -1,7 +1,7 @@
 package de.codecentric.fpl;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,8 +11,8 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
@@ -38,13 +38,13 @@ public class AbstractFplTest {
 		this.clazz = clazz == null ? this.getClass() : clazz;
 	}
 
-    @Before
+    @BeforeEach
     public void setUp() throws EvaluationException, ScopeException {
     	engine = new FplEngine();
         scope = engine.getScope();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
     	engine = null;
         scope = null;

@@ -1,13 +1,13 @@
 package de.codecentric.fpl.builtin;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 
@@ -15,14 +15,14 @@ public class PrintTest extends AbstractFplTest {
 	private ByteArrayOutputStream stream;
 	private PrintStream printStream;
 	
-	@Before
+	@BeforeEach
 	public void before() throws Exception {
 		stream = new ByteArrayOutputStream();
 		printStream = new PrintStream(stream, true, "UTF-8");
 		engine.setSystemOut(printStream);
 	}
 	
-	@After
+	@AfterEach
 	public void after() throws Exception {
 		engine.setSystemOut(System.out);
 	}

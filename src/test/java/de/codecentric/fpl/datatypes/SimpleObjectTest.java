@@ -1,12 +1,13 @@
 package de.codecentric.fpl.datatypes;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.MapScope;
@@ -19,13 +20,13 @@ public class SimpleObjectTest {
 	Scope outer;
 	FplObject object;
 
-	@Before
+	@BeforeEach
 	public void before() throws EvaluationException {
 		outer = new MapScope("outer");
 		object = new FplObject("obj", new Position("object-test", 2, 3));
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		outer = null;
 		object = null;
@@ -59,34 +60,46 @@ public class SimpleObjectTest {
 		assertTrue(object == object.evaluate(outer));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void nullName() {
-		new FplObject(null);
+		assertThrows(IllegalArgumentException.class, () -> {
+			new FplObject(null);
+		});
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void emptyName() {
-		new FplObject("");
+		assertThrows(IllegalArgumentException.class, () -> {
+			new FplObject("");
+		});
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void withPositionNull() {
-		new FplObject("name", null);
+		assertThrows(IllegalArgumentException.class, () -> {
+			new FplObject("name", null);
+		});
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void nullPositionTwo() {
-		new FplObject("scope-name", null, new MapScope("test"));
+		assertThrows(IllegalArgumentException.class, () -> {
+			new FplObject("scope-name", null, new MapScope("test"));
+		});
 	}
 
-	@Test(expected = ScopeException.class)
+	@Test
 	public void nullKey() throws ScopeException {
-		object.put(null, FplInteger.valueOf(0));
+		assertThrows(ScopeException.class, () -> {
+			object.put(null, FplInteger.valueOf(0));
+		});
 	}
 
-	@Test(expected = ScopeException.class)
+	@Test
 	public void emptyKey() throws ScopeException {
-		object.put("", FplInteger.valueOf(0));
+		assertThrows(ScopeException.class, () -> {
+			object.put("", FplInteger.valueOf(0));
+		});
 	}
 
 	@Test

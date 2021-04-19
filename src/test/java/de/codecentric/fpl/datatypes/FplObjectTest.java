@@ -1,13 +1,14 @@
 package de.codecentric.fpl.datatypes;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
@@ -22,31 +23,31 @@ public class FplObjectTest extends AbstractFplTest {
 	public FplObjectTest() {
 		super(FplObjectTest.class);
 	}
-	
+
 	@Test
 	public void positionEmptyList() throws Exception {
 		Position p = FplValue.position(evaluate("empty-list", "'()"));
 		assertEquals(Position.UNKNOWN, p);
 	}
-	
+
 	@Test
 	public void positionEmptyDictionary() throws Exception {
 		Position p = FplValue.position(evaluate("empty-dict", "(dict)"));
 		assertEquals(Position.UNKNOWN, p);
 	}
-	
+
 	@Test
 	public void positionListWithSymbol() throws Exception {
 		Position p = FplValue.position(evaluate("list", "'( foo )"));
 		assertEquals(new Position("list", 1, 4), p);
 	}
-	
+
 	@Test
 	public void positionListWithEmptyList() throws Exception {
 		Position p = FplValue.position(evaluate("list", "'( () )"));
 		assertEquals(Position.UNKNOWN, p);
 	}
-	
+
 	@Test
 	public void instanciateClassAndObject() {
 		new ClassAndObject(); // cover constuctor
@@ -254,8 +255,10 @@ public class FplObjectTest extends AbstractFplTest {
 		}
 	}
 
-	@Test(expected = EvaluationException.class)
+	@Test
 	public void nullMethodThrowsException() throws Exception {
-		assertNull(evaluate("not-a-function", "((instance method 1) foo)"));
+		assertThrows(EvaluationException.class, () -> {
+			assertNull(evaluate("not-a-function", "((instance method 1) foo)"));
+		});
 	}
 }

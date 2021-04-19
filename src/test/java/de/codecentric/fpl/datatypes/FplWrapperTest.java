@@ -1,15 +1,16 @@
 package de.codecentric.fpl.datatypes;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
@@ -57,7 +58,7 @@ public class FplWrapperTest extends AbstractFplTest {
 		public Boolean returnTrue() {
 			return Boolean.TRUE;
 		}
-		
+
 		public Float returnFloat() {
 			return 3.14f;
 		}
@@ -71,7 +72,7 @@ public class FplWrapperTest extends AbstractFplTest {
 			map.put("foo", "bar");
 			return map;
 		}
-		
+
 		public void methodWithException() {
 			throw new NullPointerException("nil");
 		}
@@ -82,32 +83,34 @@ public class FplWrapperTest extends AbstractFplTest {
 			// nothing to do
 		}
 	}
-	
+
 	public static class PrivateConstructor {
 		private PrivateConstructor() {
 			// nothing to do
 		}
 	}
-	
+
 	public static abstract class AbstractClass {
 		// nothing needed
 	}
-	
+
 	public static class ConstructorException {
 		public ConstructorException() {
 			throw new IllegalArgumentException("bumm");
 		}
 	}
-	
+
 	public FplWrapperTest() {
 		super(FplWrapperTest.class);
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test
 	public void nullValue() throws EvaluationException {
-		new FplWrapper((Object)null);
+		assertThrows(NullPointerException.class, () -> {
+			new FplWrapper((Object) null);
+		});
 	}
-	
+
 	@Test
 	public void noArgArrayListWrapper() throws Exception {
 		ListResultCallback callback = evaluateResource("java-list-wrapper.fpl");
@@ -128,26 +131,26 @@ public class FplWrapperTest extends AbstractFplTest {
 		ArrayList<?> list = (ArrayList<?>) wrapper.getInstance();
 		assertEquals(0, list.size());
 	}
-	
+
 	@Test
 	public void wrapValues() throws Exception {
 		ListResultCallback callback = evaluateResource("java-wrap-values.fpl");
 		List<FplValue> values = callback.getResults();
 		assertEquals(14, values.size());
 		assertNull(values.get(1));
-		assertEquals(3, ((FplInteger)values.get(2)).getValue());
-		assertEquals(255, ((FplInteger)values.get(3)).getValue());
-		assertEquals(1024, ((FplInteger)values.get(4)).getValue());
-		assertEquals(4_000_000_000L, ((FplInteger)values.get(5)).getValue());
-		assertEquals(42, ((FplInteger)values.get(6)).getValue());
-		assertEquals("Hello world!", ((FplString)values.get(7)).getContent());
-		assertEquals("a", ((FplString)values.get(8)).getContent());
+		assertEquals(3, ((FplInteger) values.get(2)).getValue());
+		assertEquals(255, ((FplInteger) values.get(3)).getValue());
+		assertEquals(1024, ((FplInteger) values.get(4)).getValue());
+		assertEquals(4_000_000_000L, ((FplInteger) values.get(5)).getValue());
+		assertEquals(42, ((FplInteger) values.get(6)).getValue());
+		assertEquals("Hello world!", ((FplString) values.get(7)).getContent());
+		assertEquals("a", ((FplString) values.get(8)).getContent());
 		assertNull(values.get(9));
-		assertEquals(1, ((FplInteger)values.get(10)).getValue());
-		assertEquals(3.14, ((FplDouble)values.get(11)).getValue(), 0.00001);
-		assertEquals(2.78, ((FplDouble)values.get(12)).getValue(), 0.00001);
+		assertEquals(1, ((FplInteger) values.get(10)).getValue());
+		assertEquals(3.14, ((FplDouble) values.get(11)).getValue(), 0.00001);
+		assertEquals(2.78, ((FplDouble) values.get(12)).getValue(), 0.00001);
 		FplObject w = (FplObject) values.get(13);
-		assertEquals("bar", ((FplString)w.get("foo")).getContent());
+		assertEquals("bar", ((FplString) w.get("foo")).getContent());
 	}
 
 	@Test
@@ -163,10 +166,13 @@ public class FplWrapperTest extends AbstractFplTest {
 	@Test
 	public void missingNoArgConstructor() throws Exception {
 		try {
-			evaluate("wrong-cons", "(java-instance\"de.codecentric.fpl.datatypes.FplWrapperTest$MissingNoArgConstructor\")");
+			evaluate("wrong-cons",
+					"(java-instance\"de.codecentric.fpl.datatypes.FplWrapperTest$MissingNoArgConstructor\")");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("No matching method with name de.codecentric.fpl.datatypes.FplWrapperTest$MissingNoArgConstructor found", e.getMessage());
+			assertEquals(
+					"No matching method with name de.codecentric.fpl.datatypes.FplWrapperTest$MissingNoArgConstructor found",
+					e.getMessage());
 		}
 	}
 
@@ -176,7 +182,9 @@ public class FplWrapperTest extends AbstractFplTest {
 			evaluate("wrong-cons", "(java-instance\"de.codecentric.fpl.datatypes.FplWrapperTest$PrivateConstructor\")");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("No matching method with name de.codecentric.fpl.datatypes.FplWrapperTest$PrivateConstructor found", e.getMessage());
+			assertEquals(
+					"No matching method with name de.codecentric.fpl.datatypes.FplWrapperTest$PrivateConstructor found",
+					e.getMessage());
 		}
 	}
 
@@ -193,7 +201,8 @@ public class FplWrapperTest extends AbstractFplTest {
 	@Test
 	public void constructorWithException() throws Exception {
 		try {
-			evaluate("cons-exception", "(java-instance\"de.codecentric.fpl.datatypes.FplWrapperTest$ConstructorException\")");
+			evaluate("cons-exception",
+					"(java-instance\"de.codecentric.fpl.datatypes.FplWrapperTest$ConstructorException\")");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("bumm", e.getMessage());
@@ -203,35 +212,37 @@ public class FplWrapperTest extends AbstractFplTest {
 	@Test
 	public void badMethod() throws Exception {
 		try {
-			evaluate("bad-method", "((java-instance \"de.codecentric.fpl.datatypes.FplWrapperTest$Inner\") iDontKnowThisMethod)");
+			evaluate("bad-method",
+					"((java-instance \"de.codecentric.fpl.datatypes.FplWrapperTest$Inner\") iDontKnowThisMethod)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("No matching method with name iDontKnowThisMethod found", e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void methodWithException() throws Exception {
 		try {
-			evaluate("method-with-exception", "((java-instance \"de.codecentric.fpl.datatypes.FplWrapperTest$Inner\") methodWithException)");
+			evaluate("method-with-exception",
+					"((java-instance \"de.codecentric.fpl.datatypes.FplWrapperTest$Inner\") methodWithException)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("nil", e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void staticCallString() throws Exception {
 		FplInteger i = (FplInteger) evaluate("static", "((java-class \"java.lang.Integer\") valueOf 10)");
 		assertEquals(FplInteger.valueOf(10), i);
 	}
-	
+
 	@Test
 	public void staticCallSymbol() throws Exception {
 		FplInteger i = (FplInteger) evaluate("static", "((java-class \"java.lang.Integer\") valueOf 10)");
 		assertEquals(FplInteger.valueOf(10), i);
 	}
-	
+
 	@Test
 	public void staticClassNotFound() throws Exception {
 		try {
@@ -241,7 +252,7 @@ public class FplWrapperTest extends AbstractFplTest {
 			assertEquals("unknown class: foo.bar.UknownClass", e.getMessage());
 		}
 	}
-	
+
 	@Test
 	public void wrapperToString() throws Exception {
 		FplValue value = evaluate("wrapper-to-string", "(java-instance \"java.util.ArrayList\")");
