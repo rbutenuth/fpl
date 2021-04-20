@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.EvaluationException;
 
-public class Append extends AbstractListTest {
+public class AppendTest extends AbstractListTest {
 	
 	@Test
 	public void firstEmpty() throws EvaluationException {

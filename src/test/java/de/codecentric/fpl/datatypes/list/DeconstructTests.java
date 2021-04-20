@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplValue;
 
-public class Deconstruct extends AbstractListTest {
+public class DeconstructTests extends AbstractListTest {
 	@Test
 	public void removeFirstSizeOne() throws EvaluationException {
 		FplList list = FplList.fromValues(new FplValue[1]);

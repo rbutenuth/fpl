@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.EvaluationException;
 
-public class SubList extends AbstractListTest {
+public class SubListTests extends AbstractListTest {
 	@Test
 	public void subListBadRange() {
 		assertThrows(EvaluationException.class, () -> {

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplValue;
 
-public class AccessMethods extends AbstractListTest {
+public class AccessMethodTest extends AbstractListTest {
 
 	@Test
 	public void createAndCheck() throws EvaluationException {

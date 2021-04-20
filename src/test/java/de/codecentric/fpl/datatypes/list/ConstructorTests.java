@@ -15,7 +15,7 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplValue;
 
-public class Constructors extends AbstractListTest {
+public class ConstructorTests extends AbstractListTest {
 	@Test
 	public void empty() throws EvaluationException {
 		FplList list = FplList.fromValues(new FplValue[0]);
