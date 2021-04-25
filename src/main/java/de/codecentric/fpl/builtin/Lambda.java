@@ -37,7 +37,7 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("lambda-dynamic", "Create an anonymous function.", true, //
+		scope.define(new AbstractFunction("lambda-dynamic", "Create an anonymous function.", false, //
 				"parameter-list", "code-list") {
 
 			@Override
@@ -62,7 +62,7 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("def-function-dynamic", "Define a function.", true, //
+		scope.define(new AbstractFunction("def-function-dynamic", "Define a function.", false, //
 				"name", "parameter-list", "code-list") {
 
 			@Override

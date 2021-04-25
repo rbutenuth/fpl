@@ -30,7 +30,7 @@ public class Parallel implements ScopePopulator {
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
 		scope.define(new AbstractFunction("thread-pool-size", "Create a new thread-pool with the given size.",
-				true, "size") {
+				false, "size") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				int size = (int) evaluateToLong(scope, parameters[0]);

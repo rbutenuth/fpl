@@ -69,7 +69,7 @@ public class ControlStructures implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("sequential", "Evaluate the parameters, return value of last parameter.",
-				true, "element") {
+				true, "element...") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplValue value = null;
@@ -81,7 +81,7 @@ public class ControlStructures implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("scope", "Evaluate the parameters within a new scope, return value of last parameter.",
-				true, "element") {
+				true, "element...") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Scope localScope = scope.createNested("scope");
@@ -94,7 +94,7 @@ public class ControlStructures implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("synchronized", "Evaluate the parameters, return value of last parameter.",
-				true, "monitor", "element") {
+				true, "monitor", "element...") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplValue monitor = evaluateToAny(scope, parameters[0]);

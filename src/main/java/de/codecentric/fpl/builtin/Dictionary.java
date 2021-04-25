@@ -22,7 +22,7 @@ public class Dictionary implements ScopePopulator {
 
 		scope.define(new AbstractFunction(
 				"dict", "Create a new dictionary from string value pairs.",
-				true, "pairs") {
+				true, "pairs...") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				if (parameters.length % 2 != 0) {

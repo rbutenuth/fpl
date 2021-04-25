@@ -100,7 +100,7 @@ public class Logic implements ScopePopulator {
 		 * @param op Operator: "and", "or", etc.
 		 */
 		private LogicFunction(String op, String comment) throws EvaluationException {
-			super(op, comment, !op.equals("not"), "expression");
+			super(op, comment, !op.equals("not"), "expression...");
 		}
 
 		/**
