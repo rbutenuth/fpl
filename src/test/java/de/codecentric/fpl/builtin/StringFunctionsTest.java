@@ -37,7 +37,21 @@ public class StringFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void describe() throws Exception {
+	public void describeBuiltinPlus() throws Exception {
+		FplString fplMarkdown = (FplString) evaluate("describe", "(describe +)");
+		String markdown = fplMarkdown.getContent();
+		String[] split = markdown.split(nl);
+		String[] expected = new String[] { //
+				"Function +", //
+				"Add values.", "* op1", "* op2", "* ops..." };
+		assertEquals(expected.length, split.length);
+		for (int i = 0; i < expected.length; i++) {
+			assertEquals(expected[i], split[i]);
+		}
+	}
+
+	@Test
+	public void describeFPLFunction() throws Exception {
 		evaluate("function", "" + //
 				"; Multiply three parameters." + nl + //
 				"; A second line without sense." + nl + //

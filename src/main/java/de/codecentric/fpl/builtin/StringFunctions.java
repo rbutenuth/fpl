@@ -47,7 +47,7 @@ public class StringFunctions implements ScopePopulator {
 					for (String param : f.getParameterNameToIndex().keySet()) {
 						sb.append("* ").append(param);
 						String c = f.getParameterComment(param);
-						if (c.trim().length() > 0) {
+						if (c != null && c.trim().length() > 0) {
 							sb.append(" ").append(c);
 						}
 						sb.append(nl);

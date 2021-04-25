@@ -128,7 +128,7 @@ public class Logic implements ScopePopulator {
 						return L_TRUE;
 					}
 					break;
-				case "xor":
+				default: // "xor":
 					current ^= next;
 					break;
 				}
