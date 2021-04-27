@@ -364,10 +364,8 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 		FplValue value = expression.evaluate(scope);
 		if (value == null) {
 			return FplInteger.valueOf(0);
-		} else if (value instanceof FplInteger) {
-			return (FplInteger) value;
-		} else if (value instanceof FplDouble) {
-			return (FplDouble) value;
+		} else if (value instanceof FplNumber) {
+			return (FplNumber) value;
 		} else {
 			throw new EvaluationException("Does not evaluate to number: " + expression);
 		}
