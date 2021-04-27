@@ -477,7 +477,7 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	/**
 	 * @return Parameter names, last one does not end with "...", even when this is
 	 *         a variable argument function. For performance reasons, the Map is not
-	 *         cloned. Don't change the content!
+	 *         cloned. Don't try to change, it's unmodifiable.
 	 */
 	public Map<String, Integer> getParameterNameToIndex() {
 		return parameterNameToIndex;
