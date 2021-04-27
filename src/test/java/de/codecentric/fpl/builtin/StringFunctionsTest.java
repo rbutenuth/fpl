@@ -255,7 +255,7 @@ public class StringFunctionsTest extends AbstractFplTest {
 		assertEquals("(quote (expression) <code>)", scope.get("quote").toString());
 		assertEquals("(list (element...) <code>)", scope.get("list").toString());
 		//String name, String comment, boolean varArg, String... parameterNames
-		assertEquals("(test-function () <code>)", new AbstractFunction("test-function", "", false) {
+		assertEquals("(test-function () <code>)", new AbstractFunction("test-function", "") {
 			
 			@Override
 			public FplValue evaluate(Scope scope) throws EvaluationException {

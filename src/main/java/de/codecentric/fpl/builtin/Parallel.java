@@ -30,7 +30,7 @@ public class Parallel implements ScopePopulator {
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
 		scope.define(new AbstractFunction("thread-pool-size", "Create a new thread-pool with the given size.",
-				false, "size") {
+				"size") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				int size = (int) evaluateToLong(scope, parameters[0]);
@@ -43,8 +43,7 @@ public class Parallel implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("parallel",
-				"Evaluate the code in parallel and return a list with the evaluation results.", true,
-				"code...") {
+				"Evaluate the code in parallel and return a list with the evaluation results.", "code...") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 
@@ -85,8 +84,8 @@ public class Parallel implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("parallel-map",
-				"Apply a function parallel to all list elements and return list with applied elements", false,
-				"function", "list") {
+				"Apply a function parallel to all list elements and return list with applied elements", "function",
+				"list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
@@ -122,8 +121,7 @@ public class Parallel implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("parallel-for-each",
-				"Apply a function parallel to all list elements, return last result", false, "function",
-				"list") {
+				"Apply a function parallel to all list elements, return last result", "function", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
@@ -159,7 +157,7 @@ public class Parallel implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("create-future", "Create a furture. Returns a function which waits for the result.", false, "code") {
+		scope.define(new AbstractFunction("create-future", "Create a furture. Returns a function which waits for the result.", "code") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				ForkJoinTask<FplValue> task = engine.getPool().submit(new RecursiveTask<FplValue>() {
@@ -174,7 +172,7 @@ public class Parallel implements ScopePopulator {
 						}
 					}
 				});
-				return new AbstractFunction("future", "future", false) {
+				return new AbstractFunction("future", "future") {
 
 					@Override
 					protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {

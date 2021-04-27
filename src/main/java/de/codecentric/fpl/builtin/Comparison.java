@@ -167,7 +167,7 @@ public class Comparison implements ScopePopulator {
 		private CompareOperator operator;
 
 		private ComparisonFunction(CompareOperator operator, String comment) throws EvaluationException {
-			super(operator.symbol(), comment, false, "left", "right");
+			super(operator.symbol(), comment, "left", "right");
 			this.operator = operator;
 		}
 

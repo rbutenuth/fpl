@@ -36,7 +36,7 @@ public class CurryingTest extends AbstractFplTest {
         assertTrue(pnIter.hasNext());
         assertEquals("op2", pnIter.next());
         assertTrue(pnIter.hasNext());
-        assertEquals("ops...", pnIter.next());
+        assertEquals("ops", pnIter.next());
         assertFalse(pnIter.hasNext());
         FplInteger i = (FplInteger)evaluate("plus3", "(plus3 4)");
         assertEquals(7, i.getValue());

@@ -38,7 +38,7 @@ public class HttpServerMain {
 
 		engine = new FplEngine();
 		Scope scope = engine.getScope();
-		scope.define(new AbstractFunction("stop-server", "Stop HTTP server.", false) {
+		scope.define(new AbstractFunction("stop-server", "Stop HTTP server.") {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {

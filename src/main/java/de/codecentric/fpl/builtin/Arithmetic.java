@@ -27,7 +27,7 @@ public class Arithmetic implements ScopePopulator {
 		scope.define(new ArithmeticFunction(ArithmeticOperator.EXP));
 
 		scope.define(new AbstractFunction("round", //
-				"Round a double to a integer. `nil` is converted to 0.", false, "number") {
+				"Round a double to a integer. `nil` is converted to 0.", "number") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplNumber number = evaluateToNumber(scope, parameters[0]);
@@ -40,7 +40,7 @@ public class Arithmetic implements ScopePopulator {
 		});
 		
 		scope.define(new AbstractFunction("to-integer", //
-				"Cast (truncate) a double to a integer. `nil` is converted to 0.", false, "number") {
+				"Cast (truncate) a double to a integer. `nil` is converted to 0.", "number") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplNumber number = evaluateToNumber(scope, parameters[0]);
@@ -146,8 +146,7 @@ public class Arithmetic implements ScopePopulator {
 		 * @param op Operator: +, -, *, /, %, **
 		 */
 		ArithmeticFunction(ArithmeticOperator op) throws EvaluationException {
-			super(op.name, op.comment, true,
-					op == ArithmeticOperator.MINUS ? new String[] { "op" } : new String[] { "op1", "op2", "ops..." });
+			super(op.name, op.comment, op == ArithmeticOperator.MINUS ? new String[] { "op..." } : new String[] { "op1", "op2", "ops..." });
 			this.op = op;
 		}
 

@@ -23,28 +23,10 @@ public class FplLambda extends AbstractFunction {
 	 */
 	public FplLambda(Position position, String name, String comment, String[] paramNames, FplValue[] code, Scope scope)
 			throws EvaluationException {
-		super(position, name, comment, varArgs(paramNames), convertedParamNames(paramNames));
+		super(position, name, comment, paramNames);
 		Map<String, Integer> parameterMap = getParameterNameToIndex();
 		this.code = compile(code, parameterMap);
 		definitionScope = scope;
-	}
-
-	private static boolean varArgs(String[] paramNames) {
-		return paramNames.length > 0 && paramNames[paramNames.length - 1].endsWith("...");
-	}
-
-	private static String[] convertedParamNames(String[] paramNames) throws EvaluationException {
-		String[] result;
-		if (varArgs(paramNames)) {
-			String[] converted = new String[paramNames.length];
-			int last = paramNames.length - 1;
-			System.arraycopy(paramNames, 0, converted, 0, last);
-			converted[last] = paramNames[last].substring(0, paramNames[last].length() - 3);
-			result = converted;
-		} else {
-			result = paramNames;
-		}
-		return result;
 	}
 
 	/**

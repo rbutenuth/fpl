@@ -51,7 +51,7 @@ public class InputOutput implements ScopePopulator {
 		scope.define(new AbstractFunction("parse-resource", //
 				"Read or evaluate all expressions within the resource given by the URI. Return a list which contains the results. "
 						+ "The resource must be UTF-8 encoded.",
-				false, "uri", "evaluate") {
+				"uri", "evaluate") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String uriAsString = evaluateToString(scope, parameters[0]);
@@ -85,7 +85,7 @@ public class InputOutput implements ScopePopulator {
 
 		scope.define(new AbstractFunction("parse-string", //
 				"Parse or evaluate all expressions within the string. Return a list which contains the results.",
-				false, "string", "evaluate") {
+				"string", "evaluate") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String str = evaluateToString(scope, parameters[0]);
@@ -112,7 +112,7 @@ public class InputOutput implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("to-string", //
-				"Write the content of a string to a file. Use UTF-8 as encoding.", false, "expression") {
+				"Write the content of a string to a file. Use UTF-8 as encoding.", "expression") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				if (parameters[0] == null) {
@@ -125,8 +125,7 @@ public class InputOutput implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("write-string-to-file", //
-				"Write the content of a string to a file. Use UTF-8 as encoding.", false, "filename",
-				"content") {
+				"Write the content of a string to a file. Use UTF-8 as encoding.", "filename", "content") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String filename = evaluateToString(scope, parameters[0]);
@@ -142,8 +141,7 @@ public class InputOutput implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("http-request", //
-				"Execute an HTTP-request.", false, "url", "method", "headers", "query-params", "body", "user",
-				"password") {
+				"Execute an HTTP-request.", "url", "method", "headers", "query-params", "body", "user", "password") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -189,7 +187,7 @@ public class InputOutput implements ScopePopulator {
 
 		scope.define(new AbstractFunction("http-server", //
 				"Start an HTTP server. Returns a function to terminate the server, parameter is the delay in seconds.",
-				true, "port", "authenticator", "handlers...") {
+				"port", "authenticator", "handlers...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -205,7 +203,7 @@ public class InputOutput implements ScopePopulator {
 					throw new EvaluationException(e.getMessage(), e);
 				}
 
-				return new AbstractFunction("terminate-server", "Terminate the HTTP server", false, "delay") {
+				return new AbstractFunction("terminate-server", "Terminate the HTTP server", "delay") {
 
 					@Override
 					protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {

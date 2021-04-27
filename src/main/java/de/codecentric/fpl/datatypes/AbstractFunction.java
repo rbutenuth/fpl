@@ -48,25 +48,31 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	 *                       function is variable argument function.
 	 * @throws IllegalArgumentException When a name is empty/null or in case of duplicate parameter names.
 	 */
-	protected AbstractFunction(Position position, String name, String comment, boolean varArg,
-			String... parameterNames) throws EvaluationException {
+	protected AbstractFunction(Position position, String name, String comment, String... parameterNames) throws EvaluationException {
 		if (name == null || name.length() == 0) {
 			throw new IllegalArgumentException("empty or null name");
+		}
+		if (parameterNames.length == 0) {
+			varArg = false;
+		} else {
+			varArg = parameterNames[parameterNames.length - 1].endsWith("...");
 		}
 		setPosition(position);
 		this.comment = comment;
 		this.name = name;
 		Map<String, Integer> map = new LinkedHashMap<>();
-		int i = 0;
-		for (String param: parameterNames) {
+		for (int i = 0; i < parameterNames.length; i++) {
+			String param = parameterNames[i];
+			if (i == parameterNames.length - 1 && param.endsWith("...")) {
+				param = param.substring(0, param.length() - 3);
+			}
 			if (map.containsKey(param)) {
 				throw new EvaluationException("Duplicate parameter name: " + param);
 			}
-			map.put(param, i++);
+			map.put(param, i);
 		}
 		parameterNameToIndex = Collections.unmodifiableMap(map);
 		parameterComments = new HashMap<>();
-		this.varArg = varArg;
 		minimumNumberOfParameters = varArg ? parameterNames.length - 1 : parameterNames.length;
 	}
 
@@ -75,12 +81,11 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	 * 
 	 * @param name           Not null, not empty.
 	 * @param comment        Comment in markdown syntax
-	 * @param varArg         Is this a function with variable argument list?
 	 * @param parameterNames Names of the parameters. If last ends with "...",
 	 *                       function is variable argument function.
 	 */
-	protected AbstractFunction(String name, String comment, boolean varArg, String... parameterNames) throws EvaluationException {
-		this(Position.INTERNAL, name, comment, varArg, parameterNames);
+	protected AbstractFunction(String name, String comment, String... parameterNames) throws EvaluationException {
+		this(Position.INTERNAL, name, comment, parameterNames);
 	}
 
 	/**
@@ -471,8 +476,8 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 
 	/**
 	 * @return Parameter names, last one does not end with "...", even when this is
-	 *         a variable argument function. For performance reasons, the array is not
-	 *         clones. Don't change the content!
+	 *         a variable argument function. For performance reasons, the Map is not
+	 *         cloned. Don't change the content!
 	 */
 	public Map<String, Integer> getParameterNameToIndex() {
 		return parameterNameToIndex;
@@ -510,20 +515,24 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 		// Copy the names of parameters where we don't have values
 		int j = 0;
 		while (iter.hasNext()) {
-			curryParameterNames[j++] = iter.next();
+			String name = iter.next();
+			if (!iter.hasNext() && varArg) {
+				name = name + "...";
+			}
+			curryParameterNames[j++] = name;
 		}
 		FplValue[] givenParameters = new FplValue[parameters.length];
 		for (int k = 0; k < givenParameters.length; k++) {
 			givenParameters[k] = makeLazy(scope, parameters[k]);
 		}
-		return new CurryFunction(curryName, givenParameters, curryParameterNames, varArg);
+		return new CurryFunction(curryName, givenParameters, curryParameterNames);
 	}
 
 	private class CurryFunction extends AbstractFunction {
 		private FplValue[] givenParameters;
 
-		private CurryFunction(String name, FplValue[] lazies, String[] parameterNames, boolean varArg) throws EvaluationException {
-			super(name, AbstractFunction.this.getComment(), AbstractFunction.this.varArg, parameterNames);
+		private CurryFunction(String name, FplValue[] lazies, String[] parameterNames) throws EvaluationException {
+			super(name, AbstractFunction.this.getComment(), parameterNames);
 			this.givenParameters = lazies;
 		}
 

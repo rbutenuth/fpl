@@ -18,7 +18,7 @@ public class ClassAndObject implements ScopePopulator {
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
 		scope.define(new AbstractFunction("class", "Create a new scope and execute the given code within it.",
-				true, "code...") {
+				"code...") {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -30,7 +30,7 @@ public class ClassAndObject implements ScopePopulator {
 
 		scope.define(new AbstractFunction("def-class", 
 				"Create a new scope and execute the given code within it. Assign the resulting class to \"name\"",
-				true, "name", "code...") {
+				"name", "code...") {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -47,8 +47,8 @@ public class ClassAndObject implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("sub-class",
-				"Create a new scope and execute the given code within it, set parent to parameter.", true,
-				"parent", "code...") {
+				"Create a new scope and execute the given code within it, set parent to parameter.", "parent",
+				"code...") {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -60,7 +60,7 @@ public class ClassAndObject implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("def-sub-class", "Define a class and set the parent of the class.",
-				true, "name", "parent", "code...") {
+				"name", "parent", "code...") {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -77,8 +77,7 @@ public class ClassAndObject implements ScopePopulator {
 
 		});
 
-		scope.define(new AbstractFunction("new-instance", "Create an instance of an object.", true,
-				"key-value-pair...") {
+		scope.define(new AbstractFunction("new-instance", "Create an instance of an object.", "key-value-pair...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -98,7 +97,7 @@ public class ClassAndObject implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("this",
-				"The next object in the scope chain, can be nil when not within an object context.", false) {
+				"The next object in the scope chain, can be nil when not within an object context.") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {

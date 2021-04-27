@@ -24,8 +24,8 @@ public class ControlStructures implements ScopePopulator {
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
 		scope.define(new AbstractFunction("if-else", //
-				"Evaluate condition, if true, return evaluated if-part, otherwise evaluated else-part.", false,
-				"condition", "if-part", "else-part") {
+				"Evaluate condition, if true, return evaluated if-part, otherwise evaluated else-part.", "condition",
+				"if-part", "else-part") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				if (evaluateToBoolean(scope, parameters[0])) {
@@ -38,8 +38,7 @@ public class ControlStructures implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("if", //
-				"Evaluate condition, if true, return evaluated if-part, otherwise nil.", false, "condition",
-				"if-part") {
+				"Evaluate condition, if true, return evaluated if-part, otherwise nil.", "condition", "if-part") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				if (evaluateToBoolean(scope, parameters[0])) {
@@ -53,8 +52,8 @@ public class ControlStructures implements ScopePopulator {
 
 		scope.define(new AbstractFunction("cond", //
 				"Handle condition expression pairs. When condition is true, expression is executed and result returned. "
-				+ "When number of parameters is not even, last one is an expression which is evaluated if all conditions are false.", true,
-				"condition", "expression...") {
+				+ "When number of parameters is not even, last one is an expression which is evaluated if all conditions are false.", "condition",
+				"expression...") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				int i = 0;
@@ -69,7 +68,7 @@ public class ControlStructures implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("sequential", "Evaluate the parameters, return value of last parameter.",
-				true, "element...") {
+				"element...") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplValue value = null;
@@ -81,7 +80,7 @@ public class ControlStructures implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("scope", "Evaluate the parameters within a new scope, return value of last parameter.",
-				true, "element...") {
+				"element...") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Scope localScope = scope.createNested("scope");
@@ -94,7 +93,7 @@ public class ControlStructures implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("synchronized", "Evaluate the parameters, return value of last parameter.",
-				true, "monitor", "element...") {
+				"monitor", "element...") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplValue monitor = evaluateToAny(scope, parameters[0]);
@@ -109,7 +108,7 @@ public class ControlStructures implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("throw", //
-				"Throw an exception.", false, "message") {
+				"Throw an exception.", "message") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String message = evaluateToString(scope, parameters[0]);
@@ -118,7 +117,7 @@ public class ControlStructures implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("throw-with-id", //
-				"Throw an exception.", false, "message", "id") {
+				"Throw an exception.", "message", "id") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String message = evaluateToString(scope, parameters[0]);
@@ -130,7 +129,7 @@ public class ControlStructures implements ScopePopulator {
 		scope.define(new AbstractFunction("try-catch", //
 				"Evaluate the given `expression` and return the result. "
 						+ "In case of an exception, call `catch-function` and return its result.",
-				false, "expression", "catch-function") {
+				"expression", "catch-function") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function catchFunction = evaluateToFunctionOrNull(scope, parameters[1]);
@@ -143,8 +142,8 @@ public class ControlStructures implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("try-with", //
-				"Open `resources`, evaluate (and return the value of) an `expression`, catch exceptions.", false,
-				"resources", "expression", "catch-function") {
+				"Open `resources`, evaluate (and return the value of) an `expression`, catch exceptions.", "resources",
+				"expression", "catch-function") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Scope localScope = scope.createNested("try-with");

@@ -19,8 +19,7 @@ public class Assignment implements ScopePopulator {
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
 		scope.define(new AbstractFunction("put", 
-				"Assign symbol to evluated value in current scope, deletes if value is null", false, "symbol",
-				"value") {
+				"Assign symbol to evluated value in current scope, deletes if value is null", "symbol", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				return put(scope,targetName(scope, parameters[0]), value(scope, parameters[1]));
@@ -28,8 +27,7 @@ public class Assignment implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("put-global", 
-				"Assign symbol to evluated value in global scope, deletes if value is null", false, "symbol",
-				"value") {
+				"Assign symbol to evluated value in global scope, deletes if value is null", "symbol", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Scope global = scope;
@@ -41,7 +39,7 @@ public class Assignment implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("set", "Reassign value in scope chain. nil as value not allowed",
-				false, "symbol", "value") {
+				"symbol", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
@@ -53,8 +51,8 @@ public class Assignment implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("def", 
-				"Assign value in current scope, it must be unassigned before. nil as value not allowed", false,
-				"symbol", "value") {
+				"Assign value in current scope, it must be unassigned before. nil as value not allowed", "symbol",
+				"value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
@@ -66,8 +64,8 @@ public class Assignment implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("def-field",  
-				"Assign value in the next object scope, it must be unassigned before. nil as value not allowed", false,
-				"symbol", "value") {
+				"Assign value in the next object scope, it must be unassigned before. nil as value not allowed", "symbol",
+				"value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
@@ -86,8 +84,8 @@ public class Assignment implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("def-global", 
-				"Assign value in global scope, it must be unassigned before. nil as value not allowed", false,
-				"symbol", "value") {
+				"Assign value in global scope, it must be unassigned before. nil as value not allowed", "symbol",
+				"value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {

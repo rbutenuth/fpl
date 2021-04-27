@@ -7,11 +7,11 @@ import de.codecentric.fpl.parser.Position;
 public class TestFunction extends AbstractFunction {
 
 	public TestFunction(Position position, String name, boolean varArg, String... parameterNames) throws EvaluationException {
-		super(position, name, "", varArg, parameterNames);
+		super(position, name, "", parameterNames);
 	}
 
 	public TestFunction(String name, boolean varArg, String... parameterNames) throws EvaluationException {
-		super(Position.UNKNOWN, name, "", varArg, parameterNames);
+		super(Position.UNKNOWN, name, "", parameterNames);
 	}
 	
 	@Override

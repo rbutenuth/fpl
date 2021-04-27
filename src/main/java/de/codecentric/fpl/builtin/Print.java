@@ -29,7 +29,7 @@ public class Print implements ScopePopulator {
 		private FplEngine engine;
 
 		private PrintFunction(boolean newline, String comment, FplEngine engine) throws EvaluationException {
-        super(newline ? "println" : "print", comment, true, "expression...");
+        super(newline ? "println" : "print", comment, "expression...");
         this.newline = newline;
         this.engine = engine;
     }

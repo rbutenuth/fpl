@@ -20,8 +20,8 @@ import de.codecentric.fpl.datatypes.list.FplList;
 public class Loop implements ScopePopulator {
 	@Override
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
-		scope.define(new AbstractFunction("while", "Execute code while condition returns true.", true,
-				"condition", "code...") {
+		scope.define(new AbstractFunction("while", "Execute code while condition returns true.", "condition",
+				"code...") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplValue result = null;
@@ -35,7 +35,7 @@ public class Loop implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("for-each", 
-				"Apply a lambda to all list elements, return last result", false, "function", "list") {
+				"Apply a lambda to all list elements, return last result", "function", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplList list = evaluateToList(scope, parameters[1]);
@@ -54,8 +54,7 @@ public class Loop implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("map", 
-				"Apply a lambda to all list elements and return list with applied elements", false, "function",
-				"list") {
+				"Apply a lambda to all list elements and return list with applied elements", "function", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
@@ -71,7 +70,7 @@ public class Loop implements ScopePopulator {
 		scope.define(new AbstractFunction("reduce", 
 				"Reduce a list to one value. The function must accept two parameters: "
 						+ "accumulator and value. It must return the \"reduction\" of accumulator and value.",
-				false, "function", "accumulator", "list") {
+				"function", "accumulator", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
@@ -84,7 +83,7 @@ public class Loop implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("filter", "Filter a list elements.", false, "func", "list") {
+		scope.define(new AbstractFunction("filter", "Filter a list elements.", "func", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);

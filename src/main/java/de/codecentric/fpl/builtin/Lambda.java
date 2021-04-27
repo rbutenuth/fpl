@@ -24,8 +24,7 @@ public class Lambda implements ScopePopulator {
 	@Override
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
-		scope.define(new AbstractFunction("lambda", "Create an anonymous function.", true, "parameter-list",
-				"code...") {
+		scope.define(new AbstractFunction("lambda", "Create an anonymous function.", "parameter-list", "code...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -37,8 +36,8 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("lambda-dynamic", "Create an anonymous function.", false, //
-				"parameter-list", "code-list") {
+		scope.define(new AbstractFunction("lambda-dynamic", "Create an anonymous function.", "parameter-list", //
+				"code-list") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -48,8 +47,7 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("def-function", "Define a function.", true, "name", "parameter-list",
-				"code...") {
+		scope.define(new AbstractFunction("def-function", "Define a function.", "name", "parameter-list", "code...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -62,8 +60,8 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("def-function-dynamic", "Define a function.", false, //
-				"name", "parameter-list", "code-list") {
+		scope.define(new AbstractFunction("def-function-dynamic", "Define a function.", "name", //
+				"parameter-list", "code-list") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -75,7 +73,7 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("eval", "Evaluate expression.", false, "expression") {
+		scope.define(new AbstractFunction("eval", "Evaluate expression.", "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -84,7 +82,7 @@ public class Lambda implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("type-of", "Return type of argument as string", false, "value") {
+		scope.define(new AbstractFunction("type-of", "Return type of argument as string", "value") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -94,7 +92,7 @@ public class Lambda implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("java-instance", "Create an instance of a Java wrapper object by calling a constructor.", //
-				true, "class...") {
+				"class...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -108,7 +106,7 @@ public class Lambda implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("java-class", "Create a handle to call static methods of a Java class.", //
-				false, "class") {
+				"class") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {

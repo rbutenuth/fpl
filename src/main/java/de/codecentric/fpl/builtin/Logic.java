@@ -28,7 +28,7 @@ public class Logic implements ScopePopulator {
 		scope.define(new LogicFunction("xor", "Logic xor of parameters."));
 		scope.define(new LogicFunction("not", "Logic not of parameter."));
 
-		scope.define(new AbstractFunction("is-symbol", "Is expression a symbol?", false, "expression") {
+		scope.define(new AbstractFunction("is-symbol", "Is expression a symbol?", "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -36,7 +36,7 @@ public class Logic implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("is-integer", "Is expression an integer?", false, "expression") {
+		scope.define(new AbstractFunction("is-integer", "Is expression an integer?", "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -44,7 +44,7 @@ public class Logic implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("is-double", "Is expression a double?", false, "expression") {
+		scope.define(new AbstractFunction("is-double", "Is expression a double?", "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -52,7 +52,7 @@ public class Logic implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("is-number", "Is expression an integer or double?", false, "expression") {
+		scope.define(new AbstractFunction("is-number", "Is expression an integer or double?", "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -61,7 +61,7 @@ public class Logic implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("is-string", "Is expression a string?", false, "expression") {
+		scope.define(new AbstractFunction("is-string", "Is expression a string?", "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -69,7 +69,7 @@ public class Logic implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("is-list", "Is expression a list?", false, "expression") {
+		scope.define(new AbstractFunction("is-list", "Is expression a list?", "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -77,7 +77,7 @@ public class Logic implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("is-object", "Is expression an object?", false, "expression") {
+		scope.define(new AbstractFunction("is-object", "Is expression an object?", "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -85,7 +85,7 @@ public class Logic implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("is-function", "Is expression a function?", false, "expression") {
+		scope.define(new AbstractFunction("is-function", "Is expression a function?", "expression") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -100,7 +100,7 @@ public class Logic implements ScopePopulator {
 		 * @param op Operator: "and", "or", etc.
 		 */
 		private LogicFunction(String op, String comment) throws EvaluationException {
-			super(op, comment, !op.equals("not"), "expression...");
+			super(op, comment, "expression...");
 		}
 
 		/**

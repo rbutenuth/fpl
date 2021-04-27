@@ -29,13 +29,13 @@ public class FplWrapper extends AbstractFunction {
 	private final Object instance;
 
 	public FplWrapper(Object value) throws EvaluationException {
-		super(value.getClass().getName(), "", true, "args...");
+		super(value.getClass().getName(), "", "args...");
 		clazz = value.getClass();
 		instance = value;
 	}
 
 	public FplWrapper(String className) throws EvaluationException {
-		super(className, "", true, "args...");
+		super(className, "", "args...");
 		try {
 			clazz = Class.forName(className);
 		} catch (ClassNotFoundException e) {
@@ -45,7 +45,7 @@ public class FplWrapper extends AbstractFunction {
 	}
 
 	public FplWrapper(String className, Object[] methodParams) throws EvaluationException {
-		super(className, "", true, "args...");
+		super(className, "", "args...");
 		unwrap(methodParams);
 		try {
 			clazz = Class.forName(className);

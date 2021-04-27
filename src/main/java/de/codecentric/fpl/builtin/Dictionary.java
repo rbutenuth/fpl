@@ -22,7 +22,7 @@ public class Dictionary implements ScopePopulator {
 
 		scope.define(new AbstractFunction(
 				"dict", "Create a new dictionary from string value pairs.",
-				true, "pairs...") {
+				"pairs...") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				if (parameters.length % 2 != 0) {
@@ -45,7 +45,7 @@ public class Dictionary implements ScopePopulator {
 		scope.define(new AbstractFunction(
 				"dict-put", "Put a value into the scope of an object or dictionary, " +
 						"key must be a string, returns the old value associated with the key.",
-				false, "dict", "key", "value") {
+				"dict", "key", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
@@ -60,7 +60,7 @@ public class Dictionary implements ScopePopulator {
 		scope.define(new AbstractFunction("dict-def", 
 				"Define a value in the scope of an object or dictionary, " +
 						"key must be a string, returns the value associated with the key, original mapping must be nil.",
-				false, "dict", "key", "value") {
+				"dict", "key", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
@@ -77,7 +77,7 @@ public class Dictionary implements ScopePopulator {
 				"Change a value into the scope of an object or dictionary, " +
 						"key must be a string," +
 						"returns the old value associated with the key, new and old value must not be nil.",
-				false, "dict", "key", "value") {
+				"dict", "key", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
@@ -91,7 +91,7 @@ public class Dictionary implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("dict-get", "Get a value from the scope of an object or dictionary, " +
-				"key must be a string.", false, "dict", "key") {
+				"key must be a string.", "dict", "key") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplObject o = evaluateToDictionary(scope, parameters[0]);
@@ -100,7 +100,7 @@ public class Dictionary implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("dict-keys", "Get all keys of an object or dictionary as a list.",
-				false, "dict") {
+				"dict") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplObject o = evaluateToDictionary(scope, parameters[0]);
@@ -121,7 +121,7 @@ public class Dictionary implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("dict-values", 
-				"Get all values of an object or dictionary as a list.", false, "dict") {
+				"Get all values of an object or dictionary as a list.", "dict") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplObject o = evaluateToDictionary(scope, parameters[0]);
@@ -131,7 +131,7 @@ public class Dictionary implements ScopePopulator {
 
 		scope.define(new AbstractFunction("dict-entries", 
 				"Get all entries of an object or dictionary as a list. Each entry is a list with two elements: key and value",
-				false, "dict") {
+				"dict") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplObject o = evaluateToDictionary(scope, parameters[0]);
