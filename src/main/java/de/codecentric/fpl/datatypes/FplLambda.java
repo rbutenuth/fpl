@@ -19,7 +19,8 @@ public class FplLambda extends AbstractFunction {
 	 * @param paramNames Names of parameters, if last one ends with "...", this is a
 	 *                   variable list function.
 	 * @param code       The Lisp code.
-	 * @param scope		The scope in which this function is defined. This is the <code>next</code> when the function is called.
+	 * @param scope      The scope in which this function is defined. This is the
+	 *                   <code>next</code> when the function is called.
 	 */
 	public FplLambda(Position position, String name, String comment, String[] paramNames, FplValue[] code, Scope scope)
 			throws EvaluationException {
@@ -36,25 +37,24 @@ public class FplLambda extends AbstractFunction {
 	@Override
 	public FplValue callInternal(final Scope scope, final FplValue... parameters) throws EvaluationException {
 		FplValue[] scopeParameters = new FplValue[getNumberOfParameterNames()];
-		if (parameters.length > 0) {
-			int lastNamedIndex = getNumberOfParameterNames() - 1;
-			if (isVarArg()) {
-				for (int i = 0; i < getMinimumNumberOfParameters(); i++) {
-					scopeParameters[i] = makeLazy(scope, parameters[i]);
-				}
-				int count = parameters.length - getMinimumNumberOfParameters();
-				FplValue[] varArgs = new FplValue[count];
-				for (int i = 0, j = lastNamedIndex; i < count; i++, j++) {
-					varArgs[i] = makeLazy(scope, parameters[j]);
-				}
-				scopeParameters[lastNamedIndex] = FplList.fromValues(varArgs);
-			} else {
-				for (int i = 0; i < parameters.length; i++) {
-					scopeParameters[i] = makeLazy(scope, parameters[i]);
-				}
+		int lastNamedIndex = getNumberOfParameterNames() - 1;
+		if (isVarArg()) {
+			for (int i = 0; i < getMinimumNumberOfParameters(); i++) {
+				scopeParameters[i] = makeLazy(scope, parameters[i]);
+			}
+			int count = parameters.length - getMinimumNumberOfParameters();
+			FplValue[] varArgs = new FplValue[count];
+			for (int i = 0, j = lastNamedIndex; i < count; i++, j++) {
+				varArgs[i] = makeLazy(scope, parameters[j]);
+			}
+			scopeParameters[lastNamedIndex] = FplList.fromValues(varArgs);
+		} else {
+			for (int i = 0; i < parameters.length; i++) {
+				scopeParameters[i] = makeLazy(scope, parameters[i]);
 			}
 		}
-		ParameterScope callScope = new ParameterScope(getName(), definitionScope, getParameterNameToIndex(), scopeParameters);
+		ParameterScope callScope = new ParameterScope(getName(), definitionScope, getParameterNameToIndex(),
+				scopeParameters);
 		FplValue result = null;
 		for (int i = 0; i < code.length; i++) {
 			result = code[i].evaluate(callScope);
