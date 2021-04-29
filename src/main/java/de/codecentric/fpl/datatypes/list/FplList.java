@@ -157,7 +157,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	/**
 	 * Create a list.
 	 *
-	 * @param values      Array with values, the values be copied.
+	 * @param values      Array with values, the values wile be be copied into new arrays.
 	 *
 	 * @param bucketSizes The size of the used buckets. The of the sizes must match
 	 *                    the length of <code>values</code>
