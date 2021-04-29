@@ -25,6 +25,7 @@ public class FplObject extends MapScope implements PositionHolder, FplValue, Fun
 
 	/**
 	 * Create an object which is not in the scope chain: A simple dictcionary.
+	 * 
 	 * @param position Where it is defined in the source
 	 */
 	public FplObject(String name, Position position) throws IllegalArgumentException {
@@ -37,6 +38,7 @@ public class FplObject extends MapScope implements PositionHolder, FplValue, Fun
 
 	/**
 	 * Create a "real" object, with predecessor scope.
+	 * 
 	 * @param position Where it is defined in the source
 	 * @param next     Next outer {@link Scope}
 	 */
@@ -52,15 +54,9 @@ public class FplObject extends MapScope implements PositionHolder, FplValue, Fun
 
 	@Override
 	public FplValue call(Scope scope, FplValue... parameters) throws EvaluationException {
-		Scope callScope = this;
-		FplValue firstElement = parameters[0].evaluate(callScope);
-
-		if (firstElement instanceof Function) {
-			FplValue[] shiftedParameters = Arrays.copyOfRange(parameters, 1, parameters.length);
-			return ((Function) firstElement).call(callScope, shiftedParameters);
-		} else {
-			throw new EvaluationException("Not a function: " + firstElement);
-		}
+		Function firstElement = AbstractFunction.evaluateToFunction(this, parameters[0]);
+		FplValue[] shiftedParameters = Arrays.copyOfRange(parameters, 1, parameters.length);
+		return firstElement.call(this, shiftedParameters);
 	}
 
 	@Override
