@@ -514,7 +514,7 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 		int j = 0;
 		while (iter.hasNext()) {
 			String name = iter.next();
-			if (!iter.hasNext() && varArg) {
+			if (varArg && !iter.hasNext()) {
 				name = name + "...";
 			}
 			curryParameterNames[j++] = name;
