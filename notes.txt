@@ -62,6 +62,10 @@ NPP_SAVE
 
 (auth "fred" "secretx")
 
+; Was kostet das "synchronized" im FplLazy?
+(fib 34) mit synchronized: 7,6 s
+(fib 34) ohne synchronized: 7,5 s
+; Nicht viel! (Gemessen mit Java 11)
 
 
 (put fib nil)
