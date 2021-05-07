@@ -198,23 +198,27 @@ public class ControlStructures implements ScopePopulator {
 		if (catchFunction == null) {
 			throw e;
 		} else {
-			StackTraceElement[] javaStackTrace = e.getStackTrace();
-			List<FplList> fplStackTrace = new ArrayList<>();
-			for (int i = 0; i < javaStackTrace.length; i++) {
-				if (AbstractFunction.FPL.equals(javaStackTrace[i].getClassName())) {
-					FplValue[] entry = new FplValue[3];
-					entry[0] = new FplString(javaStackTrace[i].getFileName());
-					entry[1] = FplInteger.valueOf(javaStackTrace[i].getLineNumber());
-					entry[2] = new FplString(javaStackTrace[i].getMethodName());
-					fplStackTrace.add(FplList.fromValues(entry));
-				}
-			}
+			FplList stackTrace = filteredStacktrace(e.getStackTrace());
 			FplValue[] catcherParameters = new FplValue[3];
 			catcherParameters[0] = new FplString(e.getMessage());
 			catcherParameters[1] = FplInteger.valueOf(e.getId());
-			catcherParameters[2] = AbstractFunction.quote(FplList.fromValues((fplStackTrace)));
+			catcherParameters[2] = AbstractFunction.quote(stackTrace);
 			return catchFunction.call(scope, catcherParameters);
 		}
+	}
+
+	private FplList filteredStacktrace(StackTraceElement[] javaStackTrace) {
+		List<FplList> fplStackTrace = new ArrayList<>();
+		for (int i = 0; i < javaStackTrace.length; i++) {
+			if (AbstractFunction.FPL.equals(javaStackTrace[i].getClassName())) {
+				FplValue[] entry = new FplValue[3];
+				entry[0] = new FplString(javaStackTrace[i].getFileName());
+				entry[1] = FplInteger.valueOf(javaStackTrace[i].getLineNumber());
+				entry[2] = new FplString(javaStackTrace[i].getMethodName());
+				fplStackTrace.add(FplList.fromValues(entry));
+			}
+		}
+		return FplList.fromValues(fplStackTrace);
 	}
 
 }
