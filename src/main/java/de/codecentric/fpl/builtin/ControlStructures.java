@@ -63,7 +63,7 @@ public class ControlStructures implements ScopePopulator {
 					}
 					i += 2;
 				}
-				return i < parameters.length ? evaluateToAny(scope, parameters[i]) : FplInteger.valueOf(0);
+				return i < parameters.length ? evaluateToAny(scope, parameters[i]) : null;
 			}
 		});
 

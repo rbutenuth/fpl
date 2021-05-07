@@ -47,7 +47,7 @@ public class ControlStructuresTest extends AbstractFplTest {
         assertEquals(FplInteger.valueOf(2), evaluate("cond", "(cond 1 2 3)"));
         assertEquals(FplInteger.valueOf(3), evaluate("cond", "(cond 0 2 1 3)"));
         assertEquals(FplInteger.valueOf(4), evaluate("cond", "(cond 0 2 0 3 4)"));
-        assertEquals(FplInteger.valueOf(0), evaluate("cond", "(cond 0 2 0 3)"));
+        assertNull(evaluate("cond", "(cond 0 2 0 3)"));
     }
 
 	@Test
