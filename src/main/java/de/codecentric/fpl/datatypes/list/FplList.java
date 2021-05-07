@@ -62,7 +62,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		}
 	}
 
-	public static FplList fromValues(List<FplValue> list) {
+	public static FplList fromValues(List<? extends FplValue> list) {
 		if (list.isEmpty()) {
 			return EMPTY_LIST;
 		} else {

@@ -199,20 +199,20 @@ public class ControlStructures implements ScopePopulator {
 			throw e;
 		} else {
 			StackTraceElement[] javaStackTrace = e.getStackTrace();
-			FplList[] fplStackTrace = new FplList[javaStackTrace.length];
+			List<FplList> fplStackTrace = new ArrayList<>();
 			for (int i = 0; i < javaStackTrace.length; i++) {
 				if (AbstractFunction.FPL.equals(javaStackTrace[i].getClassName())) {
 					FplValue[] entry = new FplValue[3];
 					entry[0] = new FplString(javaStackTrace[i].getFileName());
 					entry[1] = FplInteger.valueOf(javaStackTrace[i].getLineNumber());
 					entry[2] = new FplString(javaStackTrace[i].getMethodName());
-					fplStackTrace[i] = FplList.fromValues(entry);
+					fplStackTrace.add(FplList.fromValues(entry));
 				}
 			}
 			FplValue[] catcherParameters = new FplValue[3];
 			catcherParameters[0] = new FplString(e.getMessage());
 			catcherParameters[1] = FplInteger.valueOf(e.getId());
-			catcherParameters[2] = AbstractFunction.quote(FplList.fromValues(fplStackTrace));
+			catcherParameters[2] = AbstractFunction.quote(FplList.fromValues((fplStackTrace)));
 			return catchFunction.call(scope, catcherParameters);
 		}
 	}
