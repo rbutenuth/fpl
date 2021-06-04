@@ -1,6 +1,7 @@
 package de.codecentric.fpl.builtin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -84,6 +85,13 @@ public class ParallelTest extends AbstractFplTest {
 		evaluate("parallel-for-each", "(def-function fun (x) (+ x x))");
 		FplInteger result = (FplInteger) evaluate("parallel-for-each", "(parallel-for-each fun '(1 2 3 4))");
 		assertEquals(FplInteger.valueOf(8), result);
+	}
+
+	@Test
+	public void parallelForEachOfEmptyList() throws Exception {
+		evaluate("parallel-for-each", "(def-function fun (x) (+ x x))");
+		FplInteger result = (FplInteger) evaluate("parallel-for-each", "(parallel-for-each fun '())");
+		assertNull(result);
 	}
 
 	@Test

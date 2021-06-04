@@ -64,22 +64,7 @@ public class Parallel implements ScopePopulator {
 					});
 				}
 
-				FplValue[] values = new FplValue[parameters.length];
-				try {
-					if (ForkJoinTask.inForkJoinPool()) {
-						ForkJoinTask.invokeAll(tasks);
-					} else {
-						for (RecursiveTask<FplValue> task : tasks) {
-							engine.getPool().execute(task);
-						}
-					}
-					for (int i = 0; i < parameters.length; i++) {
-						values[i] = tasks.get(i).get();
-					}
-				} catch (InterruptedException | ExecutionException e) {
-					throw new EvaluationException(e);
-				}
-				return FplList.fromValues(values);
+				return FplList.fromValues(executeTasks(tasks));
 			}
 		});
 
@@ -90,12 +75,9 @@ public class Parallel implements ScopePopulator {
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplList list = evaluateToList(scope, parameters[1]);
-				int size = list.size();
-				@SuppressWarnings("unchecked")
-				ForkJoinTask<FplValue>[] tasks = new ForkJoinTask[size];
-				int i = 0;
+				List<RecursiveTask<FplValue>> tasks = new ArrayList<>(list.size());
 				for (FplValue value : list) {
-					tasks[i++] = engine.getPool().submit(new RecursiveTask<FplValue>() {
+					tasks.add(new RecursiveTask<FplValue>() {
 						private static final long serialVersionUID = -5037994686972663758L;
 
 						@Override
@@ -108,15 +90,7 @@ public class Parallel implements ScopePopulator {
 						}
 					});
 				}
-				FplValue[] values = new FplValue[size];
-				for (i = 0; i < size; i++) {
-					try {
-						values[i] = tasks[i].get();
-					} catch (InterruptedException | ExecutionException e) {
-						throw new EvaluationException(e);
-					}
-				}
-				return FplList.fromValues(values);
+				return FplList.fromValues(executeTasks(tasks));
 			}
 		});
 
@@ -127,11 +101,9 @@ public class Parallel implements ScopePopulator {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplList list = evaluateToList(scope, parameters[1]);
 				int size = list.size();
-				@SuppressWarnings("unchecked")
-				ForkJoinTask<FplValue>[] tasks = new ForkJoinTask[size];
-				int i = 0;
+				List<RecursiveTask<FplValue>> tasks = new ArrayList<>(size);
 				for (FplValue value : list) {
-					tasks[i++] = engine.getPool().submit(new RecursiveTask<FplValue>() {
+					tasks.add(new RecursiveTask<FplValue>() {
 						private static final long serialVersionUID = -5037994686972663758L;
 
 						@Override
@@ -144,16 +116,8 @@ public class Parallel implements ScopePopulator {
 						}
 					});
 				}
-				FplValue value = null;
-				for (i = 0; i < size; i++) {
-					try {
-						// The last value wins
-						value = tasks[i].get();
-					} catch (InterruptedException | ExecutionException e) {
-						throw new EvaluationException(e);
-					}
-				}
-				return value;
+				FplValue[] values = executeTasks(tasks);
+				return values.length > 0 ? values[values.length - 1] : null;
 			}
 		});
 
@@ -186,5 +150,25 @@ public class Parallel implements ScopePopulator {
 			}
 		});
 
+	}
+	
+	private FplValue[] executeTasks(List<RecursiveTask<FplValue>> tasks) throws EvaluationException {
+		int size = tasks.size();
+		FplValue[] values = new FplValue[size];
+		try {
+			if (ForkJoinTask.inForkJoinPool()) {
+				ForkJoinTask.invokeAll(tasks);
+			} else {
+				for (RecursiveTask<FplValue> task : tasks) {
+					engine.getPool().execute(task);
+				}
+			}
+			for (int i = 0; i < size; i++) {
+				values[i] = tasks.get(i).get();
+			}
+		} catch (InterruptedException | ExecutionException e) {
+			throw new EvaluationException(e);
+		}
+		return values;
 	}
 }
