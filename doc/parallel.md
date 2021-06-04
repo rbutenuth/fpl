@@ -61,7 +61,8 @@ two lines, you could execute other code in parallel with the code spawned by `cr
 ### synchronized
 Evaluate the parameters, return value of last parameter. This happens within a `synchronized` controlled
 by the `monitor`. Be what you choose as monitor. Some values (e.g. small integers, empty list) may be
-implemented as singletons. Objects (dictionaries) and strings are safe.
+implemented as singletons, so you may end up with the same instance even when you think you create a new monitor.
+Objects (dictionaries) and strings are safe regarding this aspect.
 
 ```
 (synchronized monitor elements...)
