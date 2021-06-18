@@ -52,7 +52,7 @@ function will wait for the result of the code running in parallel.
 ```
 Example:
 ```
-(put future (create-future ((java-class java.lang.Thread) sleep 5000)))
+(put future (create-future ((java-class "java.lang.Thread") sleep 5000)))
 (future)
 ```
 Creates a future which will wait for 5 seconds, then wait until it completes. Between that
