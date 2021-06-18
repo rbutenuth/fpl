@@ -1,6 +1,6 @@
 
 (def array-list (java-instance "java.util.ArrayList"))
 
-(array-list size)
+(array-list "size")
 
  

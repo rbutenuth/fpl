@@ -213,7 +213,7 @@ public class FplWrapperTest extends AbstractFplTest {
 	public void badMethod() throws Exception {
 		try {
 			evaluate("bad-method",
-					"((java-instance \"de.codecentric.fpl.datatypes.FplWrapperTest$Inner\") iDontKnowThisMethod)");
+					"((java-instance \"de.codecentric.fpl.datatypes.FplWrapperTest$Inner\") \"iDontKnowThisMethod\")");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("No matching method with name iDontKnowThisMethod found", e.getMessage());
@@ -224,7 +224,7 @@ public class FplWrapperTest extends AbstractFplTest {
 	public void methodWithException() throws Exception {
 		try {
 			evaluate("method-with-exception",
-					"((java-instance \"de.codecentric.fpl.datatypes.FplWrapperTest$Inner\") methodWithException)");
+					"((java-instance \"de.codecentric.fpl.datatypes.FplWrapperTest$Inner\") \"methodWithException\")");
 			fail("exception missing");
 		} catch (EvaluationException e) {
 			assertEquals("nil", e.getMessage());
@@ -233,13 +233,13 @@ public class FplWrapperTest extends AbstractFplTest {
 
 	@Test
 	public void staticCallString() throws Exception {
-		FplInteger i = (FplInteger) evaluate("static", "((java-class \"java.lang.Integer\") valueOf 10)");
+		FplInteger i = (FplInteger) evaluate("static", "((java-class \"java.lang.Integer\") \"valueOf\" 10)");
 		assertEquals(FplInteger.valueOf(10), i);
 	}
 
 	@Test
 	public void staticCallSymbol() throws Exception {
-		FplInteger i = (FplInteger) evaluate("static", "((java-class \"java.lang.Integer\") valueOf 10)");
+		FplInteger i = (FplInteger) evaluate("static", "((java-class \"java.lang.Integer\") \"valueOf\" 10)");
 		assertEquals(FplInteger.valueOf(10), i);
 	}
 

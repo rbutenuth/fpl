@@ -67,12 +67,7 @@ public class FplWrapper extends AbstractFunction {
 	@Override
 	protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 		FplValue first = parameters[0];
-		String name = null;
-		if (first instanceof Symbol) {
-			name = ((Symbol) first).getName();
-		} else {
-			name = ((FplString) first.evaluate(scope)).getContent();
-		}
+		String name = AbstractFunction.evaluateToString(scope, first);
 		try {
 			Object[] javaParams = evaluatedParams(parameters);
 			Method[] executables = clazz.getMethods();

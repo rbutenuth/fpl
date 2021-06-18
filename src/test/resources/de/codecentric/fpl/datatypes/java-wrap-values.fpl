@@ -1,40 +1,40 @@
 (def inner (java-instance "de.codecentric.fpl.datatypes.FplWrapperTest$Inner"))
 
 ; 1
-(inner returnNull)
+(inner "returnNull")
 
 ; 2
-(inner returnByte)
+(inner "returnByte")
 
 ; 3
-(inner returnShort)
+(inner "returnShort")
 
 ; 4
-(inner returnInteger)
+(inner "returnInteger")
 
 ; 5
-(inner returnLong)
+(inner "returnLong")
 
 ; 6
-(inner returnFplValue)
+(inner "returnFplValue")
 
 ; 7
-(inner returnString)
+(inner "returnString")
 
 ; 8
-(inner returnCharacter)
+(inner "returnCharacter")
 
 ; 9
-(inner returnFalse)
+(inner "returnFalse")
 
 ; 10
-(inner returnTrue)
+(inner "returnTrue")
 
 ; 11
-(inner returnFloat)
+(inner "returnFloat")
 
 ; 12
-(inner returnDouble)
+(inner "returnDouble")
 
 ; 13
 (inner "returnHashMap")
