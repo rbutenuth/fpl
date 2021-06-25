@@ -19,10 +19,17 @@ Converts an expression into its string representation.
 (to-string expression)
 ```
 
-### write-to-file
+### write-string-to-file
 Write the content of a string to a file. Use UTF-8 as encoding.
 ```
 (write-string-to-file filename content)
+```
+
+### read-string-from-resource
+Read the content from a resource defined by its uri to a string. 
+The resource must be UTF-8 encoded. 
+```
+(read-string-from-resource uri-as-string)
 ```
 
 ### http-request

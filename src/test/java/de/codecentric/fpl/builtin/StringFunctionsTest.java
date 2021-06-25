@@ -374,7 +374,7 @@ public class StringFunctionsTest extends AbstractFplTest {
 		int count = 0;
 		for (Iterator<Entry<String, FplValue>> iterator = obj.iterator(); iterator.hasNext();) {
 			Entry<String, FplValue> entry = iterator.next();
-			if (entry.getKey().equals("<nil>")) {
+			if (entry.getKey().equals("nil")) {
 				assertEquals(1, ((FplInteger)entry.getValue()).getValue());
 			} else {
 				fail("unknown key: " + entry.getKey());

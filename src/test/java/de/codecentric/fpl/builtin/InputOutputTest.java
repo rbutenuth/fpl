@@ -6,9 +6,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
@@ -137,23 +139,56 @@ public class InputOutputTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void readFromFile() throws Exception {
+		final int length = 10_000;
+		File file = File.createTempFile("test", ".txt");
+		StringBuilder content = new StringBuilder(length);
+		for (int i = 0; i < length; i++) {
+			content.append((char) ('a' + i));
+		}
+		try (Writer w = new FileWriter(file)) {
+			w.write(content.toString());
+		}
+		try {
+			FplString str = (FplString) evaluate("read-string-from-resource",
+					"(read-string-from-resource \"" + file.toURI().toString().replace('\\', '/') + "\")");
+			String readContent = str.getContent();
+			for (int i = 0; i < length; i++) {
+				assertEquals(content.charAt(i), readContent.charAt(i));
+			}
+		} finally {
+			file.delete();
+		}
+	}
+
+	@Test
+	public void readFromFileWithBadURI() throws Exception {
+		try {
+			evaluate("evaluate", "(read-string-from-resource \"htsonstwas://foo.fpl\")");
+			fail("missing exception");
+		} catch (EvaluationException e) {
+			assertEquals("java.net.MalformedURLException: unknown protocol: htsonstwas", e.getMessage());
+		}
+	}
+
+	@Test
 	public void toStringOfNil() throws Exception {
 		FplString str = (FplString) evaluate("nil", "(to-string nil)");
 		assertEquals("nil", str.getContent());
 	}
-	
+
 	@Test
 	public void toStringOfValueNil() throws Exception {
 		FplString str = (FplString) evaluate("nil", "(to-string symbol-with-value-nil)");
 		assertEquals("nil", str.getContent());
 	}
-	
+
 	@Test
 	public void toStringOfSymbol() throws Exception {
 		FplString str = (FplString) evaluate("nil", "(to-string 'some-symbol)");
 		assertEquals("some-symbol", str.getContent());
 	}
-	
+
 	@Test
 	public void writeToFileWithException() throws Exception {
 		File file = File.createTempFile("test", ".txt");

@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -54,8 +55,8 @@ public class InputOutput implements ScopePopulator {
 				"uri", "evaluate") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				String uriAsString = evaluateToString(scope, parameters[0]);
 				boolean evaluate = evaluateToBoolean(scope, parameters[1]);
+				String uriAsString = evaluateToString(scope, parameters[0]);
 				try {
 					URI uri = new URI(uriAsString);
 					try (InputStream is = uri.toURL().openStream();
@@ -135,6 +136,29 @@ public class InputOutput implements ScopePopulator {
 					writer.write(content);
 					return new FplString(content);
 				} catch (IOException e) {
+					throw new EvaluationException(e);
+				}
+			}
+		});
+
+		scope.define(new AbstractFunction("read-string-from-resource", //
+				"Read the content of a a file as String. Use UTF-8 as encoding.", "filename") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				String uriAsString = evaluateToString(scope, parameters[0]);
+				try {
+					URI uri = new URI(uriAsString);
+					try (Reader rd = new BomAwareReader(uri.toURL().openStream())) {
+						StringBuilder sb = new StringBuilder();
+						char[] buffer = new char[8192];
+						int count = rd.read(buffer);
+						while (count >= 0) {
+							sb.append(buffer, 0, count);
+							count = rd.read(buffer);
+						}
+						return new FplString(sb.toString());
+					}
+				} catch (IOException | URISyntaxException e) {
 					throw new EvaluationException(e);
 				}
 			}

@@ -393,24 +393,17 @@ public class StringFunctions implements ScopePopulator {
 					private FplValue deserializeMap(Map<String, Any> map) throws ScopeException, EvaluationException {
 						FplObject obj = new FplObject("dict");
 						for (Map.Entry<String, Any> entry : map.entrySet()) {
-							String key = entry.getKey();
-							if (key.equals("nil")) {
-								obj.define("<nil>", deserialize(entry.getValue()));
-							} else {
-								obj.define(key, deserialize(entry.getValue()));
-							}
+							obj.define(entry.getKey(), deserialize(entry.getValue()));
 						}
 						return obj;
 					}
 
-					private FplValue deserializeNumber(Any any) {
-						String s = any.toString();
-						if (s.indexOf('.') >= 0) {
-							return new FplDouble(any.toDouble());
-						} else {
-							return FplInteger.valueOf(any.toLong());
-						}
-					}
-				});
+	private FplValue deserializeNumber(Any any) {
+		String s = any.toString();
+		if (s.indexOf('.') >= 0) {
+			return new FplDouble(any.toDouble());
+		} else {
+			return FplInteger.valueOf(any.toLong());
+		}
 	}
-}
+});}}

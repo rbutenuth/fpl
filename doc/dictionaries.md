@@ -8,7 +8,7 @@ A dictionary is created with the function `dict`
 ```
 (dict
    "key" 42
-   "another-key": bar
+   "another-key" bar
 )
 ```
 
