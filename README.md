@@ -67,4 +67,4 @@ Results are written to standard output.
 * [Java bridge](doc/java.md)
 * [Functions for parallelism](doc/parallel.md)
 * [Input/Output functions](doc/io.md)
-* [Built-in HTTP server](doc/http-server.md)
+* [HTTP server as REPL](doc/http-server-repl.md)
