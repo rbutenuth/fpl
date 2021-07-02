@@ -113,7 +113,7 @@ public class InputOutput implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("to-string", //
-				"Write the content of a string to a file. Use UTF-8 as encoding.", "expression") {
+				"Converts an expression into its string representation.", "expression") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				if (parameters[0] == null) {
@@ -142,7 +142,7 @@ public class InputOutput implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("read-string-from-resource", //
-				"Read the content of a a file as String. Use UTF-8 as encoding.", "filename") {
+				"Read the content of a a file or other resource as String. Use UTF-8 as encoding.", "filename") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String uriAsString = evaluateToString(scope, parameters[0]);
