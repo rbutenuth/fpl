@@ -39,12 +39,13 @@ Do an HTTP-request. Input parameters:
 * headers A map of headers. Values can be single values (strings) or list of strings
 * query-params A map of query-params. Values can be single values (strings) or list of strings
 * body A string with the body
-* user User for basic authentication (may be nil)
+Additionally you can add (both or none):
+* user User for basic authentication
 * password Password for basic authentication (may be nil)
 The result is a list with
 * status code
 * response headers (map with single values or list of values), header names are converted to lower case.
-* body
+* body (nil for empty body)
 ```
 (http-request url method headers query-params body user password)
 ```

@@ -81,6 +81,40 @@ public class InputOutputHttpRequestTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void getRequestUserOnly() throws Exception {
+		String expression = "(http-request \"http://localhost:" + port + "/some-path\"" //
+				+ " \"GET\" nil nil nil " + "\"someUser\")";
+		try {
+			evaluate("http-request", expression);
+			fail("Exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("user set, password missing", e.getMessage());
+		}
+	}
+
+	@Test
+	public void getRequestTooManyParameters() throws Exception {
+		String expression = "(http-request \"http://localhost:" + port + "/some-path\"" //
+				+ " \"GET\" nil nil nil " + "\"someUser\" \"somePassword\" \"someNonsense\")";
+		try {
+			evaluate("http-request", expression);
+			fail("Exception missing");
+		} catch (EvaluationException e) {
+			assertEquals("too many parameters", e.getMessage());
+		}
+	}
+
+	@Test
+	public void getRequestNoUserNoPassword() throws Exception {
+		String expression = "(http-request \"http://localhost:" + port + "/some-path\"" //
+				+ " \"GET\" nil nil nil )";
+		FplList list = (FplList) evaluate("http-request", expression);
+		assertEquals(3, list.size());
+		assertEquals(401, ((FplInteger) list.get(0)).getValue());
+		assertNull(list.get(2));
+	}
+
+	@Test
 	public void getRequestWithHeadersFromVariable() throws Exception {
 		FplList list = execute("/hello", "GET", "not-defined-symbol-with-no-headers", "nil", "nil");
 		assertEquals(3, list.size());

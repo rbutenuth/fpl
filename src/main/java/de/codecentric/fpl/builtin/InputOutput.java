@@ -165,12 +165,20 @@ public class InputOutput implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("http-request", //
-				"Execute an HTTP-request.", "url", "method", "headers", "query-params", "body", "user", "password") {
+				"Execute an HTTP-request. Two additional parameters for basic auth (user, password) are possible", //
+				"url", "method", "headers", "query-params", "body...") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
 					HttpRequest req = new HttpRequest();
+					if (parameters.length == 7) {
+						req.setBasicAuth(evaluateToString(scope, parameters[5]), evaluateToString(scope, parameters[6]));
+					} else if (parameters.length == 6) {
+						throw new EvaluationException("user set, password missing");
+					} else if (parameters.length > 7) {
+						throw new EvaluationException("too many parameters");
+					}
 					req.setBaseUri(evaluateToString(scope, parameters[0]));
 					req.setMethod(evaluateToString(scope, parameters[1]));
 					setHeaders(req, evaluateToDictionaryNullDefaultsToEmpty(scope, parameters[2]));
@@ -183,7 +191,6 @@ public class InputOutput implements ScopePopulator {
 							req.setBody(body.toString(), "UTF-8");
 						}
 					}
-					req.setBasicAuth(evaluateToString(scope, parameters[5]), evaluateToString(scope, parameters[6]));
 					HttpResponse res = new HttpClient().execute(req);
 					FplValue[] values = new FplValue[3];
 					values[0] = FplInteger.valueOf(res.getStatusCode());
