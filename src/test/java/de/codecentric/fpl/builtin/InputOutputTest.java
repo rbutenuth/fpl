@@ -146,7 +146,7 @@ public class InputOutputTest extends AbstractFplTest {
 		for (int i = 0; i < length; i++) {
 			content.append((char) ('a' + i));
 		}
-		try (Writer w = new FileWriter(file)) {
+		try (Writer w = new FileWriter(file, StandardCharsets.UTF_8)) {
 			w.write(content.toString());
 		}
 		try {
