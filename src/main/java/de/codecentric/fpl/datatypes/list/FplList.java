@@ -868,6 +868,22 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			}
 		};
 	}
+	
+	public FplList map(java.util.function.Function<FplValue, FplValue> operator) {
+		return FplList.fromIterator(new Iterator<FplValue>() {
+			Iterator<FplValue> iter = iterator();
+			
+			@Override
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+
+			@Override
+			public FplValue next() {
+				return operator.apply(iter.next());
+			}
+		}, size());
+	}
 
 	@Override
 	public Iterator<FplValue> iterator() {

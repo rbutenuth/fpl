@@ -60,7 +60,17 @@ public class Loop implements ScopePopulator {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplList list = evaluateToList(scope, parameters[1]);
 				try {
-					return FplList.fromIterator(list.lambdaIterator(scope, function), list.size());
+					return list.map(new java.util.function.Function<FplValue, FplValue>() {
+						
+						@Override
+						public FplValue apply(FplValue value) {
+							try {
+								return function.call(scope, new FplValue[] { AbstractFunction.quote(value) });
+							} catch (EvaluationException e) {
+								throw new TunnelException(e);
+							}
+						}
+					});
 				} catch (TunnelException e) {
 					throw e.getTunnelledException();
 				}
