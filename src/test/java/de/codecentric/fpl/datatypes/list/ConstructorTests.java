@@ -104,6 +104,13 @@ public class ConstructorTests extends AbstractListTest {
 		checkSizes(list, 128, 32, 7);
 	}
 
+	@Test
+	public void fromIteratorWithBadSize() throws Exception {
+		assertThrows(IllegalArgumentException.class, () -> {
+			FplList.fromIterator(createIterator(0, 2), 1);
+		});
+	}
+
 	private Iterator<FplValue> createIterator(int from, int to) {
 		return new Iterator<FplValue>() {
 			int nextValue = from;

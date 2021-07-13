@@ -1,21 +1,15 @@
 package de.codecentric.fpl.builtin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-
-import java.util.Iterator;
 
 import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
-import de.codecentric.fpl.datatypes.FplLambda;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.list.AbstractListTest;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 public class LoopTest extends AbstractFplTest {
@@ -124,18 +118,6 @@ public class LoopTest extends AbstractFplTest {
 		} catch (EvaluationException expected) {
 			assertEquals("java.lang.ArithmeticException: / by zero", expected.getMessage());
 		}
-	}
-
-	@Test
-	public void iterateWithLambda() throws Exception {
-		FplLambda lambda = (FplLambda) evaluate("lambda", "(lambda (x) x)");
-		Iterator<FplValue> iter = AbstractListTest.create(0, 10).lambdaIterator(scope, lambda);
-		for (int i = 0; i < 10; i++) {
-			assertTrue(iter.hasNext());
-			FplValue value = iter.next();
-			assertEquals(FplInteger.valueOf(i), value);
-		}
-		assertFalse(iter.hasNext());
 	}
 
 	@Test

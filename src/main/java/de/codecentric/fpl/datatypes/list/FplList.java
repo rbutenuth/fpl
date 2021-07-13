@@ -1,8 +1,10 @@
 package de.codecentric.fpl.datatypes.list;
 
+import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToFunction;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.copyOf;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -10,10 +12,7 @@ import java.util.NoSuchElementException;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
-import de.codecentric.fpl.datatypes.AbstractFunction;
-import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToFunction;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.Function;
 
 /**
  * A persistent list implementation. 
@@ -80,6 +79,9 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			for (int inBucketIdx = 0; inBucketIdx < bucket.length; inBucketIdx++) {
 				bucket[inBucketIdx] = iter.next();
 			}
+		}
+		if (iter.hasNext()) {
+			throw new IllegalArgumentException("Iterator conatins too much elements");
 		}
 		return new FplList(shape);
 	}
@@ -839,36 +841,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		return count;
 	}
 
-	/**
-	 * Return an {@link Iterator} over this list, where each element is processed by
-	 * a function before it is returned.
-	 *
-	 * @param scope    Scope for evaluation of function
-	 * @param function Lambda to apply.
-	 * @return processed elements
-	 * @throws TunnelException With a wrapped {@link EvaluationException} when
-	 *                         function apply fails.
-	 */
-	public Iterator<FplValue> lambdaIterator(Scope scope, Function function) {
-		return new Iterator<FplValue>() {
-			Iterator<FplValue> iter = iterator();
-
-			@Override
-			public boolean hasNext() {
-				return iter.hasNext();
-			}
-
-			@Override
-			public FplValue next() {
-				try {
-					return function.call(scope, new FplValue[] { AbstractFunction.quote(iter.next()) });
-				} catch (EvaluationException e) {
-					throw new TunnelException(e);
-				}
-			}
-		};
-	}
-	
 	public FplList map(java.util.function.Function<FplValue, FplValue> operator) {
 		return FplList.fromIterator(new Iterator<FplValue>() {
 			Iterator<FplValue> iter = iterator();
@@ -883,6 +855,23 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				return operator.apply(iter.next());
 			}
 		}, size());
+	}
+
+	public FplList flatMap(java.util.function.Function<FplValue, FplValue> operator) {
+		List<FplValue> values = new ArrayList<>(size());
+		Iterator<FplValue> iter = iterator();
+		while (iter.hasNext()) {
+			FplValue value = iter.next();
+			if (value instanceof FplList) {
+				FplList subList = (FplList)value;
+				for (FplValue subValue : subList) {
+					values.add(subValue);
+				}
+			} else {
+				throw new TunnelException(new EvaluationException("Not a list: " + value));
+			}
+		}
+		return FplList.fromValues(values);
 	}
 
 	@Override

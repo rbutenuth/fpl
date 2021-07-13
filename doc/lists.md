@@ -123,6 +123,12 @@ Apply a funtion to all list elements and return list with applied elements
 (map function list)
 ```
 
+### flat-map
+Apply a lambda to all list elements, the result of the lambda must be a list. Return list with applied elements of all returned lists.
+```
+(flat-map function list)
+```
+
 ### filter
 Filter a list elements. Return a list containing all elements from input list for which `function` returned true.
 ```

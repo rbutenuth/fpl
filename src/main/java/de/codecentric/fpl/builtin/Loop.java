@@ -42,9 +42,9 @@ public class Loop implements ScopePopulator {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				try {
 					FplValue result = null;
-					Iterator<FplValue> iter = list.lambdaIterator(scope, function);
+					Iterator<FplValue> iter = list.iterator();
 					while (iter.hasNext()) {
-						result = iter.next();
+						result = function.call(scope, new FplValue[] { AbstractFunction.quote(iter.next()) });
 					}
 					return result;
 				} catch (TunnelException e) {
@@ -61,6 +61,30 @@ public class Loop implements ScopePopulator {
 				FplList list = evaluateToList(scope, parameters[1]);
 				try {
 					return list.map(new java.util.function.Function<FplValue, FplValue>() {
+						
+						@Override
+						public FplValue apply(FplValue value) {
+							try {
+								return function.call(scope, new FplValue[] { AbstractFunction.quote(value) });
+							} catch (EvaluationException e) {
+								throw new TunnelException(e);
+							}
+						}
+					});
+				} catch (TunnelException e) {
+					throw e.getTunnelledException();
+				}
+			}
+		});
+
+		scope.define(new AbstractFunction("flat-map", 
+				"Apply a lambda to all list elements, the result of the lambda must be a list. Return list with applied elements of all returned lists.", "function", "list") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				Function function = evaluateToFunction(scope, parameters[0]);
+				FplList list = evaluateToList(scope, parameters[1]);
+				try {
+					return list.flatMap(new java.util.function.Function<FplValue, FplValue>() {
 						
 						@Override
 						public FplValue apply(FplValue value) {
