@@ -10,12 +10,11 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.FplValue;
 
 /**
- * A persistent list implementation. 
+ * A persistent list implementation.
  */
 public class FplList implements FplValue, Iterable<FplValue> {
 	public static final FplList EMPTY_LIST = new FplList();
@@ -51,7 +50,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 * @param values Array with values, the values will NOT be copied, so don't
 	 *               modify the array after calling this method!
 	 */
-	public static FplList fromValues(FplValue ...values) {
+	public static FplList fromValues(FplValue... values) {
 		if (values.length == 0) {
 			return EMPTY_LIST;
 		} else {
@@ -159,7 +158,8 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	/**
 	 * Create a list.
 	 *
-	 * @param values      Array with values, the values wile be be copied into new arrays.
+	 * @param values      Array with values, the values wile be be copied into new
+	 *                    arrays.
 	 *
 	 * @param bucketSizes The size of the used buckets. The of the sizes must match
 	 *                    the length of <code>values</code>
@@ -170,7 +170,8 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			sum += l;
 		}
 		if (values.length != sum) {
-			throw new IllegalArgumentException("values.length = " + values.length + ", but sum of bucketSizes = " + sum);
+			throw new IllegalArgumentException(
+					"values.length = " + values.length + ", but sum of bucketSizes = " + sum);
 		}
 		FplValue[][] data = new FplValue[bucketSizes.length][];
 		int i = 0;
@@ -709,8 +710,10 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	/**
-	 * @return The lower / first half of a list. Get the other half with {@link #upperHalf()}. When the size
-	 * of the list is not an even number, the lower half will be one element smaller than the upper half.
+	 * @return The lower / first half of a list. Get the other half with
+	 *         {@link #upperHalf()}. When the size of the list is not an even
+	 *         number, the lower half will be one element smaller than the upper
+	 *         half.
 	 */
 	public FplList lowerHalf() {
 		// from is 0, so no variable
@@ -757,8 +760,10 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	/**
-	 * @return The upper / second half of a list. Get the other half with {@link #lowerHalf()}. When the size
-	 * of the list is not an even number, the lower half will be one element smaller than the upper half.
+	 * @return The upper / second half of a list. Get the other half with
+	 *         {@link #lowerHalf()}. When the size of the list is not an even
+	 *         number, the lower half will be one element smaller than the upper
+	 *         half.
 	 */
 	public FplList upperHalf() {
 		int to = size(); // exclusive
@@ -844,7 +849,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	public FplList map(java.util.function.Function<FplValue, FplValue> operator) {
 		return FplList.fromIterator(new Iterator<FplValue>() {
 			Iterator<FplValue> iter = iterator();
-			
+
 			@Override
 			public boolean hasNext() {
 				return iter.hasNext();
@@ -857,18 +862,13 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		}, size());
 	}
 
-	public FplList flatMap(java.util.function.Function<FplValue, FplValue> operator) {
+	public FplList flatMap(java.util.function.Function<FplValue, FplList> operator) {
 		List<FplValue> values = new ArrayList<>(size());
 		Iterator<FplValue> iter = iterator();
 		while (iter.hasNext()) {
-			FplValue value = iter.next();
-			if (value instanceof FplList) {
-				FplList subList = (FplList)value;
-				for (FplValue subValue : subList) {
-					values.add(subValue);
-				}
-			} else {
-				throw new TunnelException(new EvaluationException("Not a list: " + value));
+			FplList subList = operator.apply(iter.next());
+			for (FplValue subValue : subList) {
+				values.add(subValue);
 			}
 		}
 		return FplList.fromValues(values);

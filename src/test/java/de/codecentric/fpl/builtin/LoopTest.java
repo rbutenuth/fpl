@@ -2,6 +2,7 @@ package de.codecentric.fpl.builtin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
@@ -118,6 +119,25 @@ public class LoopTest extends AbstractFplTest {
 		} catch (EvaluationException expected) {
 			assertEquals("java.lang.ArithmeticException: / by zero", expected.getMessage());
 		}
+	}
+
+	@Test
+	public void flatMap() throws Exception {
+		evaluate("some-list", "(def-function some-list (x) (list x x))");
+		FplList flatList = (FplList) evaluate("map", "(flat-map some-list '(0 1 2 3))");
+		assertEquals(8, flatList.size());
+		for (int i = 0; i < 4; i++) {
+			assertEquals(FplInteger.valueOf(i), flatList.get(2 * i));
+			assertEquals(FplInteger.valueOf(i), flatList.get(2 * i + 1));
+		}
+	}
+
+	@Test
+	public void flatMapNotAList() throws Exception {
+		evaluate("some-list", "(def-function some-list (x) x)");
+		assertThrows(EvaluationException.class, () -> {
+			evaluate("map", "(flat-map some-list '(0 1 2 3))");
+		});
 	}
 
 	@Test
