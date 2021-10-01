@@ -862,7 +862,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		}, size());
 	}
 
-	public FplList flat(java.util.function.Function<FplValue, FplList> operator) {
+	public FplList flatMap(java.util.function.Function<FplValue, FplList> operator) {
 		List<FplValue> values = new ArrayList<>(size());
 		Iterator<FplValue> iter = iterator();
 		while (iter.hasNext()) {
