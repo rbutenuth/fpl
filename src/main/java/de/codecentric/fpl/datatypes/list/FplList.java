@@ -862,7 +862,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		}, size());
 	}
 
-	public FplList flatMapWithArrayList(java.util.function.Function<FplValue, FplList> operator) {
+	public FplList flat(java.util.function.Function<FplValue, FplList> operator) {
 		List<FplValue> values = new ArrayList<>(size());
 		Iterator<FplValue> iter = iterator();
 		while (iter.hasNext()) {
@@ -872,48 +872,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			}
 		}
 		return FplList.fromValues(values);
-	}
-
-	public FplList flatMapWithAppendAtEnd(java.util.function.Function<FplValue, FplList> operator) {
-		FplList result = EMPTY_LIST;
-		Iterator<FplValue> iter = iterator();
-		while (iter.hasNext()) {
-			FplList subList = operator.apply(iter.next());
-			for (FplValue subValue : subList) {
-				result = result.addAtEnd(subValue);
-			}
-		}
-		return result;
-	}
-
-	public FplList flatMap(java.util.function.Function<FplValue, FplList> operator) {
-		Iterator<FplValue> listIter = iterator();
-		if (listIter.hasNext()) {
-
-			return FplList.fromIterator(new Iterator<FplValue>() {
-				Iterator<FplValue> subListIter = operator.apply(listIter.next()).iterator();
-
-				@Override
-				public boolean hasNext() {
-					return subListIter.hasNext();
-				}
-
-				@Override
-				public FplValue next() {
-					FplValue result = subListIter.next();
-					while (!subListIter.hasNext()) {
-						if (listIter.hasNext()) {
-							subListIter = operator.apply(listIter.next()).iterator();
-						} else {
-							break;
-						}
-					}
-					return result;
-				}
-			});
-		} else {
-			return EMPTY_LIST;
-		}
 	}
 
 	@Override
