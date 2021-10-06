@@ -86,7 +86,8 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	public static FplList fromIterator(Iterator<FplValue> iter) {
 		FplValue[][] data = new FplValue[1][];
-		FplValue[] currentBucket = new FplValue[BASE_SIZE - 1];
+		int bucketSize = BASE_SIZE;
+		FplValue[] currentBucket = new FplValue[bucketSize];
 		data[0] = currentBucket;
 		int currentBucketUsed = 0;
 
@@ -98,46 +99,13 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				currentBucket[currentBucketUsed++] = value;
 			} else {
 				// Last bucket is full, create a new one
-				int bucketIdx = data.length - 1;
-				int carrySize = 1;
-				int maxSize = BASE_SIZE;
-
-				while (bucketIdx >= 0) {
-					int bucketSize = data[bucketIdx].length;
-
-					if (carrySize + bucketSize < maxSize) {
-						// There is enough space in the current bucket,
-						// use it by pointing bucketIdx just before it.
-						bucketIdx--;
-						carrySize += bucketSize;
-						break;
-					}
-					if (bucketSize >= maxSize) {
-						// The current bucket is too big, insert carry before
-						break;
-					}
-
-					bucketIdx--;
-					carrySize += bucketSize;
-					maxSize *= FACTOR;
-				}
-				// buckedIdx points to the first bucket which is NOT part of the carry
-				FplValue[][] dataNew = new FplValue[bucketIdx + 3][];
-
-				// Collect carry
-				FplValue[] carry = new FplValue[carrySize];
-				carry[carry.length - 1] = value;
-				dataNew[dataNew.length - 2] = carry;
-				for (int i = bucketIdx + 1, dst = 0; i < data.length; i++) {
-					arraycopy(data[i], 0, carry, dst, data[i].length);
-					dst += data[i].length;
-				}
-				// Copy buckets (before carry)
-				arraycopy(data, 0, dataNew, 0, dataNew.length - 2);
-				data = dataNew;
-				// Create a new bucket to collect values
-				data[data.length - 1] = currentBucket = new FplValue[BASE_SIZE - 1];
-				currentBucketUsed = 0;
+				FplValue[][] newData = new FplValue[data.length + 1][];
+				arraycopy(data, 0, newData, 0, data.length);
+				bucketSize += bucketSize / 2; // * 1.5
+				data = newData;
+				data[data.length - 1] = currentBucket = new FplValue[bucketSize];
+				currentBucketUsed = 1;
+				currentBucket[0] = value;
 			}
 		}
 

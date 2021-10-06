@@ -92,16 +92,18 @@ public class ConstructorTests extends AbstractListTest {
 
 	@Test
 	public void fromIteratorThreeBuckets() throws Exception {
-		FplList list = FplList.fromIterator(createIterator(0, 163));
-		check(list, 0, 163);
-		checkSizes(list, 128, 32, 3);
+		int size = 8 + 12 + 17;
+		FplList list = FplList.fromIterator(createIterator(0, size));
+		check(list, 0, size);
+		checkSizes(list, 8, 12, 17);
 	}
 
 	@Test
 	public void fromIteratorThreeBucketsWithLastFull() throws Exception {
-		FplList list = FplList.fromIterator(createIterator(0, 167));
-		check(list, 0, 167);
-		checkSizes(list, 128, 32, 7);
+		int size = 8 + 12 + 18;
+		FplList list = FplList.fromIterator(createIterator(0, size));
+		check(list, 0, size);
+		checkSizes(list, 8, 12, 18);
 	}
 
 	@Test
