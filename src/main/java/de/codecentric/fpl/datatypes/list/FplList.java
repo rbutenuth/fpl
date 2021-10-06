@@ -4,7 +4,6 @@ import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToFunction;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.copyOf;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -863,15 +862,33 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	public FplList flatMap(java.util.function.Function<FplValue, FplList> operator) {
-		List<FplValue> values = new ArrayList<>(size());
-		Iterator<FplValue> iter = iterator();
-		while (iter.hasNext()) {
-			FplList subList = operator.apply(iter.next());
-			for (FplValue subValue : subList) {
-				values.add(subValue);
-			}
+		Iterator<FplValue> listIter = iterator();
+		if (listIter.hasNext()) {
+
+			return FplList.fromIterator(new Iterator<FplValue>() {
+				Iterator<FplValue> subListIter = operator.apply(listIter.next()).iterator();
+
+				@Override
+				public boolean hasNext() {
+					return subListIter.hasNext();
+				}
+
+				@Override
+				public FplValue next() {
+					FplValue result = subListIter.next();
+					while (!subListIter.hasNext()) {
+						if (listIter.hasNext()) {
+							subListIter = operator.apply(listIter.next()).iterator();
+						} else {
+							break;
+						}
+					}
+					return result;
+				}
+			});
+		} else {
+			return EMPTY_LIST;
 		}
-		return FplList.fromValues(values);
 	}
 
 	@Override
