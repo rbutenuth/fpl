@@ -387,7 +387,7 @@ public class StringFunctions implements ScopePopulator {
 						for (int i = 0; i < size; i++) {
 							entries[i] = deserialize(list.get(i));
 						}
-						return FplList.fromValues(entries);
+						return FplList.fromValues(entries); // TODO: Change to fromIterator to avoid copying
 					}
 
 					private FplValue deserializeMap(Map<String, Any> map) throws ScopeException, EvaluationException {

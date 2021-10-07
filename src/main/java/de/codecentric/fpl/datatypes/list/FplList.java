@@ -4,6 +4,7 @@ import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToFunction;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.copyOf;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -46,15 +47,14 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	/**
 	 * Create a list.
 	 *
-	 * @param values Array with values, the values will NOT be copied, so don't
-	 *               modify the array after calling this method!
+	 * @param values Array with values, the values will be copied, so think about using {@link #fromIterator(Iterator, int)} instead.
 	 */
 	public static FplList fromValues(FplValue... values) {
 		if (values.length == 0) {
 			return EMPTY_LIST;
 		} else {
 			FplValue[][] data = new FplValue[1][];
-			data[0] = values;
+			data[0] = Arrays.copyOf(values, values.length);
 			return new FplList(data);
 		}
 	}
@@ -664,7 +664,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		if (size <= BASE_SIZE) {
 			FplValue[] b = new FplValue[size];
 			arraycopy(fplValues, first, b, 0, size);
-			return FplList.fromValues(b);
+			return FplList.fromValues(b);  // TODO: Change to iterator to avoid copying
 		} else {
 			FplValue[][] bucketsDst = createEmptyShape(size);
 			for (int i = 0, bucketIdx = 0; bucketIdx < bucketsDst.length; bucketIdx++) {

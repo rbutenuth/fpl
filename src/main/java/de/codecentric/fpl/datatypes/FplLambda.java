@@ -47,7 +47,7 @@ public class FplLambda extends AbstractFunction {
 			for (int i = 0, j = lastNamedIndex; i < count; i++, j++) {
 				varArgs[i] = makeLazy(scope, parameters[j]);
 			}
-			scopeParameters[lastNamedIndex] = FplList.fromValues(varArgs);
+			scopeParameters[lastNamedIndex] = FplList.fromValues(varArgs); // TODO: change to fromIterator() to avoid copying
 		} else {
 			for (int i = 0; i < parameters.length; i++) {
 				scopeParameters[i] = makeLazy(scope, parameters[i]);
@@ -78,7 +78,7 @@ public class FplLambda extends AbstractFunction {
 			for (FplValue o : list) {
 				compiled[i++] = compile(o, parameterMap);
 			}
-			return FplList.fromValues(compiled);
+			return FplList.fromValues(compiled); // TODO: Change to iterator to avoid copying
 		} else {
 			if (code instanceof Symbol) {
 				Symbol s = (Symbol) code;
