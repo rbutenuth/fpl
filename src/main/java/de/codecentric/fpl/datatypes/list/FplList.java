@@ -4,7 +4,6 @@ import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToFunction;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.copyOf;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -47,16 +46,33 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	/**
 	 * Create a list.
 	 *
-	 * @param values Array with values, the values will be copied, so think about using {@link #fromIterator(Iterator, int)} instead.
+	 * @param a first element
+	 * @param b second element
 	 */
-	public static FplList fromValues(FplValue... values) {
-		if (values.length == 0) {
-			return EMPTY_LIST;
-		} else {
-			FplValue[][] data = new FplValue[1][];
-			data[0] = Arrays.copyOf(values, values.length);
-			return new FplList(data);
-		}
+	public static FplList fromValues(FplValue a, FplValue b) {
+		FplValue[][] data = new FplValue[1][];
+		FplValue[] ab = new FplValue[2];
+		ab[0] = a;
+		ab[1] = b;
+		data[0] = ab;
+		return new FplList(data);
+	}
+
+	/**
+	 * Create a list.
+	 *
+	 * @param a first element
+	 * @param b second element
+	 * @param c third element
+	 */
+	public static FplList fromValues(FplValue a, FplValue b, FplValue c) {
+		FplValue[][] data = new FplValue[1][];
+		FplValue[] abc = new FplValue[3];
+		abc[0] = a;
+		abc[1] = b;
+		abc[2] = c;
+		data[0] = abc;
+		return new FplList(data);
 	}
 
 	public static FplList fromValues(List<? extends FplValue> list) {
@@ -71,55 +87,59 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	public static FplList fromIterator(Iterator<FplValue> iter, int size) {
-		FplValue[][] shape = createEmptyShape(size);
-		for (int bucketsIdx = 0; bucketsIdx < shape.length; bucketsIdx++) {
-			FplValue[] bucket = shape[bucketsIdx];
-			for (int inBucketIdx = 0; inBucketIdx < bucket.length; inBucketIdx++) {
-				bucket[inBucketIdx] = iter.next();
-			}
-		}
 		if (iter.hasNext()) {
-			throw new IllegalArgumentException("Iterator conatins too much elements");
+			FplValue[][] shape = createEmptyShape(size);
+			for (int bucketsIdx = 0; bucketsIdx < shape.length; bucketsIdx++) {
+				FplValue[] bucket = shape[bucketsIdx];
+				for (int inBucketIdx = 0; inBucketIdx < bucket.length; inBucketIdx++) {
+					bucket[inBucketIdx] = iter.next();
+				}
+			}
+			if (iter.hasNext()) {
+				throw new IllegalArgumentException("Iterator conatins too much elements");
+			}
+			return new FplList(shape);
+		} else {
+			return EMPTY_LIST;
 		}
-		return new FplList(shape);
 	}
 
 	public static FplList fromIterator(Iterator<FplValue> iter) {
-		FplValue[][] data = new FplValue[1][];
-		int bucketSize = BASE_SIZE;
-		FplValue[] currentBucket = new FplValue[bucketSize];
-		data[0] = currentBucket;
-		int currentBucketUsed = 0;
-
-		while (iter.hasNext()) {
-			FplValue value = iter.next();
-
-			if (currentBucketUsed < currentBucket.length) {
-				// Room in last bucket, use it
-				currentBucket[currentBucketUsed++] = value;
-			} else {
-				// Last bucket is full, create a new one
-				FplValue[][] newData = new FplValue[data.length + 1][];
-				arraycopy(data, 0, newData, 0, data.length);
-				bucketSize += bucketSize / 2; // * 1.5
-				data = newData;
-				data[data.length - 1] = currentBucket = new FplValue[bucketSize];
-				currentBucketUsed = 1;
-				currentBucket[0] = value;
+		if (!iter.hasNext()) {
+			return EMPTY_LIST;
+		} else {
+			FplValue[][] data = new FplValue[1][];
+			int bucketSize = BASE_SIZE;
+			FplValue[] currentBucket = new FplValue[bucketSize];
+			data[0] = currentBucket;
+			int currentBucketUsed = 0;
+			
+			while (iter.hasNext()) {
+				FplValue value = iter.next();
+				
+				if (currentBucketUsed < currentBucket.length) {
+					// Room in last bucket, use it
+					currentBucket[currentBucketUsed++] = value;
+				} else {
+					// Last bucket is full, create a new one
+					FplValue[][] newData = new FplValue[data.length + 1][];
+					arraycopy(data, 0, newData, 0, data.length);
+					bucketSize += bucketSize / 2; // * 1.5
+					data = newData;
+					data[data.length - 1] = currentBucket = new FplValue[bucketSize];
+					currentBucketUsed = 1;
+					currentBucket[0] = value;
+				}
 			}
+			
+			if (currentBucket.length > currentBucketUsed) {
+				FplValue[] shrinked = new FplValue[currentBucketUsed];
+				arraycopy(currentBucket, 0, shrinked, 0, currentBucketUsed);
+				data[data.length - 1] = shrinked;
+			}
+			
+			return new FplList(data);
 		}
-
-		if (currentBucketUsed == 0) {
-			FplValue[][] dataNew = new FplValue[data.length - 1][];
-			arraycopy(data, 0, dataNew, 0, dataNew.length);
-			data = dataNew;
-		} else if (currentBucket.length > currentBucketUsed) {
-			FplValue[] shrinked = new FplValue[currentBucketUsed];
-			arraycopy(currentBucket, 0, shrinked, 0, currentBucketUsed);
-			data[data.length - 1] = shrinked;
-		}
-
-		return new FplList(data);
 	}
 
 	/**
@@ -663,8 +683,10 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int size = behindLast - first;
 		if (size <= BASE_SIZE) {
 			FplValue[] b = new FplValue[size];
+			FplValue[][] data = new FplValue[1][];
+			data[0] = b;
 			arraycopy(fplValues, first, b, 0, size);
-			return FplList.fromValues(b);  // TODO: Change to iterator to avoid copying
+			return new FplList(data);
 		} else {
 			FplValue[][] bucketsDst = createEmptyShape(size);
 			for (int i = 0, bucketIdx = 0; bucketIdx < bucketsDst.length; bucketIdx++) {

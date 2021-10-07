@@ -2,24 +2,33 @@ package de.codecentric.fpl.datatypes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 public class UnWrapper {
 
 	public static FplValue wrap(Object obj) throws EvaluationException {
+		try {
+			return wrapInternal(obj);
+		} catch (TunnelException e) {
+			throw e.getTunnelledException();
+		}
+	}
+
+	private static FplValue wrapInternal(Object obj) throws TunnelException {
 		FplValue value;
 		if (obj == null) {
 			value = null;
 		} else if (obj instanceof FplValue) {
 			value = (FplValue) obj;
-		} else if (obj instanceof Byte || obj instanceof Short || obj instanceof Integer
-				|| obj instanceof Long) {
+		} else if (obj instanceof Byte || obj instanceof Short || obj instanceof Integer || obj instanceof Long) {
 			value = FplInteger.valueOf(((Number) obj).longValue());
 		} else if (obj instanceof Float || obj instanceof Double) {
 			value = new FplDouble(((Number) obj).doubleValue());
@@ -31,46 +40,61 @@ public class UnWrapper {
 			boolean b = ((Boolean) obj).booleanValue();
 			value = b ? FplInteger.valueOf(1) : null;
 		} else if (obj instanceof List) {
-			value = wrap((List<?>)obj); 
+			value = wrap((List<?>) obj);
 		} else if (obj instanceof Object[]) {
-			value = wrap((Object[])obj); 
-		} else if (obj instanceof Map && (areAllKeysStrings((Map<?, ?>)obj))) {
-			value = wrap((Map<?, ?>)obj); 
+			value = wrap((Object[]) obj);
+		} else if (obj instanceof Map && (areAllKeysStrings((Map<?, ?>) obj))) {
+			value = wrap((Map<?, ?>) obj);
 		} else {
 			value = new FplWrapper(obj);
 		}
 		return value;
 	}
 
-	private static FplList wrap(List<?> list) throws EvaluationException {
-		FplValue[] values = new FplValue[list.size()];
-		int i = 0;
-		for (Object o : list) {
-			values[i++] = wrap(o);
-		}
-		return FplList.fromValues(values);  // TODO: Change to iterator to avoid copying
+	private static FplList wrap(List<?> list) {
+		Iterator<?> iter = list.iterator();
+		return FplList.fromIterator(new Iterator<FplValue>() {
+
+			@Override
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+
+			@Override
+			public FplValue next() {
+				return wrapInternal(iter.next());
+			}
+		}, list.size());
 	}
-	
-	private static FplList wrap(Object[] a) throws EvaluationException {
-		FplValue[] values = new FplValue[a.length];
-		for (int i = 0; i < a.length; i++) {
-			values[i] = wrap(a[i]);
-		}
-		return FplList.fromValues(values);  // TODO: Change to iterator to avoid copying
+
+	private static FplList wrap(Object[] a) {
+		return FplList.fromIterator(new Iterator<FplValue>() {
+			int i = 0;
+
+			@Override
+			public boolean hasNext() {
+				return i < a.length;
+			}
+
+			@Override
+			public FplValue next() {
+				return wrapInternal(a[i++]);
+			}
+		}, a.length);
 	}
-	
-	private static FplObject wrap(Map<?, ?> map) throws EvaluationException {
+
+	private static FplObject wrap(Map<?, ?> map) {
 		FplObject object = new FplObject("dict");
 		try {
 			for (Entry<?, ?> entry : map.entrySet()) {
-				object.put((String)entry.getKey(), wrap(entry.getValue()));
+				object.put((String) entry.getKey(), wrapInternal(entry.getValue()));
 			}
 		} catch (ScopeException e) {
-			throw new EvaluationException(e.getMessage(), e);
+			throw new TunnelException(new EvaluationException(e.getMessage(), e));
 		}
 		return object;
 	}
-	
+
 	private static boolean areAllKeysStrings(Map<?, ?> map) {
 		for (Object key : map.keySet()) {
 			if (!(key instanceof String)) {
@@ -79,8 +103,6 @@ public class UnWrapper {
 		}
 		return true;
 	}
-	
-	
 
 	public static Object unwrap(FplValue p) {
 		Object u;
@@ -93,9 +115,9 @@ public class UnWrapper {
 		} else if (p instanceof FplInteger) {
 			u = Long.valueOf(((FplInteger) p).getValue());
 		} else if (p instanceof FplList) {
-			u = unwrap((FplList)p);
+			u = unwrap((FplList) p);
 		} else if (p instanceof FplObject) {
-			u = unwrap((FplObject)p);
+			u = unwrap((FplObject) p);
 		} else {
 			u = p;
 		}

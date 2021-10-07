@@ -1,7 +1,6 @@
 package de.codecentric.fpl.datatypes.list;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
@@ -17,14 +16,6 @@ import de.codecentric.fpl.datatypes.FplValue;
 
 public class ConstructorTests extends AbstractListTest {
 	@Test
-	public void empty() throws EvaluationException {
-		FplList list = FplList.fromValues(new FplValue[0]);
-		assertEquals(0, list.size());
-		assertFalse(list.iterator().hasNext());
-		assertEquals(0, list.bucketSizes().length);
-	}
-
-	@Test
 	public void elementConstructor() throws EvaluationException {
 		FplList list = FplList.fromValue(value(42));
 		assertEquals(1, list.size());
@@ -36,17 +27,6 @@ public class ConstructorTests extends AbstractListTest {
 	public void emptyListConstructor() throws EvaluationException {
 		FplList list = FplList.fromValues(Collections.emptyList());
 		assertEquals(0, list.size());
-	}
-
-	@Test
-	public void bigArrayConstructor() throws EvaluationException {
-		FplValue[] values = new FplValue[100];
-		for (int i = 0; i < values.length; i++) {
-			values[i] = value(i);
-		}
-		FplList list = FplList.fromValues(values);
-		check(list, 0, values.length);
-		assertEquals(1, list.bucketSizes().length);
 	}
 
 	@Test

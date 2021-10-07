@@ -1,7 +1,10 @@
 package de.codecentric.fpl.builtin;
 
+import java.util.Iterator;
+
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
+import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
@@ -19,17 +22,16 @@ public class ListFunctions implements ScopePopulator {
 	@Override
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
-		scope.define(
-				new AbstractFunction("quote", "Don't evaluate the argument, return it as is.", "expression") {
-					@Override
-					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-						if (parameters[0] instanceof Parameter) {
-							return ((Parameter) parameters[0]).quote(scope);
-						} else {
-							return parameters[0];
-						}
-					}
-				});
+		scope.define(new AbstractFunction("quote", "Don't evaluate the argument, return it as is.", "expression") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				if (parameters[0] instanceof Parameter) {
+					return ((Parameter) parameters[0]).quote(scope);
+				} else {
+					return parameters[0];
+				}
+			}
+		});
 
 		scope.define(new AbstractFunction("size", "Number of elements in a list.", "list") {
 			@Override
@@ -62,11 +64,31 @@ public class ListFunctions implements ScopePopulator {
 		scope.define(new AbstractFunction("list", "Make a list out of the parameters.", "element...") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				FplValue[] values = new FplValue[parameters.length];
-				for (int i = 0; i < parameters.length; i++) {
-					values[i] = evaluateToAny(scope, parameters[i]);
+				if (parameters.length == 0) {
+					return FplList.EMPTY_LIST;
+				} else {
+					try {
+						return FplList.fromIterator(new Iterator<FplValue>() {
+							int i = 0;
+
+							@Override
+							public boolean hasNext() {
+								return i < parameters.length;
+							}
+
+							@Override
+							public FplValue next() {
+								try {
+									return evaluateToAny(scope, parameters[i++]);
+								} catch (EvaluationException e) {
+									throw new TunnelException(e);
+								}
+							}
+						}, parameters.length);
+					} catch (TunnelException e) {
+						throw e.getTunnelledException();
+					}
 				}
-				return FplList.fromValues(values);
 			}
 		});
 

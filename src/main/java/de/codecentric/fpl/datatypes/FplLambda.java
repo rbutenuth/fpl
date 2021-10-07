@@ -1,5 +1,6 @@
 package de.codecentric.fpl.datatypes;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import de.codecentric.fpl.EvaluationException;
@@ -43,11 +44,21 @@ public class FplLambda extends AbstractFunction {
 				scopeParameters[i] = makeLazy(scope, parameters[i]);
 			}
 			int count = parameters.length - getMinimumNumberOfParameters();
-			FplValue[] varArgs = new FplValue[count];
-			for (int i = 0, j = lastNamedIndex; i < count; i++, j++) {
-				varArgs[i] = makeLazy(scope, parameters[j]);
-			}
-			scopeParameters[lastNamedIndex] = FplList.fromValues(varArgs); // TODO: change to fromIterator() to avoid copying
+			scopeParameters[lastNamedIndex] = FplList.fromIterator(new Iterator<FplValue>() {
+				int i = 0;
+				int j = lastNamedIndex;
+				
+				@Override
+				public boolean hasNext() {
+					return i < count;
+				}
+
+				@Override
+				public FplValue next() {
+					i++;
+					return makeLazy(scope, parameters[j++]);
+				}
+			}, count);
 		} else {
 			for (int i = 0; i < parameters.length; i++) {
 				scopeParameters[i] = makeLazy(scope, parameters[i]);
@@ -73,12 +84,18 @@ public class FplLambda extends AbstractFunction {
 	private FplValue compile(FplValue code, Map<String, Integer> parameterMap) {
 		if (code instanceof FplList) {
 			FplList list = (FplList) code;
-			FplValue[] compiled = new FplValue[list.size()];
-			int i = 0;
-			for (FplValue o : list) {
-				compiled[i++] = compile(o, parameterMap);
-			}
-			return FplList.fromValues(compiled); // TODO: Change to iterator to avoid copying
+			Iterator<FplValue> iter = list.iterator();
+			return FplList.fromIterator(new Iterator<FplValue>() {
+				@Override
+				public boolean hasNext() {
+					return iter.hasNext();
+				}
+				
+				@Override
+				public FplValue next() {
+					return compile(iter.next(), parameterMap);
+				}
+			}, list.size());
 		} else {
 			if (code instanceof Symbol) {
 				Symbol s = (Symbol) code;

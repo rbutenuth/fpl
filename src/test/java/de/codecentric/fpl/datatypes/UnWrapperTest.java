@@ -12,9 +12,10 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.datatypes.list.AbstractListTest;
 import de.codecentric.fpl.datatypes.list.FplList;
 
-public class UnWrapperTest {
+public class UnWrapperTest extends AbstractListTest {
 
 	@Test
 	public void instanciateUnWrapper() {
@@ -92,13 +93,9 @@ public class UnWrapperTest {
 	
 	@Test
 	public void unwrapList() throws EvaluationException {
-		FplValue[] values = new FplValue[4];
-		for (int i = 0; i < values.length; i++) {
-			values[i] = FplInteger.valueOf(i);
-		}
-		List<?> list = (List<?>) UnWrapper.unwrap(FplList.fromValues(values));
-		assertEquals(values.length, list.size());
-		for (int i = 0; i < values.length; i++) {
+		List<?> list = (List<?>) UnWrapper.unwrap(create(0, 4));
+		assertEquals(4, list.size());
+		for (int i = 0; i < 4; i++) {
 			assertEquals(Long.valueOf(i), list.get(i));
 		}
 	}

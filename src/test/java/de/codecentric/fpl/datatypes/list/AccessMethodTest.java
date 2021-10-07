@@ -72,7 +72,7 @@ public class AccessMethodTest extends AbstractListTest {
 	@Test
 	public void firstEmptyFails() throws EvaluationException {
 		assertThrows(EvaluationException.class, () -> {
-			FplList list = FplList.fromValues(new FplValue[0]);
+			FplList list = FplList.EMPTY_LIST;
 			list.first();
 		});
 	}
@@ -92,7 +92,7 @@ public class AccessMethodTest extends AbstractListTest {
 	@Test
 	public void removeFirstEmptyFails() throws EvaluationException {
 		assertThrows(EvaluationException.class, () -> {
-			FplList list = FplList.fromValues(new FplValue[0]);
+			FplList list = FplList.EMPTY_LIST;
 			list.removeFirst();
 		});
 	}
@@ -118,7 +118,7 @@ public class AccessMethodTest extends AbstractListTest {
 	@Test
 	public void lastEmptyFails() throws EvaluationException {
 		assertThrows(EvaluationException.class, () -> {
-			FplList list = FplList.fromValues(new FplValue[0]);
+			FplList list = FplList.EMPTY_LIST;
 			list.removeFirst();
 		});
 	}

@@ -6,12 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.FplString;
 
 public class DeconstructTests extends AbstractListTest {
 	@Test
 	public void removeFirstSizeOne() throws EvaluationException {
-		FplList list = FplList.fromValues(new FplValue[1]);
+		FplList list = FplList.fromValue(new FplString(""));
 		FplList rest = list.removeFirst();
 		assertEquals(0, rest.size());
 	}
@@ -48,7 +48,7 @@ public class DeconstructTests extends AbstractListTest {
 
 	@Test
 	public void removeLastSizeOne() throws EvaluationException {
-		FplList list = FplList.fromValues(new FplValue[1]);
+		FplList list = FplList.fromValue(new FplString(""));
 		FplList rest = list.removeLast();
 		assertEquals(0, rest.size());
 	}

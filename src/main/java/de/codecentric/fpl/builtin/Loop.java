@@ -136,7 +136,7 @@ public class Loop implements ScopePopulator {
 						results.add(value);
 					}
 				}
-				return FplList.fromValues(results);
+				return FplList.fromValues(results);  // TODO: Change to fromIterator to avoid copying
 			}
 		});
 	}

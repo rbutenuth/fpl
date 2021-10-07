@@ -1,6 +1,7 @@
 package de.codecentric.fpl.builtin;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
@@ -29,8 +30,7 @@ public class Parallel implements ScopePopulator {
 	@Override
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
 
-		scope.define(new AbstractFunction("thread-pool-size", "Create a new thread-pool with the given size.",
-				"size") {
+		scope.define(new AbstractFunction("thread-pool-size", "Create a new thread-pool with the given size.", "size") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				int size = (int) evaluateToLong(scope, parameters[0]);
@@ -64,7 +64,7 @@ public class Parallel implements ScopePopulator {
 					});
 				}
 
-				return FplList.fromValues(executeTasks(tasks));
+				return executeTasks(tasks);
 			}
 		});
 
@@ -90,7 +90,7 @@ public class Parallel implements ScopePopulator {
 						}
 					});
 				}
-				return FplList.fromValues(executeTasks(tasks));
+				return executeTasks(tasks);
 			}
 		});
 
@@ -101,27 +101,31 @@ public class Parallel implements ScopePopulator {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplList list = evaluateToList(scope, parameters[1]);
 				int size = list.size();
-				List<RecursiveTask<FplValue>> tasks = new ArrayList<>(size);
-				for (FplValue value : list) {
-					tasks.add(new RecursiveTask<FplValue>() {
-						private static final long serialVersionUID = -5037994686972663758L;
+				if (size == 0) {
+					return null;
+				} else {
+					List<RecursiveTask<FplValue>> tasks = new ArrayList<>(size);
+					for (FplValue value : list) {
+						tasks.add(new RecursiveTask<FplValue>() {
+							private static final long serialVersionUID = -5037994686972663758L;
 
-						@Override
-						protected FplValue compute() {
-							try {
-								return function.call(scope, new FplValue[] { value });
-							} catch (EvaluationException e) {
-								throw new TunnelException(e);
+							@Override
+							protected FplValue compute() {
+								try {
+									return function.call(scope, new FplValue[] { value });
+								} catch (EvaluationException e) {
+									throw new TunnelException(e);
+								}
 							}
-						}
-					});
+						});
+					}
+					return executeTasks(tasks).last();
 				}
-				FplValue[] values = executeTasks(tasks);
-				return values.length > 0 ? values[values.length - 1] : null;
 			}
 		});
 
-		scope.define(new AbstractFunction("create-future", "Create a future. Returns a function which waits for the result.", "code") {
+		scope.define(new AbstractFunction("create-future",
+				"Create a future. Returns a function which waits for the result.", "code") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				ForkJoinTask<FplValue> task = engine.getPool().submit(new RecursiveTask<FplValue>() {
@@ -151,24 +155,36 @@ public class Parallel implements ScopePopulator {
 		});
 
 	}
-	
-	private FplValue[] executeTasks(List<RecursiveTask<FplValue>> tasks) throws EvaluationException {
+
+	private FplList executeTasks(List<RecursiveTask<FplValue>> tasks) throws EvaluationException {
 		int size = tasks.size();
-		FplValue[] values = new FplValue[size];
-		try {
-			if (ForkJoinTask.inForkJoinPool()) {
-				ForkJoinTask.invokeAll(tasks);
-			} else {
-				for (RecursiveTask<FplValue> task : tasks) {
-					engine.getPool().execute(task);
-				}
+		if (ForkJoinTask.inForkJoinPool()) {
+			ForkJoinTask.invokeAll(tasks);
+		} else {
+			for (RecursiveTask<FplValue> task : tasks) {
+				engine.getPool().execute(task);
 			}
-			for (int i = 0; i < size; i++) {
-				values[i] = tasks.get(i).get();
-			}
-		} catch (InterruptedException | ExecutionException e) {
-			throw new EvaluationException(e);
 		}
-		return values;
+		try {
+			return FplList.fromIterator(new Iterator<FplValue>() {
+				int i = 0;
+
+				@Override
+				public boolean hasNext() {
+					return i < size;
+				}
+
+				@Override
+				public FplValue next() {
+					try {
+						return tasks.get(i++).get();
+					} catch (InterruptedException | ExecutionException e) {
+						throw new TunnelException(new EvaluationException(e));
+					}
+				}
+			}, size);
+		} catch (TunnelException e) {
+			throw e.getTunnelledException();
+		}
 	}
 }

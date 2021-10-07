@@ -56,7 +56,11 @@ public class Lambda implements ScopePopulator {
 				FplList paramList = evaluateToListIfNotAlreadyList(scope, parameters[1]);
 				FplValue[] code = new FplValue[parameters.length - 2];
 				System.arraycopy(parameters, 2, code, 0, code.length);
-				return defineFunction(scope, name, position, FplValue.comments(parameters[0]), paramList, code);
+				try {
+					return defineFunction(scope, name, position, FplValue.comments(parameters[0]), paramList, code);
+				} catch (IllegalArgumentException e) {
+					throw new EvaluationException(e.getMessage(), e);
+				}
 			}
 		});
 

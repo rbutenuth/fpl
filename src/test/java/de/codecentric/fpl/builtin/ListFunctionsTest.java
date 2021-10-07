@@ -154,6 +154,13 @@ public class ListFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void listConstructorWithException() throws Exception {
+		assertThrows(EvaluationException.class, () -> {
+			evaluate("list", "(list (/ 1 0))");
+		});
+	}
+
+	@Test
 	public void first() throws Exception {
 		FplInteger li = (FplInteger) evaluate("first", "(first '(1 2 3))");
 		assertEquals(1, li.getValue());

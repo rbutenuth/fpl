@@ -88,7 +88,9 @@ public class AddTest extends AbstractListTest {
 
 	@Test
 	public void addAtStartOnListWithBigFirstBucket() throws EvaluationException {
-		FplList list = create(1, 100);
+		int sizes[] = new int[1];
+		sizes[0] = 99;
+		FplList list = create(1, 100, sizes);
 		list = list.addAtStart(value(0));
 		check(list, 0, 100);
 		checkSizes(list, 1, 99);
@@ -96,7 +98,9 @@ public class AddTest extends AbstractListTest {
 
 	@Test
 	public void addAtEndOnListWithBigLastBucket() throws EvaluationException {
-		FplList list = create(0, 99);
+		int sizes[] = new int[1];
+		sizes[0] = 99;
+		FplList list = create(0, 99, sizes);
 		list = list.addAtEnd(value(99));
 		check(list, 0, 100);
 		checkSizes(list, 99, 1);

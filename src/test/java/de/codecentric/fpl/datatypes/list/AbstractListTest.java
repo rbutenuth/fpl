@@ -43,11 +43,13 @@ public class AbstractListTest {
 	/**
 	 * @param from first element of generated list (including)
 	 * @param to   last element of generated list (excluding)
-	 * @return List of {@link FplInteger}, including <code>start</code> and
+	 * @return List of {@link FplInteger}, including <code>start</code> and excluding
 	 *         <code>end</code>
 	 */
 	public static FplList create(int from, int to) {
-		return FplList.fromValues(createValues(from, to));
+		int bucketSizes[] = new int[1];
+		bucketSizes[0] = to - from;
+		return FplList.fromValuesWithShape(createValues(from, to), bucketSizes);
 	}
 
 	public static  FplValue[] createValues(int from, int to) {

@@ -28,7 +28,7 @@ public class FplWrapper extends AbstractFunction {
 	private final Class<?> clazz;
 	private final Object instance;
 
-	public FplWrapper(Object value) throws EvaluationException {
+	public FplWrapper(Object value) {
 		super(value.getClass().getName(), "", "args...");
 		clazz = value.getClass();
 		instance = value;

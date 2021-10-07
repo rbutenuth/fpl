@@ -19,6 +19,7 @@ import com.jsoniter.output.JsonStream;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
+import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
@@ -45,7 +46,8 @@ public class StringFunctions implements ScopePopulator {
 					AbstractFunction f = (AbstractFunction) value;
 					sb.append("Function ").append(f.getName()).append(nl);
 					sb.append(f.getComment()).append(nl);
-					for (Iterator<String> paramIter = f.getParameterNameToIndex().keySet().iterator(); paramIter.hasNext();) {
+					for (Iterator<String> paramIter = f.getParameterNameToIndex().keySet().iterator(); paramIter
+							.hasNext();) {
 						String param = paramIter.next();
 						sb.append("* ").append(param);
 						if (!paramIter.hasNext() && f.isVararg()) {
@@ -76,7 +78,7 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("format-number", 
+		scope.define(new AbstractFunction("format-number",
 				"Format a number to string format. The format is a Java DecimalFormat string. The locale a two letter locale.",
 				"format", "locale", "number") {
 
@@ -96,7 +98,7 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("parse-number", 
+		scope.define(new AbstractFunction("parse-number",
 				"Parse a string to a number. The format is a Java NumberFormat string. The locale a two letter locale.",
 				"format", "locale", "string") {
 
@@ -119,17 +121,17 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("length", "Determine the length (number of characters) of a string.",
-				"string") {
+		scope.define(
+				new AbstractFunction("length", "Determine the length (number of characters) of a string.", "string") {
 
-			@Override
-			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return FplInteger.valueOf(evaluateToString(scope, parameters[0]).length());
-			}
-		});
+					@Override
+					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+						return FplInteger.valueOf(evaluateToString(scope, parameters[0]).length());
+					}
+				});
 
-		scope.define(new AbstractFunction("char-at",
-				"Return the code (integer) of the character at position index.", "string", "index") {
+		scope.define(new AbstractFunction("char-at", "Return the code (integer) of the character at position index.",
+				"string", "index") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -202,20 +204,33 @@ public class StringFunctions implements ScopePopulator {
 				Matcher m = pattern.matcher(evaluateToString(scope, parameters[0]));
 				if (m.find()) {
 					// 2+: index of match, group 0 (match), which is not counted by groupCount()
-					FplValue[] values = new FplValue[2 + m.groupCount()];
-					values[0] = FplInteger.valueOf(m.start());
-					for (int i = 1; i < values.length; i++) {
-						String group  = m.group(i - 1);
-						values[i] = new FplString(group == null ? "" : group);
-					}
-					return FplList.fromValues(values);
+					int count = 2 + m.groupCount();
+					return FplList.fromIterator(new Iterator<FplValue>() {
+						int i = 0;
+
+						@Override
+						public boolean hasNext() {
+							return i < count;
+						}
+
+						@Override
+						public FplValue next() {
+							if (i == 0) {
+								i++;
+								return FplInteger.valueOf(m.start());
+							} else {
+								String group = m.group(i++ - 1);
+								return new FplString(group == null ? "" : group);
+							}
+						}
+					}, count);
 				} else {
 					return FplList.EMPTY_LIST;
 				}
 			}
 		});
 
-		scope.define(new AbstractFunction("replace-all", 
+		scope.define(new AbstractFunction("replace-all",
 				"Replaces each substring of this string that matches the given regex with the given replacement. "
 						+ "(See String.replaceAll for more details.)",
 				"string", "regex", "replacement") {
@@ -229,23 +244,21 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(
-				new AbstractFunction("to-lower-case", "Convert the string to lower case.", "string") {
+		scope.define(new AbstractFunction("to-lower-case", "Convert the string to lower case.", "string") {
 
-					@Override
-					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-						return new FplString(evaluateToString(scope, parameters[0]).toLowerCase());
-					}
-				});
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				return new FplString(evaluateToString(scope, parameters[0]).toLowerCase());
+			}
+		});
 
-		scope.define(
-				new AbstractFunction("to-upper-case", "Convert the string to upper case.", "string") {
+		scope.define(new AbstractFunction("to-upper-case", "Convert the string to upper case.", "string") {
 
-					@Override
-					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-						return new FplString(evaluateToString(scope, parameters[0]).toUpperCase());
-					}
-				});
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				return new FplString(evaluateToString(scope, parameters[0]).toUpperCase());
+			}
+		});
 
 		scope.define(new AbstractFunction("symbol", "Create a symbol.", "string") {
 
@@ -255,155 +268,166 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(
-				new AbstractFunction("name-of-symbol", "Determine the name of a symbol.", "symbol") {
+		scope.define(new AbstractFunction("name-of-symbol", "Determine the name of a symbol.", "symbol") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				return new FplString(((Symbol) parameters[0].evaluate(scope)).getName());
+			}
+		});
+
+		scope.define(new AbstractFunction("serialize-to-json", "Convert value to JSON string.", "value") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				FplValue value = parameters[0].evaluate(scope);
+				StringBuilder sb = new StringBuilder();
+				serialize(sb, value);
+				return new FplString(sb.toString());
+			}
+
+			private void serialize(StringBuilder sb, FplValue value) throws EvaluationException {
+				if (value == null) {
+					sb.append("null");
+				} else if (value instanceof FplList) {
+					serialiazeList(sb, (FplList) value);
+				} else if (value instanceof FplObject) {
+					serializeObject(sb, (FplObject) value);
+				} else if (value instanceof FplDouble) {
+					serializeDouble(sb, (FplDouble) value);
+				} else if (value instanceof FplInteger) {
+					serializeInteger(sb, (FplInteger) value);
+				} else if (value instanceof FplString) {
+					serializeString(sb, (FplString) value);
+				} else if (value instanceof Symbol) {
+					serializeSymbol(sb, (Symbol) value);
+				} else {
+					throw new EvaluationException("Can't serialize " + value.typeName() + " to json");
+				}
+			}
+
+			private void serialiazeList(StringBuilder sb, FplList list) throws EvaluationException {
+				sb.append("[");
+				boolean first = true;
+				for (FplValue value : list) {
+					if (!first) {
+						sb.append(",");
+					}
+					first = false;
+					serialize(sb, value);
+				}
+				sb.append("]");
+			}
+
+			private void serializeObject(StringBuilder sb, FplObject object) throws EvaluationException {
+				boolean first = true;
+				sb.append("{");
+				for (Entry<String, FplValue> entry : object) {
+					if (!first) {
+						sb.append(",");
+					}
+					sb.append(JsonStream.serialize(entry.getKey()));
+					sb.append(":");
+					serialize(sb, entry.getValue());
+					first = false;
+				}
+				sb.append("}");
+			}
+
+			private void serializeDouble(StringBuilder sb, FplDouble d) throws EvaluationException {
+				sb.append(JsonStream.serialize(d.getValue()));
+			}
+
+			private void serializeInteger(StringBuilder sb, FplInteger i) throws EvaluationException {
+				sb.append(JsonStream.serialize(i.getValue()));
+			}
+
+			private void serializeString(StringBuilder sb, FplString str) throws EvaluationException {
+				sb.append(JsonStream.serialize(str.getContent()));
+			}
+
+			private void serializeSymbol(StringBuilder sb, Symbol symbol) throws EvaluationException {
+				String name = symbol.getName();
+				if (name.equalsIgnoreCase("true")) {
+					sb.append("true");
+				} else if (name.equalsIgnoreCase("false")) {
+					sb.append("false");
+				} else {
+					sb.append(JsonStream.serialize(name));
+				}
+			}
+		});
+
+		scope.define(new AbstractFunction("parse-json",
+				"Convert a JSON string to list/object. In case the JSON contain a key \"nil\","
+						+ " it is converted to \"<nil>\", as \"nil\" is not a valid symbol in FPL.",
+				"string") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				String str = evaluateToString(scope, parameters[0]);
+				Any parsed = JsonIterator.deserialize(str);
+				try {
+					return deserialize(parsed);
+				} catch (TunnelException e) {
+					throw new EvaluationException(e.getMessage(), e);
+				}
+			}
+
+			private FplValue deserialize(Any any) {
+				ValueType t = any.valueType();
+				if (t == ValueType.ARRAY) {
+					return deserializeList(any.asList());
+				} else if (t == ValueType.OBJECT) {
+					return deserializeMap(any.asMap());
+				} else if (t == ValueType.STRING) {
+					return new FplString(any.toString());
+				} else if (t == ValueType.BOOLEAN) {
+					return any.toBoolean() ? FplInteger.valueOf(1) : FplInteger.valueOf(0);
+				} else if (t == ValueType.NUMBER) {
+					return deserializeNumber(any);
+				} else { // ValueType.NULL or INVALID
+					return null;
+				}
+			}
+
+			private FplValue deserializeList(List<Any> list) {
+				int size = list.size();
+				return FplList.fromIterator(new Iterator<FplValue>() {
+					int i = 0;
 
 					@Override
-					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-						return new FplString(((Symbol) parameters[0].evaluate(scope)).getName());
+					public boolean hasNext() {
+						return i < size;
 					}
-				});
-
-		scope.define(
-				new AbstractFunction("serialize-to-json", "Convert value to JSON string.", "value") {
 
 					@Override
-					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-						FplValue value = parameters[0].evaluate(scope);
-						StringBuilder sb = new StringBuilder();
-						serialize(sb, value);
-						return new FplString(sb.toString());
+					public FplValue next() {
+						return deserialize(list.get(i++));
 					}
+				}, size);
+			}
 
-					private void serialize(StringBuilder sb, FplValue value) throws EvaluationException {
-						if (value == null) {
-							sb.append("null");
-						} else if (value instanceof FplList) {
-							serialiazeList(sb, (FplList) value);
-						} else if (value instanceof FplObject) {
-							serializeObject(sb, (FplObject) value);
-						} else if (value instanceof FplDouble) {
-							serializeDouble(sb, (FplDouble) value);
-						} else if (value instanceof FplInteger) {
-							serializeInteger(sb, (FplInteger) value);
-						} else if (value instanceof FplString) {
-							serializeString(sb, (FplString) value);
-						} else if (value instanceof Symbol) {
-							serializeSymbol(sb, (Symbol) value);
-						} else {
-							throw new EvaluationException("Can't serialize " + value.typeName() + " to json");
-						}
+			private FplValue deserializeMap(Map<String, Any> map) {
+				FplObject obj = new FplObject("dict");
+				for (Map.Entry<String, Any> entry : map.entrySet()) {
+					try {
+						obj.put(entry.getKey(), deserialize(entry.getValue()));
+					} catch (ScopeException e) {
+						throw new TunnelException(new EvaluationException(e.getMessage(), e));
 					}
+				}
+				return obj;
+			}
 
-					private void serialiazeList(StringBuilder sb, FplList list) throws EvaluationException {
-						sb.append("[");
-						boolean first = true;
-						for (FplValue value : list) {
-							if (!first) {
-								sb.append(",");
-							}
-							first = false;
-							serialize(sb, value);
-						}
-						sb.append("]");
-					}
-
-					private void serializeObject(StringBuilder sb, FplObject object) throws EvaluationException {
-						boolean first = true;
-						sb.append("{");
-						for (Entry<String, FplValue> entry : object) {
-							if (!first) {
-								sb.append(",");
-							}
-							sb.append(JsonStream.serialize(entry.getKey()));
-							sb.append(":");
-							serialize(sb, entry.getValue());
-							first = false;
-						}
-						sb.append("}");
-					}
-
-					private void serializeDouble(StringBuilder sb, FplDouble d) throws EvaluationException {
-						sb.append(JsonStream.serialize(d.getValue()));
-					}
-
-					private void serializeInteger(StringBuilder sb, FplInteger i) throws EvaluationException {
-						sb.append(JsonStream.serialize(i.getValue()));
-					}
-
-					private void serializeString(StringBuilder sb, FplString str) throws EvaluationException {
-						sb.append(JsonStream.serialize(str.getContent()));
-					}
-					
-					private void serializeSymbol(StringBuilder sb, Symbol symbol) throws EvaluationException {
-						String name = symbol.getName();
-						if (name.equalsIgnoreCase("true")) {
-							sb.append("true");
-						} else if (name.equalsIgnoreCase("false")) {
-							sb.append("false");
-						} else {
-							sb.append(JsonStream.serialize(name));
-						}
-					}
-				});
-
-		scope.define(
-				new AbstractFunction("parse-json",
-						"Convert a JSON string to list/object. In case the JSON contain a key \"nil\","
-								+ " it is converted to \"<nil>\", as \"nil\" is not a valid symbol in FPL.",
-						"string") {
-
-					@Override
-					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-						String str = evaluateToString(scope, parameters[0]);
-						Any parsed = JsonIterator.deserialize(str);
-						try {
-							return deserialize(parsed);
-						} catch (ScopeException e) {
-							throw new EvaluationException(e.getMessage(), e);
-						}
-					}
-
-					private FplValue deserialize(Any any) throws EvaluationException, ScopeException {
-						ValueType t = any.valueType();
-						if (t == ValueType.ARRAY) {
-							return deserializeList(any.asList());
-						} else if (t == ValueType.OBJECT) {
-							return deserializeMap(any.asMap());
-						} else if (t == ValueType.STRING) {
-							return new FplString(any.toString());
-						} else if (t == ValueType.BOOLEAN) {
-							return any.toBoolean() ? FplInteger.valueOf(1) : FplInteger.valueOf(0);
-						} else if (t == ValueType.NUMBER) {
-							return deserializeNumber(any);
-						} else { // ValueType.NULL or INVALID
-							return null;
-						}
-					}
-
-					private FplValue deserializeList(List<Any> list) throws EvaluationException, ScopeException {
-						int size = list.size();
-						FplValue[] entries = new FplValue[size];
-						for (int i = 0; i < size; i++) {
-							entries[i] = deserialize(list.get(i));
-						}
-						return FplList.fromValues(entries); // TODO: Change to fromIterator to avoid copying
-					}
-
-					private FplValue deserializeMap(Map<String, Any> map) throws ScopeException, EvaluationException {
-						FplObject obj = new FplObject("dict");
-						for (Map.Entry<String, Any> entry : map.entrySet()) {
-							obj.define(entry.getKey(), deserialize(entry.getValue()));
-						}
-						return obj;
-					}
-
-	private FplValue deserializeNumber(Any any) {
-		String s = any.toString();
-		if (s.indexOf('.') >= 0) {
-			return new FplDouble(any.toDouble());
-		} else {
-			return FplInteger.valueOf(any.toLong());
-		}
+			private FplValue deserializeNumber(Any any) {
+				String s = any.toString();
+				if (s.indexOf('.') >= 0) {
+					return new FplDouble(any.toDouble());
+				} else {
+					return FplInteger.valueOf(any.toLong());
+				}
+			}
+		});
 	}
-});}}
+}

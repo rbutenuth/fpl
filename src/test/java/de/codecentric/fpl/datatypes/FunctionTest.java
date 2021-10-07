@@ -62,7 +62,7 @@ public class FunctionTest extends AbstractFplTest {
 	@Test
 	public void evaluateNonEmptyListToBoolean() throws Exception {
 		Scope scope = new MapScope("test");
-		scope.put("x", FplList.fromValues(new FplValue[] { new FplString("baz") }));
+		scope.put("x", FplList.fromValue(new FplString("baz")));
 		assertTrue(AbstractFunction.evaluateToBoolean(scope, new Symbol("x")));
 	}
 

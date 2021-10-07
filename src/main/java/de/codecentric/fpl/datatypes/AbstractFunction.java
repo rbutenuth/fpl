@@ -48,7 +48,7 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	 *                       function is variable argument function.
 	 * @throws IllegalArgumentException When a name is empty/null or in case of duplicate parameter names.
 	 */
-	protected AbstractFunction(Position position, String name, String comment, String... parameterNames) throws EvaluationException {
+	protected AbstractFunction(Position position, String name, String comment, String... parameterNames) {
 		if (name == null || name.length() == 0) {
 			throw new IllegalArgumentException("empty or null name");
 		}
@@ -67,7 +67,7 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 				param = param.substring(0, param.length() - 3);
 			}
 			if (map.containsKey(param)) {
-				throw new EvaluationException("Duplicate parameter name: " + param);
+				throw new IllegalArgumentException("Duplicate parameter name: " + param);
 			}
 			map.put(param, i);
 		}
@@ -83,8 +83,9 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	 * @param comment        Comment in markdown syntax
 	 * @param parameterNames Names of the parameters. If last ends with "...",
 	 *                       function is variable argument function.
+	 * @throws IllegalArgumentException When a name is empty/null or in case of duplicate parameter names.
 	 */
-	protected AbstractFunction(String name, String comment, String... parameterNames) throws EvaluationException {
+	protected AbstractFunction(String name, String comment, String... parameterNames) {
 		this(Position.INTERNAL, name, comment, parameterNames);
 	}
 

@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -69,7 +70,7 @@ public class InputOutput implements ScopePopulator {
 							}
 							values.add(value);
 						}
-						return FplList.fromValues(values);
+						return FplList.fromValues(values);  // TODO: Change to fromIterator to avoid copying
 					}
 				} catch (IOException | URISyntaxException e) {
 					EvaluationException ee = new EvaluationException(e.getMessage(), e);
@@ -100,7 +101,7 @@ public class InputOutput implements ScopePopulator {
 						}
 						values.add(value);
 					}
-					return FplList.fromValues(values);
+					return FplList.fromValues(values);  // TODO: Change to fromIterator to avoid copying
 				} catch (ParseException | IOException e) {
 					EvaluationException ee = new EvaluationException(e.getMessage(), e);
 					// the cast does not have to be protected, the IOException will never be thrown
@@ -192,11 +193,9 @@ public class InputOutput implements ScopePopulator {
 						}
 					}
 					HttpResponse res = new HttpClient().execute(req);
-					FplValue[] values = new FplValue[3];
-					values[0] = FplInteger.valueOf(res.getStatusCode());
-					values[1] = fplHeaders(res);
-					values[2] = res.hasBody() ? new FplString(res.getBodyAsString("UTF-8")) : null;
-					return FplList.fromValues(values);
+					return FplList.fromValues(FplInteger.valueOf(res.getStatusCode()),
+							fplHeaders(res),
+							res.hasBody() ? new FplString(res.getBodyAsString("UTF-8")) : null);
 				} catch (IOException | ScopeException e) {
 					throw new EvaluationException(e.getMessage(), e);
 				}
@@ -413,11 +412,19 @@ public class InputOutput implements ScopePopulator {
 			if (count == 1) {
 				params.put(name, new FplString(values.get(0)));
 			} else {
-				FplValue[] array = new FplString[count];
-				for (int i = 0; i < count; i++) {
-					array[i] = new FplString(values.get(i));
-				}
-				params.put(name, FplList.fromValues(array));
+				params.put(name, FplList.fromIterator(new Iterator<FplValue>() {
+					int i = 0;
+					
+					@Override
+					public boolean hasNext() {
+						return i < count;
+					}
+
+					@Override
+					public FplValue next() {
+						return new FplString(values.get(i++));
+					}
+				} , count));
 			}
 		}
 		return params;
@@ -432,11 +439,19 @@ public class InputOutput implements ScopePopulator {
 				if (count == 1) {
 					headers.put(name.toLowerCase(), new FplString(values.get(0)));
 				} else {
-					FplValue[] array = new FplString[count];
-					for (int i = 0; i < count; i++) {
-						array[i] = new FplString(values.get(i));
-					}
-					headers.put(name.toLowerCase(), FplList.fromValues(array));
+					headers.put(name.toLowerCase(), FplList.fromIterator(new Iterator<FplValue>() {
+						int i = 0;
+						
+						@Override
+						public boolean hasNext() {
+							return i < count;
+						}
+
+						@Override
+						public FplValue next() {
+							return new FplString(values.get(i++));
+						}
+					} , count));
 				}
 			}
 		}
