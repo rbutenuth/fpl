@@ -122,8 +122,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 					currentBucket[currentBucketUsed++] = value;
 				} else {
 					// Last bucket is full, create a new one
-					FplValue[][] newData = new FplValue[data.length + 1][];
-					arraycopy(data, 0, newData, 0, data.length);
+					FplValue[][] newData = copyOf(data, data.length + 1);
 					bucketSize += bucketSize / 2; // * 1.5
 					data = newData;
 					data[data.length - 1] = currentBucket = new FplValue[bucketSize];
@@ -133,9 +132,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			}
 			
 			if (currentBucket.length > currentBucketUsed) {
-				FplValue[] shrinked = new FplValue[currentBucketUsed];
-				arraycopy(currentBucket, 0, shrinked, 0, currentBucketUsed);
-				data[data.length - 1] = shrinked;
+				data[data.length - 1] = copyOf(currentBucket, currentBucketUsed);
 			}
 			
 			return new FplList(data);
@@ -252,15 +249,11 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		checkNotEmpty();
 		int lastIdx = shape.length - 1;
 		if (shape[lastIdx].length == 1) {
-			FplValue[][] bucketsDst = new FplValue[shape.length - 1][];
-			arraycopy(shape, 0, bucketsDst, 0, bucketsDst.length);
-			return new FplList(bucketsDst);
+			return new FplList(copyOf(shape, shape.length - 1));
 		}
 		if (shape[lastIdx].length <= BASE_SIZE + 1) {
-			FplValue[][] bucketsDst = new FplValue[shape.length][];
-			arraycopy(shape, 0, bucketsDst, 0, bucketsDst.length - 1);
-			bucketsDst[lastIdx] = new FplValue[shape[lastIdx].length - 1];
-			arraycopy(shape[lastIdx], 0, bucketsDst[lastIdx], 0, bucketsDst[lastIdx].length);
+			FplValue[][] bucketsDst = copyOf(shape, shape.length);
+			bucketsDst[lastIdx] = copyOf(shape[lastIdx], shape[lastIdx].length - 1);
 			return new FplList(bucketsDst);
 		}
 		int count = shape[lastIdx].length - 1;
@@ -405,12 +398,14 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			}
 
 			lastSize = bucketSize;
+			
 			bucketIdx--;
 			carrySize += bucketSize;
 			maxSize *= FACTOR;
 		}
 		// buckedIdx points to the first bucket which is NOT part of the carry
-		FplValue[][] bucketsDst = new FplValue[bucketIdx + 2][];
+		// Copy buckets (before carry)
+		FplValue[][] bucketsDst = copyOf(shape, bucketIdx + 2);
 
 		// Collect carry
 		FplValue[] carry = new FplValue[carrySize];
@@ -420,9 +415,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			arraycopy(shape[i], 0, carry, dst, shape[i].length);
 			dst += shape[i].length;
 		}
-		// Copy buckets (before carry)
-		arraycopy(shape, 0, bucketsDst, 0, bucketsDst.length - 1);
-
 		return new FplList(bucketsDst);
 	}
 
@@ -449,10 +441,8 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			if (needsReshaping(totalBuckets - 1, totalSize)) {
 				return new FplList(mergedShape(shape, list.shape, totalSize));
 			} else {
-				FplValue[][] buckets = new FplValue[shape.length + list.shape.length - 1][];
-				arraycopy(shape, 0, buckets, 0, shape.length - 1);
-				FplValue[] bucket = new FplValue[lastBucket.length + listFirstBucket.length];
-				arraycopy(lastBucket, 0, bucket, 0, lastBucket.length);
+				FplValue[][] buckets = copyOf(shape, shape.length + list.shape.length - 1);
+				FplValue[] bucket = copyOf(lastBucket, lastBucket.length + listFirstBucket.length);
 				arraycopy(listFirstBucket, 0, bucket, lastBucket.length, listFirstBucket.length);
 				buckets[shape.length - 1] = bucket;
 				arraycopy(list.shape, 1, buckets, shape.length, list.shape.length - 1);
@@ -645,8 +635,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				rest -= size;
 				bucketSize *= FACTOR;
 			}
-			bucketsDst[bucketDstIndex] = new FplValue[rest];
-			arraycopy(bucket, 0, bucketsDst[bucketDstIndex], 0, rest);
+			bucketsDst[bucketDstIndex] = copyOf(bucket, rest);
 		}
 	}
 
@@ -719,8 +708,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			count += shape[fromBucketIdx++].length;
 		}
 		if (fromBucketIdx < shape.length && count == to) {
-			data = new FplValue[fromBucketIdx][];
-			arraycopy(shape, 0, data, 0, data.length);
+			data = copyOf(shape,  fromBucketIdx);
 		} else {
 			data = createShapeForSplitting(to);
 			fromBucketIdx = 0;
