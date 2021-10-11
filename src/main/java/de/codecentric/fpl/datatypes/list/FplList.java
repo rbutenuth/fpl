@@ -3,6 +3,7 @@ package de.codecentric.fpl.datatypes.list;
 import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToFunction;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.copyOf;
+import static java.util.Arrays.copyOfRange;
 
 import java.util.Iterator;
 import java.util.List;
@@ -161,8 +162,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int i = 0;
 		for (int bucketIdx = 0; bucketIdx < bucketSizes.length; bucketIdx++) {
 			int size = bucketSizes[bucketIdx];
-			data[bucketIdx] = new FplValue[size];
-			arraycopy(values, i, data[bucketIdx], 0, size);
+			data[bucketIdx] = copyOfRange(values, i, i + size);
 			i += size;
 		}
 		return new FplList(data);
@@ -194,15 +194,11 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	public FplList removeFirst() throws EvaluationException {
 		checkNotEmpty();
 		if (shape[0].length == 1) {
-			FplValue[][] bucketsDst = new FplValue[shape.length - 1][];
-			arraycopy(shape, 1, bucketsDst, 0, bucketsDst.length);
-			return new FplList(bucketsDst);
+			return new FplList(copyOfRange(shape, 1, shape.length));
 		}
 		if (shape[0].length <= BASE_SIZE + 1) {
-			FplValue[][] bucketsDst = new FplValue[shape.length][];
-			arraycopy(shape, 1, bucketsDst, 1, bucketsDst.length - 1);
-			bucketsDst[0] = new FplValue[shape[0].length - 1];
-			arraycopy(shape[0], 1, bucketsDst[0], 0, bucketsDst[0].length);
+			FplValue[][] bucketsDst = copyOf(shape, shape.length);
+			bucketsDst[0] = copyOfRange(shape[0], 1, shape[0].length);
 			return new FplList(bucketsDst);
 		}
 		// First bucket is too large, split it according "ideal" shape
@@ -217,8 +213,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 		FplValue[][] bucketsDst = new FplValue[shape.length + additionalBuckets][];
 		bucketFillSize = BASE_SIZE / 2;
-		bucketsDst[0] = new FplValue[bucketFillSize];
-		arraycopy(shape[0], 1, bucketsDst[0], 0, bucketFillSize);
+		bucketsDst[0] = copyOfRange(shape[0], 1, 1 + bucketFillSize);
 
 		int dstIdx = 1;
 		count = shape[0].length - 1 - bucketFillSize;
@@ -228,8 +223,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			if (bucketFillSize > count) {
 				bucketFillSize = count;
 			}
-			bucketsDst[dstIdx] = new FplValue[bucketFillSize];
-			arraycopy(shape[0], inBucketIdx, bucketsDst[dstIdx], 0, bucketFillSize);
+			bucketsDst[dstIdx] = copyOfRange(shape[0], inBucketIdx, inBucketIdx + bucketFillSize);
 			dstIdx++;
 			inBucketIdx += bucketFillSize;
 			count -= bucketFillSize;
@@ -269,8 +263,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		bucketFillSize = BASE_SIZE / 2;
 		int dstIdx = shape.length + additionalBuckets - 1;
 		int inBucketIdx = shape[lastIdx].length - bucketFillSize - 1;
-		bucketsDst[dstIdx] = new FplValue[bucketFillSize];
-		arraycopy(shape[lastIdx], inBucketIdx, bucketsDst[dstIdx], 0, bucketFillSize);
+		bucketsDst[dstIdx] = copyOfRange(shape[lastIdx], inBucketIdx, inBucketIdx + bucketFillSize);
 
 		dstIdx--;
 		count = shape[lastIdx].length - 1 - bucketFillSize;
@@ -280,8 +273,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				bucketFillSize = count;
 			}
 			inBucketIdx -= bucketFillSize;
-			bucketsDst[dstIdx] = new FplValue[bucketFillSize];
-			arraycopy(shape[lastIdx], inBucketIdx, bucketsDst[dstIdx], 0, bucketFillSize);
+			bucketsDst[dstIdx] = copyOfRange(shape[lastIdx], inBucketIdx, inBucketIdx + bucketFillSize);
 			dstIdx--;
 			count -= bucketFillSize;
 		}
@@ -607,15 +599,13 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			int rest = bucket.length - inBucketFromIdx;
 			while (rest > bucketSize) {
 				int size = Math.min(bucketSize / 2, rest);
-				bucketsDst[bucketDstIndex] = new FplValue[size];
-				arraycopy(bucket, inBucketFromIdx, bucketsDst[bucketDstIndex], 0, size);
+				bucketsDst[bucketDstIndex] = copyOfRange(bucket, inBucketFromIdx, inBucketFromIdx + size);
 				bucketDstIndex++;
 				inBucketFromIdx += size;
 				rest -= size;
 				bucketSize *= FACTOR;
 			}
-			bucketsDst[bucketDstIndex] = new FplValue[rest];
-			arraycopy(bucket, inBucketFromIdx, bucketsDst[bucketDstIndex], 0, rest);
+			bucketsDst[bucketDstIndex] =  copyOfRange(bucket, inBucketFromIdx, inBucketFromIdx + rest);
 		}
 	}
 
@@ -628,8 +618,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			int rest = inBucketToIdx + 1;
 			while (rest > bucketSize) {
 				int size = Math.min(bucketSize / 2, rest);
-				bucketsDst[bucketDstIndex] = new FplValue[size];
-				arraycopy(bucket, inBucketToIdx - size + 1, bucketsDst[bucketDstIndex], 0, size);
+				bucketsDst[bucketDstIndex] = copyOfRange(bucket, inBucketToIdx - size + 1, inBucketToIdx + 1);
 				bucketDstIndex--;
 				inBucketToIdx += size;
 				rest -= size;
@@ -671,10 +660,9 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	private FplList subListFromOneLargeArray(FplValue[] fplValues, int first, int behindLast) {
 		int size = behindLast - first;
 		if (size <= BASE_SIZE) {
-			FplValue[] b = new FplValue[size];
+			FplValue[] b = copyOfRange(fplValues, first, first + size);
 			FplValue[][] data = new FplValue[1][];
 			data[0] = b;
-			arraycopy(fplValues, first, b, 0, size);
 			return new FplList(data);
 		} else {
 			FplValue[][] bucketsDst = createEmptyShape(size);
@@ -721,7 +709,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				toBucket[inToBucketIdx++] = fromBucket[inFromBucketIdx++];
 				if (inFromBucketIdx == fromBucket.length) {
 					// We can never hit the last value in the last bucket,
-					// so here no if necessary as for toBucketIdx
+					// so here no "if" necessary as for toBucketIdx
 					fromBucket = shape[++fromBucketIdx];
 					inFromBucketIdx = 0;
 				}
@@ -758,8 +746,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		}
 		fromBucketIdx++;
 		if (count == size) {
-			data = new FplValue[shape.length - fromBucketIdx][];
-			arraycopy(shape, fromBucketIdx, data, 0, data.length);
+			data = copyOfRange(shape, fromBucketIdx, shape.length);  // new FplValue[shape.length - fromBucketIdx][];
 		} else {
 			data = createShapeForSplitting(size);
 
