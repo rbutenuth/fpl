@@ -260,6 +260,31 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("split", "Split string by regular expression, limit number of results if limit is positive. " 
+				+ "0 will return all, but omit trailing empty string. -1 will return all.", "input-string", "regex", "limit") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				String input = evaluateToString(scope, parameters[0]);
+				String regex = evaluateToString(scope, parameters[1]);
+				int limit = (int)evaluateToLong(scope, parameters[2]);
+				String[] splitted = input.split(regex, limit);
+				return FplList. fromIterator(new Iterator<FplValue>() {
+					int i = 0;
+					
+					@Override
+					public boolean hasNext() {
+						return i < splitted.length;
+					}
+
+					@Override
+					public FplValue next() {
+						return new FplString(splitted[i++]);
+					}
+				}, splitted.length);
+			}
+		});
+
 		scope.define(new AbstractFunction("symbol", "Create a symbol.", "string") {
 
 			@Override

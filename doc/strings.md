@@ -82,6 +82,13 @@ Convert the string to upper case.
 (to-upper-case string)
 ```
 
+### split
+Split string by regular expression, limit number of results if limit is positive.
+0 will return all, but omit trailing empty string. -1 will return all.
+```
+(split input-string regex limit)
+```
+
 ### symbol
 Create a symbol.
 ```

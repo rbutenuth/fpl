@@ -239,6 +239,16 @@ public class StringFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void split() throws Exception {
+		FplList list = (FplList) evaluate("split", "(split \"foo bar baz \" \" \" -1)");
+		assertEquals(4, list.size());
+		assertEquals("foo", ((FplString) list.get(0)).getContent());		
+		assertEquals("bar", ((FplString) list.get(1)).getContent());		
+		assertEquals("baz", ((FplString) list.get(2)).getContent());		
+		assertEquals("", ((FplString) list.get(3)).getContent());		
+	}
+
+	@Test
 	public void symbol() throws Exception {
 		Symbol s = (Symbol) evaluate("symbol", "(symbol \"abcdef\")");
 		assertEquals("abcdef", s.getName());
