@@ -25,6 +25,13 @@ Write the content of a string to a file. Use UTF-8 as encoding.
 (write-string-to-file filename content)
 ```
 
+### read-string-from-file
+Read the content from file.
+The file must be UTF-8 encoded. 
+```
+(read-string-from-file name)
+```
+
 ### read-string-from-resource
 Read the content from a resource defined by its uri to a string. 
 The resource must be UTF-8 encoded. 

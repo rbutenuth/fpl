@@ -1,6 +1,7 @@
 package de.codecentric.fpl.builtin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -139,7 +140,7 @@ public class InputOutputTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void readFromFile() throws Exception {
+	public void readFromFileByUrl() throws Exception {
 		final int length = 10_000;
 		File file = File.createTempFile("test", ".txt");
 		StringBuilder content = new StringBuilder(length);
@@ -162,13 +163,40 @@ public class InputOutputTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void readFromFileWithBadURI() throws Exception {
-		try {
-			evaluate("evaluate", "(read-string-from-resource \"htsonstwas://foo.fpl\")");
-			fail("missing exception");
-		} catch (EvaluationException e) {
-			assertEquals("java.net.MalformedURLException: unknown protocol: htsonstwas", e.getMessage());
+	public void readFromFile() throws Exception {
+		final int length = 10_000;
+		File file = File.createTempFile("test", ".txt");
+		StringBuilder content = new StringBuilder(length);
+		for (int i = 0; i < length; i++) {
+			content.append((char) ('a' + i));
 		}
+		try (Writer w = new FileWriter(file, StandardCharsets.UTF_8)) {
+			w.write(content.toString());
+		}
+		try {
+			FplString str = (FplString) evaluate("read-string-from-file",
+					"(read-string-from-file \"" + file.getAbsolutePath().replace('\\', '/') + "\")");
+			String readContent = str.getContent();
+			for (int i = 0; i < length; i++) {
+				assertEquals(content.charAt(i), readContent.charAt(i));
+			}
+		} finally {
+			file.delete();
+		}
+	}
+
+	@Test
+	public void readFromFileWithBadURI() throws Exception {
+		assertThrows(EvaluationException.class, () -> {
+			evaluate("evaluate", "(read-string-from-resource \"htsonstwas://foo.fpl\")");
+		});
+	}
+
+	@Test
+	public void readFromFileWithBadName() throws Exception {
+		assertThrows(EvaluationException.class, () -> {
+			evaluate("evaluate", "(read-string-from-file \"foo.fpl\")");
+		});
 	}
 
 	@Test

@@ -1,5 +1,7 @@
 package de.codecentric.fpl.builtin;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -143,21 +145,14 @@ public class InputOutput implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("read-string-from-resource", //
-				"Read the content of a a file or other resource as String. Use UTF-8 as encoding.", "filename") {
+				"Read the content of a a file or other resource as String. Use UTF-8 as encoding.", "url") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String uriAsString = evaluateToString(scope, parameters[0]);
 				try {
 					URI uri = new URI(uriAsString);
-					try (Reader rd = new BomAwareReader(uri.toURL().openStream())) {
-						StringBuilder sb = new StringBuilder();
-						char[] buffer = new char[8192];
-						int count = rd.read(buffer);
-						while (count >= 0) {
-							sb.append(buffer, 0, count);
-							count = rd.read(buffer);
-						}
-						return new FplString(sb.toString());
+					try (InputStream is =uri.toURL().openStream()) { 
+						return readFromInputStream(is);
 					}
 				} catch (IOException | URISyntaxException e) {
 					throw new EvaluationException(e);
@@ -165,6 +160,21 @@ public class InputOutput implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("read-string-from-file", //
+				"Read the content of a a file. Use UTF-8 as encoding.", "filename") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				File file = new File(evaluateToString(scope, parameters[0]));
+				try {
+					try (InputStream is = new FileInputStream(file)) {
+						return readFromInputStream(is);
+					}
+				} catch (IOException e) {
+					throw new EvaluationException(e);
+				}
+			}
+		});
+		
 		scope.define(new AbstractFunction("http-request", //
 				"Execute an HTTP-request. Two additional parameters for basic auth (user, password) are possible", //
 				"url", "method", "headers", "query-params", "body...") {
@@ -456,5 +466,18 @@ public class InputOutput implements ScopePopulator {
 			}
 		}
 		return headers;
+	}
+	
+	private FplString readFromInputStream(InputStream is) throws IOException {
+		try (Reader rd = new BomAwareReader(is)) {
+			StringBuilder sb = new StringBuilder();
+			char[] buffer = new char[8192];
+			int count = rd.read(buffer);
+			while (count >= 0) {
+				sb.append(buffer, 0, count);
+				count = rd.read(buffer);
+			}
+			return new FplString(sb.toString());
+		}
 	}
 }
