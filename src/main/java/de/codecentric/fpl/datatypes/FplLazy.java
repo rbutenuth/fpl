@@ -24,6 +24,21 @@ public class FplLazy implements FplValue {
 		}
 	}
 
+    /**
+     * @param scope Scope for evaluation, not null.
+     * @param expression The expression to be evaluated, may be null.
+     */
+	public static FplValue makeEvaluated(Scope scope, FplValue expression) {
+		if (expression instanceof FplLazy || expression instanceof EvaluatesToThisValue) {
+			return expression;
+		} else {
+			FplLazy result = new FplLazy(scope, expression);
+			result.evaluated = true;
+			result.value = expression;
+			return result;
+		}
+	}
+
     private FplLazy(Scope scope, FplValue originalExpression) {
         if (scope == null) {
             throw new NullPointerException("scope");

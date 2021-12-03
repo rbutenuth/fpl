@@ -10,6 +10,7 @@ import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplLazy;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.list.FplList;
@@ -18,6 +19,7 @@ import de.codecentric.fpl.datatypes.list.FplList;
  * Loop functions.
  */
 public class Loop implements ScopePopulator {
+	
 	@Override
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
 		scope.define(
@@ -43,7 +45,7 @@ public class Loop implements ScopePopulator {
 				FplValue result = null;
 				Iterator<FplValue> iter = list.iterator();
 				while (iter.hasNext()) {
-					result = function.call(scope, new FplValue[] { AbstractFunction.quote(iter.next()) });
+					result = function.call(scope, new FplValue[] { FplLazy.makeEvaluated(scope, iter.next()) });
 				}
 				return result;
 			}
@@ -62,7 +64,7 @@ public class Loop implements ScopePopulator {
 						@Override
 						public FplValue apply(FplValue value) {
 							try {
-								return function.call(scope, new FplValue[] { AbstractFunction.quote(value) });
+								return function.call(scope, new FplValue[] { FplLazy.makeEvaluated(scope, value) });
 							} catch (EvaluationException e) {
 								throw new TunnelException(e);
 							}
@@ -89,7 +91,7 @@ public class Loop implements ScopePopulator {
 						public FplList apply(FplValue value) {
 							try {
 								FplValue applied = function.call(scope,
-										new FplValue[] { AbstractFunction.quote(value) });
+										new FplValue[] { FplLazy.makeEvaluated(scope, value) });
 								if (applied instanceof FplList) {
 									return (FplList) applied;
 								} else {
@@ -114,12 +116,12 @@ public class Loop implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
-				FplValue accumulator = parameters[1];
+				FplValue accumulator = parameters[1].evaluate(scope);
 				FplList list = evaluateToList(scope, parameters[2]);
 				for (FplValue value : list) {
-					accumulator = AbstractFunction.quote(function.call(scope, accumulator, value));
+					accumulator = function.call(scope, FplLazy.makeEvaluated(scope, accumulator), FplLazy.makeEvaluated(scope, value));
 				}
-				return accumulator.evaluate(scope);
+				return accumulator;
 			}
 		});
 
@@ -132,7 +134,7 @@ public class Loop implements ScopePopulator {
 				List<FplValue> results = new ArrayList<>();
 				while (iter.hasNext()) {
 					FplValue value = iter.next();
-					if (evaluateToBoolean(scope, function.call(scope, AbstractFunction.quote(value)))) {
+					if (evaluateToBoolean(scope, function.call(scope, FplLazy.makeEvaluated(scope, value)))) {
 						results.add(value);
 					}
 				}
