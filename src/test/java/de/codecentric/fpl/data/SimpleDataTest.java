@@ -109,15 +109,7 @@ public class SimpleDataTest {
 	@Test
 	public void badLazyExpression() {
 		assertThrows(NullPointerException.class, () -> {
-			new FplLazy(null, null);
+			FplLazy.make(null, null);
 		});
-	}
-
-	@Test
-	public void lazyExpression() throws EvaluationException {
-		FplLazy e = new FplLazy(new MapScope("test"), FplInteger.valueOf(42));
-		assertEquals(42, ((FplInteger) e.getOriginalExpression()).getValue());
-		assertEquals(42, ((FplInteger) e.evaluate(null)).getValue());
-		assertEquals("integer", e.typeName());
 	}
 }

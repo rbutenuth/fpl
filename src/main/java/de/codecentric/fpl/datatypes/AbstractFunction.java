@@ -200,6 +200,9 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	 *                             Function.
 	 */
 	public static Function evaluateToFunction(Scope scope, FplValue expression) throws EvaluationException {
+		if (expression == null) {
+			throw new EvaluationException("Not a function: " + expression);	
+		}
 		FplValue value = expression.evaluate(scope);
 		if (value == null) {
 			throw new EvaluationException("Not a function: " + expression);
@@ -404,14 +407,6 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 		return result;
 	}
 
-	public static FplValue makeLazy(Scope scope, FplValue e) {
-		if (e instanceof FplLazy || e instanceof EvaluatesToThisValue) {
-			return e;
-		} else {
-			return new FplLazy(scope, e);
-		}
-	}
-
 	@Override
 	public Position getPosition() {
 		return position;
@@ -522,7 +517,7 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 		}
 		FplValue[] givenParameters = new FplValue[parameters.length];
 		for (int k = 0; k < givenParameters.length; k++) {
-			givenParameters[k] = makeLazy(scope, parameters[k]);
+			givenParameters[k] = FplLazy.make(scope, parameters[k]);
 		}
 		return new CurryFunction(curryName, givenParameters, curryParameterNames);
 	}

@@ -41,7 +41,7 @@ public class FplLambda extends AbstractFunction {
 		int lastNamedIndex = getNumberOfParameterNames() - 1;
 		if (isVarArg()) {
 			for (int i = 0; i < getMinimumNumberOfParameters(); i++) {
-				scopeParameters[i] = makeLazy(scope, parameters[i]);
+				scopeParameters[i] = FplLazy.make(scope, parameters[i]);
 			}
 			int count = parameters.length - getMinimumNumberOfParameters();
 			scopeParameters[lastNamedIndex] = FplList.fromIterator(new Iterator<FplValue>() {
@@ -56,12 +56,12 @@ public class FplLambda extends AbstractFunction {
 				@Override
 				public FplValue next() {
 					i++;
-					return makeLazy(scope, parameters[j++]);
+					return FplLazy.make(scope, parameters[j++]);
 				}
 			}, count);
 		} else {
 			for (int i = 0; i < parameters.length; i++) {
-				scopeParameters[i] = makeLazy(scope, parameters[i]);
+				scopeParameters[i] = FplLazy.make(scope, parameters[i]);
 			}
 		}
 		ParameterScope callScope = new ParameterScope(getName(), definitionScope, getParameterNameToIndex(),

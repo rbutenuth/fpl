@@ -114,12 +114,12 @@ public class Loop implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
-				FplValue accumulator = parameters[1].evaluate(scope);
+				FplValue accumulator = parameters[1];
 				FplList list = evaluateToList(scope, parameters[2]);
 				for (FplValue value : list) {
-					accumulator = function.call(scope, accumulator, AbstractFunction.quote(value));
+					accumulator = AbstractFunction.quote(function.call(scope, accumulator, value));
 				}
-				return accumulator;
+				return accumulator.evaluate(scope);
 			}
 		});
 

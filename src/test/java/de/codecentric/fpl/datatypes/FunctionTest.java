@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
+import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.list.FplList;
@@ -39,6 +40,13 @@ public class FunctionTest extends AbstractFplTest {
 		assertThrows(IllegalArgumentException.class, () -> {
 			AbstractFunction f = new TestFunction("foo", false);
 			f.setParameterComment("bam", null);
+		});
+	}
+
+	@Test
+	public void nullExpression() throws Exception {
+		assertThrows(EvaluationException.class, () -> {
+			AbstractFunction.evaluateToFunction(scope, null);
 		});
 	}
 
