@@ -260,6 +260,14 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("trim", "Remove white space at begin and end.", "string") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				return new FplString(evaluateToString(scope, parameters[0]).trim());
+			}
+		});
+
 		scope.define(new AbstractFunction("split", "Split string by regular expression, limit number of results if limit is positive. " 
 				+ "0 will return all, but omit trailing empty string. -1 will return all.", "input-string", "regex", "limit") {
 

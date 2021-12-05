@@ -82,6 +82,12 @@ Convert the string to upper case.
 (to-upper-case string)
 ```
 
+### trim
+Remove white space at begin and end.
+```
+(trim string)
+```
+
 ### split
 Split string by regular expression, limit number of results if limit is positive.
 0 will return all, but omit trailing empty string. -1 will return all.

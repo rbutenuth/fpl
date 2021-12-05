@@ -239,6 +239,12 @@ public class StringFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void trim() throws Exception {
+		FplString str = (FplString) evaluate("trim", "(trim \" abcdef \")");
+		assertEquals("abcdef", str.getContent());
+	}
+
+	@Test
 	public void split() throws Exception {
 		FplList list = (FplList) evaluate("split", "(split \"foo bar baz \" \" \" -1)");
 		assertEquals(4, list.size());
