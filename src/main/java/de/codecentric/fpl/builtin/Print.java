@@ -1,5 +1,7 @@
 package de.codecentric.fpl.builtin;
 
+import java.io.PrintStream;
+
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.ScopePopulator;
@@ -36,16 +38,18 @@ public class Print implements ScopePopulator {
 
 		@Override
 		public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+			PrintStream systemOut = engine.getSystemOut();
 			for (int i = 0; i < parameters.length; i++) {
 				String string = evaluateToString(scope, parameters[i]);
-				engine.getSystemOut().print(string);
+				systemOut.print(string);
 				if (i < parameters.length - 1) {
-					engine.getSystemOut().print(' ');
+					systemOut.print(' ');
 				}
 			}
 			if (newline) {
-				engine.getSystemOut().println();
+				systemOut.println();
 			}
+			systemOut.flush();
 			return null;
 		}
 	}

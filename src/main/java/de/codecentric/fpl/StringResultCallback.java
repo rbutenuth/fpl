@@ -12,7 +12,7 @@ import de.codecentric.fpl.datatypes.FplValue;
 public class StringResultCallback implements ResultCallback {
 	private boolean continueOnException;
 	private StringBuilder builder;
-	private OutputStream out;
+	private CopyOutputStream out;
 
 	public StringResultCallback(boolean continueOnException) {
 		this.continueOnException = continueOnException;
@@ -22,6 +22,7 @@ public class StringResultCallback implements ResultCallback {
 	
 	@Override
 	public synchronized String toString() {
+		out.flush();
 		return builder.toString();
 	}
 	
@@ -96,7 +97,7 @@ public class StringResultCallback implements ResultCallback {
 		}
 
 		@Override
-		public synchronized void flush() throws IOException {
+		public synchronized void flush() {
 			builder.append(new String(buffer, 0, length, StandardCharsets.UTF_8));
 			length = 0;
 		}

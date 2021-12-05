@@ -36,7 +36,7 @@ public class PrintTest extends AbstractFplTest {
 	
 	@Test
 	public void printLine() throws Exception {
-		evaluate("print", "(println 42 43)");
+		evaluate("println", "(println 42 43)");
 		assertEquals("42 43" + System.lineSeparator(), new String(stream.toByteArray(), "UTF-8"));
 	}
 }
