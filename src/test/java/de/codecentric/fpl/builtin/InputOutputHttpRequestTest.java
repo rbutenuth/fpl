@@ -5,9 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +29,12 @@ import de.codecentric.fpl.io.SimpleHttpServer;
 public class InputOutputHttpRequestTest extends AbstractFplTest {
 	private final static String testUser = "flintstone";
 	private String testPassword;
-	private static int nextPort = 9099;
 	private int port;
 	private SimpleHttpServer server;
 	private List<HttpRequest> requests;
 
 	@BeforeEach
 	public void startServer() throws Exception {
-		port = nextPort++;
 		SecureRandom sr = new SecureRandom();
 		byte[] bytes = new byte[32];
 		sr.nextBytes(bytes);
@@ -47,22 +42,14 @@ public class InputOutputHttpRequestTest extends AbstractFplTest {
 			bytes[i] = (byte) ('0' + ((0xff & bytes[i]) % 10));
 		}
 		testPassword = new String(bytes);
-		server = new SimpleHttpServer(engine.getPool(), port, new Handler(), new BasicAuthenticator("unit-test") {
+		server = new SimpleHttpServer(engine.getPool(), 0, new Handler(), new BasicAuthenticator("unit-test") {
 
 			@Override
 			public boolean checkCredentials(String username, String password) {
 				return testUser.equals(username) && testPassword.equals(password);
 			}
 		});
-		// Wait until server in background thread has started and we can really connect.
-		boolean success = false;
-		while (!success) {
-			try (Socket s = new Socket(InetAddress.getLocalHost(), port)) {
-				success = true;
-			} catch (IOException e) {
-				Thread.sleep(100);
-			}
-		}
+		port = server.getPort();
 		requests = new ArrayList<HttpRequest>();
 	}
 

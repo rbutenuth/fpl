@@ -93,19 +93,19 @@ public class SubListTests extends AbstractListTest {
 	@Test
 	public void subListBucketsStart() throws EvaluationException {
 		FplList list = create(0, 16, 4, 8, 4);
-		check(list.subList(0, 7), 0, 8);
+		check(list.subList(0, 7), 0, 7);
 	}
 
 	@Test
 	public void subListBucketsWithin() throws EvaluationException {
 		FplList list = create(0, 16, 4, 8, 4);
-		check(list.subList(2, 7), 2, 8);
+		check(list.subList(2, 7), 2, 7);
 	}
 
 	@Test
 	public void subListBucketsStartWithPartFromLastBucket() throws EvaluationException {
 		FplList list = create(0, 16, 4, 8, 4);
-		check(list.subList(0, 13), 0, 14);
+		check(list.subList(0, 13), 0, 13);
 	}
 
 	@Test
@@ -124,7 +124,13 @@ public class SubListTests extends AbstractListTest {
 	public void subListFromSeveralLargeBuckets() throws EvaluationException {
 		FplList list = create(0, 100, 20, 20, 20, 20, 20);
 		check(list, 0, 100);
-		check(list.subList(5, 95), 5, 96);
+		check(list.subList(5, 95), 5, 95);
+	}
+
+	@Test
+	public void subListFromShape() throws EvaluationException {
+		FplList list = create(0, 30, 4, 22, 4);
+		check(list.subList(0, 5), 0, 5);
 	}
 
 	@Test

@@ -3,9 +3,6 @@ package de.codecentric.fpl.io;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +19,6 @@ import com.sun.net.httpserver.BasicAuthenticator;
 public class SimpleHttpServerTest {
 	private final static String testUser = "fred";
 
-	private static int nextPort = 9099;
 	private int port;
 	private String baseUrl;
 	private String testPassword;
@@ -32,8 +28,6 @@ public class SimpleHttpServerTest {
 
 	@BeforeEach
 	public void startServer() throws Exception {
-		port = nextPort++;
-		baseUrl = "http://localhost:" + port + "/test";
 		SecureRandom sr = new SecureRandom();
 		byte[] bytes = new byte[32];
 		sr.nextBytes(bytes);
@@ -48,16 +42,12 @@ public class SimpleHttpServerTest {
 				return testUser.equals(username) && testPassword.equals(password);
 			}
 		});
-		// Wait until server in background thread has started and we can really connect.
-		boolean success = false;
-		while (!success) {
-			try (Socket s = new Socket(InetAddress.getLocalHost(), port)) {
-				success = true;
-			} catch (IOException e) {
-				Thread.sleep(100);
-			}
-		}
+		port = server.getPort();
+
 		requests = new ArrayList<HttpRequest>();
+
+		baseUrl = "http://localhost:" + port + "/test";
+		
 		req = new HttpRequest();
 		req.setBaseUri(baseUrl);
 		req.setBasicAuth(testUser, testPassword);

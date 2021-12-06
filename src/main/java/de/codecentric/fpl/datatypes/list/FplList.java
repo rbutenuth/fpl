@@ -615,10 +615,10 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		} else {
 			int bucketSize = 3 * BASE_SIZE / 4;
 			int bucketDstIndex = bucketsDst.length - 1;
-			int rest = inBucketToIdx + 1;
+			int rest = inBucketToIdx;
 			while (rest > bucketSize) {
 				int size = Math.min(bucketSize / 2, rest);
-				bucketsDst[bucketDstIndex] = copyOfRange(bucket, inBucketToIdx - size + 1, inBucketToIdx + 1);
+				bucketsDst[bucketDstIndex] = copyOfRange(bucket, inBucketToIdx - size, inBucketToIdx);
 				bucketDstIndex--;
 				inBucketToIdx += size;
 				rest -= size;

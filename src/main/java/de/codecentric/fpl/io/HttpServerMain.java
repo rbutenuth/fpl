@@ -21,18 +21,19 @@ import de.codecentric.fpl.datatypes.FplValue;
 public class HttpServerMain {
 	private static SimpleHttpServer server;
 	private static FplEngine engine;
+	private static int port;
 
 	/**
 	 * @param args
 	 *             <ul>
-	 *             <li>[0]: HTTP server port</li>
+	 *             <li>[0]: HTTP server port, when set to 0, server uses any free port.</li>
 	 *             <li>[1]: user</li>
 	 *             <li>[2]: password</li>
 	 *             </ul>
 	 * @throws IOException On socket failures etc.
 	 */
 	public static void main(String[] args) throws Exception {
-		int port = Integer.parseInt(args[0]);
+		port = Integer.parseInt(args[0]);
 		String serverUser = args[1];
 		String serverPassword = args[2];
 
@@ -72,6 +73,7 @@ public class HttpServerMain {
 		};
 
 		server = new SimpleHttpServer(engine.getPool(), port, handler, authenticator);
+		port = server.getPort();
 	}
 
 	public static void terminate(int delayInSeconds) {
@@ -80,6 +82,10 @@ public class HttpServerMain {
 
 	public static void waitForTermination() {
 		server.waitForTermination();
+	}
+
+	public static int getPort() {
+		return port;
 	}
 	
 	private static void handleGet(HttpRequest req, HttpResponse res) throws IOException {

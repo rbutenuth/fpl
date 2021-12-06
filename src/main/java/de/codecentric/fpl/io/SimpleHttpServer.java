@@ -21,11 +21,13 @@ public class SimpleHttpServer {
 	private ForkJoinPool pool;
 	private HttpServer server;
 	private boolean running;
+	private int port;
 
 	public SimpleHttpServer(ForkJoinPool pool, int port, HttpRequestHandler handler, BasicAuthenticator authenticator) throws IOException {
 		this.pool = pool;
 		server = HttpServer.create(new InetSocketAddress(port), 0);
 		server.setExecutor(pool);
+		this.port = server.getAddress().getPort();
 		HttpContext context = server.createContext("/");
 		if (authenticator != null) {
 			context.setAuthenticator(authenticator);
@@ -79,6 +81,10 @@ public class SimpleHttpServer {
 		}
 	}
 	
+	public int getPort() {
+		return port;
+	}
+
 	/**
 	 * Terminate the server in the background, don't wait for termination.
 	 * 

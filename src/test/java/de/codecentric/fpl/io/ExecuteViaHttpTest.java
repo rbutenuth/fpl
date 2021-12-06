@@ -12,8 +12,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
@@ -27,15 +25,12 @@ public class ExecuteViaHttpTest {
 	private final static String user = "fred";
 	private final static String nl = System.lineSeparator();
 
-	private static int nextPort = 9099;
 	private int port;
 	private String baseUrl;
 	private String password;
 
 	@BeforeEach
 	public void startServer() throws Exception {
-		port = nextPort++;
-		baseUrl = "http://localhost:" + port + "/fpl";
 		SecureRandom sr = new SecureRandom();
 		byte[] bytes = new byte[32];
 		sr.nextBytes(bytes);
@@ -43,16 +38,9 @@ public class ExecuteViaHttpTest {
 			bytes[i] = (byte) ('0' + ((0xff & bytes[i]) % 10));
 		}
 		password = new String(bytes);
-		HttpServerMain.main(new String[] { Integer.toString(port), user, password });
-		// Wait until server in background thread has started and we can really connect.
-		boolean success = false;
-		while (!success) {
-			try (Socket s = new Socket(InetAddress.getLocalHost(), port)) {
-				success = true;
-			} catch (IOException e) {
-				Thread.sleep(100);
-			}
-		}
+		HttpServerMain.main(new String[] { "0", user, password });
+		port = HttpServerMain.getPort();
+		baseUrl = "http://localhost:" + port + "/fpl";
 	}
 
 	@AfterEach
