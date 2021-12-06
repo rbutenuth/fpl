@@ -132,7 +132,7 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 		if (minimumNumberOfParameters < parameters.length) {
 			if (!varArg) {
 				throw new EvaluationException(
-						"Expect " + minimumNumberOfParameters + " parameters but got " + parameters.length);
+						"Function " + name + ": Expect " + minimumNumberOfParameters + " parameters but got " + parameters.length);
 			}
 		}
 		// numberOfParameters == parameters.length
