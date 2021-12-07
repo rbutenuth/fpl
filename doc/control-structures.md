@@ -13,13 +13,6 @@ value (you may know this from C). In FPL nearly everything is true, false is:
 * The empty string
 
 
-
-### for-each
-Apply a lambda to all list elements, return evaluation result of last lambda.
-```
-(for-each function list)
-```
-
 ### if
 Evaluate condition, if true, return evaluated if-part, otherwise return nil.
 ```
@@ -81,6 +74,39 @@ Or an efficient way to compute Fibonacci numbers:
 The code defines a symbol with value 10. The loop is executed while the value of the symbol `counter` is >= 0. 
 So the the lines from 10 to 0 are printed.  The last `set` assigns the value -1. The function `set` returns the 
 value of the symbol before changing it, 0 in this case. As a consequence, the return value of the loop is 0.
+
+### for-each
+Apply a lambda to all list elements, return evaluation result of last lambda.
+```
+(for-each lambda list)
+```
+
+### from-to-inclusive
+Apply a lambda to all numbers from start (inclusive) to end (inclusive). Start and end must be numbers.
+End may be smaller then start, in this case to sequence of numbers is decreasing.
+The lambda must accept one parameter, the current number.
+Result is the result of the last lambda evaluation.
+```
+(from-to-inclusive lambda start end)
+```
+
+### from-to
+Apply a lambda to all numbers from start (inclusive) to end (exclusive). Start and end must be numbers.
+End may be smaller then start, in this case to sequence of numbers is decreasing.
+The lambda must accept one parameter, the current number.
+Result is the result of the last lambda evaluation.
+```
+(from-to lambda start end)
+```
+
+### map-sequence
+Apply a lambda to all numbers from start (inclusive) to end (exclusive). Start and end must be numbers.
+End must not be less than start.
+The lambda must accept one parameter, the current number.
+Result is a list of the applied lambda for all the numbers in the sequence.
+```
+(map-sequence lambda start end)
+```
 
 ### sequential
 Evaluate the parameters, return value of last parameter.

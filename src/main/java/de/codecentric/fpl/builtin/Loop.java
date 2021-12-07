@@ -10,6 +10,7 @@ import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplLazy;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
@@ -37,7 +38,7 @@ public class Loop implements ScopePopulator {
 				});
 
 		scope.define(new AbstractFunction("for-each", "Apply a lambda to all list elements, return last result",
-				"function", "list") {
+				"lambda", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplList list = evaluateToList(scope, parameters[1]);
@@ -51,8 +52,92 @@ public class Loop implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("from-to", "Apply a lambda to all numbers from start (inclusive) to end (exclusive). " 
+				+ "Start and end must be numbers.\n"
+				+ "End may be smaller then start, in this case to sequence of numbers is decreasing.\n"
+				+ "The lambda must accept one parameter, the current number.\n"
+				+ "Result is the result of the last lambda evaluation.",
+				"lambda", "start", "end") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				Function function = evaluateToFunction(scope, parameters[0]);
+				long start = evaluateToLong(scope, parameters[1]);
+				long end = evaluateToLong(scope, parameters[2]);
+				long delta = end >= start ? 1 : -1;
+				FplValue result = null;
+				while (start != end) {
+					result = function.call(scope, new FplValue[] { FplInteger.valueOf(start) });
+					start += delta;
+				}
+				return result;
+			}
+		});
+
+		scope.define(new AbstractFunction("from-to-inclusive", "Apply a lambda to all numbers from start (inclusive) to end (inclusive). " 
+				+ "Start and end must be numbers.\n"
+				+ "End may be smaller then start, in this case to sequence of numbers is decreasing.\n"
+				+ "The lambda must accept one parameter, the current number.\n"
+				+ "Result is the result of the last lambda evaluation.",
+				"lambda", "start", "end") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				Function function = evaluateToFunction(scope, parameters[0]);
+				long start = evaluateToLong(scope, parameters[1]);
+				long end = evaluateToLong(scope, parameters[2]);
+				long delta = end >= start ? 1 : -1;
+				end += delta;
+				FplValue result = null;
+				while (start != end) {
+					result = function.call(scope, new FplValue[] { FplInteger.valueOf(start) });
+					start += delta;
+				}
+				return result;
+			}
+		});
+
+		scope.define(new AbstractFunction("map-sequence", "Apply a lambda to all numbers from start (inclusive) to end (exclusive). Start and end must be numbers.\n"
+				+ "End must not be less than start.\n"
+				+ "The lambda must accept one parameter, the current number.\n"
+				+ "Result is a list of the applied lambda for all the numbers in the sequence.\n",
+				"lambda", "start", "end") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				Function function = evaluateToFunction(scope, parameters[0]);
+				long start = evaluateToLong(scope, parameters[1]);
+				long end = evaluateToLong(scope, parameters[2]);
+				if (start > end) {
+					throw new EvaluationException("start > end");
+				}
+				if (start == end) {
+					return FplList.EMPTY_LIST;
+				} else {
+					try {
+					return FplList.fromIterator(new Iterator<FplValue>() {
+						long current = start;
+
+						@Override
+						public boolean hasNext() {
+							return current < end;
+						}
+
+						@Override
+						public FplValue next() {
+							try {
+								return function.call(scope, new FplValue[] { FplInteger.valueOf(current++) });
+							} catch (EvaluationException e) {
+								throw new TunnelException(e);
+							}
+						}
+					}, (int)(end - start));
+					} catch (TunnelException e) {
+						throw e.getTunnelledException();
+					}
+				}
+			}
+		});
+
 		scope.define(new AbstractFunction("map",
-				"Apply a lambda to all list elements and return list with applied elements", "function", "list") {
+				"Apply a lambda to all list elements and return list with applied elements", "lambda", "list") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {

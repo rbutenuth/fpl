@@ -3,6 +3,7 @@ package de.codecentric.fpl.builtin;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.list.AbstractListTest;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 public class LoopTest extends AbstractFplTest {
@@ -42,6 +44,82 @@ public class LoopTest extends AbstractFplTest {
 		} catch (EvaluationException expected) {
 			assertEquals("java.lang.ArithmeticException: / by zero", expected.getMessage());
 		}
+	}
+
+	@Test
+	public void fromTo() throws Exception {
+		evaluate("values", "(def values '())");
+		FplList result = (FplList) evaluate("from-to", "(from-to (lambda (x) (set values (add-end values x))) 0 10)");
+		FplList values = (FplList) scope.get("values");
+		AbstractListTest.check(result, 0, 9);
+		AbstractListTest.check(values, 0, 10);
+	}
+
+	@Test
+	public void fromToDown() throws Exception {
+		evaluate("values", "(def values '())");
+		FplList result = (FplList) evaluate("from-to", "(from-to (lambda (x) (set values (add-end values x))) 10 0)");
+		FplList values = (FplList) scope.get("values");
+		assertEquals(9, result.size());
+		assertEquals(10, values.size());
+		for (int i = 0; i < 9; i++) {
+			assertEquals(10 - i, ((FplInteger) result.get(i)).getValue());
+			assertEquals(10 - i, ((FplInteger) values.get(i)).getValue());
+		}
+		assertEquals(1, ((FplInteger) values.get(9)).getValue());
+	}
+
+	@Test
+	public void fromToInclusive() throws Exception {
+		evaluate("values", "(def values '())");
+		FplList result = (FplList) evaluate("from-to-inclusive",
+				"(from-to-inclusive (lambda (x) (set values (add-end values x))) 0 10)");
+		FplList values = (FplList) scope.get("values");
+		AbstractListTest.check(result, 0, 10);
+		AbstractListTest.check(values, 0, 11);
+	}
+
+	@Test
+	public void fromToDownInclusive() throws Exception {
+		evaluate("values", "(def values '())");
+		FplList result = (FplList) evaluate("from-to-inclusive",
+				"(from-to-inclusive (lambda (x) (set values (add-end values x))) 10 0)");
+		FplList values = (FplList) scope.get("values");
+		assertEquals(10, result.size());
+		assertEquals(11, values.size());
+		for (int i = 0; i <= 9; i++) {
+			assertEquals(10 - i, ((FplInteger) result.get(i)).getValue());
+			assertEquals(10 - i, ((FplInteger) values.get(i)).getValue());
+		}
+		assertEquals(0, ((FplInteger) values.get(10)).getValue());
+	}
+
+	@Test
+	public void mapEmptySequence() throws Exception {
+		FplList values = (FplList) evaluate("map-sequence", "(map-sequence (lambda (x) x) 0 0)");
+		assertTrue(values.isEmpty());
+	}
+
+	@Test
+	public void mapSequence() throws Exception {
+		FplList values = (FplList) evaluate("map-sequence", "(map-sequence (lambda (x) x) 0 10)");
+		AbstractListTest.check(values, 0, 10);
+	}
+
+	@Test
+	public void mapSequenceException() throws Exception {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
+			evaluate("map-sequence", "(map-sequence (lambda (x) x) 10 0)");
+		});
+		assertEquals("start > end", e.getMessage());
+	}
+
+	@Test
+	public void mapSequenceLambdaThrowsException() throws Exception {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
+			evaluate("map-sequence", "(map-sequence (lambda (x) (/ 1 0)) 0 10)");
+		});
+		assertEquals("java.lang.ArithmeticException: / by zero", e.getMessage());
 	}
 
 	@Test
