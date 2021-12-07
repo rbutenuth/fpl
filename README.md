@@ -54,7 +54,7 @@ java -jar fpl.jar file.fpl another.fpl
 ```
 Results are written to standard output.
 
-## Further Reading...
+## Documentation of Standard Functions
 
 * [Arithmetic and comparison](doc/arithmetic-comparison.md)
 * [Variables, assignments, and scopes](doc/variables-assignments-scopes.md)
@@ -68,3 +68,8 @@ Results are written to standard output.
 * [Functions for parallelism](doc/parallel.md)
 * [Input/Output functions](doc/io.md)
 * [HTTP server as REPL](doc/http-server-repl.md)
+
+## Further Reading
+
+If you want to see larger examples, have a look at my [solutions](https://github.com/rbutenuth/advent-of-code) of the [Advent of Code 2021](https://adventofcode.com/2021)
+.
