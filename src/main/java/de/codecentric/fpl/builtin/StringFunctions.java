@@ -140,7 +140,7 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("from-chars", "Build a string from a list of characters (integers).",
+		scope.define(new AbstractFunction("from-chars", "Build a string from a list of characters (UTF integers).",
 				"list-of-chars") {
 
 			@Override
@@ -156,6 +156,29 @@ public class StringFunctions implements ScopePopulator {
 					}
 				}
 				return new FplString(new String(chars));
+			}
+		});
+
+		scope.define(new AbstractFunction("to-chars", "Build a list of UTF codes from a string.",
+				"string") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				String str = evaluateToString(scope, parameters[0]);
+				int length = str.length();
+				return FplList.fromIterator(new Iterator<FplValue>() {
+					int i = 0;
+					
+					@Override
+					public boolean hasNext() {
+						return i < length;
+					}
+
+					@Override
+					public FplValue next() {
+						return FplInteger.valueOf(str.charAt(i++));
+					}
+				}, length);
 			}
 		});
 

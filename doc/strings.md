@@ -31,9 +31,15 @@ Return the code (integer) of the character at position index.
 ```
 
 ### from-chars
-Build a string from a list of characters (integers).
+Build a string from a list of characters (UTF integers).
 ```
 (from-chars list-of-chars)
+```
+
+### to-chars
+Build a list of UTF codes from a string.
+```
+(to-chars string)
 ```
 
 ### index-of
