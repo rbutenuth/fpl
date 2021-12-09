@@ -154,6 +154,18 @@ public class LambdaTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void lambdaNil() throws Exception {
+		FplValue nil = evaluate("lambda", "((lambda (a) nil) 42)");
+		assertNull(nil);
+	}
+
+	@Test
+	public void lambdaNilToString() throws Exception {
+		String s = evaluate("lambda", "(lambda (a) nil)").toString();
+		assertEquals("(lambda (a) nil)", s);
+	}
+
+	@Test
 	public void lambdaString() throws Exception {
 		FplLambda f = (FplLambda) evaluate("lambda", "(lambda (a b c...) 42 43)");
 		assertEquals(2, f.getMinimumNumberOfParameters());

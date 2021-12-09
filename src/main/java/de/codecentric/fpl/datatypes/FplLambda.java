@@ -68,7 +68,7 @@ public class FplLambda extends AbstractFunction {
 				scopeParameters);
 		FplValue result = null;
 		for (int i = 0; i < code.length; i++) {
-			result = code[i].evaluate(callScope);
+			result = code[i] == null ? null : code[i].evaluate(callScope);
 		}
 		return result;
 	}
@@ -138,7 +138,7 @@ public class FplLambda extends AbstractFunction {
 		}
 		sb.append(") ");
 		for (i = 0; i < code.length; i++) {
-			sb.append(code[i].toString());
+			sb.append(code[i] == null ? "nil" : code[i].toString());
 			if (i < code.length - 1) {
 				sb.append(' ');
 			}
