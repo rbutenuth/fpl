@@ -3,13 +3,13 @@
 ### add-end
 Return a new list with expression added at the end of the given list.
 ```
-(add-end list expression)
+(add-end some-list expression)
 ```
 
 ### add-front
 Return a new list with expression added in front of the given list.
 ```
-(add-front expression list)
+(add-front expression some-list)
 ```
 
 ### append
@@ -22,19 +22,19 @@ Append two lists, return the concatenation of the two lists as one.
 ### first
 Return first element of the list.
 ```
-(first list)
+(first some-list)
 ```
 
 ### last
 Return last element of the list.
 ```
-(last list)
+(last some-list)
 ```
 
 ### get-element
 Return the element at position pos (counted from 0 ) from the given list.
 ```
-(get-element list pos)
+(get-element some-list pos)
 ```
 
 ### is-list
@@ -46,14 +46,14 @@ Is expression a list?
 ### list
 Make a list out of the parameters.
 ```
-(list element)
+(list element...)
 ```
 
 ### lower-half
 Return the lower half of a list (opposite to upper-half). In case the number of elements is not even,
 the lower half has one element less than the upper half.
 ```
-(lower-half list)
+(lower-half some-list)
 ```
 Example:
 ```
@@ -68,7 +68,7 @@ returns
 Return the upper half of a list (opposite to lower-half). In case the number of elements is not even,
 the lower half has one element less than the upper half.
 ```
-(upper-half list)
+(upper-half some-list)
 ```
 Example:
 ```
@@ -82,64 +82,88 @@ returns
 ### remove-first
 Return list without the first element.
 ```
-(remove-first list)
+(remove-first some-list)
 ```
 
 ### remove-last
 Return list without the last element.
 ```
-(remove-last list)
+(remove-last some-list)
 ```
 
 ### size
 Number of elements in a list.
 ```
-(size list)
+(size some-list)
 ```
 
 ### is-empty
 Is this list empty? (Works also on strings and objects.) `nil` is empty, too.
 ```
-(is-empty list)
+(is-empty some-list)
 ```
 
 ### sub-list
 Return a part from the given list, including start, excluding end (counted from 0).
 ```
-(sub-list list start end)
+(sub-list some-list start end)
 ```
+
+### sort
+Sort a list. The lambda takes two arguments (left, right) and must return a number:
+< 0 if left < right, 0 for left = right and > 0 for left > right.
+```
+(sort lambda some-list)
+```
+
+Example:
+```
+(sort 
+	(lambda (a b)
+		(if-else (lt a b) 
+			-1 
+			(if-else (gt a b) 
+				1 
+				0
+			)
+		)
+	) 
+	values
+)
+```
+
 
 ## Loops over lists
 
 ### for-each
 Apply a lambda to all list elements, return last result
 ```
-(for-each function list)
+(for-each function some-list)
 ```
 
 ### map
 Apply a funtion to all list elements and return list with applied elements
 ```
-(map function list)
+(map function some-list)
 ```
 
 ### flat-map
 Apply a lambda to all list elements, the result of the lambda must be a list. Return list with applied elements of all returned lists.
 ```
-(flat-map function list)
+(flat-map function some-list)
 ```
 
 ### filter
 Filter a list elements. Return a list containing all elements from input list for which `function` returned true.
 ```
-(filter function list)
+(filter function some-list)
 ```
 
 ### reduce
 Reduce a list to one value. The function must accept two parameters: 
 `accumulator` and `value`. It must return the \"reduction\" of accumulator and value.
 ```
-(reduce funcction accumulator list)
+(reduce funcction accumulator some-list)
 ```
 Example:
 ```

@@ -133,6 +133,27 @@ public class LoopTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void sort() throws Exception {
+		evaluate("values", "(def values '(4 5 9 8 7 8 6))");
+		FplList sorted = (FplList) evaluate("sort",
+				"(sort (lambda (a b) (if-else (lt a b) -1 (if-else (gt a b) 1 0))) values)");
+		FplList expected = (FplList) evaluate("expected", "'(4 5 6 7 8 8 9)");
+		assertEquals(7, sorted.size());
+		for (int i = 0; i < expected.size(); i++) {
+			assertEquals(expected.get(i), sorted.get(i));
+		}
+	}
+
+	@Test
+	public void sortWithExceptionInComparator() throws Exception {
+		evaluate("values", "(def values '(4 5 9 8 7 8 6))");
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
+			evaluate("sort", "(sort (lambda (a b) (/ 1 0)) values)");
+		});
+		assertEquals("java.lang.ArithmeticException: / by zero", e.getMessage());
+	}
+
+	@Test
 	public void filterWithLayzSymbol() throws Exception {
 		evaluate("filter", "(def-function ge-filter (t src)\r\n" + //
 				"	(filter (lambda (x) (ge x t)) src)\r\n" + //
