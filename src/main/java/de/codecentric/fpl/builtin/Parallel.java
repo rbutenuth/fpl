@@ -56,7 +56,7 @@ public class Parallel implements ScopePopulator {
 						@Override
 						protected FplValue compute() {
 							try {
-								return value.evaluate(scope);
+								return evaluateToAny(scope, value);
 							} catch (EvaluationException e) {
 								throw new TunnelException(e);
 							}
@@ -134,7 +134,7 @@ public class Parallel implements ScopePopulator {
 					@Override
 					protected FplValue compute() {
 						try {
-							return parameters[0].evaluate(scope);
+							return evaluateToAny(scope, parameters[0]);
 						} catch (EvaluationException e) {
 							throw new TunnelException(e);
 						}

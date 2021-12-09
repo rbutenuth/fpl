@@ -124,7 +124,7 @@ public class ListFunctions implements ScopePopulator {
 				"Return a new list with expression added in front of the given list.", "expression", "list") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return evaluateToList(scope, parameters[1]).addAtStart(parameters[0].evaluate(scope));
+				return evaluateToList(scope, parameters[1]).addAtStart(evaluateToAny(scope, parameters[0]));
 			}
 		});
 
@@ -132,7 +132,7 @@ public class ListFunctions implements ScopePopulator {
 				"Return a new list with expression added at the end of the given list.", "list", "expression") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return evaluateToList(scope, parameters[0]).addAtEnd(parameters[1].evaluate(scope));
+				return evaluateToList(scope, parameters[0]).addAtEnd(evaluateToAny(scope, parameters[1]));
 			}
 		});
 

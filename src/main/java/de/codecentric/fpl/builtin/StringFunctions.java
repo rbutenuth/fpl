@@ -40,7 +40,7 @@ public class StringFunctions implements ScopePopulator {
 				"expression") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				FplValue value = parameters[0].evaluate(scope);
+				FplValue value = evaluateToAny(scope, parameters[0]);
 				if (value instanceof AbstractFunction) {
 					StringBuilder sb = new StringBuilder();
 					AbstractFunction f = (AbstractFunction) value;
@@ -87,7 +87,7 @@ public class StringFunctions implements ScopePopulator {
 				DecimalFormatSymbols symbols = new DecimalFormatSymbols(
 						new Locale(evaluateToString(scope, parameters[1])));
 				NumberFormat format = new DecimalFormat(evaluateToString(scope, parameters[0]), symbols);
-				FplValue number = parameters[2].evaluate(scope);
+				FplValue number = evaluateToAny(scope, parameters[2]);
 				if (number instanceof FplDouble) {
 					return new FplString(format.format(((FplDouble) number).getValue()));
 				} else if (number instanceof FplInteger) {
@@ -328,7 +328,7 @@ public class StringFunctions implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return new FplString(((Symbol) parameters[0].evaluate(scope)).getName());
+				return new FplString(((Symbol) evaluateToAny(scope, parameters[0])).getName());
 			}
 		});
 
@@ -336,7 +336,7 @@ public class StringFunctions implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				FplValue value = parameters[0].evaluate(scope);
+				FplValue value = evaluateToAny(scope, parameters[0]);
 				StringBuilder sb = new StringBuilder();
 				serialize(sb, value);
 				return new FplString(sb.toString());

@@ -134,7 +134,7 @@ public class ControlStructures implements ScopePopulator {
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function catchFunction = evaluateToFunctionOrNull(scope, parameters[1]);
 				try {
-					return parameters[0].evaluate(scope);
+					return evaluateToAny(scope, parameters[0]);
 				} catch (EvaluationException e) {
 					return callCatcher(scope, e, catchFunction);
 				}
@@ -158,12 +158,12 @@ public class ControlStructures implements ScopePopulator {
 							throw new EvaluationException("resource must have size 3, but has size " + rl.size());
 						}
 						String target = Assignment.targetName(localScope, rl.get(0));
-						FplValue value = rl.get(1).evaluate(localScope);
+						FplValue value = evaluateToAny(localScope, rl.get(1));
 						Function function = evaluateToFunction(localScope, rl.get(2));
 						localScope.define(target, value);
 						resources.add(new Resource(value, function));
 					}
-					return parameters[1].evaluate(localScope);
+					return evaluateToAny(localScope, parameters[1]);
 				} catch (EvaluationException e) {
 					return callCatcher(localScope, e, catchFunction);
 				} catch (ScopeException e) {

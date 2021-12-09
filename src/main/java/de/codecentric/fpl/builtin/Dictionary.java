@@ -50,7 +50,7 @@ public class Dictionary implements ScopePopulator {
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
 					FplObject o = evaluateToDictionary(scope, parameters[0]);
-					return o.put(evaluateToString(scope, parameters[1]), Assignment.value(scope, parameters[2]));
+					return o.put(evaluateToString(scope, parameters[1]), AbstractFunction.evaluateToAny(scope, parameters[2]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}
@@ -66,7 +66,7 @@ public class Dictionary implements ScopePopulator {
 				try {
 					FplObject o = evaluateToDictionary(scope, parameters[0]);
 					return o.define(evaluateToString(scope, parameters[1]),
-							Assignment.value(scope, parameters[2]));
+							AbstractFunction.evaluateToAny(scope, parameters[2]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}
@@ -83,7 +83,7 @@ public class Dictionary implements ScopePopulator {
 				try {
 					FplObject o = evaluateToDictionary(scope, parameters[0]);
 					return o.replace(evaluateToString(scope, parameters[1]),
-							Assignment.value(scope, parameters[2]));
+							AbstractFunction.evaluateToAny(scope, parameters[2]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}

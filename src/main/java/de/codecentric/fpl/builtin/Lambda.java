@@ -81,8 +81,8 @@ public class Lambda implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				FplValue expression = parameters[0].evaluate(scope);
-				return Assignment.value(scope, expression);
+				FplValue expression = evaluateToAny(scope, parameters[0]);
+				return evaluateToAny(scope, expression);
 			}
 		});
 
@@ -90,7 +90,7 @@ public class Lambda implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				FplValue expression = Assignment.value(scope, parameters[0]);
+				FplValue expression = evaluateToAny(scope, parameters[0]);
 				return expression == null ? null : new FplString(expression.typeName());
 			}
 		});
@@ -103,7 +103,7 @@ public class Lambda implements ScopePopulator {
 				String name = evaluateToString(scope, parameters[0]);
 				Object[] methodParams = new Object[parameters.length - 1];
 				for (int i = 0; i < methodParams.length; i++) {
-					methodParams[i] = Assignment.value(scope, parameters[i + 1]);
+					methodParams[i] = evaluateToAny(scope, parameters[i + 1]);
 				}
 				return new FplWrapper(name, methodParams);
 			}

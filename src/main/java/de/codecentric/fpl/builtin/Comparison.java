@@ -177,8 +177,8 @@ public class Comparison implements ScopePopulator {
 		 */
 		@Override
 		public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-			FplValue left = parameters[0] == null ? null : parameters[0].evaluate(scope);
-			FplValue right = parameters[1] == null ? null : parameters[1].evaluate(scope);
+			FplValue left = evaluateToAny(scope, parameters[0]);
+			FplValue right = evaluateToAny(scope, parameters[1]);
 
 			if (left == null) {
 				if (right == null) {

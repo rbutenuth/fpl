@@ -9,6 +9,7 @@ import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.parser.Position;
+import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToAny;
 
 /**
  * Class and Object related functions.
@@ -110,7 +111,7 @@ public class ClassAndObject implements ScopePopulator {
 			throws EvaluationException {
 		FplObject obj = new FplObject(name, position, next);
 		for (int i = first; i < parameters.length; i++) {
-			parameters[i].evaluate(obj);
+			evaluateToAny(obj, parameters[i]);
 		}
 		return obj;
 	}
@@ -138,7 +139,7 @@ public class ClassAndObject implements ScopePopulator {
 		FplValue[] values = new FplValue[keyValueCount];
 		for (int i = 0; i < keyValueCount; i++) {
 			keys[i] = Assignment.targetName(scope, parameters[i * 2]);
-			values[i] = Assignment.value(scope, parameters[i * 2 + 1]);
+			values[i] = AbstractFunction.evaluateToAny(scope, parameters[i * 2 + 1]);
 		}
 		for (int i = 0; i < keyValueCount; i++) {
 			try {

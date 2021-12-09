@@ -32,7 +32,7 @@ public class Loop implements ScopePopulator {
 						FplValue result = null;
 						while (evaluateToBoolean(scope, parameters[0])) {
 							for (int i = 1; i < parameters.length; i++) {
-								result = parameters[i].evaluate(scope);
+								result = evaluateToAny(scope, parameters[i]);
 							}
 						}
 						return result;
@@ -256,7 +256,7 @@ public class Loop implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
-				FplValue accumulator = parameters[1].evaluate(scope);
+				FplValue accumulator = evaluateToAny(scope, parameters[1]);
 				FplList list = evaluateToList(scope, parameters[2]);
 				for (FplValue value : list) {
 					accumulator = function.call(scope, FplLazy.makeEvaluated(scope, accumulator),

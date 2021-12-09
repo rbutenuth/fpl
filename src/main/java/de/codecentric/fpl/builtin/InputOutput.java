@@ -68,7 +68,7 @@ public class InputOutput implements ScopePopulator {
 						while (p.hasNext()) {
 							FplValue value = p.next();
 							if (evaluate) {
-								value = value.evaluate(scope);
+								value = evaluateToAny(scope, value);
 							}
 							values.add(value);
 						}
@@ -99,7 +99,7 @@ public class InputOutput implements ScopePopulator {
 					while (p.hasNext()) {
 						FplValue value = p.next();
 						if (evaluate) {
-							value = value.evaluate(scope);
+							value = evaluateToAny(scope, value);
 						}
 						values.add(value);
 					}
@@ -194,7 +194,7 @@ public class InputOutput implements ScopePopulator {
 					req.setMethod(evaluateToString(scope, parameters[1]));
 					setHeaders(req, evaluateToDictionaryNullDefaultsToEmpty(scope, parameters[2]));
 					setParams(req, evaluateToDictionaryNullDefaultsToEmpty(scope, parameters[3]));
-					FplValue body = parameters[4] == null ? null : parameters[4].evaluate(scope);
+					FplValue body = evaluateToAny(scope, parameters[4]);
 					if (body != null) {
 						if (body instanceof FplString) {
 							req.setBody(((FplString) body).getContent(), "UTF-8");

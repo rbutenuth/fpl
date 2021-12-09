@@ -157,7 +157,7 @@ public class Arithmetic implements ScopePopulator {
 		@Override
 		public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 			try {
-				FplValue value = parameters[0] == null ? null : parameters[0].evaluate(scope);
+				FplValue value = evaluateToAny(scope, parameters[0]);
 				boolean isDouble;
 				long intAccumulator = 0;
 				double doubleAccumulator = 0;
@@ -182,7 +182,7 @@ public class Arithmetic implements ScopePopulator {
 				for (int i = 1; i < parameters.length; i++) {
 					long intNext = 0;
 					double doubleNext = 0;
-					value = parameters[i] == null ? null : parameters[i].evaluate(scope);
+					value = evaluateToAny(scope, parameters[i]);
 					if (value instanceof FplInteger) {
 						if (isDouble) {
 							doubleNext = ((FplInteger) value).getValue();

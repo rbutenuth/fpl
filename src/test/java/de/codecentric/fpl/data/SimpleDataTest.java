@@ -2,13 +2,11 @@ package de.codecentric.fpl.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplLazy;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.parser.Position;

@@ -1,5 +1,7 @@
 package de.codecentric.fpl.builtin;
 
+import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToAny;
+
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
@@ -22,7 +24,7 @@ public class Assignment implements ScopePopulator {
 				"Assign symbol to evluated value in current scope, deletes if value is null", "symbol", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return put(scope,targetName(scope, parameters[0]), value(scope, parameters[1]));
+				return put(scope,targetName(scope, parameters[0]), evaluateToAny(scope, parameters[1]));
 			}
 		});
 
@@ -34,7 +36,7 @@ public class Assignment implements ScopePopulator {
 				while (global.getNext() != null) {
 					global = global.getNext();
 				}
-				return put(global, targetName(scope, parameters[0]), value(scope, parameters[1]));
+				return put(global, targetName(scope, parameters[0]), evaluateToAny(scope, parameters[1]));
 			}
 		});
 
@@ -43,7 +45,7 @@ public class Assignment implements ScopePopulator {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
-					return scope.replace(targetName(scope, parameters[0]), value(scope, parameters[1]));
+					return scope.replace(targetName(scope, parameters[0]), evaluateToAny(scope, parameters[1]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}
@@ -56,7 +58,7 @@ public class Assignment implements ScopePopulator {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
-					return scope.define(targetName(scope, parameters[0]), value(scope, parameters[1]));
+					return scope.define(targetName(scope, parameters[0]), evaluateToAny(scope, parameters[1]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}
@@ -76,7 +78,7 @@ public class Assignment implements ScopePopulator {
 					if (s == null) {
 						throw new EvaluationException("No object found");
 					}
-					return s.define(targetName(scope, parameters[0]), value(scope, parameters[1]));
+					return s.define(targetName(scope, parameters[0]), evaluateToAny(scope, parameters[1]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}
@@ -93,7 +95,7 @@ public class Assignment implements ScopePopulator {
 					while (s.getNext() != null) {
 						s = s.getNext();
 					}
-					return s.define(targetName(scope, parameters[0]), value(scope, parameters[1]));
+					return s.define(targetName(scope, parameters[0]), evaluateToAny(scope, parameters[1]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}
@@ -128,7 +130,7 @@ public class Assignment implements ScopePopulator {
 			if (expression == null) {
 				throw new EvaluationException("nil is not a valid name");
 			}
-			FplValue value = expression.evaluate(scope);
+			FplValue value = evaluateToAny(scope, expression);
 			if (value instanceof Symbol) {
 				return ((Symbol) value).getName();
 			} else if (value instanceof FplString) {
@@ -137,15 +139,5 @@ public class Assignment implements ScopePopulator {
 				throw new EvaluationException("Not a symbol or string: " + value);
 			}
 		}
-	}
-
-	/**
-	 * @param scope      For the evaluation
-	 * @param expression Expression to evaluate
-	 * @return <code>null</code> for nil input, otherwise evaluated expression.
-	 * @throws EvaluationException
-	 */
-	static public FplValue value(Scope scope, FplValue expression) throws EvaluationException {
-		return expression == null ? null : expression.evaluate(scope);
 	}
 }
