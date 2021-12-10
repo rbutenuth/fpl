@@ -313,7 +313,10 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 		if (expression == null) {
 			return false;
 		}
-		FplValue value = expression.evaluate(scope);
+		return isTrue(expression.evaluate(scope));
+	}
+
+	public static boolean isTrue(FplValue value) {
 		if (value == null) {
 			return false;
 		} else if (value instanceof FplList) {

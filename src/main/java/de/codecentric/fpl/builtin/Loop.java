@@ -275,7 +275,7 @@ public class Loop implements ScopePopulator {
 				List<FplValue> results = new ArrayList<>();
 				while (iter.hasNext()) {
 					FplValue value = iter.next();
-					if (evaluateToBoolean(scope, function.call(scope, FplLazy.makeEvaluated(scope, value)))) {
+					if (isTrue(function.call(scope, FplLazy.makeEvaluated(scope, value)))) {
 						results.add(value);
 					}
 				}

@@ -266,7 +266,7 @@ public class InputOutput implements ScopePopulator {
 							parameters[0] = FplString.make(username);
 							parameters[1] = FplString.make(password);
 							try {
-								return evaluateToBoolean(scope, authLambda.call(scope, parameters));
+								return isTrue(authLambda.call(scope, parameters));
 							} catch (EvaluationException e) {
 								return false;
 							}
