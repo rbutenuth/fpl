@@ -6,6 +6,12 @@ Evaluate all expressions, convert them to strings, join (concatenate) the string
 (join expression...)
 ```
 
+### join-list
+join strings within a list.
+```
+(join-list values)
+```
+
 ### format-number
 Format a number to string format. The format is a Java DecimalFormat string. The locale a two letter locale.
 ```

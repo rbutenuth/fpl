@@ -78,6 +78,19 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("join-list", "join strings within a list", "values") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				FplList values = evaluateToList(scope, parameters[0]);
+				StringBuilder result = new StringBuilder();
+				for (FplValue value : values) {
+					result.append(evaluateToString(scope, value));
+				}
+				return new FplString(result.toString());
+			}
+		});
+
 		scope.define(new AbstractFunction("format-number",
 				"Format a number to string format. The format is a Java DecimalFormat string. The locale a two letter locale.",
 				"format", "locale", "number") {

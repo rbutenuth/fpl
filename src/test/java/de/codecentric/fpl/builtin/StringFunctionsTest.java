@@ -98,6 +98,12 @@ public class StringFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void joinList() throws Exception {
+		FplString str = (FplString) evaluate("join-list", "(join-list '(\"first\" 42))");
+		assertEquals("first42", str.getContent());
+	}
+
+	@Test
 	public void formatInteger() throws Exception {
 		FplString str = (FplString) evaluate("integer", "(format-number \"#\" \"US\" 42)");
 		assertEquals("42", str.getContent());
