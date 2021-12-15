@@ -63,7 +63,7 @@ Determine the last index of pattern in a string. Return -1 for not found.
 ### substring
 Returns a substring starting at begin-index (including) and ending at end-index (excluding).
 ```
-(substring begin-index end-index)
+(substring string begin-index end-index)
 ```
 
 ### match
