@@ -1,12 +1,18 @@
 package de.codecentric.fpl.datatypes.list;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplString;
+import de.codecentric.fpl.datatypes.FplValue;
 
 public class DeconstructTests extends AbstractListTest {
 	@Test
@@ -164,5 +170,12 @@ public class DeconstructTests extends AbstractListTest {
 		upper = upper.upperHalf();
 		check(upper, 750000, 1000000);
 		assertEquals(16, upper.bucketSizes().length);
+	}
+	
+	@Test
+	public void iteratorFromEmptyList() {
+		Iterator<FplValue> iterator = FplList.EMPTY_LIST.iterator();
+		assertFalse(iterator.hasNext());
+		assertThrows(NoSuchElementException.class, () -> { iterator.next(); });
 	}
 }

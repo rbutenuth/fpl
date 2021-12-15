@@ -18,6 +18,17 @@ import de.codecentric.fpl.datatypes.FplValue;
  */
 public class FplList implements FplValue, Iterable<FplValue> {
 	public static final FplList EMPTY_LIST = new FplList();
+	private static final Iterator<FplValue> EMPTY_ITERATOR = new Iterator<FplValue>() {
+		@Override
+		public boolean hasNext() {
+			return false;
+		}
+
+		@Override
+		public FplValue next() {
+			throw new NoSuchElementException("empty list");
+		}
+	};
 
 	private static final int BASE_SIZE = 8;
 	private static final int FACTOR = 4;
@@ -114,10 +125,10 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			FplValue[] currentBucket = new FplValue[bucketSize];
 			data[0] = currentBucket;
 			int currentBucketUsed = 0;
-			
-			while (iter.hasNext()) {
+
+			do {
 				FplValue value = iter.next();
-				
+
 				if (currentBucketUsed < currentBucket.length) {
 					// Room in last bucket, use it
 					currentBucket[currentBucketUsed++] = value;
@@ -130,12 +141,12 @@ public class FplList implements FplValue, Iterable<FplValue> {
 					currentBucketUsed = 1;
 					currentBucket[0] = value;
 				}
-			}
-			
+			} while (iter.hasNext());
+
 			if (currentBucket.length > currentBucketUsed) {
 				data[data.length - 1] = copyOf(currentBucket, currentBucketUsed);
 			}
-			
+
 			return new FplList(data);
 		}
 	}
@@ -390,7 +401,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			}
 
 			lastSize = bucketSize;
-			
+
 			bucketIdx--;
 			carrySize += bucketSize;
 			maxSize *= FACTOR;
@@ -605,7 +616,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				rest -= size;
 				bucketSize *= FACTOR;
 			}
-			bucketsDst[bucketDstIndex] =  copyOfRange(bucket, inBucketFromIdx, inBucketFromIdx + rest);
+			bucketsDst[bucketDstIndex] = copyOfRange(bucket, inBucketFromIdx, inBucketFromIdx + rest);
 		}
 	}
 
@@ -696,7 +707,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			count += shape[fromBucketIdx++].length;
 		}
 		if (fromBucketIdx < shape.length && count == to) {
-			data = copyOf(shape,  fromBucketIdx);
+			data = copyOf(shape, fromBucketIdx);
 		} else {
 			data = createShapeForSplitting(to);
 			fromBucketIdx = 0;
@@ -746,7 +757,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		}
 		fromBucketIdx++;
 		if (count == size) {
-			data = copyOfRange(shape, fromBucketIdx, shape.length);  // new FplValue[shape.length - fromBucketIdx][];
+			data = copyOfRange(shape, fromBucketIdx, shape.length); // new FplValue[shape.length - fromBucketIdx][];
 		} else {
 			data = createShapeForSplitting(size);
 
@@ -827,62 +838,68 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	public FplList flatMap(java.util.function.Function<FplValue, FplList> operator) {
-		Iterator<FplValue> listIter = iterator();
-		if (listIter.hasNext()) {
-
-			return FplList.fromIterator(new Iterator<FplValue>() {
-				Iterator<FplValue> subListIter = operator.apply(listIter.next()).iterator();
-
-				@Override
-				public boolean hasNext() {
-					return subListIter.hasNext();
-				}
-
-				@Override
-				public FplValue next() {
-					FplValue result = subListIter.next();
-					while (!subListIter.hasNext()) {
-						if (listIter.hasNext()) {
-							subListIter = operator.apply(listIter.next()).iterator();
-						} else {
-							break;
-						}
-					}
-					return result;
-				}
-			});
-		} else {
-			return EMPTY_LIST;
-		}
-	}
-
-	@Override
-	public Iterator<FplValue> iterator() {
-		return new Iterator<FplValue>() {
-			private int bucketsIdx = 0;
-			private int inBucketIdx = 0;
-			private boolean atEnd = isEmpty();
+		
+		return FplList.fromIterator(new Iterator<FplValue>() {
+			Iterator<FplValue> listIter = iterator();
+			Iterator<FplValue> subListIter = null;
 
 			@Override
 			public boolean hasNext() {
-				return !atEnd;
+				while (subListIter == null|| !subListIter.hasNext()) {
+					if (listIter.hasNext()) {
+						subListIter = operator.apply(listIter.next()).iterator();
+						if (subListIter.hasNext()) {
+							return true;
+						} else {
+							// Don't return, try listIter in next loop again.
+							subListIter = null;
+						}
+					} else {
+						return false;
+					}
+				}
+				return subListIter.hasNext();
 			}
 
 			@Override
 			public FplValue next() {
-				if (atEnd) {
-					throw new NoSuchElementException();
-				}
-				FplValue result = shape[bucketsIdx][inBucketIdx];
-				inBucketIdx++;
-				if (inBucketIdx == shape[bucketsIdx].length) {
-					bucketsIdx++;
-					inBucketIdx = 0;
-					atEnd = bucketsIdx == shape.length;
-				}
-				return result;
+				// We don't check if we have an element, fromIterator() is correct.
+				return subListIter.next();
 			}
-		};
+		});
+	}
+
+	@Override
+	public Iterator<FplValue> iterator() {
+		if (isEmpty()) {
+			return EMPTY_ITERATOR;
+		} else {
+			return new Iterator<FplValue>() {
+				private int bucketsIdx = 0;
+				private int inBucketIdx = 0;
+				private boolean atEnd = isEmpty();
+
+				@Override
+				public boolean hasNext() {
+					return !atEnd;
+				}
+
+				@Override
+				public FplValue next() {
+					if (atEnd) {
+						throw new NoSuchElementException();
+					}
+					FplValue result = shape[bucketsIdx][inBucketIdx];
+					inBucketIdx++;
+					if (inBucketIdx == shape[bucketsIdx].length) {
+						bucketsIdx++;
+						inBucketIdx = 0;
+						atEnd = bucketsIdx == shape.length;
+					}
+					return result;
+				}
+			};
+		}
 	}
 
 	@Override

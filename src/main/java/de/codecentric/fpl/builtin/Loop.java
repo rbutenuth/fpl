@@ -225,7 +225,7 @@ public class Loop implements ScopePopulator {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplList list = evaluateToList(scope, parameters[1]);
 				try {
-					return list.flatMap(new java.util.function.Function<FplValue, FplList>() {
+					FplList f = list.flatMap(new java.util.function.Function<FplValue, FplList>() {
 
 						@Override
 						public FplList apply(FplValue value) {
@@ -242,6 +242,7 @@ public class Loop implements ScopePopulator {
 							}
 						}
 					});
+					return f;
 				} catch (TunnelException e) {
 					throw e.getTunnelledException();
 				}

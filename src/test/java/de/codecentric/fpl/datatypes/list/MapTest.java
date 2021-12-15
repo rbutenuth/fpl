@@ -40,7 +40,7 @@ public class MapTest extends AbstractListTest {
 	}
 	
 	@Test
-	public void flatMap() throws EvaluationException {
+	public void flatMapOneEmptyListInTheMiddle() throws EvaluationException {
 		FplList list = FplList.fromValues(create(0, 3), FplList.EMPTY_LIST, create(3, 7));
 		list = list.flatMap(new Function<FplValue, FplList>() {
 
@@ -51,4 +51,33 @@ public class MapTest extends AbstractListTest {
 		});
 		check(list, 0, 7);
 	}
+	
+	@Test
+	public void flatMapOneEmptyListAtTheBeginning() throws EvaluationException {
+		FplList list = FplList.fromValues(FplList.EMPTY_LIST, create(0, 3), create(3, 7));
+		list = list.flatMap(new Function<FplValue, FplList>() {
+
+			@Override
+			public FplList apply(FplValue t) {
+				return (FplList)t;
+			}
+		});
+		check(list, 0, 7);
+	}
+	
+	@Test
+	public void flatMapOneEmptyListAtTheEnd() throws EvaluationException {
+		FplList list = FplList.fromValues(create(0, 3), create(3, 7), FplList.EMPTY_LIST);
+		list = list.flatMap(new Function<FplValue, FplList>() {
+
+			@Override
+			public FplList apply(FplValue t) {
+				return (FplList)t;
+			}
+		});
+		check(list, 0, 7);
+	}
+	
+
+
 }
