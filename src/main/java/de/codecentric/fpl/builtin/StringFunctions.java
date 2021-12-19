@@ -172,6 +172,16 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("from-char", "Build a string from one characters (UTF integer).",
+				"char-as-int") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				long character = evaluateToLong(scope, parameters[0]);
+				return new FplString(String.valueOf((char)character));
+			}
+		});
+
 		scope.define(new AbstractFunction("to-chars", "Build a list of UTF codes from a string.",
 				"string") {
 

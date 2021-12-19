@@ -166,6 +166,12 @@ public class StringFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void fromChar() throws Exception {
+		FplString str = (FplString) evaluate("from-char", "(from-char 97)");
+		assertEquals("a", str.getContent());
+	}
+
+	@Test
 	public void fromChars() throws Exception {
 		FplString str = (FplString) evaluate("from-chars", "(from-chars '(97 98 99))");
 		assertEquals("abc", str.getContent());

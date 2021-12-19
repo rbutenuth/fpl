@@ -36,6 +36,12 @@ Return the code (integer) of the character at position index.
 (char-at string index)
 ```
 
+### from-char
+Build a string from one characters (UTF integer).
+```
+(from-char char-as-int)
+```
+
 ### from-chars
 Build a string from a list of characters (UTF integers).
 ```
