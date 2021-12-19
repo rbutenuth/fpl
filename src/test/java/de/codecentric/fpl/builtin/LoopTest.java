@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
+import de.codecentric.fpl.datatypes.FplObject;
+import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.AbstractListTest;
 import de.codecentric.fpl.datatypes.list.FplList;
@@ -122,6 +124,83 @@ public class LoopTest extends AbstractFplTest {
 		assertEquals("java.lang.ArithmeticException: / by zero", e.getMessage());
 	}
 
+	@Test
+	public void mapToDict() throws Exception {
+		evaluate("pattern", "(def rule-pattern \"([A-Z]+) -> ([A-Z]+)\")");
+		evaluate("def-dict",
+				"(def rule-dict\r\n"
+				+ "	(map-to-dict \r\n"
+				+ "		(lambda (rule)\r\n"
+				+ "			(get-element (match rule rule-pattern) 2)\r\n"
+				+ "		) \r\n"
+				+ "		(lambda (old rule)\r\n"
+				+ "			(get-element (match rule rule-pattern) 3)\r\n"
+				+ "		) \r\n"
+				+ "		'(\"CH -> B\" \"HH -> N\" ) \r\n"
+				+ "	)\r\n"
+				+ ")\r\n"
+				+ "");
+		FplObject dict = (FplObject) scope.get("rule-dict");
+		assertEquals(FplString.make("B"), dict.get("CH"));
+	}
+	
+	@Test
+	public void mapToDictCheckOldValue() throws Exception {
+		evaluate("pattern", "(def rule-pattern \"([A-Z]+) -> ([A-Z]+)\")");
+		evaluate("def-dict",
+				"(def rule-dict\r\n"
+				+ "	(map-to-dict \r\n"
+				+ "		(lambda (rule)\r\n"
+				+ "			(get-element (match rule rule-pattern) 2)\r\n"
+				+ "		) \r\n"
+				+ "		(lambda (old rule)\r\n"
+				+ "			(join (if-else old old \"\") (get-element (match rule rule-pattern) 3))\r\n"
+				+ "		) \r\n"
+				+ "		'(\"CH -> X\" \"CH -> Y\" ) \r\n"
+				+ "	)\r\n"
+				+ ")\r\n"
+				+ "");
+		FplObject dict = (FplObject) scope.get("rule-dict");
+		assertEquals(FplString.make("XY"), dict.get("CH"));
+	}
+	
+	@Test
+	public void mapToDictEmptyKey() throws Exception {
+		evaluate("def-dict",
+				"(def rule-dict\r\n"
+				+ "	(map-to-dict \r\n"
+				+ "		(lambda (rule)\r\n"
+				+ "			\"\"\r\n" // empty key
+				+ "		) \r\n"
+				+ "		(lambda (old rule)\r\n"
+				+ "			42\r\n"
+				+ "		) \r\n"
+				+ "		'(1) \r\n"
+				+ "	)\r\n"
+				+ ")\r\n"
+				+ "");
+		FplObject dict = (FplObject) scope.get("rule-dict");
+		assertEquals(0, dict.entrieSet().size());
+	}
+	
+	@Test
+	public void mapToDictKeyNotString() throws Exception {
+		assertThrows(EvaluationException.class, () -> {
+		evaluate("def-dict",
+				"(def rule-dict\r\n"
+				+ "	(map-to-dict \r\n"
+				+ "		(lambda (rule)\r\n"
+				+ "			42\r\n" // key is number
+				+ "		) \r\n"
+				+ "		(lambda (old rule)\r\n"
+				+ "			42\r\n"
+				+ "		) \r\n"
+				+ "		'(1) \r\n"
+				+ "	)\r\n"
+				+ ")\r\n"
+				+ ""); });
+	}
+	
 	@Test
 	public void filterOfList() throws Exception {
 		evaluate("filter", "(def-function my-filter (x) (lt x 3))");

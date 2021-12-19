@@ -138,35 +138,49 @@ Example:
 ### for-each
 Apply a lambda to all list elements, return last result
 ```
-(for-each function some-list)
+(for-each lambda some-list)
 ```
 
 ### map
-Apply a funtion to all list elements and return list with applied elements
+Apply a lambda to all list elements and return list with applied elements
 ```
-(map function some-list)
+(map lambda some-list)
+```
+
+### map-to-dict
+Apply a lambda to all list elements and return a dictionary. The dictionary is build from the results
+of the lambdas. The first must return the key as string, the second a value (any type). 
+When the key is an empty string, the second lambda is not called and nothing is put to the dictionary.
+Adding to the dictionary is done by put, so mappings may overwrite each other or even remove mappings,
+when value is nil.
+The first lambda receives a list element as parameter.
+The second lambda receives two parameters: The first is the previous value contained in the dictionary for the given
+key (may be nil if no mapping exists), the second the list element to be mapped.
+```
+(map-to-dict key-lambda value-lambda some-list)
 ```
 
 ### flat-map
 Apply a lambda to all list elements, the result of the lambda must be a list. Return list with applied elements of all returned lists.
 ```
-(flat-map function some-list)
+(flat-map lambda some-list)
 ```
 
 ### filter
-Filter a list elements. Return a list containing all elements from input list for which `function` returned true.
+Filter a list elements. Return a list containing all elements from input list for which `lambda` returned true.
 ```
-(filter function some-list)
+(filter lambda some-list)
 ```
 
 ### reduce
-Reduce a list to one value. The function must accept two parameters: 
+Reduce a list to one value. The lambda must accept two parameters: 
 `accumulator` and `value`. It must return the \"reduction\" of accumulator and value.
 ```
-(reduce funcction accumulator some-list)
+(reduce lambda accumulator some-list)
 ```
 Example:
 ```
 (reduce (lambda (acc value) (+ acc value)) 0 '(1 2 3 4 5 6))
 ```
 Computes the sum of the number 1 to 6.
+

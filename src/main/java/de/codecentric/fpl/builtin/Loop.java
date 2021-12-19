@@ -14,6 +14,8 @@ import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplLazy;
+import de.codecentric.fpl.datatypes.FplObject;
+import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.list.FplList;
@@ -48,7 +50,7 @@ public class Loop implements ScopePopulator {
 				FplValue result = null;
 				Iterator<FplValue> iter = list.iterator();
 				while (iter.hasNext()) {
-					result = function.call(scope, new FplValue[] { FplLazy.makeEvaluated(scope, iter.next()) });
+					result = function.call(scope, FplLazy.makeEvaluated(scope, iter.next()));
 				}
 				return result;
 			}
@@ -154,7 +156,8 @@ public class Loop implements ScopePopulator {
 						@Override
 						public FplValue apply(FplValue value) {
 							try {
-								return function.call(scope, new FplValue[] { FplLazy.makeEvaluated(scope, value) });
+								return function.call(scope, //
+										FplLazy.makeEvaluated(scope, value));
 							} catch (EvaluationException e) {
 								throw new TunnelException(e);
 							}
@@ -180,7 +183,7 @@ public class Loop implements ScopePopulator {
 						Iterator<FplValue> iter = list.iterator();
 						int i = 0;
 						while (iter.hasNext()) {
-							values[i++] = iter.next(); 
+							values[i++] = iter.next();
 						}
 						try {
 							Arrays.sort(values, new Comparator<FplValue>() {
@@ -188,9 +191,9 @@ public class Loop implements ScopePopulator {
 								@Override
 								public int compare(FplValue left, FplValue right) {
 									try {
-										return (int)evaluateToLong(scope, function.call(scope, 
-												FplLazy.makeEvaluated(scope, left),
-												FplLazy.makeEvaluated(scope, right)));
+										return (int) evaluateToLong(scope,
+												function.call(scope, FplLazy.makeEvaluated(scope, left),
+														FplLazy.makeEvaluated(scope, right)));
 									} catch (EvaluationException e) {
 										throw new TunnelException(e);
 									}
@@ -199,7 +202,7 @@ public class Loop implements ScopePopulator {
 
 							return FplList.fromIterator(new Iterator<FplValue>() {
 								int i = 0;
-								
+
 								@Override
 								public boolean hasNext() {
 									return i < values.length;
@@ -230,8 +233,7 @@ public class Loop implements ScopePopulator {
 						@Override
 						public FplList apply(FplValue value) {
 							try {
-								FplValue applied = function.call(scope,
-										new FplValue[] { FplLazy.makeEvaluated(scope, value) });
+								FplValue applied = function.call(scope, FplLazy.makeEvaluated(scope, value));
 								if (applied instanceof FplList) {
 									return (FplList) applied;
 								} else {
@@ -246,6 +248,40 @@ public class Loop implements ScopePopulator {
 				} catch (TunnelException e) {
 					throw e.getTunnelledException();
 				}
+			}
+		});
+
+		scope.define(new AbstractFunction("map-to-dict", "Apply a lambda to all list elements and return a dictionary. The dictionary is build from the results "
+				+ "of the lambdas. The first must return the key as string, the second a value (any type). "
+				+ "When the key is an empty string, the second lambda is not called and nothing is put to the dictionary. "
+				+ "Adding to the dictionary is done by put, so mappings may overwrite each other or even remove mappings, "
+				+ "when value is nil. "
+				+ "The first lambda receives a list element as parameter. "
+				+ "The second lambda receives two parameters: The first is the previous value contained in the dictionary for the given "
+				+ "key (may be nil if no mapping exists), the second the list element to be mapped.",
+				"key-lambda", "value-lambda", "list") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				Function keyLambda = evaluateToFunction(scope, parameters[0]);
+				Function valueLambda = evaluateToFunction(scope, parameters[1]);
+				FplList list = evaluateToList(scope, parameters[2]);
+				FplObject dict = new FplObject("dict");
+				for (FplValue value : list) {
+					FplValue keyLambdaResult = keyLambda.call(scope, FplLazy.makeEvaluated(scope, value));
+					if (keyLambdaResult instanceof FplString) {
+						String key = ((FplString) keyLambdaResult).getContent();
+						if (!key.isEmpty()) {
+							FplValue old = dict.get(key);
+							FplValue valueLambdaResult = valueLambda.call(scope, //
+									FplLazy.makeEvaluated(scope, old), FplLazy.makeEvaluated(scope, value));
+							dict.put(key, valueLambdaResult);
+						}
+					} else {
+						throw new EvaluationException("Not a string: " + keyLambdaResult);
+					}
+				}
+				return dict;
 			}
 		});
 
@@ -280,7 +316,9 @@ public class Loop implements ScopePopulator {
 						results.add(value);
 					}
 				}
-				return FplList.fromValues(results); // TODO: Change to fromIterator to avoid copying
+				return FplList.fromValues(results); // TODO: Change to
+													// fromIterator to avoid
+													// copying
 			}
 		});
 	}
