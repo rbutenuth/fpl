@@ -22,16 +22,21 @@ import de.codecentric.fpl.builtin.Parallel;
 import de.codecentric.fpl.builtin.Print;
 import de.codecentric.fpl.builtin.StringFunctions;
 import de.codecentric.fpl.data.MapScope;
+import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Parser;
+import de.codecentric.fpl.parser.Position;
 import de.codecentric.fpl.parser.Scanner;
 
 /**
  * Builds the initial {@link Scope} and contains helpers for execution.
  */
 public class FplEngine {
+	private static final Position UNKNOWN = new Position("<unknown>", 1, 1);
 	private ForkJoinPool pool;
 	private PrintStream systemOut;
 	private Scope scope;
@@ -41,11 +46,10 @@ public class FplEngine {
 		scope = createDefaultScope();
 		pool = ForkJoinPool.commonPool();
 	}
-	
+
 	/**
 	 * @return A new {@link Scope} with no outer scope and all built in functions.
-	 * @throws ScopeException
-	 *             Should not happen on initialization.
+	 * @throws ScopeException Should not happen on initialization.
 	 */
 	public Scope createDefaultScope() throws ScopeException, EvaluationException {
 		Scope scope = new MapScope("global");
@@ -71,11 +75,11 @@ public class FplEngine {
 	public ForkJoinPool getPool() {
 		return pool;
 	}
-	
+
 	public void setPool(ForkJoinPool pool) {
 		this.pool = pool;
 	}
-	
+
 	public PrintStream getSystemOut() {
 		return systemOut;
 	}
@@ -87,15 +91,16 @@ public class FplEngine {
 	public Scope getScope() {
 		return scope;
 	}
-	
+
 	public List<FplValue> evaluate(String sourceName, Reader rd, ResultCallback callback) throws IOException {
 		List<FplValue> results = new ArrayList<>();
 		boolean continueEvaluation = true;
 		try (Parser parser = new Parser(new Scanner(sourceName, rd))) {
 			do {
+				FplValue expression = null;
 				try {
 					if (parser.hasNext()) {
-						FplValue expression = parser.next();
+						expression = parser.next();
 						if (expression != null) {
 							expression = expression.evaluate(scope);
 						}
@@ -103,11 +108,36 @@ public class FplEngine {
 					} else {
 						continueEvaluation = false;
 					}
+				} catch (EvaluationException e) {
+					Position p = findPosition(expression);
+					e.add(new StackTraceElement(AbstractFunction.FPL, "top-level", p.getName(), p.getLine()));
+					continueEvaluation = callback.handleException(e);
 				} catch (Exception e) {
 					continueEvaluation = callback.handleException(e);
 				}
 			} while (continueEvaluation);
 		}
 		return results;
+	}
+
+	public static Position findPosition(FplValue expression) {
+		if (expression == null) {
+			return UNKNOWN;
+		} else {
+			if (expression instanceof PositionHolder) {
+				return ((PositionHolder) expression).getPosition();
+			} else if (expression instanceof FplList) {
+				FplList list = (FplList)expression;
+				for (FplValue subExpression : list) {
+					Position p = findPosition(subExpression);
+					if (! UNKNOWN.equals(p)) {
+						return p;
+					}
+				}
+				return UNKNOWN;
+			} else {
+				return UNKNOWN;
+			}
+		}
 	}
 }

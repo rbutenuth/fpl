@@ -228,7 +228,7 @@ public class ExecuteViaHttpTest {
 	@Test
 	public void oneExpressionFollowedByFailureGivesResultAndFailure() throws IOException {
 		String response = ExecuteViaHttp.post(baseUrl, user, password, stream("(+ 3 4)\n(/ 3 0)"), false);
-		assertEquals("7" + nl + nl + "java.lang.ArithmeticException: / by zero" + nl + "    at /(<internal>:1)",
+		assertEquals("7" + nl + nl + "java.lang.ArithmeticException: / by zero" + nl + "    at /(<internal>:1)" + nl + "    at top-level(http-post:2)",
 				response.trim());
 	}
 
@@ -246,7 +246,8 @@ public class ExecuteViaHttpTest {
 				"    at /(<internal>:1)" + nl + //
 				"    at function-c(http-post:3)" + nl + //
 				"    at function-b(http-post:2)" + nl + //
-				"    at function-a(http-post:1)", //
+				"    at function-a(http-post:1)" + nl + //
+				"    at top-level(http-post:4)",
 				response.trim());
 	}
 
