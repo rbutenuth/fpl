@@ -112,12 +112,7 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 				return makeCurryFunction(scope, parameters, missing);
 			}
 		}
-		try {
-			return callInternal(scope, parameters);
-		} catch (EvaluationException e) {
-			e.add(new StackTraceElement(FPL, getName(), getPosition().getName(), getPosition().getLine()));
-			throw e;
-		}
+		return callInternal(scope, parameters);
 	}
 
 	/**

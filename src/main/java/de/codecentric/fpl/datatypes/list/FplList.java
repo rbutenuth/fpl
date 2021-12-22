@@ -10,8 +10,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.Named;
+import de.codecentric.fpl.parser.Position;
 
 /**
  * A persistent list implementation.
@@ -904,7 +908,15 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	@Override
 	public FplValue evaluate(Scope scope) throws EvaluationException {
-		return evaluateToFunction(scope, first()).call(scope, createParameterArray());
+		FplValue function = first();
+		try {
+			return evaluateToFunction(scope, function).call(scope, createParameterArray());
+		} catch (EvaluationException e) {
+			Position position = FplEngine.findPosition(function);
+			String method = (function instanceof Named) ? ((Named)function).getName() : "?";
+			e.add(new StackTraceElement(AbstractFunction.FPL, method, position.getName(), position.getLine()));
+			throw e;
+		}
 	}
 
 	@Override

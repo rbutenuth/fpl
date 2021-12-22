@@ -279,9 +279,9 @@ public class LambdaTest extends AbstractFplTest {
 			evaluate("bam", "(fun1 42)");
 		} catch (EvaluationException e) {
 			assertEquals("Not a function: x", e.getMessage());
-			assertEquals(4, e.getAdded());
+			assertEquals(5, e.getAdded());
 			StackTraceElement[] st = e.getStackTrace();
-			assertEquals("fun4", st[0].getMethodName());
+			assertEquals("x", st[0].getMethodName());
 			assertEquals("fun4.fpl", st[0].getFileName());
 			assertEquals(1, st[0].getLineNumber());
 		}

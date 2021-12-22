@@ -114,7 +114,7 @@ public class ControlStructuresTest extends AbstractFplTest {
 		assertEquals("bam-message", logMessage.getContent());
 		FplList stackTrace = (FplList) scope.get("stack-trace");
 		FplList entry = (FplList) stackTrace.get(1);
-		assertEquals("bam-source", ((FplString) entry.get(0)).getContent());
+		assertEquals("catch", ((FplString) entry.get(0)).getContent());
 		assertEquals(1, ((FplInteger) entry.get(1)).getValue());
 		assertEquals("bam", ((FplString)entry.get(2)).getContent());
 	}
@@ -128,7 +128,7 @@ public class ControlStructuresTest extends AbstractFplTest {
 		assertEquals("bam-message", logMessage.getContent());
 		FplList stackTrace = (FplList) scope.get("stack-trace");
 		FplList entry = (FplList) stackTrace.get(1);
-		assertEquals("bam-source", ((FplString) entry.get(0)).getContent());
+		assertEquals("catch", ((FplString) entry.get(0)).getContent());
 		assertEquals(1, ((FplInteger) entry.get(1)).getValue());
 		assertEquals("bam", ((FplString)entry.get(2)).getContent());
 		FplInteger id = (FplInteger) scope.get("log-id");
