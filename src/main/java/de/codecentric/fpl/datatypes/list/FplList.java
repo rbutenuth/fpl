@@ -654,7 +654,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	private int numBucketsForCount(int count) {
-		if (count < BASE_SIZE) {
+		if (count < 3 * BASE_SIZE / 4) {
 			return 1;
 		}
 		int rest = count;

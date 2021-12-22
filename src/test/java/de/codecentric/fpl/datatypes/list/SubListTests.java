@@ -140,9 +140,16 @@ public class SubListTests extends AbstractListTest {
 	}
 
 	@Test
-	public void subListFromSpecialShape() throws EvaluationException {
+	public void subListFromSpecialShape1() throws EvaluationException {
 		FplList list = create(0, 45, 3, 37, 5);
 		FplList leftSubList = list.subList(0, 38);
 		check(leftSubList, 0, 38);
+	}
+
+	@Test
+	public void subListFromSpecialShape2() throws EvaluationException {
+		FplList list = create(0, 10, 2, 8);
+		FplList leftSubList = list.subList(0, 9);
+		check(leftSubList, 0, 9);
 	}
 }
