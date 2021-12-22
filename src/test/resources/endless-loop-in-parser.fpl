@@ -1,0 +1,117 @@
+(def list-of-strings (split (read-string-from-file "src/main/resources/2021/day10/test-input.txt") "\\r?\\n" 0))
+
+(def left-round (char-at "(" 0))	; 40
+(def right-round (char-at ")" 0))	; 41
+
+(def left-square (char-at "[" 0))	; 91
+(def right-square (char-at "]" 0))	; 93
+
+(def left-curly (char-at "{" 0))	; 123
+(def right-curly (char-at "}" 0))	; 125
+
+(def left-angle (char-at "<" 0))	; 60
+(def right-angle (char-at ">" 0))	; 62
+
+; State of the "scanner". Should be moved to an object
+(def eof -1)
+(def line-to-parse "")
+(def pos -1)
+(def token eof)
+(def token-as-string "eof")
+
+(def-function init-parser (input-line)
+	(set line-to-parse input-line)
+	(set pos -1)
+	(next-token)
+)
+
+(def-function next-token ()
+	(set pos (+ pos 1))
+	(set token 
+		(if-else (lt pos (length line-to-parse))
+			(sequential
+				(set token-as-string (substring line-to-parse pos (+ pos 1)))
+;				(println "next-token: " token-as-string) 
+				(char-at line-to-parse pos)
+			)
+			(sequential
+				(set token-as-string "<eof>")
+;				(println "<eof>")
+				eof
+			)
+		)
+	)
+	token
+)
+
+(def-function is-left ()
+	(or
+		(eq token left-round)
+		(eq token left-square)
+		(eq token left-curly)
+		(eq token left-angle)
+	)
+)
+
+(def-function right-for-left ()
+	(cond
+		(eq token left-round)  right-round
+		(eq token left-square) right-square
+		(eq token left-curly)  right-curly
+		(eq token left-angle)  right-angle
+	)
+)
+
+(def-function parse-list ()
+	(def right (right-for-left)) ; token is the opening parenthesis
+	(next-token) ; skip left parenthesis
+;	(println "parse-list, right: " (from-chars (list right)))
+	(while (and (ne token right) (ne token eof))
+		(parse-expression)		
+	)
+	(if-else (eq token right)
+		(next-token)
+		(throw (join "Unexpected token: " token-as-string " at position " pos))
+	)
+)
+
+(def-function parse-expression ()
+	(if-else (is-left)
+		(parse-list)
+		(throw (join "Unexpected token: " token-as-string " at position " pos))
+	)
+)
+
+(def-function parse-sequence ()
+;	(println "parse-sequence: " token-as-string)
+	(while (ne token eof)
+		(if-else (is-left)
+			(sequential
+;				(println "found left: " token-as-string)
+				(parse-expression)
+			)
+			(throw (join "Unexpected token: " token-as-string " at position " pos))
+		)
+	)
+)
+
+(def-function parse-line (line)
+	(try-catch
+		(sequential
+			(init-parser line)
+			(parse-sequence)
+			0
+		)
+		(lambda (message id stacktrace)
+			(println message ")
+			(cond
+				(eq token right-round) 3 
+				(eq token right-square) 57 
+				(eq token right-curly) 1197 
+				(eq token right-angle) 25137
+			)
+		)
+	)
+)
+
+(parse-line "(]")

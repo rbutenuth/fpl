@@ -139,4 +139,10 @@ public class SubListTests extends AbstractListTest {
 		assertEquals(0, list.subList(3, 3).size());
 	}
 
+	@Test
+	public void subListFromSpecialShape() throws EvaluationException {
+		FplList list = create(0, 45, 3, 37, 5);
+		FplList leftSubList = list.subList(0, 38);
+		check(leftSubList, 0, 38);
+	}
 }

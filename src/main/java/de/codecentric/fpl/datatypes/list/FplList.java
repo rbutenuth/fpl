@@ -631,7 +631,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				int size = Math.min(bucketSize / 2, rest);
 				bucketsDst[bucketDstIndex] = copyOfRange(bucket, inBucketToIdx - size, inBucketToIdx);
 				bucketDstIndex--;
-				inBucketToIdx += size;
+				inBucketToIdx -= size;
 				rest -= size;
 				bucketSize *= FACTOR;
 			}
