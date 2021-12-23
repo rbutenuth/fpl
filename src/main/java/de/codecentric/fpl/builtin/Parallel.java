@@ -11,7 +11,6 @@ import java.util.concurrent.RecursiveTask;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.ScopePopulator;
-import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
@@ -55,11 +54,7 @@ public class Parallel implements ScopePopulator {
 
 						@Override
 						protected FplValue compute() {
-							try {
-								return evaluateToAny(scope, value);
-							} catch (EvaluationException e) {
-								throw new TunnelException(e);
-							}
+							return evaluateToAny(scope, value);
 						}
 					});
 				}
@@ -82,11 +77,7 @@ public class Parallel implements ScopePopulator {
 
 						@Override
 						protected FplValue compute() {
-							try {
-								return function.call(scope, new FplValue[] { value });
-							} catch (EvaluationException e) {
-								throw new TunnelException(e);
-							}
+							return function.call(scope, new FplValue[] { value });
 						}
 					});
 				}
@@ -111,11 +102,7 @@ public class Parallel implements ScopePopulator {
 
 							@Override
 							protected FplValue compute() {
-								try {
-									return function.call(scope, new FplValue[] { value });
-								} catch (EvaluationException e) {
-									throw new TunnelException(e);
-								}
+								return function.call(scope, new FplValue[] { value });
 							}
 						});
 					}
@@ -133,11 +120,7 @@ public class Parallel implements ScopePopulator {
 
 					@Override
 					protected FplValue compute() {
-						try {
-							return evaluateToAny(scope, parameters[0]);
-						} catch (EvaluationException e) {
-							throw new TunnelException(e);
-						}
+						return evaluateToAny(scope, parameters[0]);
 					}
 				});
 				return new AbstractFunction("future", "future") {
@@ -165,26 +148,22 @@ public class Parallel implements ScopePopulator {
 				engine.getPool().execute(task);
 			}
 		}
-		try {
-			return FplList.fromIterator(new Iterator<FplValue>() {
-				int i = 0;
+		return FplList.fromIterator(new Iterator<FplValue>() {
+			int i = 0;
 
-				@Override
-				public boolean hasNext() {
-					return i < size;
-				}
+			@Override
+			public boolean hasNext() {
+				return i < size;
+			}
 
-				@Override
-				public FplValue next() {
-					try {
-						return tasks.get(i++).get();
-					} catch (InterruptedException | ExecutionException e) {
-						throw new TunnelException(new EvaluationException(e));
-					}
+			@Override
+			public FplValue next() {
+				try {
+					return tasks.get(i++).get();
+				} catch (InterruptedException | ExecutionException e) {
+					throw new EvaluationException(e);
 				}
-			}, size);
-		} catch (TunnelException e) {
-			throw e.getTunnelledException();
-		}
+			}
+		}, size);
 	}
 }

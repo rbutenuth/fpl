@@ -4,7 +4,6 @@ import java.util.Iterator;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
-import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
@@ -67,27 +66,19 @@ public class ListFunctions implements ScopePopulator {
 				if (parameters.length == 0) {
 					return FplList.EMPTY_LIST;
 				} else {
-					try {
-						return FplList.fromIterator(new Iterator<FplValue>() {
-							int i = 0;
+					return FplList.fromIterator(new Iterator<FplValue>() {
+						int i = 0;
 
-							@Override
-							public boolean hasNext() {
-								return i < parameters.length;
-							}
+						@Override
+						public boolean hasNext() {
+							return i < parameters.length;
+						}
 
-							@Override
-							public FplValue next() {
-								try {
-									return evaluateToAny(scope, parameters[i++]);
-								} catch (EvaluationException e) {
-									throw new TunnelException(e);
-								}
-							}
-						}, parameters.length);
-					} catch (TunnelException e) {
-						throw e.getTunnelledException();
-					}
+						@Override
+						public FplValue next() {
+							return evaluateToAny(scope, parameters[i++]);
+						}
+					}, parameters.length);
 				}
 			}
 		});

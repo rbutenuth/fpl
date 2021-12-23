@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
@@ -426,7 +427,7 @@ public class StringFunctionsTest extends AbstractFplTest {
 		try {
 			evaluate("parse-json", "(parse-json \"{\\\"\\\": 1}\")");
 			fail("execption missing");
-		} catch (EvaluationException e) {
+		} catch (ScopeException e) {
 			assertEquals("\"\" is not a valid name", e.getMessage());
 		}
 	}

@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.TunnelException;
 
 public class EvaluationExceptionTest {
 
@@ -56,11 +55,5 @@ public class EvaluationExceptionTest {
 		assertTrue(ee.getAdded() > 0);
 		StackTraceElement[] stackTrace = ee.getStackTrace();
 		assertEquals("class", stackTrace[0].getClassName());
-	}
-	
-	@Test
-	public void withTunnelException() {
-		EvaluationException e = new EvaluationException("foo", new TunnelException(new EvaluationException("tunnelled")));
-		assertEquals("tunnelled", e.getMessage());
 	}
 }

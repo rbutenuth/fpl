@@ -55,7 +55,7 @@ public class ParallelTest extends AbstractFplTest {
 			evaluate("parallel", "(parallel  (+ 3 4) (* 3 4) (/ 3 0) )");
 			fail("Exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("java.lang.ArithmeticException: / by zero", e.getMessage());
+			assertTrue(e.getMessage().contains("java.lang.ArithmeticException: / by zero"));
 		}
 	}
 
@@ -75,8 +75,8 @@ public class ParallelTest extends AbstractFplTest {
 		try {
 			evaluate("parallel-map", "(parallel-map square '(1 2 3 4))");
 			fail("should not be reached.");
-		} catch (EvaluationException expected) {
-			assertEquals("java.lang.ArithmeticException: / by zero", expected.getMessage());
+		} catch (EvaluationException e) {
+			assertTrue(e.getMessage().contains("java.lang.ArithmeticException: / by zero"));
 		}
 	}
 
@@ -100,8 +100,8 @@ public class ParallelTest extends AbstractFplTest {
 		try {
 			evaluate("parallel-for-each", "(parallel-for-each fail '(1 2 3 4))");
 			fail("should not be reached.");
-		} catch (EvaluationException expected) {
-			assertEquals("java.lang.ArithmeticException: / by zero", expected.getMessage());
+		} catch (EvaluationException e) {
+			assertTrue(e.getMessage().contains("java.lang.ArithmeticException: / by zero"));
 		}
 	}
 
@@ -119,7 +119,7 @@ public class ParallelTest extends AbstractFplTest {
 			evaluate("future", "(future)");
 			fail("Exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("java.lang.ArithmeticException: / by zero", e.getMessage());
+			assertTrue(e.getMessage().contains("java.lang.ArithmeticException: / by zero"));
 		}
 	}
 }

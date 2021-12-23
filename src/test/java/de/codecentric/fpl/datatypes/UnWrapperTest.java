@@ -12,6 +12,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.list.AbstractListTest;
 import de.codecentric.fpl.datatypes.list.FplList;
 
@@ -64,7 +65,7 @@ public class UnWrapperTest extends AbstractListTest {
 		try {
 			UnWrapper.wrap(map);
 			fail("exception missing");
-		} catch (EvaluationException e) {
+		} catch (ScopeException e) {
 			assertEquals("\"\" is not a valid name", e.getLocalizedMessage());
 		}
 	}

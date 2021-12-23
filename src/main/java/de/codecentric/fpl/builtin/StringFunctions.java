@@ -19,7 +19,6 @@ import com.jsoniter.output.JsonStream;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
-import de.codecentric.fpl.TunnelException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
@@ -446,11 +445,7 @@ public class StringFunctions implements ScopePopulator {
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String str = evaluateToString(scope, parameters[0]);
 				Any parsed = JsonIterator.deserialize(str);
-				try {
-					return deserialize(parsed);
-				} catch (TunnelException e) {
-					throw new EvaluationException(e.getMessage(), e);
-				}
+				return deserialize(parsed);
 			}
 
 			private FplValue deserialize(Any any) {
@@ -490,11 +485,7 @@ public class StringFunctions implements ScopePopulator {
 			private FplValue deserializeMap(Map<String, Any> map) {
 				FplObject obj = new FplObject("dict");
 				for (Map.Entry<String, Any> entry : map.entrySet()) {
-					try {
-						obj.put(entry.getKey(), deserialize(entry.getValue()));
-					} catch (ScopeException e) {
-						throw new TunnelException(new EvaluationException(e.getMessage(), e));
-					}
+					obj.put(entry.getKey(), deserialize(entry.getValue()));
 				}
 				return obj;
 			}

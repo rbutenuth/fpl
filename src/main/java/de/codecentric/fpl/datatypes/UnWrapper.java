@@ -8,21 +8,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.TunnelException;
-import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 public class UnWrapper {
 
 	public static FplValue wrap(Object obj) throws EvaluationException {
-		try {
-			return wrapInternal(obj);
-		} catch (TunnelException e) {
-			throw e.getTunnelledException();
-		}
-	}
-
-	private static FplValue wrapInternal(Object obj) throws TunnelException {
 		FplValue value;
 		if (obj == null) {
 			value = null;
@@ -62,7 +52,7 @@ public class UnWrapper {
 
 			@Override
 			public FplValue next() {
-				return wrapInternal(iter.next());
+				return wrap(iter.next());
 			}
 		}, list.size());
 	}
@@ -78,19 +68,15 @@ public class UnWrapper {
 
 			@Override
 			public FplValue next() {
-				return wrapInternal(a[i++]);
+				return wrap(a[i++]);
 			}
 		}, a.length);
 	}
 
 	private static FplObject wrap(Map<?, ?> map) {
 		FplObject object = new FplObject("dict");
-		try {
-			for (Entry<?, ?> entry : map.entrySet()) {
-				object.put((String) entry.getKey(), wrapInternal(entry.getValue()));
-			}
-		} catch (ScopeException e) {
-			throw new TunnelException(new EvaluationException(e.getMessage(), e));
+		for (Entry<?, ?> entry : map.entrySet()) {
+			object.put((String) entry.getKey(), wrap(entry.getValue()));
 		}
 		return object;
 	}
