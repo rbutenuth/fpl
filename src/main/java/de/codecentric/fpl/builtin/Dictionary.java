@@ -1,5 +1,6 @@
 package de.codecentric.fpl.builtin;
 
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
@@ -10,8 +11,10 @@ import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplObject;
+import de.codecentric.fpl.datatypes.FplSortedDictionary;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
@@ -31,6 +34,42 @@ public class Dictionary implements ScopePopulator {
 				}
 				FplObject dict = new FplObject("dict");
 				for (int i = 0; i < parameters.length; i += 2) {
+					String key = evaluateToString(scope, parameters[i]);
+					FplValue value = evaluateToAny(scope, parameters[i+1]);
+					try {
+						dict.put(key, value);
+					} catch (ScopeException e) {
+						throw new EvaluationException(e.getMessage(), e);
+					}
+				}
+				return dict;
+			}
+		});
+
+		scope.define(new AbstractFunction(
+				"sorted-dict", "Create a new sorted dictionary from string value pairs. \r\n"
+				+ "The lambda sort takes two arguments (left, right) and must return a number:\"\r\n"
+				+ " < 0 if left < right, 0 for left = right and > 0 for left > right.",
+				"sort", "pairs...") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				Function function = evaluateToFunction(scope, parameters[0]);
+				if (parameters.length % 2 != 1) {
+					throw new EvaluationException("Number of parameters must be odd (sort lamda plus key value pairs)");
+				}
+				Comparator<String> comparator = new Comparator<String>() {
+
+					@Override
+					public int compare(String left, String right) {
+						return (int) evaluateToLong(scope,
+								function.call(scope, // 
+										new FplString(left),
+										new FplString(right)));
+					}
+				};
+
+				FplSortedDictionary dict = new FplSortedDictionary(comparator);
+				for (int i = 1; i < parameters.length; i += 2) {
 					String key = evaluateToString(scope, parameters[i]);
 					FplValue value = evaluateToAny(scope, parameters[i+1]);
 					try {

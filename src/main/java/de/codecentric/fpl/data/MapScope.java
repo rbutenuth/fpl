@@ -66,7 +66,7 @@ public class MapScope implements Scope {
 	 * Lookup a symbol, if not found in this scope, walk chain of scopes.
 	 * 
 	 * @param key Name of value to lookup
-	 * @return The found expression, may be null.
+	 * @return The found value, may be null.
 	 */
 	@Override
 	public FplValue get(String key) {
@@ -154,7 +154,7 @@ public class MapScope implements Scope {
 		return map.entrySet();
 	}
 
-	private void checkKeyNotNullOrEmpty(String key) throws ScopeException {
+	public static void checkKeyNotNullOrEmpty(String key) throws ScopeException {
 		if (key == null) {
 			throw new ScopeException("nil is not a valid name");
 		} else if (key.isEmpty()) {
@@ -162,7 +162,7 @@ public class MapScope implements Scope {
 		}
 	}
 	
-	private void checkValueNotNull(FplValue value) throws ScopeException {
+	public static void checkValueNotNull(FplValue value) throws ScopeException {
 		if (value == null) {
 			throw new ScopeException("value is nil");
 		}

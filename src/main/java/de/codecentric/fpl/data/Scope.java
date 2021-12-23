@@ -32,9 +32,8 @@ public interface Scope extends Iterable<Entry<String, FplValue>> {
 	/**
 	 * Put a key value mapping in the scope, may overwrite an existing mapping.
 	 * 
-	 * @param key   Name of value to lookup, not null, not empty
-	 * @param value The value of the symbol, null values are allowed and will remove
-	 *              the mapping.
+	 * @param key   Name of value to store, not null, not empty
+	 * @param value The value, null values are allowed and will remove the mapping.
 	 * @throws ScopeException If key is empty.
 	 */
 	public FplValue put(String key, FplValue value) throws ScopeException;
@@ -63,7 +62,7 @@ public interface Scope extends Iterable<Entry<String, FplValue>> {
 	public FplValue replaceLocal(String key, FplValue newValue) throws ScopeException;
 
 	/**
-	 * @param key   Name of value to change, not null, not empty
+	 * @param key   Name of value to define, not null, not empty
 	 * @param value The new value, not <code>null</code>
 	 * @return value
 	 * @throws ScopeException If value did already exist.

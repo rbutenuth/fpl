@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Problems during evaluation.
  */
-public class EvaluationException extends Exception {
+public class EvaluationException extends RuntimeException {
 	private static final long serialVersionUID = 6161879115582780204L;
 	private int added;
 	private int id;

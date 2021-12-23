@@ -48,11 +48,6 @@ public class FplObject extends MapScope implements FplDictionary, PositionHolder
 	}
 
 	@Override
-	public FplValue evaluate(Scope scope) throws EvaluationException {
-		return this;
-	}
-
-	@Override
 	public FplValue call(Scope scope, FplValue... parameters) throws EvaluationException {
 		Function firstElement = AbstractFunction.evaluateToFunction(this, parameters[0]);
 		FplValue[] shiftedParameters = Arrays.copyOfRange(parameters, 1, parameters.length);
