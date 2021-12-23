@@ -134,7 +134,7 @@ public class FplObjectTest extends AbstractFplTest {
 			evaluate("sub-class", "(sub-class my-class (def-field a2 3) (def-field a3 4))");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("Not a dictionary: 42", e.getMessage());
+			assertEquals("Not an object: 42", e.getMessage());
 		}
 	}
 
@@ -168,7 +168,7 @@ public class FplObjectTest extends AbstractFplTest {
 			evaluate("sub-class", "(def-sub-class my-sub-class my-class (def-field a2 3) (def-field a3 4))");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("Not a dictionary: 42", e.getMessage());
+			assertEquals("Not an object: 42", e.getMessage());
 		}
 	}
 

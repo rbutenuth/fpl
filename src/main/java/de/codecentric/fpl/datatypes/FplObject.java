@@ -14,7 +14,7 @@ import de.codecentric.fpl.parser.Position;
  * of {@link Scope} with {@link Named}. The rest are some built in functions for
  * linking and executing methods on objects.
  */
-public class FplObject extends MapScope implements PositionHolder, FplValue, Function {
+public class FplObject extends MapScope implements FplDictionary, PositionHolder, FplValue, Function {
 	private static String NL = System.lineSeparator();
 	private Position position;
 
@@ -24,7 +24,7 @@ public class FplObject extends MapScope implements PositionHolder, FplValue, Fun
 	}
 
 	/**
-	 * Create an object which is not in the scope chain: A simple dictcionary.
+	 * Create an object which is not in the scope chain: A simple dictionary.
 	 * 
 	 * @param position Where it is defined in the source
 	 */

@@ -8,6 +8,7 @@ import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
@@ -49,8 +50,8 @@ public class Dictionary implements ScopePopulator {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
-					FplObject o = evaluateToDictionary(scope, parameters[0]);
-					return o.put(evaluateToString(scope, parameters[1]), AbstractFunction.evaluateToAny(scope, parameters[2]));
+					FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
+					return dict.put(evaluateToString(scope, parameters[1]), AbstractFunction.evaluateToAny(scope, parameters[2]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
 				}
@@ -64,8 +65,8 @@ public class Dictionary implements ScopePopulator {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
-					FplObject o = evaluateToDictionary(scope, parameters[0]);
-					return o.define(evaluateToString(scope, parameters[1]),
+					FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
+					return dict.define(evaluateToString(scope, parameters[1]),
 							AbstractFunction.evaluateToAny(scope, parameters[2]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
@@ -81,8 +82,8 @@ public class Dictionary implements ScopePopulator {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				try {
-					FplObject o = evaluateToDictionary(scope, parameters[0]);
-					return o.replace(evaluateToString(scope, parameters[1]),
+					FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
+					return dict.replace(evaluateToString(scope, parameters[1]),
 							AbstractFunction.evaluateToAny(scope, parameters[2]));
 				} catch (ScopeException e) {
 					throw new EvaluationException(e.getMessage());
@@ -94,8 +95,8 @@ public class Dictionary implements ScopePopulator {
 				"key must be a string.", "dict", "key") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				FplObject o = evaluateToDictionary(scope, parameters[0]);
-				return o.get(evaluateToString(scope, parameters[1]));
+				FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
+				return dict.get(evaluateToString(scope, parameters[1]));
 			}
 		});
 
@@ -103,7 +104,7 @@ public class Dictionary implements ScopePopulator {
 				"dict") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				FplObject o = evaluateToDictionary(scope, parameters[0]);
+				FplDictionary o = evaluateToDictionary(scope, parameters[0]);
 				return FplList.fromIterator(new Iterator<FplValue>() {
 					Iterator<String> iter = o.keySet().iterator();
 
@@ -124,8 +125,8 @@ public class Dictionary implements ScopePopulator {
 				"Get all values of an object or dictionary as a list.", "dict") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				FplObject o = evaluateToDictionary(scope, parameters[0]);
-				return FplList.fromIterator(o.values().iterator());
+				FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
+				return FplList.fromIterator(dict.values().iterator());
 			}
 		});
 
@@ -134,9 +135,9 @@ public class Dictionary implements ScopePopulator {
 				"dict") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				FplObject o = evaluateToDictionary(scope, parameters[0]);
+				FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
 				return FplList.fromIterator(new Iterator<FplValue>() {
-					Iterator<Entry<String, FplValue>> iter = o.entrieSet().iterator();
+					Iterator<Entry<String, FplValue>> iter = dict.entrieSet().iterator();
 
 					@Override
 					public boolean hasNext() {

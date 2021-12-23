@@ -232,18 +232,18 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	}
 
 	/**
-	 * Evaluate an expression and cast the result to a {@link FplObject}.
+	 * Evaluate an expression and cast the result to a {@link FplDictionary}.
 	 * 
 	 * @param scope      Scope used for evaluation.
 	 * @param expression Expression to evaluate.
-	 * @return A FplObject.
+	 * @return A FplDictionary.
 	 * @throws EvaluationException If <code>expression</code> does not evaluate to a
-	 *                             FplObject.
+	 *                             FplDictionary.
 	 */
-	public static FplObject evaluateToDictionary(Scope scope, FplValue expression) throws EvaluationException {
+	public static FplDictionary evaluateToDictionary(Scope scope, FplValue expression) throws EvaluationException {
 		FplValue value = expression.evaluate(scope);
-		if (value instanceof FplObject) {
-			return (FplObject) value;
+		if (value instanceof FplDictionary) {
+			return (FplDictionary) value;
 		} else {
 			throw new EvaluationException("Not a dictionary: " + value);
 		}
@@ -286,11 +286,16 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	 *                             FplObject.
 	 */
 	public static FplObject evaluateToObject(Scope scope, FplValue expression) throws EvaluationException {
-		FplObject object = evaluateToDictionary(scope, expression);
-		if (object.getNext() == null) {
-			throw new EvaluationException("Not an object: " + object);
+		FplValue value = expression.evaluate(scope);
+		if (value instanceof FplObject) {
+			FplObject object = (FplObject) value;
+			if (object.getNext() == null) {
+				throw new EvaluationException("Not an object: " + object);
+			}
+			return (FplObject) value;
+		} else {
+			throw new EvaluationException("Not an object: " + value);
 		}
-		return object;
 	}
 
 	/**
