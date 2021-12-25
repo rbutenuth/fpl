@@ -53,20 +53,25 @@ public class Dictionary implements ScopePopulator {
 				"sort", "pairs...") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				Function function = evaluateToFunction(scope, parameters[0]);
+				Function function = evaluateToFunctionOrNull(scope, parameters[0]);
+				Comparator<String> comparator;
 				if (parameters.length % 2 != 1) {
 					throw new EvaluationException("Number of parameters must be odd (sort lamda plus key value pairs)");
 				}
-				Comparator<String> comparator = new Comparator<String>() {
-
-					@Override
-					public int compare(String left, String right) {
-						return (int) evaluateToLong(scope,
-								function.call(scope, // 
-										new FplString(left),
-										new FplString(right)));
-					}
-				};
+				if (function == null) {
+					comparator = null;
+				} else {
+					comparator = new Comparator<String>() {
+						
+						@Override
+						public int compare(String left, String right) {
+							return (int) evaluateToLong(scope,
+									function.call(scope, // 
+											new FplString(left),
+											new FplString(right)));
+						}
+					};
+				}
 
 				FplSortedDictionary dict = new FplSortedDictionary(comparator);
 				for (int i = 1; i < parameters.length; i += 2) {

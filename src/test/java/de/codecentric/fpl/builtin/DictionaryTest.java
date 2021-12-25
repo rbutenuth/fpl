@@ -161,6 +161,14 @@ public class DictionaryTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void sortedDictionaryWithNaturalStringOrder() throws Exception {
+		FplSortedDictionary dict = (FplSortedDictionary) evaluate("sorted-dict",
+				"(def sd (sorted-dict nil \"b\" \"b\"))");
+		evaluate("def a", "(dict-def sd \"a\" \"a\")");
+		assertEquals(2, dict.keySet().size());
+	}
+
+	@Test
 	public void sortedDictionaryWrongNumberOfParameters() throws Exception {
 		assertThrows(EvaluationException.class, () -> {
 			evaluate("sorted-dict", "(sorted-dict (lambda (a b) (if-else (lt a b) -1 (if-else (gt a b) 1 0))) 42)");

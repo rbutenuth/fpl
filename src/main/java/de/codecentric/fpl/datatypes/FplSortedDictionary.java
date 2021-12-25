@@ -18,7 +18,11 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	private TreeMap<String, FplValue> map;
 
 	public FplSortedDictionary(Comparator<String> comparator) {
-		map = new TreeMap<>(comparator);
+		if (comparator == null) {
+			map = new TreeMap<>();
+		} else {
+			map = new TreeMap<>(comparator);
+		}
 	}
 	
 	@Override

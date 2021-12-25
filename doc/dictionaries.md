@@ -32,6 +32,7 @@ Create a new dictionary from key value pairs. The number of parameters must be e
 Create a new sorted dictionary from string value pairs.
 The lambda sort takes two arguments (left, right) and must return a number:
 < 0 if left < right, 0 for left = right and > 0 for left > right.
+When sort-lambda is nil, the natural string order is used.
 
 ```
 (sorted dict sort-lambda pairs...)
