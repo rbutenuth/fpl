@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
@@ -22,6 +23,17 @@ import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 public class DictionaryTest extends AbstractFplTest {
+	private FplObject aDict;
+	private FplSortedDictionary abSortedDict;
+	
+	@BeforeEach
+	public void before() throws Exception {
+		scope.define("empty-dict", evaluate("empty-dict", "(dict)"));
+		scope.define("empty-sorted-dict", evaluate("empty-sorted-dict", "(sorted-dict nil)"));
+		aDict = (FplObject) scope.define("a-dict", evaluate("a-dict", "(dict \"a\" 1)"));
+		abSortedDict = (FplSortedDictionary) scope.define("ab-sorted-dict", evaluate("ab-sorted-dict", "(sorted-dict nil \"a\" 1 \"b\" 2)"));
+	}
+	
 	@Test
 	public void dict() throws Exception {
 		FplObject dict = (FplObject) evaluate("dict", "(dict \"a\" 1 \"b\" (+ 1 1) \"c\" 3)");
@@ -192,6 +204,192 @@ public class DictionaryTest extends AbstractFplTest {
 		assertEquals("java.lang.ArithmeticException: / by zero", e.getMessage());
 	}
 
+	@Test
+	public void peekAndFetchOnEmptyDictionaryFails() throws Exception {
+		EvaluationException e;
+		
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-peek", "(dict-peek-first-key empty-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-peek", "(dict-peek-last-key empty-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-fetch-first", "(dict-fetch-first-key empty-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-fetch-last", "(dict-fetch-last-key empty-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-fetch-first", "(dict-fetch-first-value empty-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-fetch-last", "(dict-fetch-last-value empty-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-fetch-first", "(dict-fetch-first-entry empty-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-fetch-last", "(dict-fetch-last-entry empty-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+	}
+	
+	@Test
+	public void peekAndFetchOnEmptySortedDictionaryFails() throws Exception {
+		EvaluationException e;
+		
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-peek", "(dict-peek-first-key empty-sorted-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-peek", "(dict-peek-last-key empty-sorted-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-fetch-first", "(dict-fetch-first-key empty-sorted-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-fetch-last", "(dict-fetch-last-key empty-sorted-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-fetch-first", "(dict-fetch-first-value empty-sorted-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-fetch-last", "(dict-fetch-last-value empty-sorted-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-fetch-first", "(dict-fetch-first-entry empty-sorted-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+
+		e = assertThrows(EvaluationException.class, () -> {
+			evaluate("empty-fail-fetch-last", "(dict-fetch-last-entry empty-sorted-dict)");
+		});
+		assertEquals("dictionary is empty", e.getMessage());
+	}
+
+	@Test
+	public void peekAndFetchFirstKey() throws Exception {
+		assertEquals(new FplString("a"), evaluate("peek", "(dict-peek-first-key a-dict)"));
+		assertEquals(1, aDict.size());
+		assertEquals(FplInteger.valueOf(1), (FplInteger)evaluate("size", "(dict-size a-dict)"));
+
+		assertEquals(new FplString("a"), evaluate("fetch", "(dict-fetch-first-key a-dict)"));
+		assertEquals(0, aDict.size());
+	}
+	
+	@Test
+	public void peekAndFetchLastKey() throws Exception {
+		assertEquals(new FplString("a"), evaluate("peek", "(dict-peek-last-key a-dict)"));
+		assertEquals(1, aDict.size());
+		assertEquals(FplInteger.valueOf(1), (FplInteger)evaluate("size", "(dict-size a-dict)"));
+
+		assertEquals(new FplString("a"), evaluate("fetch", "(dict-fetch-last-key a-dict)"));
+		assertEquals(0, aDict.size());
+	}
+	
+	@Test
+	public void fetchFirstValue() throws Exception {
+		assertEquals(FplInteger.valueOf(1), evaluate("fetch", "(dict-fetch-first-value a-dict)"));
+		assertEquals(0, aDict.size());
+	}
+	
+	@Test
+	public void fetchLastValue() throws Exception {
+		assertEquals(FplInteger.valueOf(1), evaluate("fetch", "(dict-fetch-last-value a-dict)"));
+		assertEquals(0, aDict.size());
+	}
+	
+	@Test
+	public void fetchFirstEntry() throws Exception {
+		FplList list = (FplList)evaluate("fetch", "(dict-fetch-first-entry a-dict)");
+		assertEquals(new FplString("a"), list.first());
+		assertEquals(FplInteger.valueOf(1), list.last());
+		assertEquals(0, aDict.size());
+	}
+	
+	@Test
+	public void fetchLastEntry() throws Exception {
+		FplList list = (FplList)evaluate("fetch", "(dict-fetch-last-entry a-dict)");
+		assertEquals(new FplString("a"), list.first());
+		assertEquals(FplInteger.valueOf(1), list.last());
+		assertEquals(0, aDict.size());
+	}
+	
+	@Test
+	public void sortedPeekAndFetchFirstKey() throws Exception {
+		assertEquals(new FplString("a"), evaluate("peek", "(dict-peek-first-key ab-sorted-dict)"));
+		assertEquals(2, abSortedDict.size());
+		assertEquals(FplInteger.valueOf(2), (FplInteger)evaluate("size", "(dict-size ab-sorted-dict)"));
+
+		assertEquals(new FplString("a"), evaluate("fetch", "(dict-fetch-first-key ab-sorted-dict)"));
+		assertEquals(1, abSortedDict.size());
+	}
+	
+	@Test
+	public void sortedPeekAndFetchLastKey() throws Exception {
+		assertEquals(new FplString("b"), evaluate("peek", "(dict-peek-last-key ab-sorted-dict)"));
+		assertEquals(2, abSortedDict.size());
+		assertEquals(FplInteger.valueOf(2), (FplInteger)evaluate("size", "(dict-size ab-sorted-dict)"));
+
+		assertEquals(new FplString("b"), evaluate("fetch", "(dict-fetch-last-key ab-sorted-dict)"));
+		assertEquals(1, abSortedDict.size());
+	}
+	
+	@Test
+	public void sortedfetchFirstValue() throws Exception {
+		assertEquals(FplInteger.valueOf(1), evaluate("fetch", "(dict-fetch-first-value ab-sorted-dict)"));
+		assertEquals(1, abSortedDict.size());
+	}
+	
+	@Test
+	public void sortedFetchLastValue() throws Exception {
+		assertEquals(FplInteger.valueOf(2), evaluate("fetch", "(dict-fetch-last-value ab-sorted-dict)"));
+		assertEquals(1, abSortedDict.size());
+	}
+	
+	@Test
+	public void sortedFetchFirstEntry() throws Exception {
+		FplList list = (FplList)evaluate("fetch", "(dict-fetch-first-entry ab-sorted-dict)");
+		assertEquals(new FplString("a"), list.first());
+		assertEquals(FplInteger.valueOf(1), list.last());
+		assertEquals(1, abSortedDict.size());
+	}
+	
+	@Test
+	public void sortedFetchLastEntry() throws Exception {
+		FplList list = (FplList)evaluate("fetch", "(dict-fetch-last-entry ab-sorted-dict)");
+		assertEquals(new FplString("b"), list.first());
+		assertEquals(FplInteger.valueOf(2), list.last());
+		assertEquals(1, abSortedDict.size());
+	}
+	
 	private void createDictionary() throws Exception {
 		evaluate("create", "(def test-dict (dict \"a\" 1 \"b\" 2 \"c\" 3 ))");
 	}

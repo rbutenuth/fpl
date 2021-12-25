@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import de.codecentric.fpl.data.ScopeException;
+import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
  * Common base for unsorted and sorted maps and objects.
@@ -58,4 +59,67 @@ public interface FplDictionary {
 	 * @return Ordered entries.
 	 */
 	public Set<Entry<String, FplValue>> entrieSet();
+
+	/**
+	 * @return Number of mappings in this dictionary.
+	 */
+	public int size();
+	
+	/**
+	 * @return Returns the first key from the dictionary. In case
+	 * of an unsorted dictionary, a random key is returned.
+	 * @throws ScopeException When dictionary is empty.
+	 */
+	public String peekFirstKey() throws ScopeException;
+
+	/**
+	 * @return Returns the last key from the dictionary. In case
+	 * of an unsorted dictionary, a random key is returned.
+	 * @throws ScopeException When dictionary is empty.
+	 */
+	public String peekLastKey() throws ScopeException;
+
+	/**
+	 * @return Returns and removes the first key from the dictionary. In case
+	 * of an unsorted dictionary, a random key is returned/removed.
+	 * @throws ScopeException When dictionary is empty.
+	 */
+	public String fetchFirstKey() throws ScopeException;
+
+	/**
+	 * @return Returns and removes the last key from the dictionary. In case
+	 * of an unsorted dictionary, a random key is returned/removed.
+	 * @throws ScopeException When dictionary is empty.
+	 */
+	public String fetchLastKey() throws ScopeException;
+	
+	/**
+	 * @return Returns and removes the first value from the dictionary. In case
+	 * of an unsorted dictionary, a random value is returned/removed.
+	 * @throws ScopeException When dictionary is empty.
+	 */
+	public FplValue fetchFirstValue() throws ScopeException;
+
+	/**
+	 * @return Returns and removes the last value from the dictionary. In case
+	 * of an unsorted dictionary, a random value is returned/removed.
+	 * @throws ScopeException When dictionary is empty.
+	 */
+	public FplValue fetchLastValue() throws ScopeException;
+
+	/**
+	 * @return Returns and removes the first entry from the dictionary. In case
+	 * of an unsorted dictionary, a random entry is returned/removed.
+	 * The list contains the key and the value.
+	 * @throws ScopeException When dictionary is empty.
+	 */
+	public FplList fetchFirstEntry() throws ScopeException;
+
+	/**
+	 * @return Returns and removes the last entry from the dictionary. In case
+	 * of an unsorted dictionary, a random entry is returned/removed.
+	 * The list contains the key and the value.
+	 * @throws ScopeException When dictionary is empty.
+	 */
+	public FplList fetchLastEntry() throws ScopeException;
 }

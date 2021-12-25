@@ -10,6 +10,7 @@ import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplDictionary;
+import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplSortedDictionary;
 import de.codecentric.fpl.datatypes.FplString;
@@ -197,6 +198,128 @@ public class Dictionary implements ScopePopulator {
 			}
 		});
 
-	}
+		scope.define(new AbstractFunction("dict-size", 
+				"The number of mappings in the dictionary.",
+				"dict") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
+				return FplInteger.valueOf(dict.size());
+			}
+		});
 
+		scope.define(new AbstractFunction("dict-peek-first-key", 
+				"Returns the first key (random for unsorted dictionaries) of a dictionary.",
+				"dict") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				try {
+					FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
+					return new FplString(dict.peekFirstKey());
+				} catch (ScopeException e) {
+					throw new EvaluationException(e.getMessage());
+				}
+			}
+		});
+
+		scope.define(new AbstractFunction("dict-peek-last-key", 
+				"Returns the last key (random for unsorted dictionaries) of a dictionary.",
+				"dict") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				try {
+					FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
+					return new FplString(dict.peekLastKey());
+				} catch (ScopeException e) {
+					throw new EvaluationException(e.getMessage());
+				}
+			}
+		});
+
+		scope.define(new AbstractFunction("dict-fetch-first-key", 
+				"Returns and removes the first key (random for unsorted dictionaries) of a dictionary.",
+				"dict") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				try {
+					FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
+					return new FplString(dict.fetchFirstKey());
+				} catch (ScopeException e) {
+					throw new EvaluationException(e.getMessage());
+				}
+			}
+		});
+
+		scope.define(new AbstractFunction("dict-fetch-last-key", 
+				"Returns and removes the last key (random for unsorted dictionaries) of a dictionary.",
+				"dict") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				try {
+					FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
+					return new FplString(dict.fetchLastKey());
+				} catch (ScopeException e) {
+					throw new EvaluationException(e.getMessage());
+				}
+			}
+		});
+
+		scope.define(new AbstractFunction("dict-fetch-first-value", 
+				"Returns and removes the first value (random for unsorted dictionaries) of a dictionary.",
+				"dict") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				try {
+					FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
+					return dict.fetchFirstValue();
+				} catch (ScopeException e) {
+					throw new EvaluationException(e.getMessage());
+				}
+			}
+		});
+
+		scope.define(new AbstractFunction("dict-fetch-last-value", 
+				"Returns and removes the last value (random for unsorted dictionaries) of a dictionary.",
+				"dict") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				try {
+					FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
+					return dict.fetchLastValue();
+				} catch (ScopeException e) {
+					throw new EvaluationException(e.getMessage());
+				}
+			}
+		});
+
+		scope.define(new AbstractFunction("dict-fetch-first-entry", 
+				"Returns and removes the first entry (random for unsorted dictionaries) of a dictionary. \r\n"
+				+ "The entry is a list of key and value.",
+				"dict") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				try {
+					FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
+					return dict.fetchFirstEntry();
+				} catch (ScopeException e) {
+					throw new EvaluationException(e.getMessage());
+				}
+			}
+		});
+
+		scope.define(new AbstractFunction("dict-fetch-last-entry", 
+				"Returns and removes the last entry (random for unsorted dictionaries) of a dictionary. \r\n"
+				+ "The entry is a list of key and value.",
+				"dict") {
+			@Override
+			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				try {
+					FplDictionary dict = evaluateToDictionary(scope, parameters[0]);
+					return dict.fetchLastEntry();
+				} catch (ScopeException e) {
+					throw new EvaluationException(e.getMessage());
+				}
+			}
+		});
+	}
 }

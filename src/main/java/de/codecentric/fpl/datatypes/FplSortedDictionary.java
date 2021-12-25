@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import de.codecentric.fpl.data.ScopeException;
+import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
  * Similar to {@link FplObject}, but sorted.
@@ -79,7 +80,77 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	}
 
 	@Override
+	public int size() {
+		return map.size();
+	}
+	
+	@Override
+	public synchronized String peekFirstKey() {
+		checkNotEmpty();
+		return map.firstKey();
+	}
+
+	@Override
+	public synchronized String peekLastKey() {
+		checkNotEmpty();
+		return map.lastKey();
+	}
+	
+	@Override
+	public synchronized String fetchFirstKey() {
+		checkNotEmpty();
+		String result = map.firstKey();
+		map.remove(result);
+		return result;
+	}
+
+	@Override
+	public synchronized String fetchLastKey() {
+		checkNotEmpty();
+		String result = map.lastKey();
+		map.remove(result);
+		return result;
+	}
+
+	@Override
+	public synchronized FplValue fetchFirstValue() {
+		checkNotEmpty();
+		Entry<String, FplValue> result = map.firstEntry();
+		map.remove(result.getKey());
+		return result.getValue();
+	}
+
+	@Override
+	public synchronized FplValue fetchLastValue() {
+		checkNotEmpty();
+		Entry<String, FplValue> result = map.lastEntry();
+		map.remove(result.getKey());
+		return result.getValue();
+	}
+
+	@Override
+	public synchronized FplList fetchFirstEntry() {
+		checkNotEmpty();
+		Entry<String, FplValue> result = map.firstEntry();
+		map.remove(result.getKey());
+		return FplList.fromValues(new FplString(result.getKey()), result.getValue());
+	}
+
+	@Override
+	public synchronized FplList fetchLastEntry() {
+		checkNotEmpty();
+		Entry<String, FplValue> result = map.lastEntry();
+		map.remove(result.getKey());
+		return FplList.fromValues(new FplString(result.getKey()), result.getValue());
+	}
+
+	private void checkNotEmpty() throws ScopeException {
+		if (map.isEmpty()) {
+			throw new ScopeException("dictionary is empty");
+		}
+	}
+	
+	@Override
 	public String typeName() {
 		return "sorted-dictionary";
-	}
-}
+	}}

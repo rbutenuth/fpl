@@ -26,7 +26,6 @@ Create a new dictionary from key value pairs. The number of parameters must be e
 ```
 
 
-
 ### sorted-dict
 
 Create a new sorted dictionary from string value pairs.
@@ -95,5 +94,65 @@ Get all values of an object or dictionary as a list.
 Get all entries of an object or dictionary as a list. Each entry is a list with two elements: key and value
 
 ```
-(dict-entries entries)
+(dict-entries dictionary)
 ```
+
+### dict-size
+
+The number of mappings in the dictionary.
+
+```
+(dict-size dictionary)
+```
+
+### dict-peek-first-key
+Returns the first key (random for unsorted dictionaries) of a dictionary.
+
+```
+(dict-peek-first-key)
+```
+
+### dict-fetch-first-key
+Returns and removes the first key (random for unsorted dictionaries) of a dictionary.
+
+```
+(dict-fetch-first-key)
+```
+
+### dict-fetch-last-key
+Returns and removes the last key (random for unsorted dictionaries) of a dictionary.
+
+```
+(dict-fetch-last-key)
+```
+
+### dict-fetch-first-value
+Returns and removes the first value (random for unsorted dictionaries) of a dictionary.
+
+```
+(dict-fetch-first-value)
+```
+
+### dict-fetch-last-value
+Returns and removes the last value (random for unsorted dictionaries) of a dictionary.
+
+```
+(dict-fetch-last-value)
+```
+
+### dict-fetch-first-entry
+Returns and removes the first entry (random for unsorted dictionaries) of a dictionary.
+The entry is a list of key and value.
+
+```
+(dict-fetch-first-entry)
+```
+
+### dict-fetch-last-entry
+Returns and removes the last entry (random for unsorted dictionaries) of a dictionary.
+The entry is a list of key and value.
+
+```
+(dict-fetch-last-entry)
+```
+
