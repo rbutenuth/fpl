@@ -3,6 +3,7 @@ package de.codecentric.fpl.builtin;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
@@ -187,11 +188,13 @@ public class ComparisonTest extends AbstractFplTest {
 	private boolean evaluateToBoolean(String name, String input)
 			throws ParseException, IOException, EvaluationException {
 		FplValue value = evaluate(name, input);
-		if (value == null) {
+		long valueAsLong = ((FplInteger) value).getValue(); 
+		if (valueAsLong == 0) {
 			return false;
-		} else {
-			assertEquals(1, ((FplInteger) value).getValue());
+		} else if (valueAsLong == 1) {
 			return true;
+		} else {
+			throw new RuntimeException("unexpected comparison result: " + valueAsLong);
 		}
 	}
 }

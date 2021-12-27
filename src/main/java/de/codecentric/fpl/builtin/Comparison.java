@@ -15,6 +15,7 @@ import de.codecentric.fpl.datatypes.FplValue;
  */
 public class Comparison implements ScopePopulator {
 	private static FplInteger TRUE = FplInteger.valueOf(1);
+	private static FplInteger FALSE = FplInteger.valueOf(0);
 
 	@Override
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
@@ -30,17 +31,17 @@ public class Comparison implements ScopePopulator {
 		EQ {
 			@Override
 			FplValue compare(long left, long right) {
-				return left == right ? TRUE : null;
+				return left == right ? TRUE : FALSE;
 			}
 
 			@Override
 			FplValue compare(double left, double right) {
-				return left == right ? TRUE : null;
+				return left == right ? TRUE : FALSE;
 			}
 
 			@Override
 			FplValue compare(String left, String right) {
-				return left.equals(right) ? TRUE : null;
+				return left.equals(right) ? TRUE : FALSE;
 			}
 
 			@Override
@@ -51,17 +52,17 @@ public class Comparison implements ScopePopulator {
 		NE {
 			@Override
 			FplValue compare(long left, long right) {
-				return left != right ? TRUE : null;
+				return left != right ? TRUE : FALSE;
 			}
 
 			@Override
 			FplValue compare(double left, double right) {
-				return left != right ? TRUE : null;
+				return left != right ? TRUE : FALSE;
 			}
 
 			@Override
 			FplValue compare(String left, String right) {
-				return left.equals(right) ? null : TRUE;
+				return left.equals(right) ? FALSE : TRUE;
 			}
 
 			@Override
@@ -72,17 +73,17 @@ public class Comparison implements ScopePopulator {
 		LT {
 			@Override
 			FplValue compare(long left, long right) {
-				return left < right ? TRUE : null;
+				return left < right ? TRUE : FALSE;
 			}
 
 			@Override
 			FplValue compare(double left, double right) {
-				return left < right ? TRUE : null;
+				return left < right ? TRUE : FALSE;
 			}
 
 			@Override
 			FplValue compare(String left, String right) {
-				return left.compareTo(right) < 0 ? TRUE : null;
+				return left.compareTo(right) < 0 ? TRUE : FALSE;
 			}
 
 			@Override
@@ -93,17 +94,17 @@ public class Comparison implements ScopePopulator {
 		LE {
 			@Override
 			FplValue compare(long left, long right) {
-				return left <= right ? TRUE : null;
+				return left <= right ? TRUE : FALSE;
 			}
 
 			@Override
 			FplValue compare(double left, double right) {
-				return left <= right ? TRUE : null;
+				return left <= right ? TRUE : FALSE;
 			}
 
 			@Override
 			FplValue compare(String left, String right) {
-				return left.compareTo(right) <= 0 ? TRUE : null;
+				return left.compareTo(right) <= 0 ? TRUE : FALSE;
 			}
 
 			@Override
@@ -114,17 +115,17 @@ public class Comparison implements ScopePopulator {
 		GT {
 			@Override
 			FplValue compare(long left, long right) {
-				return left > right ? TRUE : null;
+				return left > right ? TRUE : FALSE;
 			}
 
 			@Override
 			FplValue compare(double left, double right) {
-				return left > right ? TRUE : null;
+				return left > right ? TRUE : FALSE;
 			}
 
 			@Override
 			FplValue compare(String left, String right) {
-				return left.compareTo(right) > 0 ? TRUE : null;
+				return left.compareTo(right) > 0 ? TRUE : FALSE;
 			}
 
 			@Override
@@ -135,17 +136,17 @@ public class Comparison implements ScopePopulator {
 		GE {
 			@Override
 			FplValue compare(long left, long right) {
-				return left >= right ? TRUE : null;
+				return left >= right ? TRUE : FALSE;
 			}
 
 			@Override
 			FplValue compare(double left, double right) {
-				return left >= right ? TRUE : null;
+				return left >= right ? TRUE : FALSE;
 			}
 
 			@Override
 			FplValue compare(String left, String right) {
-				return left.compareTo(right) >= 0 ? TRUE : null;
+				return left.compareTo(right) >= 0 ? TRUE : FALSE;
 			}
 
 			@Override
@@ -186,14 +187,14 @@ public class Comparison implements ScopePopulator {
 					case EQ:
 						return TRUE;
 					case NE:
-						return null;
+						return FALSE;
 					default:
 						throw new EvaluationException("Comparison with null");
 					}
 				} else { // left == null, right != null
 					switch (operator) {
 					case EQ:
-						return null;
+						return FALSE;
 					case NE:
 						return TRUE;
 					default:
@@ -204,7 +205,7 @@ public class Comparison implements ScopePopulator {
 				if (right == null) {
 					switch (operator) {
 					case EQ:
-						return null;
+						return FALSE;
 					case NE:
 						return TRUE;
 					default:
@@ -226,14 +227,14 @@ public class Comparison implements ScopePopulator {
 				} else if (right instanceof FplString) {
 					switch (operator) {
 					case EQ:
-						return null;
+						return FALSE;
 					case NE:
 						return TRUE;
 					default:
-						return null;
+						return FALSE;
 					}
 				} else {
-					return null;
+					return FALSE;
 				}
 			} else if (left instanceof FplDouble) {
 				if (right instanceof FplInteger) {
@@ -243,32 +244,32 @@ public class Comparison implements ScopePopulator {
 				} else if (right instanceof FplString) {
 					switch (operator) {
 					case EQ:
-						return null;
+						return FALSE;
 					case NE:
 						return TRUE;
 					default:
-						return null;
+						return FALSE;
 					}
 				} else {
-					return null;
+					return FALSE;
 				}
 			} else if (left instanceof FplString) {
 				if (right instanceof FplInteger || right instanceof FplDouble) {
 					switch (operator) {
 					case EQ:
-						return null;
+						return FALSE;
 					case NE:
 						return TRUE;
 					default:
-						return null;
+						return FALSE;
 					}
 				} else if (right instanceof FplString) {
 					return operator.compare(((FplString) left).getContent(), ((FplString) right).getContent());
 				} else {
-					return null;
+					return FALSE;
 				}
 			} else {
-				return null;
+				return FALSE;
 			}
 		}
 	}
