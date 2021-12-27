@@ -160,6 +160,22 @@ key (may be nil if no mapping exists), the second the list element to be mapped.
 (map-to-dict key-lambda value-lambda some-list)
 ```
 
+### map-to-sorted-dict
+Apply a lambda to all list elements and return a sorted dictionary. The dictionary is build from the results
+of the lambdas. The first must return the key as string, the second a value (any type). 
+When the key is an empty string, the second lambda is not called and nothing is put to the dictionary.
+Adding to the dictionary is done by put, so mappings may overwrite each other or even remove mappings,
+when value is nil.
+The first lambda receives a list element as parameter.
+The second lambda receives two parameters: The first is the previous value contained in the dictionary for the given
+key (may be nil if no mapping exists), the second the list element to be mapped.
+The third lambda controls the sorting of the dictionary. It takes two arguments (left, right) and must return a number:
+< 0 if left < right, 0 for left = right and > 0 for left > right. When the thirs lambda is nil, natural string ordering
+is used. 
+```
+(map-to-sorted dict key-lambda value-lambda sort-lambda some-list)
+```
+
 ### flat-map
 Apply a lambda to all list elements, the result of the lambda must be a list. Return list with applied elements of all returned lists.
 ```

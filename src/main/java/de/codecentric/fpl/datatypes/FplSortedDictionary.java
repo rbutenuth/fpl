@@ -99,49 +99,49 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	@Override
 	public synchronized String fetchFirstKey() {
 		checkNotEmpty();
-		String result = map.firstKey();
-		map.remove(result);
-		return result;
+		String key = map.firstKey();
+		map.remove(key);
+		return key;
 	}
 
 	@Override
 	public synchronized String fetchLastKey() {
 		checkNotEmpty();
-		String result = map.lastKey();
-		map.remove(result);
-		return result;
+		String key = map.lastKey();
+		map.remove(key);
+		return key;
 	}
 
 	@Override
 	public synchronized FplValue fetchFirstValue() {
 		checkNotEmpty();
-		Entry<String, FplValue> result = map.firstEntry();
-		map.remove(result.getKey());
-		return result.getValue();
+		Entry<String, FplValue> entry = map.firstEntry();
+		map.remove(entry.getKey());
+		return entry.getValue();
 	}
 
 	@Override
 	public synchronized FplValue fetchLastValue() {
 		checkNotEmpty();
-		Entry<String, FplValue> result = map.lastEntry();
-		map.remove(result.getKey());
-		return result.getValue();
+		Entry<String, FplValue> entry = map.lastEntry();
+		map.remove(entry.getKey());
+		return entry.getValue();
 	}
 
 	@Override
 	public synchronized FplList fetchFirstEntry() {
 		checkNotEmpty();
-		Entry<String, FplValue> result = map.firstEntry();
-		map.remove(result.getKey());
-		return FplList.fromValues(new FplString(result.getKey()), result.getValue());
+		Entry<String, FplValue> entry = map.firstEntry();
+		map.remove(entry.getKey());
+		return FplList.fromValues(new FplString(entry.getKey()), entry.getValue());
 	}
 
 	@Override
 	public synchronized FplList fetchLastEntry() {
 		checkNotEmpty();
-		Entry<String, FplValue> result = map.lastEntry();
-		map.remove(result.getKey());
-		return FplList.fromValues(new FplString(result.getKey()), result.getValue());
+		Entry<String, FplValue> entry = map.lastEntry();
+		map.remove(entry.getKey());
+		return FplList.fromValues(new FplString(entry.getKey()), entry.getValue());
 	}
 
 	private void checkNotEmpty() throws ScopeException {

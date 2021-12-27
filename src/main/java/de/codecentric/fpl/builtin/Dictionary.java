@@ -17,6 +17,7 @@ import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.list.FplList;
+import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToLong;
 
 /**
  * Dictionary related functions.
@@ -59,20 +60,7 @@ public class Dictionary implements ScopePopulator {
 				if (parameters.length % 2 != 1) {
 					throw new EvaluationException("Number of parameters must be odd (sort lamda plus key value pairs)");
 				}
-				if (function == null) {
-					comparator = null;
-				} else {
-					comparator = new Comparator<String>() {
-						
-						@Override
-						public int compare(String left, String right) {
-							return (int) evaluateToLong(scope,
-									function.call(scope, // 
-											new FplString(left),
-											new FplString(right)));
-						}
-					};
-				}
+				comparator = createStringSortComparator(scope, function);
 
 				FplSortedDictionary dict = new FplSortedDictionary(comparator);
 				for (int i = 1; i < parameters.length; i += 2) {
@@ -322,4 +310,24 @@ public class Dictionary implements ScopePopulator {
 			}
 		});
 	}
+
+	public static Comparator<String> createStringSortComparator(Scope scope, Function function) {
+		Comparator<String> comparator;
+		if (function == null) {
+			comparator = null;
+		} else {
+			comparator = new Comparator<String>() {
+				
+				@Override
+				public int compare(String left, String right) {
+					return (int) evaluateToLong(scope,
+							function.call(scope, // 
+									new FplString(left),
+									new FplString(right)));
+				}
+			};
+		}
+		return comparator;
+	}
+
 }

@@ -11,9 +11,11 @@ import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplLazy;
 import de.codecentric.fpl.datatypes.FplObject;
+import de.codecentric.fpl.datatypes.FplSortedDictionary;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
@@ -232,20 +234,32 @@ public class Loop implements ScopePopulator {
 				Function valueLambda = evaluateToFunction(scope, parameters[1]);
 				FplList list = evaluateToList(scope, parameters[2]);
 				FplObject dict = new FplObject("dict");
-				for (FplValue value : list) {
-					FplValue keyLambdaResult = keyLambda.call(scope, FplLazy.makeEvaluated(scope, value));
-					if (keyLambdaResult instanceof FplString) {
-						String key = ((FplString) keyLambdaResult).getContent();
-						if (!key.isEmpty()) {
-							FplValue old = dict.get(key);
-							FplValue valueLambdaResult = valueLambda.call(scope, //
-									FplLazy.makeEvaluated(scope, old), FplLazy.makeEvaluated(scope, value));
-							dict.put(key, valueLambdaResult);
-						}
-					} else {
-						throw new EvaluationException("Not a string: " + keyLambdaResult);
-					}
-				}
+				fillDictionaryWithMappedList(scope, keyLambda, valueLambda, list, dict);
+				return dict;
+			}
+		});
+
+		scope.define(new AbstractFunction("map-to-sorted-dict",
+				"Apply a lambda to all list elements and return a sorted dictionary. The dictionary is build from the results "
+						+ "of the lambdas. The first must return the key as string, the second a value (any type). "
+						+ "When the key is an empty string, the second lambda is not called and nothing is put to the dictionary. "
+						+ "Adding to the dictionary is done by put, so mappings may overwrite each other or even remove mappings, "
+						+ "when value is nil. " + "The first lambda receives a list element as parameter. "
+						+ "The second lambda receives two parameters: The first is the previous value contained in the dictionary for the given "
+						+ "The third lambda controls the sorting of the dictionary. It takes two arguments (left, right) and must return a number: "
+						+ "< 0 if left < right, 0 for left = right and > 0 for left > right. \n"
+						+ "key (may be nil if no mapping exists), the second the list element to be mapped. When the thirs lambda is nil, "
+						+ "natural string ordering is used. ",
+				"key-lambda", "value-lambda", "sort-lambda", "list") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				Function keyLambda = evaluateToFunction(scope, parameters[0]);
+				Function valueLambda = evaluateToFunction(scope, parameters[1]);
+				Function sortLambda = evaluateToFunctionOrNull(scope, parameters[2]);
+				FplList list = evaluateToList(scope, parameters[3]);
+				FplSortedDictionary dict = new FplSortedDictionary(Dictionary.createStringSortComparator(scope, sortLambda));
+				fillDictionaryWithMappedList(scope, keyLambda, valueLambda, list, dict);
 				return dict;
 			}
 		});
@@ -286,5 +300,23 @@ public class Loop implements ScopePopulator {
 													// copying
 			}
 		});
+	}
+
+	private static void fillDictionaryWithMappedList(Scope scope, Function keyLambda, Function valueLambda, FplList list,
+			FplDictionary dict) {
+		for (FplValue value : list) {
+			FplValue keyLambdaResult = keyLambda.call(scope, FplLazy.makeEvaluated(scope, value));
+			if (keyLambdaResult instanceof FplString) {
+				String key = ((FplString) keyLambdaResult).getContent();
+				if (!key.isEmpty()) {
+					FplValue old = dict.get(key);
+					FplValue valueLambdaResult = valueLambda.call(scope, //
+							FplLazy.makeEvaluated(scope, old), FplLazy.makeEvaluated(scope, value));
+					dict.put(key, valueLambdaResult);
+				}
+			} else {
+				throw new EvaluationException("Not a string: " + keyLambdaResult);
+			}
+		}
 	}
 }

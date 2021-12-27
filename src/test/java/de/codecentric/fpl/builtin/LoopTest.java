@@ -145,6 +145,27 @@ public class LoopTest extends AbstractFplTest {
 	}
 	
 	@Test
+	public void mapToSortedDict() throws Exception {
+		evaluate("pattern", "(def rule-pattern \"([A-Z]+) -> ([A-Z]+)\")");
+		evaluate("def-dict",
+				"(def rule-dict\r\n"
+				+ "	(map-to-sorted-dict \r\n"
+				+ "		(lambda (rule)\r\n"
+				+ "			(get-element (match rule rule-pattern) 2)\r\n"
+				+ "		) \r\n"
+				+ "		(lambda (old rule)\r\n"
+				+ "			(get-element (match rule rule-pattern) 3)\r\n"
+				+ "		) \r\n"
+				+ "     nil\r\n"
+				+ "		'(\"HH -> N\" \"CH -> B\" ) \r\n"
+				+ "	)\r\n"
+				+ ")\r\n"
+				+ "");
+		FplObject dict = (FplObject) scope.get("rule-dict");
+		assertEquals(FplString.make("B"), dict.get("CH"));
+	}
+	
+	@Test
 	public void mapToDictCheckOldValue() throws Exception {
 		evaluate("pattern", "(def rule-pattern \"([A-Z]+) -> ([A-Z]+)\")");
 		evaluate("def-dict",
