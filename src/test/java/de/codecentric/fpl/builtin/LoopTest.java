@@ -12,6 +12,7 @@ import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplObject;
+import de.codecentric.fpl.datatypes.FplSortedDictionary;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.AbstractListTest;
@@ -161,7 +162,7 @@ public class LoopTest extends AbstractFplTest {
 				+ "	)\r\n"
 				+ ")\r\n"
 				+ "");
-		FplObject dict = (FplObject) scope.get("rule-dict");
+		FplSortedDictionary dict = (FplSortedDictionary) scope.get("rule-dict");
 		assertEquals(FplString.make("B"), dict.get("CH"));
 	}
 	
