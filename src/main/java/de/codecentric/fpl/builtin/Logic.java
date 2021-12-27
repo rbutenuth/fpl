@@ -14,11 +14,11 @@ import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
- * Basic logic functions. <code>LInteger(0)</code> and <code>null</code> are
- * false, everything else is true.
+ * Basic logic functions.
  */
 public class Logic implements ScopePopulator {
-	private final static FplInteger L_TRUE = FplInteger.valueOf(1);
+	private final static FplInteger TRUE = FplInteger.valueOf(1);
+	private final static FplInteger FALSE = FplInteger.valueOf(0);
 
 	@Override
 	public void populate(Scope scope) throws ScopeException, EvaluationException {
@@ -32,7 +32,7 @@ public class Logic implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return evaluateToAny(scope, parameters[0]) instanceof Symbol ? L_TRUE : null;
+				return evaluateToAny(scope, parameters[0]) instanceof Symbol ? TRUE : FALSE;
 			}
 		});
 
@@ -40,7 +40,7 @@ public class Logic implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return evaluateToAny(scope, parameters[0]) instanceof FplInteger ? L_TRUE : null;
+				return evaluateToAny(scope, parameters[0]) instanceof FplInteger ? TRUE : FALSE;
 			}
 		});
 
@@ -48,7 +48,7 @@ public class Logic implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return evaluateToAny(scope, parameters[0]) instanceof FplDouble ? L_TRUE : null;
+				return evaluateToAny(scope, parameters[0]) instanceof FplDouble ? TRUE : FALSE;
 			}
 		});
 
@@ -57,7 +57,7 @@ public class Logic implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplValue value = evaluateToAny(scope, parameters[0]);
-				return (value instanceof FplInteger || value instanceof FplDouble) ? L_TRUE : null;
+				return (value instanceof FplInteger || value instanceof FplDouble) ? TRUE : FALSE;
 			}
 		});
 
@@ -65,7 +65,7 @@ public class Logic implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return evaluateToAny(scope, parameters[0]) instanceof FplString ? L_TRUE : null;
+				return evaluateToAny(scope, parameters[0]) instanceof FplString ? TRUE : FALSE;
 			}
 		});
 
@@ -73,7 +73,7 @@ public class Logic implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return evaluateToAny(scope, parameters[0]) instanceof FplList ? L_TRUE : null;
+				return evaluateToAny(scope, parameters[0]) instanceof FplList ? TRUE : FALSE;
 			}
 		});
 
@@ -81,7 +81,7 @@ public class Logic implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return evaluateToAny(scope, parameters[0]) instanceof FplObject ? L_TRUE : null;
+				return evaluateToAny(scope, parameters[0]) instanceof FplObject ? TRUE : FALSE;
 			}
 		});
 
@@ -89,7 +89,7 @@ public class Logic implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				return evaluateToAny(scope, parameters[0]) instanceof AbstractFunction ? L_TRUE : null;
+				return evaluateToAny(scope, parameters[0]) instanceof AbstractFunction ? TRUE : FALSE;
 			}
 		});
 	}
@@ -110,7 +110,7 @@ public class Logic implements ScopePopulator {
 		@Override
 		public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 			if (getName().equals("not")) {
-				return evaluateToBoolean(scope, parameters[0]) ? null : L_TRUE;
+				return evaluateToBoolean(scope, parameters[0]) ? FALSE : TRUE;
 			}
 			boolean current = getName().equals("and");
 			for (FplValue parameter : parameters) {
@@ -119,13 +119,13 @@ public class Logic implements ScopePopulator {
 				case "and":
 					current &= next;
 					if (!current) {
-						return null;
+						return FALSE;
 					}
 					break;
 				case "or":
 					current |= next;
 					if (current) {
-						return L_TRUE;
+						return TRUE;
 					}
 					break;
 				default: // "xor":
@@ -133,7 +133,7 @@ public class Logic implements ScopePopulator {
 					break;
 				}
 			}
-			return current ? L_TRUE : null;
+			return current ? TRUE : FALSE;
 		}
 	}
 }
