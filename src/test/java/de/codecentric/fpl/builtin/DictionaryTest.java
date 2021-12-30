@@ -15,28 +15,28 @@ import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplInteger;
-import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplSortedDictionary;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 public class DictionaryTest extends AbstractFplTest {
-	private FplObject aDict;
+	private FplDictionary aDict;
 	private FplSortedDictionary abSortedDict;
 	
 	@BeforeEach
 	public void before() throws Exception {
 		scope.define("empty-dict", evaluate("empty-dict", "(dict)"));
 		scope.define("empty-sorted-dict", evaluate("empty-sorted-dict", "(sorted-dict nil)"));
-		aDict = (FplObject) scope.define("a-dict", evaluate("a-dict", "(dict \"a\" 1)"));
+		aDict = (FplDictionary) scope.define("a-dict", evaluate("a-dict", "(dict \"a\" 1)"));
 		abSortedDict = (FplSortedDictionary) scope.define("ab-sorted-dict", evaluate("ab-sorted-dict", "(sorted-dict nil \"a\" 1 \"b\" 2)"));
 	}
 	
 	@Test
 	public void dict() throws Exception {
-		FplObject dict = (FplObject) evaluate("dict", "(dict \"a\" 1 \"b\" (+ 1 1) \"c\" 3)");
+		FplDictionary dict = (FplDictionary) evaluate("dict", "(dict \"a\" 1 \"b\" (+ 1 1) \"c\" 3)");
 		assertNotNull(dict);
 		assertEquals(1, ((FplInteger) dict.get("a")).getValue());
 		assertEquals(2, ((FplInteger) dict.get("b")).getValue());
@@ -66,19 +66,19 @@ public class DictionaryTest extends AbstractFplTest {
 
 	@Test
 	public void dictionaryPutAndGet() throws Exception {
-		FplObject obj = (FplObject) evaluate("create", "(def obj (dict))");
+		FplDictionary dict = (FplDictionary) evaluate("create", "(def obj (dict))");
 		assertNull(evaluate("put", "(dict-put obj \"name\" 42)"));
-		assertEquals(FplInteger.valueOf(42), obj.get("name"));
+		assertEquals(FplInteger.valueOf(42), dict.get("name"));
 		assertEquals(FplInteger.valueOf(42), evaluate("get", "(dict-get obj \"name\")"));
 	}
 
 	@Test
 	public void dictionaryDefineAndSetAndGet() throws Exception {
-		FplObject obj = (FplObject) evaluate("create", "(def obj (dict))");
+		FplDictionary dict = (FplDictionary) evaluate("create", "(def obj (dict))");
 		assertEquals(FplInteger.valueOf(42), evaluate("def", "(dict-def obj \"name\" 42)"));
-		assertEquals(FplInteger.valueOf(42), obj.get("name"));
+		assertEquals(FplInteger.valueOf(42), dict.get("name"));
 		assertEquals(FplInteger.valueOf(42), evaluate("set", "(dict-set obj \"name\" 43)"));
-		assertEquals(FplInteger.valueOf(43), obj.get("name"));
+		assertEquals(FplInteger.valueOf(43), dict.get("name"));
 		assertEquals(FplInteger.valueOf(43), evaluate("get", "(dict-get obj \"name\")"));
 	}
 

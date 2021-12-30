@@ -5,6 +5,7 @@ import static de.codecentric.fpl.data.MapScope.checkValueNotNull;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
@@ -153,4 +154,10 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	@Override
 	public String typeName() {
 		return "sorted-dictionary";
-	}}
+	}
+
+	@Override
+	public Iterator<Entry<String, FplValue>> iterator() {
+		return map.entrySet().iterator();
+	}
+}

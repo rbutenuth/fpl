@@ -306,16 +306,19 @@ public class Loop implements ScopePopulator {
 			FplDictionary dict) {
 		for (FplValue value : list) {
 			FplValue keyLambdaResult = keyLambda.call(scope, FplLazy.makeEvaluated(scope, value));
-			if (keyLambdaResult instanceof FplString) {
-				String key = ((FplString) keyLambdaResult).getContent();
-				if (!key.isEmpty()) {
-					FplValue old = dict.get(key);
-					FplValue valueLambdaResult = valueLambda.call(scope, //
-							FplLazy.makeEvaluated(scope, old), FplLazy.makeEvaluated(scope, value));
-					dict.put(key, valueLambdaResult);
-				}
+			String key;
+			if (keyLambdaResult == null) {
+				key = "";
+			} else if (keyLambdaResult instanceof FplString) {
+				key = ((FplString) keyLambdaResult).getContent();
 			} else {
-				throw new EvaluationException("Not a string: " + keyLambdaResult);
+				key = keyLambdaResult.toString();
+			}
+			if (!key.isEmpty()) {
+				FplValue old = dict.get(key);
+				FplValue valueLambdaResult = valueLambda.call(scope, //
+						FplLazy.makeEvaluated(scope, old), FplLazy.makeEvaluated(scope, value));
+				dict.put(key, valueLambdaResult);
 			}
 		}
 	}

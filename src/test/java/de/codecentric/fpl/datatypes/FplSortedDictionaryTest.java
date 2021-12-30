@@ -1,12 +1,14 @@
 package de.codecentric.fpl.datatypes;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -47,6 +49,17 @@ public class FplSortedDictionaryTest {
 		assertEquals("foo", first.getKey());
 	}
 	
+	@Test
+	public void iterable() {
+		assertNull(dict.put("foo", new FplString("bar")));
+		Iterator<Entry<String, FplValue>> iterator = dict.iterator();
+		assertTrue(iterator.hasNext());
+		Entry<String, FplValue> next = iterator.next();
+		assertEquals("foo", next.getKey());
+		assertEquals("bar", ((FplString)next.getValue()).getContent());
+		assertFalse(iterator.hasNext());
+	}
+
 	@Test
 	public void simplePutGetAndRemove() {
 		assertNull(dict.put("foo", new FplString("bar")));

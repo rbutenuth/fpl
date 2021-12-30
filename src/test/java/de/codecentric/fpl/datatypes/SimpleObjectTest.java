@@ -13,6 +13,7 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
+import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
 
 public class SimpleObjectTest {
@@ -48,10 +49,16 @@ public class SimpleObjectTest {
 	}
 
 	@Test
+	public void listEntryToString() throws Exception {
+		object.put("foo", FplList.EMPTY_LIST);
+		assertEquals("{" + NL + "    foo: <list>" + NL + "}" + NL, object.toString());
+	}
+
+	@Test
 	public void nestedToString() throws Exception {
 		object.put("foo", new FplString("bar"));
 		object.put("one", new FplObject("nested"));
-		assertEquals("{" + NL + "    foo: \"bar\"" + NL + "    one: {" + NL + "}" + NL + NL + "}" + NL,
+		assertEquals("{" + NL + "    foo: \"bar\"" + NL + "    one: <dictionary>" + NL + "}" + NL,
 				object.toString());
 	}
 

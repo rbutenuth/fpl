@@ -68,22 +68,21 @@ public class FplObjectTest extends AbstractFplTest {
 
 	@Test
 	public void createEmptyObject() throws Exception {
-		FplObject object = (FplObject) evaluate("empty", "(dict)");
-		assertEquals("{" + NL + "}" + NL, object.toString());
-		assertEquals("dictionary", object.typeName());
+		FplDictionary dict = (FplDictionary) evaluate("empty", "(dict)");
+		assertEquals("{" + NL + "}" + NL, dict.toString());
+		assertEquals("dictionary", dict.typeName());
 	}
 
 	@Test
 	public void createObjectWithTwoMembers() throws Exception {
-		FplObject object = (FplObject) evaluate("members", "(dict \"a0\" 1 \"a1\" 2)");
-		checkObject(object, 2);
-		assertNull(object.getNext());
+		FplDictionary dict = (FplDictionary) evaluate("members", "(dict \"a0\" 1 \"a1\" 2)");
+		checkDictionary(dict, 2);
 	}
 
 	@Test
 	public void createClassWithTwoMembers() throws Exception {
 		FplObject object = (FplObject) evaluate("class", "(class (def-field a0 1) (def-field a1 2))");
-		checkObject(object, 2);
+		checkDictionary(object, 2);
 		assertEquals(engine.getScope(), object.getNext());
 		checkDoesNotContainAx(engine.getScope(), 2);
 	}
@@ -92,7 +91,7 @@ public class FplObjectTest extends AbstractFplTest {
 	public void createClassFromFunction() throws Exception {
 		evaluate("def-fun", "(def-function make-class () (class (def-field a0 1) (def-field a1 2)))");
 		FplObject object = (FplObject) evaluate("call", "(make-class)");
-		checkObject(object, 2);
+		checkDictionary(object, 2);
 		assertEquals(engine.getScope(), object.getNext());
 		checkDoesNotContainAx(engine.getScope(), 2);
 	}
@@ -101,7 +100,7 @@ public class FplObjectTest extends AbstractFplTest {
 	public void defClassWithTwoMembers() throws Exception {
 		FplObject object = (FplObject) evaluate("def-class", "(def-class my-class (def-field a0 1) (def-field a1 2))");
 		assertEquals(object, engine.getScope().get("my-class"));
-		checkObject(object, 2);
+		checkDictionary(object, 2);
 		assertEquals(engine.getScope(), object.getNext());
 		checkDoesNotContainAx(engine.getScope(), 2);
 	}
@@ -123,8 +122,8 @@ public class FplObjectTest extends AbstractFplTest {
 		FplObject subClass = (FplObject) evaluate("sub-class",
 				"(sub-class my-class (def-field a2 3) (def-field a3 4))");
 		assertEquals(myClass, subClass.getNext());
-		checkObject(myClass, 2);
-		checkObject(subClass, 2);
+		checkDictionary(myClass, 2);
+		checkDictionary(subClass, 2);
 	}
 
 	@Test
@@ -145,8 +144,8 @@ public class FplObjectTest extends AbstractFplTest {
 				"(def-sub-class my-sub-class my-class (def-field a2 3) (def-field a3 4))");
 		assertEquals(myClass, subClass.getNext());
 		assertEquals(subClass, engine.getScope().get("my-sub-class"));
-		checkObject(myClass, 2);
-		checkObject(subClass, 2);
+		checkDictionary(myClass, 2);
+		checkDictionary(subClass, 2);
 	}
 
 	@Test
@@ -183,7 +182,7 @@ public class FplObjectTest extends AbstractFplTest {
 		}
 	}
 
-	private void checkObject(FplObject object, int count) {
+	private void checkDictionary(FplDictionary object, int count) {
 		int counted = 0;
 		for (Entry<String, FplValue> pair : object) {
 			counted++;

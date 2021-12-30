@@ -22,6 +22,7 @@ import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplObject;
@@ -369,8 +370,8 @@ public class StringFunctions implements ScopePopulator {
 					sb.append("null");
 				} else if (value instanceof FplList) {
 					serialiazeList(sb, (FplList) value);
-				} else if (value instanceof FplObject) {
-					serializeObject(sb, (FplObject) value);
+				} else if (value instanceof FplDictionary) {
+					serializeDictionary(sb, (FplDictionary) value);
 				} else if (value instanceof FplDouble) {
 					serializeDouble(sb, (FplDouble) value);
 				} else if (value instanceof FplInteger) {
@@ -397,7 +398,7 @@ public class StringFunctions implements ScopePopulator {
 				sb.append("]");
 			}
 
-			private void serializeObject(StringBuilder sb, FplObject object) throws EvaluationException {
+			private void serializeDictionary(StringBuilder sb, FplDictionary object) throws EvaluationException {
 				boolean first = true;
 				sb.append("{");
 				for (Entry<String, FplValue> entry : object) {

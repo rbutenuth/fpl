@@ -916,6 +916,12 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			String method = (function instanceof Named) ? ((Named)function).getName() : "?";
 			e.add(new StackTraceElement(AbstractFunction.FPL, method, position.getName(), position.getLine()));
 			throw e;
+		} catch (Throwable t) {
+			Position position = FplEngine.findPosition(function);
+			String method = (function instanceof Named) ? ((Named)function).getName() : "?";
+			EvaluationException e = new EvaluationException(t.getMessage(), t);
+			e.add(new StackTraceElement(AbstractFunction.FPL, method, position.getName(), position.getLine()));
+			throw e;
 		}
 	}
 

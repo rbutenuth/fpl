@@ -24,8 +24,9 @@ import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplInteger;
-import de.codecentric.fpl.datatypes.FplObject;
+import de.codecentric.fpl.datatypes.FplMapDictionary;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
@@ -211,7 +212,7 @@ public class InputOutput implements ScopePopulator {
 				}
 			}
 
-			private void setParams(HttpRequest req, FplObject dict) {
+			private void setParams(HttpRequest req, FplDictionary dict) {
 				for (Entry<String, FplValue> entry : dict) {
 					FplValue value = entry.getValue();
 					if (value instanceof FplList) {
@@ -371,7 +372,7 @@ public class InputOutput implements ScopePopulator {
 						// HTTP status code
 						res.setStatusCode((int) ((FplInteger) result.get(0)).getValue());
 						// map with response headers
-						setHeaders(res, (FplObject) result.get(1));
+						setHeaders(res, (FplDictionary) result.get(1));
 						// Body as string, may be `nil`
 						res.setBody(valueToString(result.get(2)), "UTF-8");
 					} catch (EvaluationException e) {
@@ -390,7 +391,7 @@ public class InputOutput implements ScopePopulator {
 		});
 	}
 
-	private void setHeaders(HttpEntity entity, FplObject dict) {
+	private void setHeaders(HttpEntity entity, FplDictionary dict) {
 		for (Entry<String, FplValue> entry : dict) {
 			FplValue value = entry.getValue();
 			if (value instanceof FplList) {
@@ -414,8 +415,8 @@ public class InputOutput implements ScopePopulator {
 		}
 	}
 
-	private FplObject fplParams(HttpRequest res) throws ScopeException {
-		FplObject params = new FplObject("dict");
+	private FplDictionary fplParams(HttpRequest res) throws ScopeException {
+		FplDictionary params = new FplMapDictionary("dict");
 		for (String name : res.getParamNames()) {
 			List<String> values = res.getParams(name);
 			int count = values.size();
@@ -440,8 +441,8 @@ public class InputOutput implements ScopePopulator {
 		return params;
 	}
 
-	private FplObject fplHeaders(HttpEntity entity) throws ScopeException {
-		FplObject headers = new FplObject("dict");
+	private FplDictionary fplHeaders(HttpEntity entity) throws ScopeException {
+		FplDictionary headers = new FplMapDictionary("dict");
 		for (String name : entity.getHeaderNames()) {
 			if (!name.isEmpty()) {
 				List<String> values = entity.getHeaders(name);

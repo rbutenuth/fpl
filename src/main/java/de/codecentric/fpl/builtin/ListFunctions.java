@@ -7,8 +7,8 @@ import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplInteger;
-import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Parameter;
@@ -51,8 +51,8 @@ public class ListFunctions implements ScopePopulator {
 					empty = ((FplList) value).isEmpty();
 				} else if (value instanceof FplString) {
 					empty = ((FplString) value).getContent().isEmpty();
-				} else if (value instanceof FplObject) {
-					empty = ((FplObject) value).keySet().isEmpty();
+				} else if (value instanceof FplDictionary) {
+					empty = ((FplDictionary) value).keySet().isEmpty();
 				} else {
 					throw new EvaluationException("is-empty is not defined for type " + value.typeName());
 				}

@@ -11,7 +11,7 @@ import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplInteger;
-import de.codecentric.fpl.datatypes.FplObject;
+import de.codecentric.fpl.datatypes.FplMapDictionary;
 import de.codecentric.fpl.datatypes.FplSortedDictionary;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
@@ -34,7 +34,7 @@ public class Dictionary implements ScopePopulator {
 				if (parameters.length % 2 != 0) {
 					throw new EvaluationException("Number of parameters must be even");
 				}
-				FplObject dict = new FplObject("dict");
+				FplMapDictionary dict = new FplMapDictionary("dict");
 				for (int i = 0; i < parameters.length; i += 2) {
 					String key = evaluateToString(scope, parameters[i]);
 					FplValue value = evaluateToAny(scope, parameters[i+1]);

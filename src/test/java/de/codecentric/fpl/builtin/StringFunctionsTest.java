@@ -2,6 +2,7 @@ package de.codecentric.fpl.builtin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
-import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
@@ -424,11 +424,9 @@ public class StringFunctionsTest extends AbstractFplTest {
 	
 	@Test
 	public void parseJsonObjectInvalidKey() throws Exception {
-		try {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			evaluate("parse-json", "(parse-json \"{\\\"\\\": 1}\")");
-			fail("execption missing");
-		} catch (ScopeException e) {
-			assertEquals("\"\" is not a valid name", e.getMessage());
-		}
+		});
+		assertEquals("\"\" is not a valid name", e.getMessage());
 	}
 }

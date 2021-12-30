@@ -95,7 +95,8 @@ public class LogicTest extends AbstractFplTest {
 
 	@Test
 	public void isObject() throws Exception {
-		assertTrue(asBoolean(evaluate("is-object", "(is-object (dict foo bar))")));
+		assertTrue(asBoolean(evaluate("class", "(is-object (class (def-field a0 (this))))")));
+		assertFalse(asBoolean(evaluate("is-object", "(is-object (dict foo bar))")));
 		assertFalse(asBoolean(evaluate("is-object", "(is-object 1)")));
 	}
 

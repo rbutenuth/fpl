@@ -206,8 +206,26 @@ public class LoopTest extends AbstractFplTest {
 	}
 	
 	@Test
-	public void mapToDictKeyNotString() throws Exception {
-		assertThrows(EvaluationException.class, () -> {
+	public void mapToDictNullKey() throws Exception {
+		evaluate("def-dict",
+				"(def rule-dict\r\n"
+				+ "	(map-to-dict \r\n"
+				+ "		(lambda (rule)\r\n"
+				+ "			nil\r\n" // nil, same as empty key
+				+ "		) \r\n"
+				+ "		(lambda (old rule)\r\n"
+				+ "			42\r\n"
+				+ "		) \r\n"
+				+ "		'(1) \r\n"
+				+ "	)\r\n"
+				+ ")\r\n"
+				+ "");
+		FplObject dict = (FplObject) scope.get("rule-dict");
+		assertEquals(0, dict.entrieSet().size());
+	}
+	
+	@Test
+	public void mapToDictKeyIsNumber() throws Exception {
 		evaluate("def-dict",
 				"(def rule-dict\r\n"
 				+ "	(map-to-dict \r\n"
@@ -220,7 +238,9 @@ public class LoopTest extends AbstractFplTest {
 				+ "		'(1) \r\n"
 				+ "	)\r\n"
 				+ ")\r\n"
-				+ ""); });
+				+ "");
+		FplObject dict = (FplObject) scope.get("rule-dict");
+		assertEquals(FplInteger.valueOf(42), dict.get("42"));
 	}
 	
 	@Test

@@ -10,7 +10,7 @@ import de.codecentric.fpl.datatypes.list.FplList;
 /**
  * Common base for unsorted and sorted maps and objects.
  */
-public interface FplDictionary {
+public interface FplDictionary extends Iterable<Entry<String, FplValue>>, FplValue {
 
 	/**
 	 * @param key Name of value to lookup
