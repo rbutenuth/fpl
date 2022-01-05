@@ -2,11 +2,15 @@ package de.codecentric.fpl.io;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.io.Reader;
 
+import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.FplEngine;
-import de.codecentric.fpl.StringResultCallback;
+import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.parser.Parser;
+import de.codecentric.fpl.parser.Position;
+import de.codecentric.fpl.parser.Scanner;
 
 /**
  * Reads and evaluates one or several files.
@@ -14,14 +18,39 @@ import de.codecentric.fpl.StringResultCallback;
 public class Interpreter {
 
 	public static void main(String[] args) throws Exception {
+		boolean firstExpression = true;
 		FplEngine engine = new FplEngine();
+		FplValue expression = null;
+
 		for (String arg : args) {
-			try (InputStream is = new FileInputStream(arg); Reader rd = new BomAwareReader(is)) {
-				StringResultCallback callback = new StringResultCallback(true);
-				try (PrintStream ps = new PrintStream(callback.getOutputStream())) {
-					engine.setSystemOut(ps);
-					engine.evaluate(arg, rd, callback);
-					System.out.println(callback.toString());
+			try (InputStream is = new FileInputStream(arg);
+					Reader rd = new BomAwareReader(is);
+					Parser parser = new Parser(new Scanner(arg, rd))) {
+				try {
+					while (parser.hasNext()) {
+						expression = parser.next();
+						if (expression != null) {
+							expression = engine.evaluate(expression);
+						}
+						if (firstExpression) {
+							firstExpression = false;
+						} else {
+							System.out.println();
+						}
+						if (expression == null) {
+							System.out.println("nil");
+						} else {
+							System.out.println(expression.toString());
+						}
+					}
+				} catch (EvaluationException e) {
+					Position p = FplEngine.findPosition(expression);
+					e.add(new StackTraceElement(AbstractFunction.FPL, "top-level", p.getName(), p.getLine()));
+					System.out.println(e.getMessage());
+					System.out.println(e.stackTraceAsString());
+				} catch (Throwable e) {
+					System.out.println(e.getMessage());
+					e.printStackTrace(System.out);
 				}
 			}
 		}

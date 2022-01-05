@@ -23,6 +23,15 @@ public class StringResultCallbackTest {
 	}
 	
 	@Test
+	public void clear() {
+		StringResultCallback src = new StringResultCallback(true);
+		assertEquals("", src.toString());
+		assertTrue(src.handleSuccess(new FplString("huhu")));
+		src.clear();
+		assertEquals("", src.toString());
+	}
+	
+	@Test
 	public void successWithNull() {
 		StringResultCallback src = new StringResultCallback(true);
 		assertTrue(src.handleSuccess(null));

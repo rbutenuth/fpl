@@ -73,6 +73,9 @@ public class EvaluationException extends RuntimeException {
 		return super.initCause(cause);
 	}
 
+	/**
+	 * @return A strack trace containing only the FPL part, without Java classes.
+	 */
 	public String stackTraceAsString() {
 		StringBuilder builder = new StringBuilder();
 		StackTraceElement[] trace = getStackTrace();

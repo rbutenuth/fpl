@@ -26,6 +26,13 @@ public class StringResultCallback implements ResultCallback {
 		return builder.toString();
 	}
 	
+	/**
+	 * Delete the content of the accumulated String.
+	 */
+	public void clear() {
+		builder.setLength(0);
+	}
+	
 	@Override
 	public synchronized boolean handleSuccess(FplValue result) {
 		separate();

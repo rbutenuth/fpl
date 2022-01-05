@@ -121,6 +121,10 @@ public class FplEngine {
 		return results;
 	}
 
+	public FplValue evaluate(FplValue expression) throws IOException {
+		return expression.evaluate(scope);
+	}
+	
 	public static Position findPosition(FplValue expression) {
 		if (expression == null) {
 			return UNKNOWN;
