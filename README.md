@@ -54,6 +54,9 @@ java -jar fpl.jar file.fpl another.fpl
 ```
 Results are written to standard output.
 
+When you want to switch off the output of all intermediate results, set the variable `silent` in the global scope to 1 (true).
+To switch them on, set `silent` to 0 (false).
+
 ## Documentation of Standard Functions
 
 * [Arithmetic and comparison](doc/arithmetic-comparison.md)

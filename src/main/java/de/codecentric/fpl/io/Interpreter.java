@@ -8,9 +8,11 @@ import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.parser.Parser;
 import de.codecentric.fpl.parser.Position;
 import de.codecentric.fpl.parser.Scanner;
+import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToBoolean;
 
 /**
  * Reads and evaluates one or several files.
@@ -18,6 +20,7 @@ import de.codecentric.fpl.parser.Scanner;
 public class Interpreter {
 
 	public static void main(String[] args) throws Exception {
+		Symbol silent = new Symbol("silent");
 		boolean firstExpression = true;
 		FplEngine engine = new FplEngine();
 		FplValue expression = null;
@@ -32,16 +35,17 @@ public class Interpreter {
 						if (expression != null) {
 							expression = engine.evaluate(expression);
 						}
-						if (firstExpression) {
-							firstExpression = false;
-						} else {
-							System.out.println();
+						if (!evaluateToBoolean(engine.getScope(), silent)) {
+							if (!firstExpression) {
+								System.out.println();
+							}
+							if (expression == null) {
+								System.out.println("nil");
+							} else {
+								System.out.println(expression.toString());
+							}
 						}
-						if (expression == null) {
-							System.out.println("nil");
-						} else {
-							System.out.println(expression.toString());
-						}
+						firstExpression = false;
 					}
 				} catch (EvaluationException e) {
 					Position p = FplEngine.findPosition(expression);
