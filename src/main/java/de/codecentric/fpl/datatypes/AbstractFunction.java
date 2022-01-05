@@ -406,6 +406,18 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 		return result;
 	}
 
+	public static Symbol valueToSymbol(FplValue v) {
+		if (v instanceof Symbol) {
+			return (Symbol)v;
+		} else if (v instanceof Parameter) {
+			return new Symbol(((Parameter)v).getName());
+		} else if (v instanceof FplString) {
+			return new Symbol(((FplString)v).getContent());
+		} else {
+			throw new EvaluationException(v + " is not a symbol/string");
+		}
+	}
+
 	@Override
 	public Position getPosition() {
 		return position;

@@ -51,6 +51,11 @@ public class InterpreterTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void silent() throws Exception {
+		assertEquals("", execute("(def silent 1)"));
+	}
+
+	@Test
 	public void evaluationException() throws Exception {
 		String str = execute("(throw \"foo\")");
 		// str should look like this:

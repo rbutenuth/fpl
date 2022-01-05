@@ -23,6 +23,8 @@ import de.codecentric.fpl.datatypes.FplValue;
  * Tests for the functions "set", "set-global", "let" etc.
  */
 public class AssignmentTest extends AbstractFplTest {
+	private static final FplInteger TRUE = FplInteger.valueOf(1);
+	private static final FplInteger FALSE = FplInteger.valueOf(0);
 
 	@Test
 	public void coverDefaultConstructor() throws Exception {
@@ -46,22 +48,48 @@ public class AssignmentTest extends AbstractFplTest {
 
 	@Test
 	public void putWithNullKeyThrowsException() throws Exception {
-		try {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			evaluate(scope, "put", "(put nil 20)");
-			fail("exception missing");
-		} catch (EvaluationException e) {
-			assertEquals("nil is not a valid name", e.getMessage());
-		}
+		});
+		assertEquals("nil is not a valid name", e.getMessage());
 	}
 
 	@Test
 	public void putEmptyKeyThrowsException() throws Exception {
-		try {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			evaluate(scope, "put", "(put \"\" 20)");
-			fail("exception missing");
-		} catch (EvaluationException e) {
-			assertEquals("\"\" is not a valid name", e.getMessage());
-		}
+		});
+		assertEquals("\"\" is not a valid name", e.getMessage());
+	}
+	
+	@Test
+	public void simplePutDoesNotMatch() throws Exception {
+		assertEquals(FALSE, evaluate("no match", "(match-put (a b) '(42))"));
+	}
+	
+	@Test
+	public void putDoesNotMatch() throws Exception {
+		assertEquals(FALSE, evaluate("no match", "(match-put (a (b)) '(42 43))"));
+	}
+	
+	@Test
+	public void putDoesNotMatch2() throws Exception {
+		assertEquals(FALSE, evaluate("no match", "(match-put (a (b c)) '(42 (43)))"));
+	}
+	
+	@Test
+	public void simplePutMatch() throws Exception {
+		assertEquals(TRUE, evaluate("simple match", "(match-put (a b) '(42 43))"));
+		assertEquals(FplInteger.valueOf(42), scope.get("a"));
+		assertEquals(FplInteger.valueOf(43), scope.get("b"));
+	}
+
+	@Test
+	public void putMatch() throws Exception {
+		assertEquals(TRUE, evaluate("simple match", "(match-put (a (b c)) '(42 (43 44)))"));
+		assertEquals(FplInteger.valueOf(42), scope.get("a"));
+		assertEquals(FplInteger.valueOf(43), scope.get("b"));
+		assertEquals(FplInteger.valueOf(44), scope.get("c"));
 	}
 
 	@Test
@@ -87,22 +115,18 @@ public class AssignmentTest extends AbstractFplTest {
 
 	@Test
 	public void putGlobalWithNullKeyThrowsException() throws Exception {
-		try {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			evaluate(scope, "put-global", "(put-global nil 20)");
-			fail("exception missing");
-		} catch (EvaluationException e) {
-			assertEquals("nil is not a valid name", e.getMessage());
-		}
+		});
+		assertEquals("nil is not a valid name", e.getMessage());
 	}
 
 	@Test
 	public void putGlobalWithEmptyKeyThrowsException() throws Exception {
-		try {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			evaluate(scope, "put-global", "(put-global \"\" 20)");
-			fail("exception missing");
-		} catch (EvaluationException e) {
-			assertEquals("\"\" is not a valid name", e.getMessage());
-		}
+		});
+		assertEquals("\"\" is not a valid name", e.getMessage());
 	}
 
 	@Test
@@ -137,12 +161,10 @@ public class AssignmentTest extends AbstractFplTest {
 
 	@Test
 	public void defGlobalWithEmptyKeyThrowsException() throws Exception {
-		try {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			evaluate(scope, "def-global", "(def-global \"\" 20)");
-			fail("exception missing");
-		} catch (EvaluationException e) {
-			assertEquals("\"\" is not a valid name", e.getMessage());
-		}
+		});
+		assertEquals("\"\" is not a valid name", e.getMessage());
 	}
 
 	@Test
@@ -155,22 +177,18 @@ public class AssignmentTest extends AbstractFplTest {
 
 	@Test
 	public void setOnUndefinedFails() throws Exception {
-		try {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			evaluate("set", "(set foo 20)");
-			fail("exception missing");
-		} catch (EvaluationException e) {
-			assertEquals("No value with key foo found", e.getMessage());
-		}
+		});
+		assertEquals("No value with key foo found", e.getMessage());
 	}
 
 	@Test
 	public void defWithEmptyKeyFails() throws Exception {
-		try {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			evaluate("def", "(def \"\" 20)");
-			fail("exception missing");
-		} catch (EvaluationException e) {
-			assertEquals("\"\" is not a valid name", e.getMessage());
-		}
+		});
+		assertEquals("\"\" is not a valid name", e.getMessage());
 	}
 
 	@Test
@@ -189,32 +207,26 @@ public class AssignmentTest extends AbstractFplTest {
 
 	@Test
 	public void defFieldNoObject() throws Exception {
-		try {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			evaluate("def-field", "(def-field key 10)");
-			fail("missing exception");
-		} catch (EvaluationException e) {
-			assertEquals("No object found", e.getMessage());
-		}
+		});
+		assertEquals("No object found", e.getMessage());
 	}
 
 	@Test
 	public void defFieldNil() throws Exception {
-		try {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			evaluate("def-field", "(def-class my-class (def-field foo nil) )");
-			fail("missing exception");
-		} catch (EvaluationException e) {
-			assertEquals("value is nil", e.getMessage());
-		}
+		});
+		assertEquals("value is nil", e.getMessage());
 	}
 
 	@Test
 	public void assignmentToParameterFails() throws Exception {
 		evaluate("def-function", "(def-function f (a) (put a 2))");
-		try {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			evaluate("call-function", "(f 3)");
-			fail("missing exception");
-		} catch (EvaluationException e) {
-			assertEquals("Parameter a can't be a target.", e.getMessage());
-		}
+		});
+		assertEquals("Parameter a can't be a target.", e.getMessage());
 	}
 }

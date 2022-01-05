@@ -11,10 +11,10 @@ import de.codecentric.fpl.datatypes.FplLambda;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.FplWrapper;
-import de.codecentric.fpl.datatypes.Parameter;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
+import static de.codecentric.fpl.datatypes.AbstractFunction.valueToSymbol;
 
 /**
  * The functional part of FPL.
@@ -136,16 +136,7 @@ public class Lambda implements ScopePopulator {
 		String[] paramComments = new String[paramNames.length];
 		int i = 0;
 		for (FplValue v : paramList) {
-			Symbol s;
-			if (v instanceof Symbol) {
-				s = (Symbol)v;
-			} else if (v instanceof Parameter) {
-				s = new Symbol(((Parameter)v).getName());
-			} else if (v instanceof FplString) {
-				s = new Symbol(((FplString)v).getContent());
-			} else {
-				throw new EvaluationException("Parameter " + v + " is not a symbol.");
-			}
+			Symbol s = valueToSymbol(v);
 			paramNames[i] = s.getName();
 			paramComments[i] = s.getComment();
 			i++;

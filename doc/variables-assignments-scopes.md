@@ -18,6 +18,32 @@ of the other special characters used by the fpl syntax: ` `, `"`, `(`, `)`, `[`,
 Some of the special characters (`[]{}:`) are reserved for future use. A symbol must not start with `'`, as this is a shortcut for the function `quote`. 
 So `++` is a valid symbol.
 
+## put with Pattern Matching
+
+The function `match-put` allows pattern matching in combination with deconstruction of lists. It's useful when you call functions
+which return a list of results. It returns if the match is successful, so you can combine it with `cond`.
+
+```
+(match-put list-with-symbols list-with-values)
+```
+
+Examples:
+
+```
+(match-put (x y) '("foo" "bar"))
+```
+
+Assigns "foo" to x and "bar" to y, returns 1 (true)
+
+```
+(match-put (x y) '("foo" "bar" "baz"))
+```
+
+Assigns nothing, returns 0 (false)
+
+Note that the first parameter of match-put is *not* evaluated. It must be a symbol or a (nested) list of symbols.
+
+
 ## Short Cut for Functions: def-function
 
 A function in fpl is a lambda expression. To define a function to square a number, you just have to write
