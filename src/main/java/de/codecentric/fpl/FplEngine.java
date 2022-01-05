@@ -121,7 +121,7 @@ public class FplEngine {
 		return results;
 	}
 
-	public FplValue evaluate(FplValue expression) throws IOException {
+	public FplValue evaluate(FplValue expression) throws EvaluationException {
 		return expression.evaluate(scope);
 	}
 	
