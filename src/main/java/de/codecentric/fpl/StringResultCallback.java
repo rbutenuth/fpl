@@ -40,15 +40,7 @@ public class StringResultCallback implements ResultCallback {
 		builder.append(exception.getMessage());
 		newline();
 		if (exception instanceof EvaluationException) {
-			EvaluationException ee = (EvaluationException) exception;
-			StackTraceElement[] trace = ee.getStackTrace();
-			for (int i = 0; i < ee.getAdded(); i++) {
-				builder.append("    at ");
-				builder.append(trace[i].getMethodName()).append("(");
-				builder.append(trace[i].getFileName()).append(":");
-				builder.append(trace[i].getLineNumber()).append(")");
-				newline();
-			}
+			builder.append(((EvaluationException) exception).stackTraceAsString());
 		}
 		return continueOnException;
 	}

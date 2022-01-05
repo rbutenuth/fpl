@@ -104,6 +104,7 @@ public class FplEngine {
 						if (expression != null) {
 							expression = expression.evaluate(scope);
 						}
+						results.add(expression);
 						continueEvaluation = callback.handleSuccess(expression);
 					} else {
 						continueEvaluation = false;

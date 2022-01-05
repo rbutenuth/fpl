@@ -73,6 +73,19 @@ public class EvaluationException extends RuntimeException {
 		return super.initCause(cause);
 	}
 
+	public String stackTraceAsString() {
+		StringBuilder builder = new StringBuilder();
+		StackTraceElement[] trace = getStackTrace();
+		for (int i = 0; i < getAdded(); i++) {
+			builder.append("    at ");
+			builder.append(trace[i].getMethodName()).append("(");
+			builder.append(trace[i].getFileName()).append(":");
+			builder.append(trace[i].getLineNumber()).append(")");
+			builder.append(System.lineSeparator());
+		}
+		return builder.toString();
+	}
+	
 	public void add(StackTraceElement stackTraceElement) {
 		StackTraceElement[] st = getStackTrace();
 		StackTraceElement[] newSt = new StackTraceElement[st.length + 1];
