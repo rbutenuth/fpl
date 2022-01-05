@@ -2,7 +2,6 @@ package de.codecentric.fpl.builtin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
@@ -65,16 +64,23 @@ public class AssignmentTest extends AbstractFplTest {
 	@Test
 	public void simplePutDoesNotMatch() throws Exception {
 		assertEquals(FALSE, evaluate("no match", "(match-put (a b) '(42))"));
+		assertNull(scope.get("a"));
+		assertNull(scope.get("b"));
 	}
 	
 	@Test
 	public void putDoesNotMatch() throws Exception {
 		assertEquals(FALSE, evaluate("no match", "(match-put (a (b)) '(42 43))"));
+		assertNull(scope.get("a"));
+		assertNull(scope.get("b"));
 	}
 	
 	@Test
 	public void putDoesNotMatch2() throws Exception {
 		assertEquals(FALSE, evaluate("no match", "(match-put (a (b c)) '(42 (43)))"));
+		assertNull(scope.get("a"));
+		assertNull(scope.get("b"));
+		assertNull(scope.get("c"));
 	}
 	
 	@Test
