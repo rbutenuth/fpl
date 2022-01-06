@@ -98,6 +98,20 @@ public class LoopTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void reduceSequence() throws Exception {
+		// sum from 0 to 10 (end is 11 cause of exclusive)
+		FplInteger sum = (FplInteger) evaluate("reduce-sequence", "(reduce-sequence (lambda (acc i) (+ acc i)) 0 0 11)");
+		assertEquals(10 * 11 / 2, sum.getValue());
+	}
+
+	@Test
+	public void reduceSequenceDownwards() throws Exception {
+		// sum down from 10 to 0 (end is -1 cause of exclusive)
+		FplInteger sum = (FplInteger) evaluate("reduce-sequence", "(reduce-sequence (lambda (acc i) (+ acc i)) 0 10 -1)");
+		assertEquals(10 * 11 / 2, sum.getValue());
+	}
+
+	@Test
 	public void mapEmptySequence() throws Exception {
 		FplList values = (FplList) evaluate("map-sequence", "(map-sequence (lambda (x) x) 0 0)");
 		assertTrue(values.isEmpty());

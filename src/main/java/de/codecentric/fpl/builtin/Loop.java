@@ -136,6 +136,27 @@ public class Loop implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("reduce-sequence",
+				"Reduce a sequence of numbers from `start` (inclusive) to `end` (exclusive) to one value. "
+				+ "The lambda must accept two parameters: "
+				+ "`accumulator` and `value`. It must return the \"reduction\" of accumulator and value.\n"
+				+ "",
+				"lambda", "acc", "start", "end") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				Function function = evaluateToFunction(scope, parameters[0]);
+				FplValue accumulator = evaluateToAny(scope, parameters[1]);
+				long start = evaluateToLong(scope, parameters[2]);
+				long end = evaluateToLong(scope, parameters[3]);
+				long delta = end >= start ? 1 : -1;
+				while (start != end) {
+					accumulator = function.call(scope, new FplValue[] { FplLazy.makeEvaluated(scope, accumulator), FplInteger.valueOf(start) });
+					start += delta;
+				}
+				return accumulator;
+			}
+		});
+
 		scope.define(new AbstractFunction("map",
 				"Apply a lambda to all list elements and return list with applied elements", "lambda", "list") {
 

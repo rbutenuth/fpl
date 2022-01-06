@@ -108,6 +108,12 @@ Result is a list of the applied lambda for all the numbers in the sequence.
 (map-sequence lambda start end)
 ```
 
+### reduce-sequence
+Reduce a sequence of numbers from `start` (inclusive) to `end` (exclusive) to one value. The lambda must accept two parameters: 
+`accumulator` and `value`. It must return the "reduction" of accumulator and value.
+```
+(reduce-sequence lambda accumulator start end)
+
 ### sequential
 Evaluate the parameters, return value of last parameter.
 This can be used to group several expressions where only one is allowed, e.g. the "if" or "else" part.
