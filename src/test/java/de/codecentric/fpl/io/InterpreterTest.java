@@ -46,7 +46,7 @@ public class InterpreterTest extends AbstractFplTest {
 
 	@Test
 	public void nilResult() throws Exception {
-		assertEquals("(lambda () nil)\r\n" + sep + "nil" + sep,
+		assertEquals("(lambda () nil)" + sep + sep + "nil" + sep,
 				execute("(def-function returns-nil () nil) (returns-nil)"));
 	}
 
