@@ -80,6 +80,7 @@ Reduce a sequence of numbers from `start` (inclusive) to `end` (exclusive) to on
 `accumulator` and `value`. It must return the "reduction" of accumulator and value.
 ```
 (reduce-sequence lambda accumulator start end)
+```
 
 ## Loops over lists
 
