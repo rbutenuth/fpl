@@ -14,6 +14,7 @@ import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplLazy;
+import de.codecentric.fpl.datatypes.FplMapDictionary;
 import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplSortedDictionary;
 import de.codecentric.fpl.datatypes.FplString;
@@ -319,6 +320,143 @@ public class Loop implements ScopePopulator {
 				return FplList.fromValues(results); // TODO: Change to
 													// fromIterator to avoid
 													// copying
+			}
+		});
+
+		scope.define(new AbstractFunction("combine",
+				"Take two lists as input, call a lambda with two parameters (elemenbt from first and second list) "
+				+ "and return a list with the result of this lambda. In case the lists have different "
+				+ "length, stop when the shorter list ends.",
+				"lambda", "list-1", "list-2") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				Function function = evaluateToFunction(scope, parameters[0]);
+				FplList list1 = evaluateToList(scope, parameters[1]);
+				FplList list2 = evaluateToList(scope, parameters[2]);
+				int size = Math.min(list1.size(), list2.size());
+				return FplList.fromIterator(new Iterator<FplValue>() {
+					Iterator<FplValue> iterator1 = list1.iterator();
+					Iterator<FplValue> iterator2 = list2.iterator();
+					int i;
+
+					@Override
+					public boolean hasNext() {
+						return i < size;
+					}
+
+					@Override
+					public FplValue next() {
+						FplValue value1 = iterator1.next();
+						FplValue value2 = iterator2.next();
+						i++;
+						return function.call(scope, FplLazy.makeEvaluated(scope, value1), FplLazy.makeEvaluated(scope, value2));
+					}
+				}, size);
+			}
+		});
+
+		scope.define(new AbstractFunction("split-by",
+				"Split a list into a list of several lists. Each time the lambda returns true, a new list is started. "
+				+ "The lambda is called with two arguments: A counter (starting at 0) and a list element. The result "
+				+ "of the lambda for the call of the first list element is ignored.",
+				"lambda", "list") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				Function function = evaluateToFunction(scope, parameters[0]);
+				FplList list = evaluateToList(scope, parameters[1]);
+				Iterator<FplValue> iterator = list.iterator();
+				return FplList.fromIterator(new Iterator<FplValue>() {
+					int counter = 0;
+					FplValue nextElement;
+					boolean nextElementValid;
+					
+					{
+						if (iterator.hasNext()) {
+							nextElement = iterator.next();
+							nextElementValid = true;
+							// The result for the first element is not needed, but we still ahve to call the lambda.
+							function.call(scope, FplInteger.valueOf(counter++), FplLazy.makeEvaluated(scope, nextElement));
+						} else {
+							nextElementValid = false;
+						}
+					}
+
+					@Override
+					public boolean hasNext() {
+						return nextElementValid;
+					}
+
+					@Override
+					public FplValue next() {
+						return computeNextSubList(iterator);
+					}
+
+					private FplList computeNextSubList(Iterator<FplValue> iterator) {
+						return FplList.fromIterator(new Iterator<FplValue>() {
+							// There is at least one element available, when we call this method.
+							boolean endReached = false;
+							
+							@Override
+							public boolean hasNext() {
+								return !endReached;
+							}
+
+							@Override
+							public FplValue next() {
+								FplValue result = nextElement;
+								if (iterator.hasNext()) {
+									nextElement = iterator.next();
+									nextElementValid = true;
+									endReached = isTrue(function.call(scope, FplInteger.valueOf(counter++), FplLazy.makeEvaluated(scope, nextElement)));
+								} else {
+									nextElement = null;
+									nextElementValid = false;
+									endReached = true;
+								}
+								return result;
+							}
+						});
+					}
+				});
+			}
+		});
+
+		scope.define(new AbstractFunction("group-by",
+				"Convert a list in a dictionary of lists. The key is the result of the lambda, converted to a string."
+				+ "The lambda is called with two arguments: A counter (starting at 0) and a list element. When the "
+				+ "result of the lambda is nil or an empty string, the corresponding element is ignored.",
+				"lambda", "list") {
+
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				Function function = evaluateToFunction(scope, parameters[0]);
+				FplList list = evaluateToList(scope, parameters[1]);
+				FplDictionary dict = new FplMapDictionary("grouped");
+				int i = 0;
+				for (FplValue value : list) {
+					FplValue keyValue = function.call(scope, FplInteger.valueOf(i), FplLazy.makeEvaluated(scope, value));
+					String key;
+					if (keyValue == null) {
+						key = "";
+					} else if (keyValue instanceof FplString) {
+						key = ((FplString) keyValue).getContent();
+					} else {
+						key = keyValue.toString();
+					}
+					if (!key.isEmpty()) {
+						FplList old = (FplList)dict.get(key);
+						if (old == null) {
+							dict.put(key, FplList.fromValue(value));
+						} else {
+							dict.put(key, old.addAtEnd(value)); 
+						}
+					}
+					i++;
+				}
+				
+				return dict;
 			}
 		});
 	}

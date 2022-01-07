@@ -1,5 +1,7 @@
 package de.codecentric.fpl.builtin;
 
+import static de.codecentric.fpl.datatypes.list.AbstractListTest.check;
+import static de.codecentric.fpl.datatypes.list.AbstractListTest.create;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -10,12 +12,12 @@ import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplSortedDictionary;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
-import de.codecentric.fpl.datatypes.list.AbstractListTest;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 public class LoopTest extends AbstractFplTest {
@@ -54,8 +56,8 @@ public class LoopTest extends AbstractFplTest {
 		evaluate("values", "(def values '())");
 		FplList result = (FplList) evaluate("from-to", "(from-to (lambda (x) (set values (add-end values x))) 0 10)");
 		FplList values = (FplList) scope.get("values");
-		AbstractListTest.check(result, 0, 9);
-		AbstractListTest.check(values, 0, 10);
+		check(result, 0, 9);
+		check(values, 0, 10);
 	}
 
 	@Test
@@ -78,8 +80,8 @@ public class LoopTest extends AbstractFplTest {
 		FplList result = (FplList) evaluate("from-to-inclusive",
 				"(from-to-inclusive (lambda (x) (set values (add-end values x))) 0 10)");
 		FplList values = (FplList) scope.get("values");
-		AbstractListTest.check(result, 0, 10);
-		AbstractListTest.check(values, 0, 11);
+		check(result, 0, 10);
+		check(values, 0, 11);
 	}
 
 	@Test
@@ -120,7 +122,7 @@ public class LoopTest extends AbstractFplTest {
 	@Test
 	public void mapSequence() throws Exception {
 		FplList values = (FplList) evaluate("map-sequence", "(map-sequence (lambda (x) x) 0 10)");
-		AbstractListTest.check(values, 0, 10);
+		check(values, 0, 10);
 	}
 
 	@Test
@@ -392,5 +394,121 @@ public class LoopTest extends AbstractFplTest {
 	public void reduce() throws Exception {
 		FplValue sum = evaluate("reduce", "(reduce (lambda (acc value) (+ acc value)) 0 '(1 2 3 4 5 6))");
 		assertEquals(FplInteger.valueOf(21), sum);
+	}
+	
+	@Test
+	public void groupByModulo() throws Exception {
+		scope.put("values", create(0, 13));
+		FplDictionary grouped =(FplDictionary) evaluate("group-by-modulo", "(group-by (lambda (i value) (% i 5)) values)");
+		assertEquals(5, grouped.size());
+		FplList value0 = (FplList)grouped.get("0");
+		assertEquals(3, value0.size());
+		assertEquals(FplInteger.valueOf(0), value0.get(0));
+		assertEquals(FplInteger.valueOf(5), value0.get(1));
+		assertEquals(FplInteger.valueOf(10), value0.get(2));
+		FplList value4 = (FplList)grouped.get("4");
+		assertEquals(2, value4.size());
+		assertEquals(FplInteger.valueOf(4), value4.get(0));
+		assertEquals(FplInteger.valueOf(9), value4.get(1));
+	}
+	
+	@Test
+	public void groupByNilKey() throws Exception {
+		scope.put("values", create(0, 5));
+		FplDictionary grouped =(FplDictionary) evaluate("group-by-nil", "(group-by (lambda (i value) (if (ne value 3) value)) values)");
+		assertEquals(4, grouped.size());
+		FplList value0 = (FplList)grouped.get("0");
+		assertEquals(1, value0.size());
+		assertNull(grouped.get("3"));
+	}
+	
+	@Test
+	public void groupByEmptyKey() throws Exception {
+		scope.put("values", create(0, 5));
+		FplDictionary grouped =(FplDictionary) evaluate("group-by-empty", "(group-by (lambda (i value) (if-else (ne value 3) value \"\")) values)");
+		assertEquals(4, grouped.size());
+		FplList value0 = (FplList)grouped.get("0");
+		assertEquals(1, value0.size());
+		assertNull(grouped.get("3"));
+	}
+	
+	@Test
+	public void splitByConditionFromValue() throws Exception {
+		scope.put("values", create(0, 12));
+		FplList result = (FplList) evaluate("split-by", "(split-by (lambda (i value) (eq (% value 5) 0)) values)");
+		// should be: 0..4, 5..9, 10..11
+		assertEquals(3, result.size());
+		check((FplList) result.get(0), 0, 5);
+		check((FplList) result.get(1), 5, 10);
+		check((FplList) result.get(2), 10, 12);
+	}
+	
+	@Test
+	public void splitByConditionFromCounter() throws Exception {
+		scope.put("values", create(10, 22));
+		FplList result = (FplList) evaluate("split-by", "(split-by (lambda (i value) (eq (% i 5) 0)) values)");
+		assertEquals(3, result.size());
+		check((FplList) result.get(0), 10, 15);
+		check((FplList) result.get(1), 15, 20);
+		check((FplList) result.get(2), 20, 22);
+	}
+	
+	@Test
+	public void splitByAllFalse() throws Exception {
+		scope.put("values", create(0, 12));
+		FplList result = (FplList) evaluate("split-by", "(split-by (lambda (i value) 0) values)");
+		// should be list of list 0..12
+		assertEquals(1, result.size());
+		FplList innerList = (FplList)result.get(0);
+		check(innerList, 0, 12);
+	}
+	
+	@Test
+	public void splitByAllTrue() throws Exception {
+		scope.put("values", create(0, 12));
+		FplList result = (FplList) evaluate("split-by", "(split-by (lambda (i value) 1) values)");
+		// should be 12 lists, each containing one number from 0 to 11
+		assertEquals(12, result.size());
+		for (int i = 0; i < 12; i++) {
+			FplList innerList = (FplList)result.get(i);
+			check(innerList, i, i + 1);
+		}
+	}
+	
+	@Test
+	public void splitByEmtyList() throws Exception {
+		scope.put("values", FplList.EMPTY_LIST);
+		FplList result = (FplList) evaluate("split-by", "(split-by (lambda (i value) (eq (% value 5) 0)) values)");
+		assertTrue(result.isEmpty());
+	}
+	
+	@Test
+	public void combineSameLength() throws Exception {
+		scope.put("list-1", create(0, 10));
+		scope.put("list-2", create(10, 20));
+		FplList result = (FplList) evaluate("combine-same-length", "(combine (lambda (a b) (+ a b)) list-1 list-2)");
+		assertEquals(10, result.size());
+		for (int i = 0; i < 10; i++) {
+			assertEquals(FplInteger.valueOf(10 + 2 * i), result.get(i));
+		}
+	}
+	
+	@Test
+	public void combineDifferentLength() throws Exception {
+		scope.put("list-1", create(0, 10));
+		scope.put("list-2", create(10, 30));
+		FplList result = (FplList) evaluate("combine-different-length", "(combine (lambda (a b) (+ a b)) list-1 list-2)");
+		assertEquals(10, result.size());
+		for (int i = 0; i < 10; i++) {
+			assertEquals(FplInteger.valueOf(10 + 2 * i), result.get(i));
+		}
+	}
+	
+	@Test
+	public void combineOneEmpty() throws Exception {
+		scope.put("list-1", create(0, 10));
+		scope.put("list-2", FplList.EMPTY_LIST);
+		FplList result = (FplList) evaluate("combine-one-empty", "(combine (lambda (a b) (+ a b)) list-1 list-2)");
+		assertTrue(result.isEmpty());
 	}
 }
