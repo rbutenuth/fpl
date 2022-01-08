@@ -33,7 +33,7 @@ public class MapScopeTest {
 	public void emptyScope() {
 		assertNull(inner.get("foo"));
 		assertNull(outer.get("foo"));
-		assertEquals("Scope<outer>", outer.toString());
+		assertEquals("MapScope<outer>", outer.toString());
 	}
 
 	@Test

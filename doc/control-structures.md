@@ -41,10 +41,30 @@ This can be used to group several expressions where only one is allowed, e.g. th
 ```
 
 ### scope
-Evaluate the parameters within a new scope, return value of last parameter.
+Evaluate the expressions within a new scope, return value of last expression.
 ```
-(scope elements...)
+(scope expression...)
 ```
+
+### pipeline
+Evaluate the expressions within a new scope, return value of last expression. "
+The evaluation result of the expressions is bound to the symbol given as parameter pipe-key.",
+```
+(pipeline pipe-key expressions...)
+```
+
+Example:
+```
+(def-function plus-mult (a b)
+	(pipeline $
+		(+ a b)
+		(* $ 10)
+	)
+)
+(plus-mult 3 4)
+```
+
+Will return 70 (10 * (3 + 4).
 
 ### throw
 Throw an exception.

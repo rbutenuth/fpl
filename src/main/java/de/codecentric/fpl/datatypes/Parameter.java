@@ -15,7 +15,7 @@ public class Parameter implements Named {
 
 	@Override
 	public FplValue evaluate(Scope scope) throws EvaluationException {
-		ParameterScope paramScope = (ParameterScope) scope;
+		ParameterScope paramScope = findNextParameterScope(scope);
 		FplValue value = paramScope.getParameter(index);
 		if (value instanceof FplLazy) {
 			value = value.evaluate(scope);
@@ -24,7 +24,7 @@ public class Parameter implements Named {
 	}
 
 	public FplValue quote(Scope scope) throws EvaluationException {
-		ParameterScope paramScope = (ParameterScope) scope;
+		ParameterScope paramScope = findNextParameterScope(scope);
 		FplValue parameter = paramScope.getParameter(index);
 		if (parameter instanceof FplLazy) {
 			return ((FplLazy) parameter).getOriginalExpression();
@@ -50,5 +50,15 @@ public class Parameter implements Named {
 	@Override
 	public String typeName() {
 		return "parameter";
+	}
+	
+	private ParameterScope findNextParameterScope(Scope scope) throws EvaluationException {
+		while (scope != null && !(scope instanceof ParameterScope)) {
+			scope = scope.getNext();
+		}
+		if (scope == null) {
+			throw new EvaluationException("not nested in ParameterScope");
+		}
+		return (ParameterScope) scope;
 	}
 }

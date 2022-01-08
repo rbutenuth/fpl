@@ -17,11 +17,6 @@ public interface Scope extends Iterable<Entry<String, FplValue>> {
 	public String getName();
 	
 	/**
-	 * @return A new nested <code>Scope</code> where {@link #getNext()} will return <code>this</code>
-	 */
-	public Scope createNested(String name);
-	
-	/**
 	 * Lookup a symbol, if not found in this scope, walk chain of scopes.
 	 * 
 	 * @param key Name of value to lookup

@@ -5,6 +5,8 @@ import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
+import de.codecentric.fpl.data.MapScope;
+import de.codecentric.fpl.data.PipelineScope;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
@@ -13,6 +15,7 @@ import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.list.FplList;
+import static de.codecentric.fpl.builtin.Assignment.targetName;
 
 /**
  * Basic logic functions. <code>FplInteger(0)</code>,
@@ -79,16 +82,30 @@ public class ControlStructures implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("scope", "Evaluate the parameters within a new scope, return value of last parameter.",
-				"element...") {
+		scope.define(new AbstractFunction("scope", "Evaluate the expression within a new scope, return value of last expression.",
+				"expression...") {
 			@Override
-			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				Scope localScope = scope.createNested("scope");
+			public FplValue callInternal(Scope scope, FplValue... expressions) throws EvaluationException {
+				Scope localScope = new MapScope("scope", scope);
 				FplValue value = null;
-				for (int i = 0; i < parameters.length; i++) {
-					value = evaluateToAny(localScope, parameters[i]);
+				for (int i = 0; i < expressions.length; i++) {
+					value = evaluateToAny(localScope, expressions[i]);
 				}
 				return value;
+			}
+		});
+
+		scope.define(new AbstractFunction("pipeline", "Evaluate the expressions within a new scope, return value of last expression. "
+				+ "The evaluation result of the expressions is bound to the symbol given as parameter pipe-key.",
+				"pipe-key", "expression...") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				String pipeKey = targetName(scope, parameters[0]);
+				PipelineScope localScope = new PipelineScope(pipeKey, scope);
+				for (int i = 1; i < parameters.length; i++) {
+					localScope.set(evaluateToAny(localScope, parameters[i]));
+				}
+				return localScope.get();
 			}
 		});
 
@@ -146,7 +163,7 @@ public class ControlStructures implements ScopePopulator {
 				"expression", "catch-function") {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				Scope localScope = scope.createNested("try-with");
+				Scope localScope = new MapScope("try-with", scope);
 				Function catchFunction = null;
 				List<Resource> resources = new ArrayList<>();
 				try {

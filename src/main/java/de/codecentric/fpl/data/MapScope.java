@@ -57,11 +57,6 @@ public class MapScope implements Scope {
 		return name;
 	}
 
-	@Override
-	public Scope createNested(String name) {
-		return new MapScope(name, this);
-	}
-	
 	/**
 	 * Lookup a symbol, if not found in this scope, walk chain of scopes.
 	 * 
@@ -136,7 +131,7 @@ public class MapScope implements Scope {
 	
 	@Override
 	public String toString() {
-		return "Scope<" + name + ">";
+		return "MapScope<" + name + ">";
 	}
 
 	@Override

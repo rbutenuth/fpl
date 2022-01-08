@@ -43,11 +43,6 @@ public class ParameterScope extends MapScope {
 	}
 
 	@Override
-	public Scope createNested(String name) {
-		return new ParameterScope(name, this, nameToIndex, parameters);
-	}
-	
-	@Override
 	public FplValue put(String key, FplValue value) throws ScopeException {
 		checkNotParameterName(key);
 		return super.put(key,  value);
