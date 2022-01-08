@@ -394,30 +394,22 @@ public class Loop implements ScopePopulator {
 					}
 
 					private FplList computeNextSubList(Iterator<FplValue> iterator) {
-						return FplList.fromIterator(new Iterator<FplValue>() {
-							// There is at least one element available, when we call this method.
-							boolean endReached = false;
-							
-							@Override
-							public boolean hasNext() {
-								return !endReached;
+						int fromIndex = counter -1;
+						int toIndex = fromIndex;
+						boolean endReached = false;
+						while (!endReached) {
+							if (iterator.hasNext()) {
+								nextElement = iterator.next();
+								nextElementValid = true;
+								endReached = isTrue(function.call(scope, FplInteger.valueOf(counter++), FplLazy.makeEvaluated(scope, nextElement)));
+							} else {
+								nextElement = null;
+								nextElementValid = false;
+								endReached = true;
 							}
-
-							@Override
-							public FplValue next() {
-								FplValue result = nextElement;
-								if (iterator.hasNext()) {
-									nextElement = iterator.next();
-									nextElementValid = true;
-									endReached = isTrue(function.call(scope, FplInteger.valueOf(counter++), FplLazy.makeEvaluated(scope, nextElement)));
-								} else {
-									nextElement = null;
-									nextElementValid = false;
-									endReached = true;
-								}
-								return result;
-							}
-						});
+							toIndex++;
+						}
+						return list.subList(fromIndex, toIndex);
 					}
 				});
 			}
