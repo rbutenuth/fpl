@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.Reader;
 
+import de.codecentric.fpl.DefaultFplEngine;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.datatypes.AbstractFunction;
@@ -22,7 +23,7 @@ public class Interpreter {
 	public static void main(String[] args) throws Exception {
 		Symbol silent = new Symbol("silent");
 		boolean firstExpression = true;
-		FplEngine engine = new FplEngine();
+		FplEngine engine = new DefaultFplEngine();
 		FplValue expression = null;
 
 		for (String arg : args) {

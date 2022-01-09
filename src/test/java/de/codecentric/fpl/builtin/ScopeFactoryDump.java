@@ -4,8 +4,8 @@ import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import de.codecentric.fpl.DefaultFplEngine;
 import de.codecentric.fpl.EvaluationException;
-import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.AbstractFunction;
@@ -19,7 +19,7 @@ public class ScopeFactoryDump {
 	 * @throws ScopeException      Should not happen
 	 */
 	public static void main(String[] args) throws EvaluationException, ScopeException {
-		Scope scope = new FplEngine().getScope();
+		Scope scope = new DefaultFplEngine().getScope();
 		SortedMap<String, FplValue> map = new TreeMap<>();
 		for (Entry<String, FplValue> scopeEntry : scope) {
 			map.put(scopeEntry.getKey(), scopeEntry.getValue());

@@ -6,6 +6,7 @@ import java.io.StringReader;
 
 import com.sun.net.httpserver.BasicAuthenticator;
 
+import de.codecentric.fpl.DefaultFplEngine;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.StringResultCallback;
@@ -37,7 +38,7 @@ public class HttpServerMain {
 		String serverUser = args[1];
 		String serverPassword = args[2];
 
-		engine = new FplEngine();
+		engine = new DefaultFplEngine();
 		Scope scope = engine.getScope();
 		scope.define(new AbstractFunction("stop-server", "Stop HTTP server.") {
 

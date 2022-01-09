@@ -40,7 +40,7 @@ public class AbstractFplTest {
 
     @BeforeEach
     public void setUp() throws EvaluationException, ScopeException {
-    	engine = new FplEngine();
+    	engine = new DefaultFplEngine();
         scope = engine.getScope();
     }
 

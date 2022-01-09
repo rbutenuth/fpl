@@ -3,128 +3,69 @@ package de.codecentric.fpl;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 
-import de.codecentric.fpl.builtin.Arithmetic;
-import de.codecentric.fpl.builtin.Assignment;
-import de.codecentric.fpl.builtin.ClassAndObject;
-import de.codecentric.fpl.builtin.Comparison;
-import de.codecentric.fpl.builtin.ControlStructures;
-import de.codecentric.fpl.builtin.Dictionary;
-import de.codecentric.fpl.builtin.InputOutput;
-import de.codecentric.fpl.builtin.Lambda;
-import de.codecentric.fpl.builtin.ListFunctions;
-import de.codecentric.fpl.builtin.Logic;
-import de.codecentric.fpl.builtin.Loop;
-import de.codecentric.fpl.builtin.Parallel;
-import de.codecentric.fpl.builtin.Print;
-import de.codecentric.fpl.builtin.StringFunctions;
-import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
-import de.codecentric.fpl.data.ScopeException;
-import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.list.FplList;
-import de.codecentric.fpl.parser.Parser;
 import de.codecentric.fpl.parser.Position;
-import de.codecentric.fpl.parser.Scanner;
 
 /**
  * Builds the initial {@link Scope} and contains helpers for execution.
  */
-public class FplEngine {
-	private static final Position UNKNOWN = new Position("<unknown>", 1, 1);
-	private ForkJoinPool pool;
-	private PrintStream systemOut;
-	private Scope scope;
-
-	public FplEngine() throws ScopeException, EvaluationException {
-		systemOut = System.out;
-		scope = createDefaultScope();
-		pool = ForkJoinPool.commonPool();
-	}
+public interface FplEngine {
+	static final Position UNKNOWN = new Position("<unknown>", 1, 1);
 
 	/**
-	 * @return A new {@link Scope} with no outer scope and all built in functions.
-	 * @throws ScopeException Should not happen on initialization.
+	 * @return The Thread pool used by the engine.
 	 */
-	public Scope createDefaultScope() throws ScopeException, EvaluationException {
-		Scope scope = new MapScope("global");
+	public ForkJoinPool getPool();
 
-		new Print(this).populate(scope);
-		new Assignment().populate(scope);
-		new Arithmetic().populate(scope);
-		new Logic().populate(scope);
-		new ListFunctions().populate(scope);
-		new StringFunctions().populate(scope);
-		new Comparison().populate(scope);
-		new ControlStructures().populate(scope);
-		new Parallel(this).populate(scope);
-		new Loop().populate(scope);
-		new Lambda().populate(scope);
-		new ClassAndObject().populate(scope);
-		new Dictionary().populate(scope);
-		new InputOutput(this).populate(scope);
+	/**
+	 * @param pool The Thread pool used by the engine.
+	 */
+	public void setPool(ForkJoinPool pool);
 
-		return scope;
-	}
+	/**
+	 * @return Output used by print / println.
+	 */
+	public PrintStream getSystemOut();
 
-	public ForkJoinPool getPool() {
-		return pool;
-	}
+	/**
+	 * @param systemOut Output used by print / println.
+	 */
+	public void setSystemOut(PrintStream systemOut);
 
-	public void setPool(ForkJoinPool pool) {
-		this.pool = pool;
-	}
+	/**
+	 * @return Default {@link Scope} used by the engine.
+	 */
+	public Scope getScope();
 
-	public PrintStream getSystemOut() {
-		return systemOut;
-	}
-
-	public void setSystemOut(PrintStream systemOut) {
-		this.systemOut = systemOut;
-	}
-
-	public Scope getScope() {
-		return scope;
-	}
-
-	public List<FplValue> evaluate(String sourceName, Reader rd, ResultCallback callback) throws IOException {
-		List<FplValue> results = new ArrayList<>();
-		boolean continueEvaluation = true;
-		try (Parser parser = new Parser(new Scanner(sourceName, rd))) {
-			do {
-				FplValue expression = null;
-				try {
-					if (parser.hasNext()) {
-						expression = parser.next();
-						if (expression != null) {
-							expression = expression.evaluate(scope);
-						}
-						results.add(expression);
-						continueEvaluation = callback.handleSuccess(expression);
-					} else {
-						continueEvaluation = false;
-					}
-				} catch (EvaluationException e) {
-					Position p = findPosition(expression);
-					e.add(new StackTraceElement(AbstractFunction.FPL, "top-level", p.getName(), p.getLine()));
-					continueEvaluation = callback.handleException(e);
-				} catch (Exception e) {
-					continueEvaluation = callback.handleException(e);
-				}
-			} while (continueEvaluation);
-		}
-		return results;
-	}
-
-	public FplValue evaluate(FplValue expression) throws EvaluationException {
-		return expression.evaluate(scope);
-	}
+	/**
+	 * Evaluate a source given by a {@link Reader}, uses engine scope as {@link Scope}.
+	 * @param sourceName Name of the source (used for error messages)
+	 * @param rd Reader
+	 * @param callback For expression results, catching exceptions, and print / println.
+	 * @return Results of all expressions evaluated.
+	 * @throws IOException For problems with the reader.
+	 */
+	public List<FplValue> evaluate(String sourceName, Reader rd, ResultCallback callback) throws IOException;
 	
+	/** 
+	 * Evaluate one expression, uses engine scope as {@link Scope}.
+	 * @param expression Expression to evaluate, not <code>null</code>
+	 * @return Evaluated expression.
+	 * @throws EvaluationException If anything goes wrong
+	 */
+	public FplValue evaluate(FplValue expression) throws EvaluationException;
+
+	/**
+	 * Try to find the position in the source where this expression has been parsed.
+	 * @param expression Expression may be <code>null</code> 
+	 * @return Found position, may be {@link FplEngine.UNKNOWN}
+	 */
 	public static Position findPosition(FplValue expression) {
 		if (expression == null) {
 			return UNKNOWN;
