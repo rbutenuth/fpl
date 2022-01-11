@@ -74,12 +74,6 @@ public class FplObjectTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void createObjectWithTwoMembers() throws Exception {
-		FplDictionary dict = (FplDictionary) evaluate("members", "(dict \"a0\" 1 \"a1\" 2)");
-		checkDictionary(dict, 2);
-	}
-
-	@Test
 	public void createClassWithTwoMembers() throws Exception {
 		FplObject object = (FplObject) evaluate("class", "(class (def-field a0 1) (def-field a1 2))");
 		checkDictionary(object, 2);
@@ -182,7 +176,7 @@ public class FplObjectTest extends AbstractFplTest {
 		}
 	}
 
-	private void checkDictionary(FplDictionary object, int count) {
+	private void checkDictionary(FplObject object, int count) {
 		int counted = 0;
 		for (Entry<String, FplValue> pair : object) {
 			counted++;

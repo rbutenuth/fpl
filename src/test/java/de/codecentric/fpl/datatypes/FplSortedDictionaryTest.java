@@ -21,19 +21,24 @@ public class FplSortedDictionaryTest {
 
 	public FplSortedDictionaryTest() {
 		dict = new FplSortedDictionary(new Comparator<String>() {
-			
+
 			@Override
 			public int compare(String s1, String s2) {
 				return s1.compareTo(s2);
 			}
 		});
 	}
-	
+
 	@Test
 	public void typeName() {
 		assertEquals("sorted-dictionary", dict.typeName());
 	}
-	
+
+	@Test
+	public void toStringTest() {
+		assertEquals("{" + System.lineSeparator() + "}" + System.lineSeparator(), dict.toString());
+	}
+
 	@Test
 	public void keySetAndValues() {
 		assertNull(dict.put("foo", new FplString("bar")));
@@ -48,7 +53,7 @@ public class FplSortedDictionaryTest {
 		Entry<String, FplValue> first = entries.iterator().next();
 		assertEquals("foo", first.getKey());
 	}
-	
+
 	@Test
 	public void iterable() {
 		assertNull(dict.put("foo", new FplString("bar")));
@@ -56,15 +61,15 @@ public class FplSortedDictionaryTest {
 		assertTrue(iterator.hasNext());
 		Entry<String, FplValue> next = iterator.next();
 		assertEquals("foo", next.getKey());
-		assertEquals("bar", ((FplString)next.getValue()).getContent());
+		assertEquals("bar", ((FplString) next.getValue()).getContent());
 		assertFalse(iterator.hasNext());
 	}
 
 	@Test
 	public void simplePutGetAndRemove() {
 		assertNull(dict.put("foo", new FplString("bar")));
-		assertEquals("bar", ((FplString)dict.get("foo")).getContent());
-		assertEquals("bar", ((FplString)dict.put("foo", null)).getContent());	
+		assertEquals("bar", ((FplString) dict.get("foo")).getContent());
+		assertEquals("bar", ((FplString) dict.put("foo", null)).getContent());
 	}
 
 	@Test

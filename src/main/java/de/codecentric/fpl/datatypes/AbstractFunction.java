@@ -262,11 +262,11 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	public static FplDictionary evaluateToDictionaryNullDefaultsToEmpty(Scope scope, FplValue expression)
 			throws EvaluationException {
 		if (expression == null) {
-			return new FplObject("dict");
+			return new FplMapDictionary();
 		}
 		FplValue value = expression.evaluate(scope);
 		if (value == null) {
-			return new FplObject("dict");
+			return new FplMapDictionary();
 		} else if (value instanceof FplDictionary) {
 			return (FplDictionary) value;
 		} else {

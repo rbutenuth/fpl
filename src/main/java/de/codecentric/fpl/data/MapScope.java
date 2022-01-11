@@ -10,6 +10,8 @@ import java.util.concurrent.ConcurrentMap;
 
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Named;
+import static de.codecentric.fpl.data.Scope.checkKeyNotNullOrEmpty;
+import static de.codecentric.fpl.data.Scope.checkValueNotNull;
 
 /**
  * Just a little bit more than a {@link Map}, can be nested.
@@ -147,19 +149,5 @@ public class MapScope implements Scope {
 	@Override
 	public Set<Entry<String, FplValue>> entrieSet() {
 		return map.entrySet();
-	}
-
-	public static void checkKeyNotNullOrEmpty(String key) throws ScopeException {
-		if (key == null) {
-			throw new ScopeException("nil is not a valid name");
-		} else if (key.isEmpty()) {
-			throw new ScopeException("\"\" is not a valid name");
-		}
-	}
-	
-	public static void checkValueNotNull(FplValue value) throws ScopeException {
-		if (value == null) {
-			throw new ScopeException("value is nil");
-		}
 	}
 }

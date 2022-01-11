@@ -3,6 +3,7 @@ package de.codecentric.fpl.datatypes;
 import java.util.Arrays;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.parser.Position;
@@ -12,7 +13,7 @@ import de.codecentric.fpl.parser.Position;
  * of {@link Scope} with {@link Named}. The rest are some built in functions for
  * linking and executing methods on objects.
  */
-public class FplObject extends FplMapDictionary implements Function, PositionHolder {
+public class FplObject extends MapScope implements Function, PositionHolder {
 	private Position position;
 
 	public FplObject(String name) {
@@ -59,5 +60,10 @@ public class FplObject extends FplMapDictionary implements Function, PositionHol
 	@Override
 	public String typeName() {
 		return "object";
+	}
+
+	@Override
+	public String toString() {
+		return FplDictionary.toString(map);
 	}
 }

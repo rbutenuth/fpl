@@ -14,7 +14,6 @@ import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplInteger;
-import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplSortedDictionary;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
@@ -157,7 +156,7 @@ public class LoopTest extends AbstractFplTest {
 				+ "	)\r\n"
 				+ ")\r\n"
 				+ "");
-		FplObject dict = (FplObject) scope.get("rule-dict");
+		FplDictionary dict = (FplDictionary) scope.get("rule-dict");
 		assertEquals(FplString.make("B"), dict.get("CH"));
 	}
 	
@@ -198,7 +197,7 @@ public class LoopTest extends AbstractFplTest {
 				+ "	)\r\n"
 				+ ")\r\n"
 				+ "");
-		FplObject dict = (FplObject) scope.get("rule-dict");
+		FplDictionary dict = (FplDictionary) scope.get("rule-dict");
 		assertEquals(FplString.make("XY"), dict.get("CH"));
 	}
 	
@@ -217,7 +216,7 @@ public class LoopTest extends AbstractFplTest {
 				+ "	)\r\n"
 				+ ")\r\n"
 				+ "");
-		FplObject dict = (FplObject) scope.get("rule-dict");
+		FplDictionary dict = (FplDictionary) scope.get("rule-dict");
 		assertEquals(0, dict.entrieSet().size());
 	}
 	
@@ -236,7 +235,7 @@ public class LoopTest extends AbstractFplTest {
 				+ "	)\r\n"
 				+ ")\r\n"
 				+ "");
-		FplObject dict = (FplObject) scope.get("rule-dict");
+		FplDictionary dict = (FplDictionary) scope.get("rule-dict");
 		assertEquals(0, dict.entrieSet().size());
 	}
 	
@@ -255,7 +254,7 @@ public class LoopTest extends AbstractFplTest {
 				+ "	)\r\n"
 				+ ")\r\n"
 				+ "");
-		FplObject dict = (FplObject) scope.get("rule-dict");
+		FplDictionary dict = (FplDictionary) scope.get("rule-dict");
 		assertEquals(FplInteger.valueOf(42), dict.get("42"));
 	}
 	

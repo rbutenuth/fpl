@@ -2,9 +2,10 @@ package de.codecentric.fpl.data;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,8 +35,21 @@ public class MapScopeTest {
 		assertNull(inner.get("foo"));
 		assertNull(outer.get("foo"));
 		assertEquals("MapScope<outer>", outer.toString());
+		assertTrue(inner.keySet().isEmpty());
+		assertTrue(outer.keySet().isEmpty());
+		assertTrue(inner.entrieSet().isEmpty());
+		assertTrue(outer.entrieSet().isEmpty());
 	}
 
+	@Test
+	public void def() {
+		inner.define("foo", new FplString("bar"));
+		assertEquals(new FplString("bar"), inner.get("foo"));
+		Set<String> keys = inner.keySet();
+		assertEquals(1, keys.size());
+		assertTrue(keys.contains("foo"));
+	}
+	
 	@Test
 	public void nesting() throws ScopeException {
 		assertTrue(inner.getNext() == outer);
@@ -96,12 +110,10 @@ public class MapScopeTest {
 	}
 
 	private void changeWithException(String key, FplValue value, String expected) {
-		try {
+		ScopeException e = assertThrows(ScopeException.class, () -> {
 			inner.replace(key, value);
-			fail("missing exception");
-		} catch (ScopeException e) {
-			assertEquals(expected, e.getMessage());
-		}
+		});
+		assertEquals(expected, e.getMessage());
 	}
 
 	@Test

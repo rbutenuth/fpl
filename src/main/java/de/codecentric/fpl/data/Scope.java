@@ -81,4 +81,18 @@ public interface Scope extends Iterable<Entry<String, FplValue>> {
 	public Collection<FplValue> values();
 	
 	public Set<Entry<String, FplValue>> entrieSet();
+
+	public static void checkKeyNotNullOrEmpty(String key) throws ScopeException {
+		if (key == null) {
+			throw new ScopeException("nil is not a valid name");
+		} else if (key.isEmpty()) {
+			throw new ScopeException("\"\" is not a valid name");
+		}
+	}
+
+	public static void checkValueNotNull(FplValue value) throws ScopeException {
+		if (value == null) {
+			throw new ScopeException("value is nil");
+		}
+	}
 }

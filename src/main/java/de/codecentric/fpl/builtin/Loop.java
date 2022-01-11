@@ -15,7 +15,6 @@ import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplLazy;
 import de.codecentric.fpl.datatypes.FplMapDictionary;
-import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplSortedDictionary;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
@@ -255,7 +254,7 @@ public class Loop implements ScopePopulator {
 				Function keyLambda = evaluateToFunction(scope, parameters[0]);
 				Function valueLambda = evaluateToFunction(scope, parameters[1]);
 				FplList list = evaluateToList(scope, parameters[2]);
-				FplObject dict = new FplObject("dict");
+				FplMapDictionary dict = new FplMapDictionary();
 				fillDictionaryWithMappedList(scope, keyLambda, valueLambda, list, dict);
 				return dict;
 			}
@@ -425,7 +424,7 @@ public class Loop implements ScopePopulator {
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplList list = evaluateToList(scope, parameters[1]);
-				FplDictionary dict = new FplMapDictionary("grouped");
+				FplDictionary dict = new FplMapDictionary();
 				int i = 0;
 				for (FplValue value : list) {
 					FplValue keyValue = function.call(scope, FplInteger.valueOf(i), FplLazy.makeEvaluated(scope, value));

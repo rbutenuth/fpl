@@ -416,7 +416,7 @@ public class InputOutput implements ScopePopulator {
 	}
 
 	private FplDictionary fplParams(HttpRequest res) throws ScopeException {
-		FplDictionary params = new FplMapDictionary("dict");
+		FplDictionary params = new FplMapDictionary();
 		for (String name : res.getParamNames()) {
 			List<String> values = res.getParams(name);
 			int count = values.size();
@@ -442,7 +442,7 @@ public class InputOutput implements ScopePopulator {
 	}
 
 	private FplDictionary fplHeaders(HttpEntity entity) throws ScopeException {
-		FplDictionary headers = new FplMapDictionary("dict");
+		FplDictionary headers = new FplMapDictionary();
 		for (String name : entity.getHeaderNames()) {
 			if (!name.isEmpty()) {
 				List<String> values = entity.getHeaders(name);

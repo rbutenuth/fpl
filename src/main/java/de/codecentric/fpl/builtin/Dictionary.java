@@ -34,7 +34,7 @@ public class Dictionary implements ScopePopulator {
 				if (parameters.length % 2 != 0) {
 					throw new EvaluationException("Number of parameters must be even");
 				}
-				FplMapDictionary dict = new FplMapDictionary("dict");
+				FplMapDictionary dict = new FplMapDictionary();
 				for (int i = 0; i < parameters.length; i += 2) {
 					String key = evaluateToString(scope, parameters[i]);
 					FplValue value = evaluateToAny(scope, parameters[i+1]);

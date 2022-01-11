@@ -1,7 +1,7 @@
 package de.codecentric.fpl.datatypes;
 
-import static de.codecentric.fpl.data.MapScope.checkKeyNotNullOrEmpty;
-import static de.codecentric.fpl.data.MapScope.checkValueNotNull;
+import static de.codecentric.fpl.data.Scope.checkKeyNotNullOrEmpty;
+import static de.codecentric.fpl.data.Scope.checkValueNotNull;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -159,5 +159,10 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	@Override
 	public Iterator<Entry<String, FplValue>> iterator() {
 		return map.entrySet().iterator();
+	}
+
+	@Override
+	public String toString() {
+		return FplDictionary.toString(map);
 	}
 }
