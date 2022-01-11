@@ -3,7 +3,7 @@ package de.codecentric.fpl.datatypes;
 /**
  * An FPL String
  */
-public class FplString implements EvaluatesToThisValue {
+public class FplString implements EvaluatesToThisValue, Comparable<FplString> {
     private final String content;
 
 	/**
@@ -86,4 +86,9 @@ public class FplString implements EvaluatesToThisValue {
         sb.append('"');
         return sb.toString();
     }
+    
+	@Override
+	public int compareTo(FplString other) {
+		return content.compareTo(other.content);
+	}
 }

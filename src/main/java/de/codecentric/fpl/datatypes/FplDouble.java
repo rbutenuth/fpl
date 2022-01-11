@@ -3,7 +3,7 @@ package de.codecentric.fpl.datatypes;
 /**
  * An FPL double.
  */
-public class FplDouble implements EvaluatesToThisValue, FplNumber {
+public class FplDouble implements EvaluatesToThisValue, FplNumber, Comparable<FplDouble> {
     private double value;
 
     /**
@@ -59,4 +59,9 @@ public class FplDouble implements EvaluatesToThisValue, FplNumber {
     public String toString() {
         return Double.toString(value);
     }
+    
+	@Override
+	public int compareTo(FplDouble other) {
+		return value < other.value ? -1 : (value > other.value ? 1 : 0);
+	}
 }

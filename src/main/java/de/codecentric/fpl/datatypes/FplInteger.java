@@ -3,7 +3,7 @@ package de.codecentric.fpl.datatypes;
 /**
  * An FPL integer.
  */
-public class FplInteger implements EvaluatesToThisValue, FplNumber {
+public class FplInteger implements EvaluatesToThisValue, FplNumber, Comparable<FplInteger> {
 	private static FplInteger[] cache;
 	private static final int low = -128;
 	private static final int high = 127;
@@ -76,5 +76,10 @@ public class FplInteger implements EvaluatesToThisValue, FplNumber {
 	@Override
 	public String toString() {
 		return Long.toString(value);
+	}
+
+	@Override
+	public int compareTo(FplInteger other) {
+		return value < other.value ? -1 : (value > other.value ? 1 : 0);
 	}
 }

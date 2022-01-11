@@ -34,6 +34,13 @@ public class StringTest {
 	}
 
 	@Test
+	public void compareToString() {
+		assertEquals(0, new FplString("aaa").compareTo(new FplString("aaa")));
+		assertEquals(-1, new FplString("aaa").compareTo(new FplString("bbb")));
+		assertEquals(1, new FplString("bbb").compareTo(new FplString("aaa")));
+	}
+
+	@Test
 	public void notEqualStringNull() {
 		assertFalse(new FplString("x").equals(null));
 	}

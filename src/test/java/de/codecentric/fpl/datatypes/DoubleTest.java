@@ -6,38 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-public class NumberTest {
+public class DoubleTest {
     
-    @Test
-    public void hashCodeInteger() {
-    	assertEquals(FplInteger.valueOf(1).hashCode(), FplInteger.valueOf(1).hashCode());
-    }
-    
-    @Test
-    public void equalInteger() {
-    	assertTrue(FplInteger.valueOf(1).equals(FplInteger.valueOf(1)));
-    }
-
-    @Test
-    public void notEqualInteger() {
-    	assertFalse(FplInteger.valueOf(1).equals(FplInteger.valueOf(2)));
-    }
-
-    @Test
-    public void equalSameInteger() {
-    	FplInteger one = FplInteger.valueOf(1);
-		assertTrue(one.equals(one));
-    }
-
-    @Test
-    public void notEqualIntegerNull() {
-    	assertFalse(FplInteger.valueOf(1).equals(null));
-    }
-
-    @Test
-    public void notEqualIntegerString() {
-    	assertFalse(FplInteger.valueOf(1).equals("foo"));
-    }
 
     @Test
     public void hashCodeDouble() {
@@ -71,4 +41,10 @@ public class NumberTest {
     	assertFalse(new FplDouble(1).equals("foo"));
     }
 
+	@Test
+	public void compareTo() {
+		assertEquals(0, new FplDouble(0).compareTo(new FplDouble(0)));
+		assertEquals(-1, new FplDouble(0).compareTo(new FplDouble(42)));
+		assertEquals(1, new FplDouble(13).compareTo(new FplDouble(0)));
+	}
 }
