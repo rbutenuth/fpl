@@ -157,7 +157,7 @@ public class LoopTest extends AbstractFplTest {
 				+ ")\r\n"
 				+ "");
 		FplDictionary dict = (FplDictionary) scope.get("rule-dict");
-		assertEquals(FplString.make("B"), dict.get("CH"));
+		assertEquals(new FplString("B"), dict.get(new FplString("CH")));
 	}
 	
 	@Test
@@ -178,7 +178,7 @@ public class LoopTest extends AbstractFplTest {
 				+ ")\r\n"
 				+ "");
 		FplSortedDictionary dict = (FplSortedDictionary) scope.get("rule-dict");
-		assertEquals(FplString.make("B"), dict.get("CH"));
+		assertEquals(new FplString("B"), dict.get(new FplString("CH")));
 	}
 	
 	@Test
@@ -198,7 +198,7 @@ public class LoopTest extends AbstractFplTest {
 				+ ")\r\n"
 				+ "");
 		FplDictionary dict = (FplDictionary) scope.get("rule-dict");
-		assertEquals(FplString.make("XY"), dict.get("CH"));
+		assertEquals(new FplString("XY"), dict.get(new FplString("CH")));
 	}
 	
 	@Test
@@ -207,7 +207,7 @@ public class LoopTest extends AbstractFplTest {
 				"(def rule-dict\r\n"
 				+ "	(map-to-dict \r\n"
 				+ "		(lambda (rule)\r\n"
-				+ "			\"\"\r\n" // empty key
+				+ "			nil\r\n" // nil key
 				+ "		) \r\n"
 				+ "		(lambda (old rule)\r\n"
 				+ "			42\r\n"
@@ -255,7 +255,7 @@ public class LoopTest extends AbstractFplTest {
 				+ ")\r\n"
 				+ "");
 		FplDictionary dict = (FplDictionary) scope.get("rule-dict");
-		assertEquals(FplInteger.valueOf(42), dict.get("42"));
+		assertEquals(FplInteger.valueOf(42), dict.get(FplInteger.valueOf(42)));
 	}
 	
 	@Test
@@ -400,12 +400,12 @@ public class LoopTest extends AbstractFplTest {
 		scope.put("values", create(0, 13));
 		FplDictionary grouped =(FplDictionary) evaluate("group-by-modulo", "(group-by (lambda (i value) (% i 5)) values)");
 		assertEquals(5, grouped.size());
-		FplList value0 = (FplList)grouped.get("0");
+		FplList value0 = (FplList)grouped.get(FplInteger.valueOf(0));
 		assertEquals(3, value0.size());
 		assertEquals(FplInteger.valueOf(0), value0.get(0));
 		assertEquals(FplInteger.valueOf(5), value0.get(1));
 		assertEquals(FplInteger.valueOf(10), value0.get(2));
-		FplList value4 = (FplList)grouped.get("4");
+		FplList value4 = (FplList)grouped.get(FplInteger.valueOf(4));
 		assertEquals(2, value4.size());
 		assertEquals(FplInteger.valueOf(4), value4.get(0));
 		assertEquals(FplInteger.valueOf(9), value4.get(1));
@@ -416,19 +416,19 @@ public class LoopTest extends AbstractFplTest {
 		scope.put("values", create(0, 5));
 		FplDictionary grouped =(FplDictionary) evaluate("group-by-nil", "(group-by (lambda (i value) (if (ne value 3) value)) values)");
 		assertEquals(4, grouped.size());
-		FplList value0 = (FplList)grouped.get("0");
+		FplList value0 = (FplList)grouped.get((FplInteger.valueOf(0)));
 		assertEquals(1, value0.size());
-		assertNull(grouped.get("3"));
+		assertNull(grouped.get((FplInteger.valueOf(3))));
 	}
 	
 	@Test
-	public void groupByEmptyKey() throws Exception {
+	public void groupByWithNilKey() throws Exception {
 		scope.put("values", create(0, 5));
-		FplDictionary grouped =(FplDictionary) evaluate("group-by-empty", "(group-by (lambda (i value) (if-else (ne value 3) value \"\")) values)");
+		FplDictionary grouped =(FplDictionary) evaluate("group-by-empty", "(group-by (lambda (i value) (if-else (ne value 3) value nil)) values)");
 		assertEquals(4, grouped.size());
-		FplList value0 = (FplList)grouped.get("0");
+		FplList value0 = (FplList)grouped.get(FplInteger.valueOf(0));
 		assertEquals(1, value0.size());
-		assertNull(grouped.get("3"));
+		assertNull(grouped.get(FplInteger.valueOf(3)));
 	}
 	
 	@Test

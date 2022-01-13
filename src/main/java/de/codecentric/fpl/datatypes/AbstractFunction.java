@@ -151,6 +151,28 @@ public abstract class AbstractFunction implements Named, PositionHolder, Functio
 	}
 
 	/**
+	 * Evaluate an expression, the result must be not null, otherwise throw {@link EvaluationException} with
+	 * given message.
+	 * 
+	 * @param scope      Scope used for evaluation.
+	 * @param expression Expression to evaluate.
+	 * @param message Message for exception.
+	 * @return Evaluated expression, not <code>null</code>
+	 * @throws EvaluationException
+	 */
+	public static FplValue evaluateToAnyNotNull(Scope scope, FplValue expression, String message) throws EvaluationException {
+		if (expression == null) {
+			throw new EvaluationException(message);
+		} else {
+			FplValue result = expression.evaluate(scope);
+			if (result == null) {
+				throw new EvaluationException(message);
+			}
+			return result;
+		}
+	}
+
+	/**
 	 * Evaluate an expression and cast the result to a {@link FplList}.
 	 * 
 	 * @param scope      Scope used for evaluation.

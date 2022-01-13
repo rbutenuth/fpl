@@ -23,7 +23,7 @@ public class ClassAndObject implements ScopePopulator {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				Position position = FplValue.position(parameters[0]);
+				Position position = parameters.length > 0 ? FplValue.position(parameters[0]) : Position.UNKNOWN;
 				return makeClass("class", position, skipParameterScopes(scope), parameters, 0);
 			}
 

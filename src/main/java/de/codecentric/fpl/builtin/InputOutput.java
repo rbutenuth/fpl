@@ -213,14 +213,15 @@ public class InputOutput implements ScopePopulator {
 			}
 
 			private void setParams(HttpRequest req, FplDictionary dict) {
-				for (Entry<String, FplValue> entry : dict) {
+				for (Entry<FplValue, FplValue> entry : dict) {
+					String key = valueToString(entry.getKey());
 					FplValue value = entry.getValue();
 					if (value instanceof FplList) {
 						for (FplValue v : (FplList) value) {
-							req.addParam(entry.getKey(), valueToString(v));
+							req.addParam(key, valueToString(v));
 						}
 					} else {
-						req.addParam(entry.getKey(), valueToString(value));
+						req.addParam(key, valueToString(value));
 					}
 				}
 			}
@@ -392,14 +393,15 @@ public class InputOutput implements ScopePopulator {
 	}
 
 	private void setHeaders(HttpEntity entity, FplDictionary dict) {
-		for (Entry<String, FplValue> entry : dict) {
+		for (Entry<FplValue, FplValue> entry : dict) {
+			String key = valueToString(entry.getKey());
 			FplValue value = entry.getValue();
 			if (value instanceof FplList) {
 				for (FplValue v : (FplList) value) {
-					entity.addHeader(entry.getKey(), valueToString(v));
+					entity.addHeader(key, valueToString(v));
 				}
 			} else {
-				entity.addHeader(entry.getKey(), valueToString(value));
+				entity.addHeader(key, valueToString(value));
 			}
 		}
 	}
@@ -421,9 +423,9 @@ public class InputOutput implements ScopePopulator {
 			List<String> values = res.getParams(name);
 			int count = values.size();
 			if (count == 1) {
-				params.put(name, new FplString(values.get(0)));
+				params.put(new FplString(name), new FplString(values.get(0)));
 			} else {
-				params.put(name, FplList.fromIterator(new Iterator<FplValue>() {
+				params.put(new FplString(name), FplList.fromIterator(new Iterator<FplValue>() {
 					int i = 0;
 					
 					@Override
@@ -448,9 +450,9 @@ public class InputOutput implements ScopePopulator {
 				List<String> values = entity.getHeaders(name);
 				int count = values.size();
 				if (count == 1) {
-					headers.put(name.toLowerCase(), new FplString(values.get(0)));
+					headers.put(new FplString(name.toLowerCase()), new FplString(values.get(0)));
 				} else {
-					headers.put(name.toLowerCase(), FplList.fromIterator(new Iterator<FplValue>() {
+					headers.put(new FplString(name.toLowerCase()), FplList.fromIterator(new Iterator<FplValue>() {
 						int i = 0;
 						
 						@Override

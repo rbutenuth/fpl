@@ -38,9 +38,9 @@ public class DictionaryTest extends AbstractFplTest {
 	public void dict() throws Exception {
 		FplDictionary dict = (FplDictionary) evaluate("dict", "(dict \"a\" 1 \"b\" (+ 1 1) \"c\" 3)");
 		assertNotNull(dict);
-		assertEquals(1, ((FplInteger) dict.get("a")).getValue());
-		assertEquals(2, ((FplInteger) dict.get("b")).getValue());
-		assertEquals(3, ((FplInteger) dict.get("c")).getValue());
+		assertEquals(1, ((FplInteger) dict.get(new FplString("a"))).getValue());
+		assertEquals(2, ((FplInteger) dict.get(new FplString("b"))).getValue());
+		assertEquals(3, ((FplInteger) dict.get(new FplString("c"))).getValue());
 	}
 
 	@Test
@@ -57,10 +57,10 @@ public class DictionaryTest extends AbstractFplTest {
 	@Test
 	public void dictBadName() throws Exception {
 		try {
-			evaluate("dict", "(dict \"\" 1 \"b\" 2)");
+			evaluate("dict", "(dict nil 1 \"b\" 2)");
 			fail("Exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("\"\" is not a valid name", e.getMessage());
+			assertEquals("nil as key is not allowed", e.getMessage());
 		}
 	}
 
@@ -68,7 +68,7 @@ public class DictionaryTest extends AbstractFplTest {
 	public void dictionaryPutAndGet() throws Exception {
 		FplDictionary dict = (FplDictionary) evaluate("create", "(def obj (dict))");
 		assertNull(evaluate("put", "(dict-put obj \"name\" 42)"));
-		assertEquals(FplInteger.valueOf(42), dict.get("name"));
+		assertEquals(FplInteger.valueOf(42), dict.get(new FplString("name")));
 		assertEquals(FplInteger.valueOf(42), evaluate("get", "(dict-get obj \"name\")"));
 	}
 
@@ -76,9 +76,9 @@ public class DictionaryTest extends AbstractFplTest {
 	public void dictionaryDefineAndSetAndGet() throws Exception {
 		FplDictionary dict = (FplDictionary) evaluate("create", "(def obj (dict))");
 		assertEquals(FplInteger.valueOf(42), evaluate("def", "(dict-def obj \"name\" 42)"));
-		assertEquals(FplInteger.valueOf(42), dict.get("name"));
+		assertEquals(FplInteger.valueOf(42), dict.get(new FplString("name")));
 		assertEquals(FplInteger.valueOf(42), evaluate("set", "(dict-set obj \"name\" 43)"));
-		assertEquals(FplInteger.valueOf(43), dict.get("name"));
+		assertEquals(FplInteger.valueOf(43), dict.get(new FplString("name")));
 		assertEquals(FplInteger.valueOf(43), evaluate("get", "(dict-get obj \"name\")"));
 	}
 
@@ -90,7 +90,7 @@ public class DictionaryTest extends AbstractFplTest {
 			evaluate("def", "(dict-def obj \"name\" 43)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("Duplicate key: name", e.getMessage());
+			assertEquals("Duplicate key: \"name\"", e.getMessage());
 		}
 	}
 
@@ -101,19 +101,17 @@ public class DictionaryTest extends AbstractFplTest {
 			evaluate("set", "(dict-set obj \"name\" 43)");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("No value with key name found", e.getMessage());
+			assertEquals("No value with key \"name\" found", e.getMessage());
 		}
 	}
 
 	@Test
-	public void objectPutWithEmptyNameFails() throws Exception {
-		try {
+	public void objectPutWithNilKeyFails() throws Exception {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			evaluate("create", "(def obj (dict))");
-			evaluate("put", "(dict-put obj \"\" 42)");
-			fail("exception missing");
-		} catch (EvaluationException e) {
-			assertEquals("\"\" is not a valid name", e.getMessage());
-		}
+			evaluate("put", "(dict-put obj nil 42)");
+		});
+		assertEquals("nil as key is not allowed", e.getMessage());
 	}
 
 	@Test
@@ -190,16 +188,24 @@ public class DictionaryTest extends AbstractFplTest {
 	@Test
 	public void sortedDictionaryWithBadKey() throws Exception {
 		EvaluationException e = assertThrows(EvaluationException.class, () -> { evaluate("sorted-dict",
-				"(def sd (sorted-dict (lambda (a b) (if-else (lt a b) -1 (if-else (gt a b) 1 0))) \"\" \"b\"))");
+				"(def sd (sorted-dict (lambda (a b) (if-else (lt a b) -1 (if-else (gt a b) 1 0))) nil \"b\"))");
 		});
-		assertEquals("\"\" is not a valid name", e.getMessage());
+		assertEquals("nil as key is not allowed", e.getMessage());
+	}
+
+	@Test
+	public void sortedDictionaryWithBadKeyAfterEvaluation() throws Exception {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> { evaluate("sorted-dict",
+				"(def sd (sorted-dict (lambda (a b) (if-else (lt a b) -1 (if-else (gt a b) 1 0))) x-is-nil \"b\"))");
+		});
+		assertEquals("nil as key is not allowed", e.getMessage());
 	}
 
 	@Test
 	public void sortedDictionaryComparatorFails() throws Exception {
 		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			FplSortedDictionary dict = (FplSortedDictionary) evaluate("sorted-dict", "(sorted-dict (lambda (a b) (/ 1 0)))");
-			dict.put("a", new FplString("a"));
+			dict.put(new FplString("a"), new FplString("a"));
 		});
 		assertEquals("java.lang.ArithmeticException: / by zero", e.getMessage());
 	}

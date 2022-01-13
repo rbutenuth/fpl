@@ -16,7 +16,6 @@ import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplLazy;
 import de.codecentric.fpl.datatypes.FplMapDictionary;
 import de.codecentric.fpl.datatypes.FplSortedDictionary;
-import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Function;
 import de.codecentric.fpl.datatypes.list.FplList;
@@ -279,7 +278,7 @@ public class Loop implements ScopePopulator {
 				Function valueLambda = evaluateToFunction(scope, parameters[1]);
 				Function sortLambda = evaluateToFunctionOrNull(scope, parameters[2]);
 				FplList list = evaluateToList(scope, parameters[3]);
-				FplSortedDictionary dict = new FplSortedDictionary(Dictionary.createStringSortComparator(scope, sortLambda));
+				FplSortedDictionary dict = new FplSortedDictionary(Dictionary.createFplValueComparator(scope, sortLambda));
 				fillDictionaryWithMappedList(scope, keyLambda, valueLambda, list, dict);
 				return dict;
 			}
@@ -415,9 +414,9 @@ public class Loop implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("group-by",
-				"Convert a list in a dictionary of lists. The key is the result of the lambda, converted to a string."
+				"Convert a list in a dictionary of lists. The key is the result of the lambda."
 				+ "The lambda is called with two arguments: A counter (starting at 0) and a list element. When the "
-				+ "result of the lambda is nil or an empty string, the corresponding element is ignored.",
+				+ "result of the lambda is nil, the corresponding element is ignored.",
 				"lambda", "list") {
 
 			@Override
@@ -427,16 +426,8 @@ public class Loop implements ScopePopulator {
 				FplDictionary dict = new FplMapDictionary();
 				int i = 0;
 				for (FplValue value : list) {
-					FplValue keyValue = function.call(scope, FplInteger.valueOf(i), FplLazy.makeEvaluated(scope, value));
-					String key;
-					if (keyValue == null) {
-						key = "";
-					} else if (keyValue instanceof FplString) {
-						key = ((FplString) keyValue).getContent();
-					} else {
-						key = keyValue.toString();
-					}
-					if (!key.isEmpty()) {
+					FplValue key = function.call(scope, FplInteger.valueOf(i), FplLazy.makeEvaluated(scope, value));
+					if (key != null) {
 						FplList old = (FplList)dict.get(key);
 						if (old == null) {
 							dict.put(key, FplList.fromValue(value));
@@ -455,16 +446,8 @@ public class Loop implements ScopePopulator {
 	private static void fillDictionaryWithMappedList(Scope scope, Function keyLambda, Function valueLambda, FplList list,
 			FplDictionary dict) {
 		for (FplValue value : list) {
-			FplValue keyLambdaResult = keyLambda.call(scope, FplLazy.makeEvaluated(scope, value));
-			String key;
-			if (keyLambdaResult == null) {
-				key = "";
-			} else if (keyLambdaResult instanceof FplString) {
-				key = ((FplString) keyLambdaResult).getContent();
-			} else {
-				key = keyLambdaResult.toString();
-			}
-			if (!key.isEmpty()) {
+			FplValue key = keyLambda.call(scope, FplLazy.makeEvaluated(scope, value));
+			if (key != null) {
 				FplValue old = dict.get(key);
 				FplValue valueLambdaResult = valueLambda.call(scope, //
 						FplLazy.makeEvaluated(scope, old), FplLazy.makeEvaluated(scope, value));

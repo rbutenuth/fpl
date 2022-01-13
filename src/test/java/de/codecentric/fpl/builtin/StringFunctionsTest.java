@@ -24,7 +24,7 @@ import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 public class StringFunctionsTest extends AbstractFplTest {
-	private static final String nl = System.lineSeparator();
+	private static final String NL = System.lineSeparator();
 
 	@Test
 	public void noDescription() throws Exception {
@@ -41,7 +41,7 @@ public class StringFunctionsTest extends AbstractFplTest {
 	public void describeBuiltinPlus() throws Exception {
 		FplString fplMarkdown = (FplString) evaluate("describe", "(describe +)");
 		String markdown = fplMarkdown.getContent();
-		String[] split = markdown.split(nl);
+		String[] split = markdown.split(NL);
 		String[] expected = new String[] { //
 				"Function +", //
 				"Add values.", "* op1", "* op2", "* ops..." };
@@ -54,18 +54,18 @@ public class StringFunctionsTest extends AbstractFplTest {
 	@Test
 	public void describeFPLFunction() throws Exception {
 		evaluate("function", "" + //
-				"; Multiply three parameters." + nl + //
-				"; A second line without sense." + nl + //
-				"(def-function multiply (" + nl + "; comment for a" + nl + //
-				"a" + nl + //
-				"; comment for b" + nl + //
-				"; with a second line" + nl + //
-				"b c)" + nl + //
-				"  (* a b c)" + nl + //
-				")" + nl);
+				"; Multiply three parameters." + NL + //
+				"; A second line without sense." + NL + //
+				"(def-function multiply (" + NL + "; comment for a" + NL + //
+				"a" + NL + //
+				"; comment for b" + NL + //
+				"; with a second line" + NL + //
+				"b c)" + NL + //
+				"  (* a b c)" + NL + //
+				")" + NL);
 		FplString fplMarkdown = (FplString) evaluate("describe", "(describe multiply)");
 		String markdown = fplMarkdown.getContent();
-		String[] split = markdown.split(nl);
+		String[] split = markdown.split(NL);
 		String[] expected = new String[] { //
 				"Function multiply", //
 				"Multiply three parameters.",
@@ -308,6 +308,21 @@ public class StringFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void toStringOfDictionary() throws Exception {
+		FplString s = (FplString) evaluate("to-string",
+				"(join (dict 42 44 \"key2\" 45 50 '() 51 0.0 52 (dict) 53 (class)))");
+		assertEquals("{" + NL //
+				+ "    \"key2\": 45" + NL //
+				+ "    50: <list>"  + NL //
+				+ "    51: 0.0"  + NL //
+				+ "    52: <dictionary>" + NL //
+				+ "    53: <object>" + NL //
+				+ "    42: 44" + NL //
+				+ "}"  + NL //
+				, s.getContent());
+	}
+
+	@Test
 	public void serializeToJson() throws Exception {
 		FplString s = (FplString) evaluate("serialize-to-json",
 				"(serialize-to-json (list \"abcdef\" 42 3.14 (dict \"key\" 44 \"other\" \"foo\") nil))");
@@ -336,10 +351,10 @@ public class StringFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
-	public void serializeObjectWithSeveralKeysToJson() throws Exception {
+	public void serializeDictionaryWithSeveralKeysToJson() throws Exception {
 		FplString s = (FplString) evaluate("serialize-to-json",
-				"(serialize-to-json (dict \"key1\" 44 \"key2\" 45))");
-		assertEquals("{\"key1\":44,\"key2\":45}", s.getContent());
+				"(serialize-to-json (dict 42 44 \"key2\" 45))");
+		assertEquals("{\"key2\":45,\"42\":44}", s.getContent());
 	}
 
 	@Test

@@ -20,11 +20,12 @@ public class FplSortedDictionaryTest {
 	private FplSortedDictionary dict;
 
 	public FplSortedDictionaryTest() {
-		dict = new FplSortedDictionary(new Comparator<String>() {
+		dict = new FplSortedDictionary(new Comparator<FplValue>() {
 
+			@SuppressWarnings("unchecked")
 			@Override
-			public int compare(String s1, String s2) {
-				return s1.compareTo(s2);
+			public int compare(FplValue o1, FplValue o2) {
+				return ((Comparable<FplValue>)o1).compareTo((FplValue)o2);
 			}
 		});
 	}
@@ -41,35 +42,35 @@ public class FplSortedDictionaryTest {
 
 	@Test
 	public void keySetAndValues() {
-		assertNull(dict.put("foo", new FplString("bar")));
-		Set<String> keySet = dict.keySet();
+		assertNull(dict.put(new FplString("foo"), new FplString("bar")));
+		Set<FplValue> keySet = dict.keySet();
 		assertEquals(1, keySet.size());
-		assertTrue(keySet.contains("foo"));
+		assertTrue(keySet.contains(new FplString("foo")));
 		Collection<FplValue> values = dict.values();
 		assertEquals(1, values.size());
 		assertTrue(values.contains(new FplString("bar")));
-		Set<Entry<String, FplValue>> entries = dict.entrieSet();
+		Set<Entry<FplValue, FplValue>> entries = dict.entrieSet();
 		assertEquals(1, entries.size());
-		Entry<String, FplValue> first = entries.iterator().next();
-		assertEquals("foo", first.getKey());
+		Entry<FplValue, FplValue> first = entries.iterator().next();
+		assertEquals(new FplString("foo"), first.getKey());
 	}
 
 	@Test
 	public void iterable() {
-		assertNull(dict.put("foo", new FplString("bar")));
-		Iterator<Entry<String, FplValue>> iterator = dict.iterator();
+		assertNull(dict.put(new FplString("foo"), new FplString("bar")));
+		Iterator<Entry<FplValue, FplValue>> iterator = dict.iterator();
 		assertTrue(iterator.hasNext());
-		Entry<String, FplValue> next = iterator.next();
-		assertEquals("foo", next.getKey());
+		Entry<FplValue, FplValue> next = iterator.next();
+		assertEquals(new FplString("foo"), next.getKey());
 		assertEquals("bar", ((FplString) next.getValue()).getContent());
 		assertFalse(iterator.hasNext());
 	}
 
 	@Test
 	public void simplePutGetAndRemove() {
-		assertNull(dict.put("foo", new FplString("bar")));
-		assertEquals("bar", ((FplString) dict.get("foo")).getContent());
-		assertEquals("bar", ((FplString) dict.put("foo", null)).getContent());
+		assertNull(dict.put(new FplString("foo"), new FplString("bar")));
+		assertEquals(new FplString("bar"), dict.get(new FplString("foo")));
+		assertEquals(new FplString("bar"), dict.put(new FplString("foo"), null));
 	}
 
 	@Test
@@ -82,35 +83,35 @@ public class FplSortedDictionaryTest {
 	@Test
 	public void assertPutEmptyKeyFails() throws ScopeException {
 		assertThrows(ScopeException.class, () -> {
-			dict.put("", new FplString("foo"));
+			dict.put(null, new FplString("foo"));
 		});
 	}
 
 	@Test
 	public void assertDefineNullValueFails() throws ScopeException {
 		assertThrows(ScopeException.class, () -> {
-			dict.define("foo", null);
+			dict.define(new FplString("foo"), null);
 		});
 	}
 
 	@Test
 	public void assertDefineKeyExistsFails() throws ScopeException {
-		dict.define("foo", new FplString("bar"));
+		dict.define(new FplString("foo"), new FplString("bar"));
 		assertThrows(ScopeException.class, () -> {
-			dict.define("foo", new FplString("bar"));
+			dict.define(new FplString("foo"), new FplString("bar"));
 		});
 	}
 
 	@Test
 	public void replaceExisting() {
-		assertNull(dict.put("foo", new FplString("bar")));
-		assertEquals(new FplString("bar"), dict.replace("foo", new FplString("baz")));
+		assertNull(dict.put(new FplString("foo"), new FplString("bar")));
+		assertEquals(new FplString("bar"), dict.replace(new FplString("foo"), new FplString("baz")));
 	}
 
 	@Test
 	public void replaceNotExisting() throws ScopeException {
 		assertThrows(ScopeException.class, () -> {
-			dict.replace("non-existing-key", new FplString("foo"));
+			dict.replace(new FplString("non-existing-key"), new FplString("foo"));
 		});
 	}
 

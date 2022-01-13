@@ -14,12 +14,12 @@ import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
- * Similar to {@link FplObject}, but sorted.
+ * Similar to {@link FplMapDictionary}, but sorted.
  */
 public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesToThisValue {
-	private TreeMap<String, FplValue> map;
+	private TreeMap<FplValue, FplValue> map;
 
-	public FplSortedDictionary(Comparator<String> comparator) {
+	public FplSortedDictionary(Comparator<FplValue> comparator) {
 		if (comparator == null) {
 			map = new TreeMap<>();
 		} else {
@@ -28,12 +28,12 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	}
 	
 	@Override
-	public synchronized FplValue get(String key) {
+	public synchronized FplValue get(FplValue key) {
 		return map.get(key);
 	}
 
 	@Override
-	public synchronized FplValue put(String key, FplValue value) throws ScopeException {
+	public synchronized FplValue put(FplValue key, FplValue value) throws ScopeException {
 		checkKeyNotNullOrEmpty(key);
 		// null means remove
 		if (value == null) {
@@ -44,7 +44,7 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	}
 
 	@Override
-	public synchronized FplValue define(String key, FplValue value) throws ScopeException {
+	public synchronized FplValue define(FplValue key, FplValue value) throws ScopeException {
 		checkKeyNotNullOrEmpty(key);
 		checkValueNotNull(value);
 		FplValue old = map.putIfAbsent(key, value);
@@ -55,7 +55,7 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	}
 
 	@Override
-	public synchronized FplValue replace(String key, FplValue newValue) throws ScopeException {
+	public synchronized FplValue replace(FplValue key, FplValue newValue) throws ScopeException {
 		checkKeyNotNullOrEmpty(key);
 		checkValueNotNull(newValue);
 		FplValue oldValue = map.replace(key, newValue);
@@ -66,7 +66,7 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	}
 
 	@Override
-	public synchronized Set<String> keySet() {
+	public synchronized Set<FplValue> keySet() {
 		return map.keySet();
 	}
 
@@ -76,7 +76,7 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	}
 
 	@Override
-	public synchronized Set<Entry<String, FplValue>> entrieSet() {
+	public synchronized Set<Entry<FplValue, FplValue>> entrieSet() {
 		return map.entrySet();
 	}
 
@@ -86,29 +86,29 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	}
 	
 	@Override
-	public synchronized String peekFirstKey() {
+	public synchronized FplValue peekFirstKey() {
 		checkNotEmpty();
 		return map.firstKey();
 	}
 
 	@Override
-	public synchronized String peekLastKey() {
+	public synchronized FplValue peekLastKey() {
 		checkNotEmpty();
 		return map.lastKey();
 	}
 	
 	@Override
-	public synchronized String fetchFirstKey() {
+	public synchronized FplValue fetchFirstKey() {
 		checkNotEmpty();
-		String key = map.firstKey();
+		FplValue key = map.firstKey();
 		map.remove(key);
 		return key;
 	}
 
 	@Override
-	public synchronized String fetchLastKey() {
+	public synchronized FplValue fetchLastKey() {
 		checkNotEmpty();
-		String key = map.lastKey();
+		FplValue key = map.lastKey();
 		map.remove(key);
 		return key;
 	}
@@ -116,7 +116,7 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	@Override
 	public synchronized FplValue fetchFirstValue() {
 		checkNotEmpty();
-		Entry<String, FplValue> entry = map.firstEntry();
+		Entry<FplValue, FplValue> entry = map.firstEntry();
 		map.remove(entry.getKey());
 		return entry.getValue();
 	}
@@ -124,7 +124,7 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	@Override
 	public synchronized FplValue fetchLastValue() {
 		checkNotEmpty();
-		Entry<String, FplValue> entry = map.lastEntry();
+		Entry<FplValue, FplValue> entry = map.lastEntry();
 		map.remove(entry.getKey());
 		return entry.getValue();
 	}
@@ -132,17 +132,17 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	@Override
 	public synchronized FplList fetchFirstEntry() {
 		checkNotEmpty();
-		Entry<String, FplValue> entry = map.firstEntry();
+		Entry<FplValue, FplValue> entry = map.firstEntry();
 		map.remove(entry.getKey());
-		return FplList.fromValues(new FplString(entry.getKey()), entry.getValue());
+		return FplList.fromValues(entry.getKey(), entry.getValue());
 	}
 
 	@Override
 	public synchronized FplList fetchLastEntry() {
 		checkNotEmpty();
-		Entry<String, FplValue> entry = map.lastEntry();
+		Entry<FplValue, FplValue> entry = map.lastEntry();
 		map.remove(entry.getKey());
-		return FplList.fromValues(new FplString(entry.getKey()), entry.getValue());
+		return FplList.fromValues(entry.getKey(), entry.getValue());
 	}
 
 	private void checkNotEmpty() throws ScopeException {
@@ -157,7 +157,7 @@ public class FplSortedDictionary implements FplDictionary, FplValue, EvaluatesTo
 	}
 
 	@Override
-	public Iterator<Entry<String, FplValue>> iterator() {
+	public Iterator<Entry<FplValue, FplValue>> iterator() {
 		return map.entrySet().iterator();
 	}
 

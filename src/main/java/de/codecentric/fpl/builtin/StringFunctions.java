@@ -398,14 +398,16 @@ public class StringFunctions implements ScopePopulator {
 				sb.append("]");
 			}
 
-			private void serializeDictionary(StringBuilder sb, FplDictionary object) throws EvaluationException {
+			private void serializeDictionary(StringBuilder sb, FplDictionary dict) throws EvaluationException {
 				boolean first = true;
 				sb.append("{");
-				for (Entry<String, FplValue> entry : object) {
+				for (Entry<FplValue, FplValue> entry : dict) {
 					if (!first) {
 						sb.append(",");
 					}
-					sb.append(JsonStream.serialize(entry.getKey()));
+					FplValue key = entry.getKey();
+					String keyAsString = (key instanceof FplString) ? ((FplString)key).getContent() : key.toString();
+					sb.append(JsonStream.serialize(keyAsString));
 					sb.append(":");
 					serialize(sb, entry.getValue());
 					first = false;

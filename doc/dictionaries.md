@@ -13,13 +13,16 @@ A dictionary is created with the function `dict`
 ```
 
 There can't be nil values in a dictionary: When you put a nil value, the mapping for that key is simply
-removed from the dictionary. 
+removed from the dictionary.
+
+Keys can be any values (except nil), but only values where there is a meaningful hash code and equals 
+method in the backing Java code make sense: string, integer, double.   
 
 ## Functions
 
 ### dict
 
-Create a new dictionary from key value pairs. The number of parameters must be even, keys must be strings.
+Create a new dictionary from key value pairs. The number of parameters must be even, keys must not be nil.
 
 ```
 (dict pairs...)
@@ -28,10 +31,11 @@ Create a new dictionary from key value pairs. The number of parameters must be e
 
 ### sorted-dict
 
-Create a new sorted dictionary from string value pairs.
+Create a new sorted dictionary from key value pairs.
 The lambda sort takes two arguments (left, right) and must return a number:
 < 0 if left < right, 0 for left = right and > 0 for left > right.
-When sort-lambda is nil, the natural string order is used.
+When sort-lambda is nil, the natural string order is used. This works only when the keys
+are string, integer, or double.
 
 ```
 (sorted dict sort-lambda pairs...)
@@ -39,7 +43,7 @@ When sort-lambda is nil, the natural string order is used.
 
 ### dict-def
 
-Define a value in the scope of an object or dictionary, key must be a string,
+Define a value in the scope of an object or dictionary, key must not be nil,
 returns the value associated with the key, original mapping must be nil.
 
 ```
@@ -48,7 +52,7 @@ returns the value associated with the key, original mapping must be nil.
 
 ### dict-get
 
-Get a value from the scope of an object or dictionary, key must be a string,
+Get a value from the scope of an object or dictionary.
 
 ```
 (dict-get dictionary key)
@@ -56,7 +60,7 @@ Get a value from the scope of an object or dictionary, key must be a string,
 
 ### dict-put
 
-Put a value into the scope of an object or dictionary, key must be a string,
+Put a value into the scope of an object or dictionary, key must not be nil,
 returns the old value associated with the key. When you want to remove a mapping, 
 set the value nil.
 
@@ -66,7 +70,7 @@ set the value nil.
 
 ### dict-set
 
-Change a value into the scope of an object or dictionary, key must be a string,
+Change a value into the scope of an object or dictionary, key must be not nil,
 returns the old value associated with the key, new and old value must not be nil.
 
 ```

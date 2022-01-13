@@ -1,11 +1,13 @@
 package de.codecentric.fpl.datatypes;
 
 import java.util.Arrays;
+import java.util.Map.Entry;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.PositionHolder;
 import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
 
 /**
@@ -64,6 +66,27 @@ public class FplObject extends MapScope implements Function, PositionHolder {
 
 	@Override
 	public String toString() {
-		return FplDictionary.toString(map);
+		final String NL = System.lineSeparator();
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		for (Entry<String, FplValue> entry : map.entrySet()) {
+			sb.append(NL).append("    ");
+			sb.append(entry.getKey()).append(": ");
+			FplValue v = entry.getValue();
+			// Be careful: Cycles in data structures can lead to endless recursion...
+			if (v instanceof FplList) {
+				sb.append("<list>");
+			} else if (v instanceof FplDictionary) {
+				sb.append("<dictionary>");
+			} else if (v instanceof FplObject) {
+				sb.append("<object>");
+			} else {
+				sb.append(v.toString());
+			}
+		}
+		sb.append(NL).append("}").append(NL);
+
+		return sb.toString();
 	}
+	
 }

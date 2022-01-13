@@ -9,57 +9,57 @@ import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.list.FplList;
 
 /**
- * Common base for unsorted and sorted maps and objects.
+ * Common base for unsorted and sorted maps.
  */
-public interface FplDictionary extends Iterable<Entry<String, FplValue>>, FplValue {
+public interface FplDictionary extends Iterable<Entry<FplValue, FplValue>>, FplValue {
 
 	/**
-	 * @param key Name of value to lookup
+	 * @param key to lookup
 	 * @return The found value, may be null.
 	 */
-	public FplValue get(String key);
+	public FplValue get(FplValue key);
 	
 	/**
 	 * Put a key value mapping in the dictionary, may overwrite an existing mapping.
 	 * 
-	 * @param key   Name of value to store, not null, not empty
+	 * @param key Key for the value to store, not null, not empty (if String)
 	 * @param value The value, null values are allowed and will remove the mapping.
 	 * @throws ScopeException If key is empty.
 	 */
-	public FplValue put(String key, FplValue value) throws ScopeException;
+	public FplValue put(FplValue key, FplValue value) throws ScopeException;
 	
 	/**
-	 * @param key   Name of value to define, not null, not empty
+	 * @param key Key for the value to store, not null, not empty (if String)
 	 * @param value The new value, not <code>null</code>
 	 * @return value
 	 * @throws ScopeException If value did already exist.
 	 */
-	public FplValue define(String key, FplValue value) throws ScopeException;
+	public FplValue define(FplValue key, FplValue value) throws ScopeException;
 	
 	/**
 	 * Replace a value in this dictionary.
 	 * 
-	 * @param key      Name of value to change, not null, not empty
+	 * @param key Key for the value to store, not null, not empty (if String)
 	 * @param newValue The new value, not <code>null</code>
 	 * @return The old value.
 	 * @throws ScopeException If value is not found.
 	 */
-	public FplValue replace(String key, FplValue newValue) throws ScopeException;
+	public FplValue replace(FplValue key, FplValue newValue) throws ScopeException;
 	
 	/**
-	 * @return Ordered keys.
+	 * @return Set of keys, ordered when dictionary is ordered.
 	 */
-	public Set<String> keySet();
+	public Set<FplValue> keySet();
 	
 	/**
-	 * @return Ordered values.
+	 * @return Values, ordered when dictionary is ordered.
 	 */
 	public Collection<FplValue> values();
 	
 	/**
-	 * @return Ordered entries.
+	 * @return Entries, ordered when dictionary is ordered.
 	 */
-	public Set<Entry<String, FplValue>> entrieSet();
+	public Set<Entry<FplValue, FplValue>> entrieSet();
 
 	/**
 	 * @return Number of mappings in this dictionary.
@@ -71,28 +71,28 @@ public interface FplDictionary extends Iterable<Entry<String, FplValue>>, FplVal
 	 * of an unsorted dictionary, a random key is returned.
 	 * @throws ScopeException When dictionary is empty.
 	 */
-	public String peekFirstKey() throws ScopeException;
+	public FplValue peekFirstKey() throws ScopeException;
 
 	/**
 	 * @return Returns the last key from the dictionary. In case
 	 * of an unsorted dictionary, a random key is returned.
 	 * @throws ScopeException When dictionary is empty.
 	 */
-	public String peekLastKey() throws ScopeException;
+	public FplValue peekLastKey() throws ScopeException;
 
 	/**
 	 * @return Returns and removes the first key from the dictionary. In case
 	 * of an unsorted dictionary, a random key is returned/removed.
 	 * @throws ScopeException When dictionary is empty.
 	 */
-	public String fetchFirstKey() throws ScopeException;
+	public FplValue fetchFirstKey() throws ScopeException;
 
 	/**
 	 * @return Returns and removes the last key from the dictionary. In case
 	 * of an unsorted dictionary, a random key is returned/removed.
 	 * @throws ScopeException When dictionary is empty.
 	 */
-	public String fetchLastKey() throws ScopeException;
+	public FplValue fetchLastKey() throws ScopeException;
 	
 	/**
 	 * @return Returns and removes the first value from the dictionary. In case
@@ -124,11 +124,11 @@ public interface FplDictionary extends Iterable<Entry<String, FplValue>>, FplVal
 	 */
 	public FplList fetchLastEntry() throws ScopeException;
 
-	public static String toString(Map<String, FplValue> map) {
+	public static String toString(Map<FplValue, FplValue> map) {
 		final String NL = System.lineSeparator();
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
-		for (Entry<String, FplValue> entry : map.entrySet()) {
+		for (Entry<FplValue, FplValue> entry : map.entrySet()) {
 			sb.append(NL).append("    ");
 			sb.append(entry.getKey()).append(": ");
 			FplValue v = entry.getValue();

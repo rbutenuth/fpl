@@ -1,5 +1,8 @@
 package de.codecentric.fpl.datatypes;
 
+import static de.codecentric.fpl.data.Scope.checkKeyNotNullOrEmpty;
+import static de.codecentric.fpl.data.Scope.checkValueNotNull;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -7,19 +10,14 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
 import de.codecentric.fpl.datatypes.list.FplList;
-import static de.codecentric.fpl.data.Scope.checkKeyNotNullOrEmpty;
-import static de.codecentric.fpl.data.Scope.checkValueNotNull;
 
 /**
- * The FPL version of an object: Most of the semantic comes from a combination
- * of {@link Scope} with {@link Named}. The rest are some built in functions for
- * linking and executing methods on objects.
+ * The FPL version of an dictionary.
  */
 public class FplMapDictionary implements FplDictionary, FplValue, EvaluatesToThisValue {
-	private ConcurrentMap<String, FplValue> map;
+	private ConcurrentMap<FplValue, FplValue> map;
 
 	public FplMapDictionary() {
 		map = new ConcurrentHashMap<>();
@@ -41,28 +39,28 @@ public class FplMapDictionary implements FplDictionary, FplValue, EvaluatesToThi
 	}
 
 	@Override
-	public synchronized String peekFirstKey() throws ScopeException {
-		Iterator<String> iterator = map.keySet().iterator();
+	public synchronized FplValue peekFirstKey() throws ScopeException {
+		Iterator<FplValue> iterator = map.keySet().iterator();
 		checkHasNext(iterator);
 		return iterator.next();
 	}
 
 	@Override
-	public String peekLastKey() throws ScopeException {
+	public FplValue peekLastKey() throws ScopeException {
 		return peekFirstKey();
 	}
 
 	@Override
-	public synchronized String fetchFirstKey() throws ScopeException {
-		Iterator<String> iterator = map.keySet().iterator();
+	public synchronized FplValue fetchFirstKey() throws ScopeException {
+		Iterator<FplValue> iterator = map.keySet().iterator();
 		checkHasNext(iterator);
-		String result = iterator.next();
+		FplValue result = iterator.next();
 		iterator.remove();
 		return result;
 	}
 
 	@Override
-	public String fetchLastKey() throws ScopeException {
+	public FplValue fetchLastKey() throws ScopeException {
 		return fetchFirstKey();
 	}
 
@@ -82,11 +80,11 @@ public class FplMapDictionary implements FplDictionary, FplValue, EvaluatesToThi
 
 	@Override
 	public synchronized FplList fetchFirstEntry() throws ScopeException {
-		Iterator<Entry<String, FplValue>> iterator = map.entrySet().iterator();
+		Iterator<Entry<FplValue, FplValue>> iterator = map.entrySet().iterator();
 		checkHasNext(iterator);
-		Entry<String, FplValue> result = iterator.next();
+		Entry<FplValue, FplValue> result = iterator.next();
 		iterator.remove();
-		return FplList.fromValues(new FplString(result.getKey()), result.getValue());
+		return FplList.fromValues(result.getKey(), result.getValue());
 	}
 
 	@Override
@@ -101,7 +99,7 @@ public class FplMapDictionary implements FplDictionary, FplValue, EvaluatesToThi
 	}
 
 	@Override
-	public Iterator<Entry<String, FplValue>> iterator() {
+	public Iterator<Entry<FplValue, FplValue>> iterator() {
 		return map.entrySet().iterator();
 	}
 
@@ -112,12 +110,12 @@ public class FplMapDictionary implements FplDictionary, FplValue, EvaluatesToThi
 	 * @return The found value, may be null.
 	 */
 	@Override
-	public FplValue get(String key) {
+	public FplValue get(FplValue key) {
 		return map.get(key);
 	}
 
 	@Override
-	public FplValue put(String key, FplValue value) throws ScopeException {
+	public FplValue put(FplValue key, FplValue value) throws ScopeException {
 		checkKeyNotNullOrEmpty(key);
 		// null means remove
 		if (value == null) {
@@ -128,7 +126,7 @@ public class FplMapDictionary implements FplDictionary, FplValue, EvaluatesToThi
 	}
 
 	@Override
-	public FplValue define(String key, FplValue value) throws ScopeException {
+	public FplValue define(FplValue key, FplValue value) throws ScopeException {
 		checkKeyNotNullOrEmpty(key);
 		checkValueNotNull(value);
 		FplValue old = map.putIfAbsent(key, value);
@@ -139,7 +137,7 @@ public class FplMapDictionary implements FplDictionary, FplValue, EvaluatesToThi
 	}
 
 	@Override
-	public FplValue replace(String key, FplValue newValue) throws ScopeException {
+	public FplValue replace(FplValue key, FplValue newValue) throws ScopeException {
 		checkKeyNotNullOrEmpty(key);
 		checkValueNotNull(newValue);
 		FplValue oldValue = map.replace(key, newValue);
@@ -150,7 +148,7 @@ public class FplMapDictionary implements FplDictionary, FplValue, EvaluatesToThi
 	}
 
 	@Override
-	public Set<String> keySet() {
+	public Set<FplValue> keySet() {
 		return map.keySet();
 	}
 
@@ -160,7 +158,7 @@ public class FplMapDictionary implements FplDictionary, FplValue, EvaluatesToThi
 	}
 
 	@Override
-	public Set<Entry<String, FplValue>> entrieSet() {
+	public Set<Entry<FplValue, FplValue>> entrieSet() {
 		return map.entrySet();
 	}
 }
