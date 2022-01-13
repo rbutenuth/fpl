@@ -1,6 +1,7 @@
 package de.codecentric.fpl.builtin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,6 +27,36 @@ import de.codecentric.fpl.datatypes.list.FplList;
 public class StringFunctionsTest extends AbstractFplTest {
 	private static final String NL = System.lineSeparator();
 
+	@Test
+	public void equalStrings() {
+		assertEquals(new FplString("aa"), new FplString("aa"));
+	}
+	
+	@Test
+	public void duplicateHashCodeComputation() {
+		FplString s = new FplString("foo");
+		int h1 = s.hashCode();
+		int h2 = s.hashCode();
+		assertEquals(h1, h2);
+	}
+	
+	@Test
+	public void hashCodeZeroLength() {
+		FplString s = new FplString("");
+		int h = s.hashCode();
+		assertEquals(0, h);
+	}
+	
+	@Test
+	public void notEqualStringsDifferentLength() {
+		assertNotEquals(new FplString("aaa"), new FplString("aa"));
+	}
+	
+	@Test
+	public void notEqualStringsSameLength() {
+		assertNotEquals(new FplString("aaa"), new FplString("aab"));
+	}
+	
 	@Test
 	public void noDescription() throws Exception {
 		// cover constructor
@@ -312,12 +343,12 @@ public class StringFunctionsTest extends AbstractFplTest {
 		FplString s = (FplString) evaluate("to-string",
 				"(join (dict 42 44 \"key2\" 45 50 '() 51 0.0 52 (dict) 53 (class)))");
 		assertEquals("{" + NL //
-				+ "    \"key2\": 45" + NL //
 				+ "    50: <list>"  + NL //
 				+ "    51: 0.0"  + NL //
 				+ "    52: <dictionary>" + NL //
 				+ "    53: <object>" + NL //
 				+ "    42: 44" + NL //
+				+ "    \"key2\": 45" + NL //
 				+ "}"  + NL //
 				, s.getContent());
 	}
@@ -354,7 +385,7 @@ public class StringFunctionsTest extends AbstractFplTest {
 	public void serializeDictionaryWithSeveralKeysToJson() throws Exception {
 		FplString s = (FplString) evaluate("serialize-to-json",
 				"(serialize-to-json (dict 42 44 \"key2\" 45))");
-		assertEquals("{\"key2\":45,\"42\":44}", s.getContent());
+		assertEquals("{\"42\":44,\"key2\":45}", s.getContent());
 	}
 
 	@Test
