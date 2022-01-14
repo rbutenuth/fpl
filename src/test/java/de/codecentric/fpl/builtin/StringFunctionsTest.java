@@ -343,12 +343,12 @@ public class StringFunctionsTest extends AbstractFplTest {
 		FplString s = (FplString) evaluate("to-string",
 				"(join (dict 42 44 \"key2\" 45 50 '() 51 0.0 52 (dict) 53 (class)))");
 		assertEquals("{" + NL //
+				+ "    \"key2\": 45" + NL //
 				+ "    50: <list>"  + NL //
 				+ "    51: 0.0"  + NL //
 				+ "    52: <dictionary>" + NL //
 				+ "    53: <object>" + NL //
 				+ "    42: 44" + NL //
-				+ "    \"key2\": 45" + NL //
 				+ "}"  + NL //
 				, s.getContent());
 	}
@@ -385,7 +385,7 @@ public class StringFunctionsTest extends AbstractFplTest {
 	public void serializeDictionaryWithSeveralKeysToJson() throws Exception {
 		FplString s = (FplString) evaluate("serialize-to-json",
 				"(serialize-to-json (dict 42 44 \"key2\" 45))");
-		assertEquals("{\"42\":44,\"key2\":45}", s.getContent());
+		assertEquals("{\"key2\":45,\"42\":44}", s.getContent());
 	}
 
 	@Test

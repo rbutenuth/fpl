@@ -1,12 +1,10 @@
 package de.codecentric.fpl.datatypes;
 
-import java.nio.charset.StandardCharsets;
-
 /**
  * An FPL String
  */
 public class FplString implements EvaluatesToThisValue, Comparable<FplString> {
-    private final byte[] value;
+    private final char value[];
 	private int hash;
 
 	/**
@@ -24,14 +22,14 @@ public class FplString implements EvaluatesToThisValue, Comparable<FplString> {
         if (content == null) {
             throw new NullPointerException("content null");
         }
-        value = content.getBytes(StandardCharsets.UTF_16);
+        value = content.toCharArray();
     }
 
     /**
      * @return Content, never null.
      */
     public String getContent() {
-        return new String(value, StandardCharsets.UTF_16);
+        return new String(value);
     }
 
     /**
@@ -41,24 +39,14 @@ public class FplString implements EvaluatesToThisValue, Comparable<FplString> {
     public int hashCode() {
         int h = hash;
         if (h == 0 && value.length > 0) {
-            hash = h = hashCode(value);
-        }
-        return h;
-    }
+            char val[] = value;
 
-    private int hashCode(byte[] value) {
-        int h = 0;
-        int length = value.length >> 1;
-        for (int i = 0; i < length; i++) {
-            h = 31 * h + getChar(i);
+            for (int i = 0; i < value.length; i++) {
+                h = 31 * h + val[i];
+            }
+            hash = h;
         }
         return h;
-    }
-    
-    private char getChar(int index) {
-        index <<= 1;
-        return (char)(((value[index++] & 0xff) << 8) |
-                      ((value[index]   & 0xff) << 0));
     }
 
     /**
@@ -69,23 +57,22 @@ public class FplString implements EvaluatesToThisValue, Comparable<FplString> {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
+        if (obj instanceof FplString) {
+            FplString anotherString = (FplString)obj;
+            int n = value.length;
+            if (n == anotherString.value.length) {
+                char v1[] = value;
+                char v2[] = anotherString.value;
+                int i = 0;
+                while (n-- != 0) {
+                    if (v1[i] != v2[i])
+                        return false;
+                    i++;
+                }
+                return true;
+            }
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        FplString other = (FplString) obj;
-        int length = value.length;
-        if (length != other.value.length) { 
-        	return false;
-        }
-        for (int i = 0; i < length; i++) {
-        	if (value[i] != other.value[i]) {
-        		return false;
-        	}
-        }
-        return true;
+        return false;
     }
 
 	@Override
@@ -122,20 +109,21 @@ public class FplString implements EvaluatesToThisValue, Comparable<FplString> {
     
 	@Override
 	public int compareTo(FplString other) {
-        return compareValues(other);
-	}
-	
-    private int compareValues(FplString other) {
-        int len1 = value.length >> 1;
-        int len2 = other.value.length >> 1;
+        int len1 = value.length;
+        int len2 = other.value.length;
         int lim = Math.min(len1, len2);
-        for (int k = 0; k < lim; k++) {
-            char c1 = getChar(k);
-            char c2 = other.getChar(k);
+        char v1[] = value;
+        char v2[] = other.value;
+
+        int k = 0;
+        while (k < lim) {
+            char c1 = v1[k];
+            char c2 = v2[k];
             if (c1 != c2) {
                 return c1 - c2;
             }
+            k++;
         }
         return len1 - len2;
-    }
+	}
 }
