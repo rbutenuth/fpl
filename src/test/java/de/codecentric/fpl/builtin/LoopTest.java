@@ -146,10 +146,10 @@ public class LoopTest extends AbstractFplTest {
 		evaluate("def-dict",
 				"(def rule-dict\r\n"
 				+ "	(map-to-dict \r\n"
-				+ "		(lambda (rule)\r\n"
+				+ "		(lambda (rule i)\r\n"
 				+ "			(get-element (match rule rule-pattern) 2)\r\n"
 				+ "		) \r\n"
-				+ "		(lambda (old rule)\r\n"
+				+ "		(lambda (old rule i)\r\n"
 				+ "			(get-element (match rule rule-pattern) 3)\r\n"
 				+ "		) \r\n"
 				+ "		'(\"CH -> B\" \"HH -> N\" ) \r\n"
@@ -166,10 +166,10 @@ public class LoopTest extends AbstractFplTest {
 		evaluate("def-dict",
 				"(def rule-dict\r\n"
 				+ "	(map-to-sorted-dict \r\n"
-				+ "		(lambda (rule)\r\n"
+				+ "		(lambda (rule i)\r\n"
 				+ "			(get-element (match rule rule-pattern) 2)\r\n"
 				+ "		) \r\n"
-				+ "		(lambda (old rule)\r\n"
+				+ "		(lambda (old rule i)\r\n"
 				+ "			(get-element (match rule rule-pattern) 3)\r\n"
 				+ "		) \r\n"
 				+ "     nil\r\n"
@@ -187,10 +187,10 @@ public class LoopTest extends AbstractFplTest {
 		evaluate("def-dict",
 				"(def rule-dict\r\n"
 				+ "	(map-to-dict \r\n"
-				+ "		(lambda (rule)\r\n"
+				+ "		(lambda (rule i)\r\n"
 				+ "			(get-element (match rule rule-pattern) 2)\r\n"
 				+ "		) \r\n"
-				+ "		(lambda (old rule)\r\n"
+				+ "		(lambda (old rule i)\r\n"
 				+ "			(join (if-else old old \"\") (get-element (match rule rule-pattern) 3))\r\n"
 				+ "		) \r\n"
 				+ "		'(\"CH -> X\" \"CH -> Y\" ) \r\n"
@@ -206,10 +206,10 @@ public class LoopTest extends AbstractFplTest {
 		evaluate("def-dict",
 				"(def rule-dict\r\n"
 				+ "	(map-to-dict \r\n"
-				+ "		(lambda (rule)\r\n"
+				+ "		(lambda (rule i)\r\n"
 				+ "			nil\r\n" // nil key
 				+ "		) \r\n"
-				+ "		(lambda (old rule)\r\n"
+				+ "		(lambda (old rule i)\r\n"
 				+ "			42\r\n"
 				+ "		) \r\n"
 				+ "		'(1) \r\n"
@@ -225,10 +225,10 @@ public class LoopTest extends AbstractFplTest {
 		evaluate("def-dict",
 				"(def rule-dict\r\n"
 				+ "	(map-to-dict \r\n"
-				+ "		(lambda (rule)\r\n"
+				+ "		(lambda (rule i)\r\n"
 				+ "			nil\r\n" // nil, same as empty key
 				+ "		) \r\n"
-				+ "		(lambda (old rule)\r\n"
+				+ "		(lambda (old rule i)\r\n"
 				+ "			42\r\n"
 				+ "		) \r\n"
 				+ "		'(1) \r\n"
@@ -244,10 +244,10 @@ public class LoopTest extends AbstractFplTest {
 		evaluate("def-dict",
 				"(def rule-dict\r\n"
 				+ "	(map-to-dict \r\n"
-				+ "		(lambda (rule)\r\n"
+				+ "		(lambda (rule i)\r\n"
 				+ "			42\r\n" // key is number
 				+ "		) \r\n"
-				+ "		(lambda (old rule)\r\n"
+				+ "		(lambda (old rule i)\r\n"
 				+ "			42\r\n"
 				+ "		) \r\n"
 				+ "		'(1) \r\n"

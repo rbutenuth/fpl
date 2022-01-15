@@ -241,11 +241,12 @@ public class Loop implements ScopePopulator {
 		scope.define(new AbstractFunction("map-to-dict",
 				"Apply a lambda to all list elements and return a dictionary. The dictionary is build from the results "
 						+ "of the lambdas. The first must return the key as string, the second a value (any type). "
-						+ "When the key is an empty string, the second lambda is not called and nothing is put to the dictionary. "
+						+ "When the key is an nil, the second lambda is not called and nothing is put to the dictionary. "
 						+ "Adding to the dictionary is done by put, so mappings may overwrite each other or even remove mappings, "
-						+ "when value is nil. " + "The first lambda receives a list element as parameter. "
-						+ "The second lambda receives two parameters: The first is the previous value contained in the dictionary for the given "
-						+ "key (may be nil if no mapping exists), the second the list element to be mapped.",
+						+ "when value is nil. " // 
+						+ "The first lambda receives a list element as parameter and the index (starting at 0). "
+						+ "The second lambda receives three parameters: The first is the previous value contained in the dictionary for the given "
+						+ "key (may be nil if no mapping exists), the second the list element to be mapped, the third the index (starting at 0).",
 				"key-lambda", "value-lambda", "list") {
 
 			@Override
@@ -261,15 +262,16 @@ public class Loop implements ScopePopulator {
 
 		scope.define(new AbstractFunction("map-to-sorted-dict",
 				"Apply a lambda to all list elements and return a sorted dictionary. The dictionary is build from the results "
-						+ "of the lambdas. The first must return the key as string, the second a value (any type). "
-						+ "When the key is an empty string, the second lambda is not called and nothing is put to the dictionary. "
-						+ "Adding to the dictionary is done by put, so mappings may overwrite each other or even remove mappings, "
-						+ "when value is nil. " + "The first lambda receives a list element as parameter. "
-						+ "The second lambda receives two parameters: The first is the previous value contained in the dictionary for the given "
-						+ "The third lambda controls the sorting of the dictionary. It takes two arguments (left, right) and must return a number: "
-						+ "< 0 if left < right, 0 for left = right and > 0 for left > right. \n"
-						+ "key (may be nil if no mapping exists), the second the list element to be mapped. When the thirs lambda is nil, "
-						+ "natural string ordering is used. ",
+				+ "of the lambdas. The first must return the key as string, the second a value (any type). "
+				+ "When the key is nil, the second lambda is not called and nothing is put to the dictionary. "
+				+ "Adding to the dictionary is done by put, so mappings may overwrite each other or even remove mappings, "
+				+ "when value is nil. " //
+				+ "The first lambda receives a list element as parameter and the index (starting from 0). "
+				+ "The second lambda receives three parameters: The first is the previous value contained in the dictionary for the given "
+				+ "key (may be nil if no mapping exists), the second the list element to be mapped, the third the index (starting from 0). "
+				+ "The third lambda controls the sorting of the dictionary. It takes two arguments (left, right) and must return a number: "
+				+ "< 0 if left < right, 0 for left = right and > 0 for left > right. When the thirs lambda is nil, natural string ordering "
+				+ "is used.",
 				"key-lambda", "value-lambda", "sort-lambda", "list") {
 
 			@Override
@@ -445,14 +447,17 @@ public class Loop implements ScopePopulator {
 
 	private static void fillDictionaryWithMappedList(Scope scope, Function keyLambda, Function valueLambda, FplList list,
 			FplDictionary dict) {
+		int i = 0;
 		for (FplValue value : list) {
-			FplValue key = keyLambda.call(scope, FplLazy.makeEvaluated(scope, value));
+			FplInteger index = FplInteger.valueOf(i);
+			FplValue key = keyLambda.call(scope, FplLazy.makeEvaluated(scope, value), index);
 			if (key != null) {
 				FplValue old = dict.get(key);
 				FplValue valueLambdaResult = valueLambda.call(scope, //
-						FplLazy.makeEvaluated(scope, old), FplLazy.makeEvaluated(scope, value));
+						FplLazy.makeEvaluated(scope, old), FplLazy.makeEvaluated(scope, value), index);
 				dict.put(key, valueLambdaResult);
 			}
+			i++;
 		}
 	}
 }

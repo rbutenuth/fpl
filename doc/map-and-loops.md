@@ -141,7 +141,7 @@ of the lambda for the call of the first list element is ignored.
 ### group-by
 Convert a list in a dictionary of lists. The key is the result of the lambda, converted to a string.
 The lambda is called with two arguments: A counter (starting at 0) and a list element. When the 
-result of the lambda is nil or an empty string, the corresponding element is ignored.
+result of the lambda is nil, the corresponding element is ignored.
 
 ```
 (group-by lambda list)
@@ -150,12 +150,13 @@ result of the lambda is nil or an empty string, the corresponding element is ign
 ### map-to-dict
 Apply a lambda to all list elements and return a dictionary. The dictionary is build from the results
 of the lambdas. The first must return the key as string, the second a value (any type). 
-When the key is an empty string, the second lambda is not called and nothing is put to the dictionary.
+When the key is nil, the second lambda is not called and nothing is put to the dictionary.
 Adding to the dictionary is done by put, so mappings may overwrite each other or even remove mappings,
 when value is nil.
-The first lambda receives a list element as parameter.
-The second lambda receives two parameters: The first is the previous value contained in the dictionary for the given
-key (may be nil if no mapping exists), the second the list element to be mapped.
+
+The first lambda receives a list element as parameter and the index (starting from 0).
+The second lambda receives three parameters: The first is the previous value contained in the dictionary for the given
+key (may be nil if no mapping exists), the second the list element to be mapped. The third the index (starting from 0).
 ```
 (map-to-dict key-lambda value-lambda some-list)
 ```
@@ -163,12 +164,12 @@ key (may be nil if no mapping exists), the second the list element to be mapped.
 ### map-to-sorted-dict
 Apply a lambda to all list elements and return a sorted dictionary. The dictionary is build from the results
 of the lambdas. The first must return the key as string, the second a value (any type). 
-When the key is an empty string, the second lambda is not called and nothing is put to the dictionary.
+When the key is nil, the second lambda is not called and nothing is put to the dictionary.
 Adding to the dictionary is done by put, so mappings may overwrite each other or even remove mappings,
 when value is nil.
-The first lambda receives a list element as parameter.
-The second lambda receives two parameters: The first is the previous value contained in the dictionary for the given
-key (may be nil if no mapping exists), the second the list element to be mapped.
+The first lambda receives a list element as parameter and the index (starting from 0).
+The second lambda receives three parameters: The first is the previous value contained in the dictionary for the given
+key (may be nil if no mapping exists), the second the list element to be mapped, the third the index (starting from 0).
 The third lambda controls the sorting of the dictionary. It takes two arguments (left, right) and must return a number:
 < 0 if left < right, 0 for left = right and > 0 for left > right. When the thirs lambda is nil, natural string ordering
 is used. 
