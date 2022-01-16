@@ -179,6 +179,6 @@ The third lambda controls the sorting of the dictionary. It takes two arguments 
 < 0 if left < right, 0 for left = right and > 0 for left > right. When the thirs lambda is nil, natural string ordering
 is used. 
 ```
-(map-to-sorted dict key-lambda value-lambda sort-lambda some-list)
+(map-to-sorted key-lambda value-lambda sort-lambda some-list)
 ```
 
