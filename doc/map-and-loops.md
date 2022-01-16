@@ -77,7 +77,7 @@ Result is a list of the applied lambda for all the numbers in the sequence.
 
 ### reduce-sequence
 Reduce a sequence of numbers from `start` (inclusive) to `end` (exclusive) to one value. The lambda must accept two parameters: 
-`accumulator` and `value`. It must return the "reduction" of accumulator and value.
+`accumulator` and `index` (starting at 0). It must return the "reduction" of accumulator and value.
 ```
 (reduce-sequence lambda accumulator start end)
 ```
@@ -85,43 +85,48 @@ Reduce a sequence of numbers from `start` (inclusive) to `end` (exclusive) to on
 ## Loops over lists
 
 ### for-each
-Apply a lambda to all list elements, return last result
+Apply a lambda to all list elements, return last result.
+The lambda receives two parameters: List element, index (starting from 0).
 ```
 (for-each lambda some-list)
 ```
 
 ### map
 Apply a lambda to all list elements and return list with applied elements
+The lambda receives two parameters: List element, index (starting from 0).
 ```
 (map lambda some-list)
 ```
 
 ### flat-map
 Apply a lambda to all list elements, the result of the lambda must be a list. Return list with applied elements of all returned lists.
+The lambda receives two parameters: List element, index (starting from 0).
+
 ```
 (flat-map lambda some-list)
 ```
 
 ### filter
 Filter a list elements. Return a list containing all elements from input list for which `lambda` returned true.
+The lambda receives two parameters: List element, index (starting from 0).
 ```
 (filter lambda some-list)
 ```
 
 ### reduce
-Reduce a list to one value. The lambda must accept two parameters: 
-`accumulator` and `value`. It must return the \"reduction\" of accumulator and value.
+Reduce a list to one value. The lambda must accept three parameters: 
+`accumulator`, `value`, and `index` (starting at 0). It must return the \"reduction\" of accumulator and value.
 ```
 (reduce lambda accumulator some-list)
 ```
 Example:
 ```
-(reduce (lambda (acc value) (+ acc value)) 0 '(1 2 3 4 5 6))
+(reduce (lambda (acc value index) (+ acc value)) 0 '(1 2 3 4 5 6))
 ```
 Computes the sum of the number 1 to 6.
 
 ### combine
-Take two lists as input, call a lambda with two parameters (elemenbt from first and second list)
+Take two lists as input, call a lambda with three parameters (element from first, second list, index)
 and return a list with the result of this lambda. In case the lists have different
 length, stop when the shorter list ends.
 
@@ -131,7 +136,7 @@ length, stop when the shorter list ends.
 
 ### split-by
 Split a list into a list of several lists. Each time the lambda returns true, a new list is started.
-The lambda is called with two arguments: A counter (starting at 0) and a list element. The result
+The lambda is called with two arguments: A list element and a counter (starting at 0). The result
 of the lambda for the call of the first list element is ignored. 
 
 ```
@@ -140,7 +145,7 @@ of the lambda for the call of the first list element is ignored.
 
 ### group-by
 Convert a list in a dictionary of lists. The key is the result of the lambda, converted to a string.
-The lambda is called with two arguments: A counter (starting at 0) and a list element. When the 
+The lambda is called with two arguments: A lit element and a counter (starting at 0). When the 
 result of the lambda is nil, the corresponding element is ignored.
 
 ```

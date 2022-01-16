@@ -95,7 +95,7 @@ public class ControlStructuresTest extends AbstractFplTest {
 				+ "	(if-else (le n 2)\n" //
 				+ "		1\n" //
 				+ "		(reduce \n" //
-				+ "			(lambda (acc value) (+ acc value))\n" //
+				+ "			(lambda (acc value i) (+ acc value))\n" //
 				+ "			0\n" //
 				+ "			(list (fibonacci (- n 1)) (fibonacci (- n 2)))\n" //
 				+ "		)\n" //

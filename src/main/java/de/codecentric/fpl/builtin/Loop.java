@@ -49,8 +49,9 @@ public class Loop implements ScopePopulator {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplValue result = null;
 				Iterator<FplValue> iter = list.iterator();
+				int i = 0;
 				while (iter.hasNext()) {
-					result = function.call(scope, FplLazy.makeEvaluated(scope, iter.next()));
+					result = function.call(scope, FplLazy.makeEvaluated(scope, iter.next()), FplInteger.valueOf(i++));
 				}
 				return result;
 			}
@@ -138,7 +139,7 @@ public class Loop implements ScopePopulator {
 		scope.define(new AbstractFunction("reduce-sequence",
 				"Reduce a sequence of numbers from `start` (inclusive) to `end` (exclusive) to one value. "
 				+ "The lambda must accept two parameters: "
-				+ "`accumulator` and `value`. It must return the \"reduction\" of accumulator and value.\n"
+				+ "`accumulator`, `index` (starting at 0). It must return the \"reduction\" of accumulator and value.\n"
 				+ "",
 				"lambda", "acc", "start", "end") {
 			@Override
@@ -149,7 +150,7 @@ public class Loop implements ScopePopulator {
 				long end = evaluateToLong(scope, parameters[3]);
 				long delta = end >= start ? 1 : -1;
 				while (start != end) {
-					accumulator = function.call(scope, new FplValue[] { FplLazy.makeEvaluated(scope, accumulator), FplInteger.valueOf(start) });
+					accumulator = function.call(scope, FplLazy.makeEvaluated(scope, accumulator), FplInteger.valueOf(start));
 					start += delta;
 				}
 				return accumulator;
@@ -157,17 +158,19 @@ public class Loop implements ScopePopulator {
 		});
 
 		scope.define(new AbstractFunction("map",
-				"Apply a lambda to all list elements and return list with applied elements", "lambda", "list") {
+				"Apply a lambda to all list elements and return list with applied elements "
+				+ "The lambda receives two parameters: List element, index (starting from 0).", "lambda", "list") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplList list = evaluateToList(scope, parameters[1]);
 				return list.map(new java.util.function.Function<FplValue, FplValue>() {
-
+					int i = 0;
+					
 					@Override
 					public FplValue apply(FplValue value) {
-						return function.call(scope, FplLazy.makeEvaluated(scope, value));
+						return function.call(scope, FplLazy.makeEvaluated(scope, value), FplInteger.valueOf(i++));
 					}
 				});
 			}
@@ -223,10 +226,11 @@ public class Loop implements ScopePopulator {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplList list = evaluateToList(scope, parameters[1]);
 				FplList f = list.flatMap(new java.util.function.Function<FplValue, FplList>() {
-
+					int i = 0;
+					
 					@Override
 					public FplList apply(FplValue value) {
-						FplValue applied = function.call(scope, FplLazy.makeEvaluated(scope, value));
+						FplValue applied = function.call(scope, FplLazy.makeEvaluated(scope, value), FplInteger.valueOf(i++));
 						if (applied instanceof FplList) {
 							return (FplList) applied;
 						} else {
@@ -296,9 +300,11 @@ public class Loop implements ScopePopulator {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplValue accumulator = evaluateToAny(scope, parameters[1]);
 				FplList list = evaluateToList(scope, parameters[2]);
+				int i = 0;
 				for (FplValue value : list) {
 					accumulator = function.call(scope, FplLazy.makeEvaluated(scope, accumulator),
-							FplLazy.makeEvaluated(scope, value));
+							FplLazy.makeEvaluated(scope, value),
+							FplInteger.valueOf(i++));
 				}
 				return accumulator;
 			}
@@ -311,20 +317,20 @@ public class Loop implements ScopePopulator {
 				FplList list = evaluateToList(scope, parameters[1]);
 				Iterator<FplValue> iter = list.iterator();
 				List<FplValue> results = new ArrayList<>();
+				int i = 0;
 				while (iter.hasNext()) {
 					FplValue value = iter.next();
-					if (isTrue(function.call(scope, FplLazy.makeEvaluated(scope, value)))) {
+					if (isTrue(function.call(scope, FplLazy.makeEvaluated(scope, value), FplInteger.valueOf(i++)))) {
 						results.add(value);
 					}
 				}
-				return FplList.fromValues(results); // TODO: Change to
-													// fromIterator to avoid
-													// copying
+				// TODO: Change to fromIterator() for better performance (avoid copy).
+				return FplList.fromValues(results);
 			}
 		});
 
 		scope.define(new AbstractFunction("combine",
-				"Take two lists as input, call a lambda with two parameters (elemenbt from first and second list) "
+				"Take two lists as input, call a lambda with two parameters (element from first, second list, index) "
 				+ "and return a list with the result of this lambda. In case the lists have different "
 				+ "length, stop when the shorter list ends.",
 				"lambda", "list-1", "list-2") {
@@ -338,7 +344,7 @@ public class Loop implements ScopePopulator {
 				return FplList.fromIterator(new Iterator<FplValue>() {
 					Iterator<FplValue> iterator1 = list1.iterator();
 					Iterator<FplValue> iterator2 = list2.iterator();
-					int i;
+					int i = 0;
 
 					@Override
 					public boolean hasNext() {
@@ -349,8 +355,8 @@ public class Loop implements ScopePopulator {
 					public FplValue next() {
 						FplValue value1 = iterator1.next();
 						FplValue value2 = iterator2.next();
-						i++;
-						return function.call(scope, FplLazy.makeEvaluated(scope, value1), FplLazy.makeEvaluated(scope, value2));
+						FplInteger index = FplInteger.valueOf(i++);
+						return function.call(scope, FplLazy.makeEvaluated(scope, value1), FplLazy.makeEvaluated(scope, value2), index);
 					}
 				}, size);
 			}
@@ -358,7 +364,7 @@ public class Loop implements ScopePopulator {
 
 		scope.define(new AbstractFunction("split-by",
 				"Split a list into a list of several lists. Each time the lambda returns true, a new list is started. "
-				+ "The lambda is called with two arguments: A counter (starting at 0) and a list element. The result "
+				+ "The lambda is called with two arguments: A list element and a counter (starting at 0). The result "
 				+ "of the lambda for the call of the first list element is ignored.",
 				"lambda", "list") {
 
@@ -377,7 +383,7 @@ public class Loop implements ScopePopulator {
 							nextElement = iterator.next();
 							nextElementValid = true;
 							// The result for the first element is not needed, but we still ahve to call the lambda.
-							function.call(scope, FplInteger.valueOf(counter++), FplLazy.makeEvaluated(scope, nextElement));
+							function.call(scope, FplLazy.makeEvaluated(scope, nextElement), FplInteger.valueOf(counter++));
 						} else {
 							nextElementValid = false;
 						}
@@ -401,7 +407,7 @@ public class Loop implements ScopePopulator {
 							if (iterator.hasNext()) {
 								nextElement = iterator.next();
 								nextElementValid = true;
-								endReached = isTrue(function.call(scope, FplInteger.valueOf(counter++), FplLazy.makeEvaluated(scope, nextElement)));
+								endReached = isTrue(function.call(scope, FplLazy.makeEvaluated(scope, nextElement), FplInteger.valueOf(counter++)));
 							} else {
 								nextElement = null;
 								nextElementValid = false;
@@ -417,7 +423,7 @@ public class Loop implements ScopePopulator {
 
 		scope.define(new AbstractFunction("group-by",
 				"Convert a list in a dictionary of lists. The key is the result of the lambda."
-				+ "The lambda is called with two arguments: A counter (starting at 0) and a list element. When the "
+				+ "The lambda is called with two arguments: A list element and a counter (starting at 0). When the "
 				+ "result of the lambda is nil, the corresponding element is ignored.",
 				"lambda", "list") {
 
@@ -428,7 +434,7 @@ public class Loop implements ScopePopulator {
 				FplDictionary dict = new FplMapDictionary();
 				int i = 0;
 				for (FplValue value : list) {
-					FplValue key = function.call(scope, FplInteger.valueOf(i), FplLazy.makeEvaluated(scope, value));
+					FplValue key = function.call(scope, FplLazy.makeEvaluated(scope, value), FplInteger.valueOf(i));
 					if (key != null) {
 						FplList old = (FplList)dict.get(key);
 						if (old == null) {

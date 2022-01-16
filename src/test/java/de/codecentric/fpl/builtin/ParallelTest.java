@@ -40,7 +40,7 @@ public class ParallelTest extends AbstractFplTest {
 				+ "	(if-else (le n 2)\n" //
 				+ "		1\n" //
 				+ "		(reduce \n" //
-				+ "			(lambda (acc value) (+ acc value))\n" //
+				+ "			(lambda (acc value i) (+ acc value))\n" //
 				+ "			0\n" + "			(parallel (par-fib (- n 1)) (par-fib (- n 2)))\n" //
 				+ "		)\n" //
 				+ "	)\n" //

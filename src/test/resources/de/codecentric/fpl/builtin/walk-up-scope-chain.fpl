@@ -11,7 +11,7 @@
 )
 
 (def-function bmi-to-us-description (bmi)
-	(get-element (last (filter (lambda (range) (ge bmi (first range)) ) us-bmi-ranges)) 1)
+	(get-element (last (filter (lambda (range i) (ge bmi (first range)) ) us-bmi-ranges)) 1)
 )
 
 (bmi-to-us-description 22)
