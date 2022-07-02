@@ -124,6 +124,19 @@ public class ScannerTest {
 			Token t = sc.next();
 			assertEquals(Id.SYMBOL, t.getId());
 			assertEquals("-a", t.toString());
+			assertEquals(1, t.getPosition().getLine());
+			t = sc.next();
+			assertEquals(Id.EOF, t.getId());
+		}
+	}
+
+	@Test
+	public void firstLineWithHash() throws Exception {
+		try (Scanner sc = new Scanner("test", new StringReader("#!/bin/fpl" + NL + "test"))) {
+			Token t = sc.next();
+			assertEquals(Id.SYMBOL, t.getId());
+			assertEquals("test", t.toString());
+			assertEquals(2, t.getPosition().getLine());
 			t = sc.next();
 			assertEquals(Id.EOF, t.getId());
 		}

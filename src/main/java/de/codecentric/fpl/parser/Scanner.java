@@ -41,6 +41,11 @@ public class Scanner implements Closeable {
 		this.line = line;
 		column = 0;
 		readChar();
+		// In first line of code, # is a comment character, allowing "#!/usr/bin/fpl" 
+		// as first line for starting an interpreter on Unix like operating systems.
+		if (ch == '#') {
+			skipRestOfLine();
+		}
 		comment = new StringBuilder();
 	}
 
@@ -99,13 +104,8 @@ public class Scanner implements Closeable {
 				if (comment.length() > 0) {
 					comment.append(NL);
 				}
-				StringBuilder commentLine = new StringBuilder();
 				readChar(); // skip ';'
-				while (ch != '\n' && ch != '\r' && ch != -1) {
-					commentLine.append((char) ch);
-					readChar();
-				}
-				comment.append(commentLine.toString().trim());
+				comment.append(skipRestOfLine().trim());
 			} else {
 				while (Character.isWhitespace(ch)) {
 					readChar();
@@ -114,6 +114,15 @@ public class Scanner implements Closeable {
 		}
 	}
 
+	private String skipRestOfLine() throws IOException {
+		StringBuilder commentLine = new StringBuilder();
+		while (ch != '\n' && ch != '\r' && ch != -1) {
+			commentLine.append((char) ch);
+			readChar();
+		}
+		return commentLine.toString();
+	}
+	
 	private Token number(Position position) throws IOException, ParseException {
 		boolean negative = false;
 		if (ch == '-') {

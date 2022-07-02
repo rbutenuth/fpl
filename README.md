@@ -46,6 +46,10 @@ The character `'` in front of a list blocks the evaluation of the list. This is 
 Comments start with `;` and end with the next newline. One or several comment lines before a symbol are collected and associated
 with that symbol. This can be used like Javadoc.
 
+A special case is `#`: It is only start of a comment, when it is the first character of the source code, allowing
+to start fpl as an interpreter on Unix like systems: Write #!/usr/bin/fpl as first line and install fpl in /usr/bin/fpl.
+Then you can start fpl scripts like shell scripts.
+
 ## Command Line Interpreter
 
 When you have build the jar file, you can interpreted one or more files by calling it from the command line, example:
