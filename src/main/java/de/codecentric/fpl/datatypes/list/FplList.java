@@ -1,6 +1,7 @@
 package de.codecentric.fpl.datatypes.list;
 
 import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToFunction;
+import static java.lang.Math.min;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.copyOf;
 import static java.util.Arrays.copyOfRange;
@@ -324,12 +325,14 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 	/**
 	 * @param position Position, starting with 0.
-	 * @param element New value at position.
+	 * @param element  New value at position.
 	 * @return Updated list.
 	 * @throws EvaluationException If list is empty or if <code>position</code> &lt;
 	 *                             0 or &gt;= {@link #size()}.
 	 */
 	public FplList set(int position, FplValue element) throws EvaluationException {
+		// General strategy is to copy all elements of a bucket, then - conditionally - overwrite
+		// overwrite the one "element" to replace. Costs one write operation, gains simplicity.
 		checkNotEmpty();
 		if (position < 0) {
 			throw new EvaluationException("position < 0");
@@ -343,12 +346,83 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				throw new EvaluationException("position >= size");
 			}
 		}
-		int inBucketIdx = position - count;
-		FplValue[][] newShape = shape.clone();
-		FplValue[] newBucket = shape[bucketIdx].clone();
-		newBucket[inBucketIdx] = element;
-		newShape[bucketIdx] = newBucket;
-		
+		FplValue[][] newShape;
+		int bucketSize = shape[bucketIdx].length;
+		if (bucketSize <= BASE_SIZE) {
+			// simple case: We hit a small bucket
+			newShape = shape.clone();
+			FplValue[] newBucket = shape[bucketIdx].clone();
+			newBucket[position - count] = element;
+			newShape[bucketIdx] = newBucket;
+		} else {
+			// we hit a large bucket, which has to be split
+			int s = size();
+			if (needsReshaping(shape.length + 1, s)) {
+				newShape = createEmptyShape(s);
+				int oldBucketIdx = 0;
+				int oldInBucketIdx = 0;
+				int newBucketIdx = 0;
+				int newInBucketIdx = 0;
+				count = 0;
+				boolean overwritten = false;
+				while (oldBucketIdx < shape.length) {
+					int oldCount = shape[oldBucketIdx].length - oldInBucketIdx;
+					int newCount = newShape[newBucketIdx].length - newInBucketIdx;
+					if (oldCount < newCount) {
+						arraycopy(shape[oldBucketIdx], oldInBucketIdx, newShape[newBucketIdx], newInBucketIdx, oldCount);
+						if (!overwritten && position - count < oldCount) {
+							newShape[newBucketIdx][newInBucketIdx + position - count] = element;
+							overwritten = true;
+						}
+						oldBucketIdx++;
+						oldInBucketIdx = 0;
+						newInBucketIdx += oldCount;
+						count += oldCount;
+					} else if (oldCount > newCount) {
+						arraycopy(shape[oldBucketIdx], oldInBucketIdx, newShape[newBucketIdx], newInBucketIdx, newCount);
+						if (!overwritten && position - count < newCount) {
+							newShape[newBucketIdx][newInBucketIdx + position - count] = element;
+							overwritten = true;
+						}
+						newBucketIdx++;
+						newInBucketIdx = 0;
+						oldInBucketIdx += newCount;
+						count += newCount;
+					} else { // oldCount == newCount
+						arraycopy(shape[oldBucketIdx], oldInBucketIdx, newShape[newBucketIdx], newInBucketIdx, oldCount);
+						if (!overwritten && position - count < newCount) {
+							newShape[newBucketIdx][newInBucketIdx + position - count] = element;
+							overwritten = true;
+						}
+						oldBucketIdx++;
+						oldInBucketIdx = 0;
+						newBucketIdx++;
+						newInBucketIdx = 0;
+						count += oldCount;
+					}
+				}
+			} else {
+				newShape = new FplValue[shape.length + 1][];
+				// copy buckets before split bucket
+				arraycopy(shape, 0, newShape, 0, bucketIdx);
+				
+				// split bucket (which has a length > BASE_SIZE)
+				int leftSize = bucketSize / 2;
+				int rightSize = bucketSize - leftSize;
+				newShape[bucketIdx] = copyOf(shape[bucketIdx], leftSize);
+				newShape[bucketIdx + 1] = new FplValue[rightSize];
+				arraycopy(shape[bucketIdx], leftSize, newShape[bucketIdx+1], 0, rightSize);
+				int inBucketIdx = position - count;
+				if (inBucketIdx < leftSize) {
+					newShape[bucketIdx][inBucketIdx] = element; 
+				} else {
+					newShape[bucketIdx + 1][inBucketIdx - leftSize] = element;
+				}
+				
+				// copy buckets behind split bucket
+				arraycopy(shape, bucketIdx + 1, newShape, bucketIdx + 2, shape.length - bucketIdx - 1);
+			}
+		}
 		return new FplList(newShape);
 	}
 
@@ -506,7 +580,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int idx = 0, inBucketIdx = 0, dstIdx = 0, inBucketDstIdx = 0;
 		// Copy entries from "left"
 		while (idx < left.length) {
-			int length = Math.min(left[idx].length - inBucketIdx, buckets[dstIdx].length - inBucketDstIdx);
+			int length = min(left[idx].length - inBucketIdx, buckets[dstIdx].length - inBucketDstIdx);
 			arraycopy(left[idx], inBucketIdx, buckets[dstIdx], inBucketDstIdx, length);
 			inBucketIdx += length;
 			if (inBucketIdx == left[idx].length) {
@@ -523,7 +597,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		idx = 0;
 		inBucketIdx = 0;
 		while (idx < right.length) {
-			int length = Math.min(right[idx].length - inBucketIdx, buckets[dstIdx].length - inBucketDstIdx);
+			int length = min(right[idx].length - inBucketIdx, buckets[dstIdx].length - inBucketDstIdx);
 			arraycopy(right[idx], inBucketIdx, buckets[dstIdx], inBucketDstIdx, length);
 			inBucketIdx += length;
 			if (inBucketIdx == right[idx].length) {
@@ -643,7 +717,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			int bucketDstIndex = 0;
 			int rest = bucket.length - inBucketFromIdx;
 			while (rest > bucketSize) {
-				int size = Math.min(bucketSize / 2, rest);
+				int size = min(bucketSize / 2, rest);
 				bucketsDst[bucketDstIndex] = copyOfRange(bucket, inBucketFromIdx, inBucketFromIdx + size);
 				bucketDstIndex++;
 				inBucketFromIdx += size;
@@ -662,7 +736,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			int bucketDstIndex = bucketsDst.length - 1;
 			int rest = inBucketToIdx;
 			while (rest > bucketSize) {
-				int size = Math.min(bucketSize / 2, rest);
+				int size = min(bucketSize / 2, rest);
 				bucketsDst[bucketDstIndex] = copyOfRange(bucket, inBucketToIdx - size, inBucketToIdx);
 				bucketDstIndex--;
 				inBucketToIdx -= size;
@@ -872,14 +946,14 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	public FplList flatMap(java.util.function.Function<FplValue, FplList> operator) {
-		
+
 		return FplList.fromIterator(new Iterator<FplValue>() {
 			Iterator<FplValue> listIter = iterator();
 			Iterator<FplValue> subListIter = null;
 
 			@Override
 			public boolean hasNext() {
-				while (subListIter == null|| !subListIter.hasNext()) {
+				while (subListIter == null || !subListIter.hasNext()) {
 					if (listIter.hasNext()) {
 						subListIter = operator.apply(listIter.next()).iterator();
 						if (subListIter.hasNext()) {
@@ -943,12 +1017,12 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			return evaluateToFunction(scope, function).call(scope, createParameterArray());
 		} catch (EvaluationException e) {
 			Position position = FplEngine.findPosition(function);
-			String method = (function instanceof Named) ? ((Named)function).getName() : "?";
+			String method = (function instanceof Named) ? ((Named) function).getName() : "?";
 			e.add(new StackTraceElement(AbstractFunction.FPL, method, position.getName(), position.getLine()));
 			throw e;
 		} catch (Throwable t) {
 			Position position = FplEngine.findPosition(function);
-			String method = (function instanceof Named) ? ((Named)function).getName() : "?";
+			String method = (function instanceof Named) ? ((Named) function).getName() : "?";
 			EvaluationException e = new EvaluationException(t.getMessage(), t);
 			e.add(new StackTraceElement(AbstractFunction.FPL, method, position.getName(), position.getLine()));
 			throw e;

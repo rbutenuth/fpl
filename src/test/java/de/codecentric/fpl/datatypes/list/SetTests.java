@@ -34,17 +34,66 @@ public class SetTests extends AbstractListTest {
 	}
 	
 	@Test
-	public void updateFirst() throws EvaluationException {
-		FplList list = create(0, 10);
+	public void updateFirstOneSmallBucket() throws EvaluationException {
+		FplList list = create(0, 8);
 		list = list.set(0, number);
-		checkUpdated(0, 10, list);
+		checkUpdated(0, 8, list);
 	}
 
 	@Test
-	public void updateLast() throws EvaluationException {
-		FplList list = create(0, 10);
-		list = list.set(9, number);
-		checkUpdated(9, 10, list);
+	public void updateFirstTwoBuckets() throws EvaluationException {
+		FplList list = create(0, 20, 10, 10);
+		list = list.set(0, number);
+		checkUpdated(0, 20, list);
+	}
+
+	@Test
+	public void updateSecondTwoBuckets() throws EvaluationException {
+		FplList list = create(0, 20, 10, 10);
+		list = list.set(1, number);
+		checkUpdated(1, 20, list);
+	}
+
+	@Test
+	public void updateFirstWithReshape() throws EvaluationException {
+		FplList list = create(0, 100, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+		list = list.set(0, number);
+		checkUpdated(0, 100, list);
+	}
+
+	@Test
+	public void updateFirstWithReshape2() throws EvaluationException {
+		FplList list = create(0, 100, 4, 15, 11, 10, 10, 10, 10, 10, 10, 10);
+		list = list.set(10, number);
+		checkUpdated(10, 100, list);
+	}
+
+	@Test
+	public void updateLastOneSmallBucket() throws EvaluationException {
+		FplList list = create(0, 8);
+		list = list.set(7, number);
+		checkUpdated(7, 8, list);
+	}
+
+	@Test
+	public void updateLastTwoBuckets() throws EvaluationException {
+		FplList list = create(0, 20, 10, 10);
+		list = list.set(19, number);
+		checkUpdated(19, 20, list);
+	}
+
+	@Test
+	public void updateSecondLastTwoBuckets() throws EvaluationException {
+		FplList list = create(0, 20, 10, 10);
+		list = list.set(18, number);
+		checkUpdated(18, 20, list);
+	}
+
+	@Test
+	public void updateLastWithReshape() throws EvaluationException {
+		FplList list = create(0, 100, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+		list = list.set(99, number);
+		checkUpdated(99, 100, list);
 	}
 
 	private void checkUpdated(int updatedIndex, int expectedSize, FplList list) {
