@@ -37,6 +37,12 @@ Return the element at position pos (counted from 0 ) from the given list.
 (get-element some-list pos)
 ```
 
+### set-element
+Replace the element at position pos (counted from 0 ) from the given list.
+```
+(set-element some-list pos element)
+```
+
 ### is-list
 Is expression a list?
 ```

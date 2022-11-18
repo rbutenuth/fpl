@@ -323,6 +323,36 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	/**
+	 * @param position Position, starting with 0.
+	 * @param element New value at position.
+	 * @return Updated list.
+	 * @throws EvaluationException If list is empty or if <code>position</code> &lt;
+	 *                             0 or &gt;= {@link #size()}.
+	 */
+	public FplList set(int position, FplValue element) throws EvaluationException {
+		checkNotEmpty();
+		if (position < 0) {
+			throw new EvaluationException("position < 0");
+		}
+		int bucketIdx = 0;
+		int count = 0;
+		while (count + shape[bucketIdx].length <= position) {
+			count += shape[bucketIdx].length;
+			bucketIdx++;
+			if (bucketIdx >= shape.length) {
+				throw new EvaluationException("position >= size");
+			}
+		}
+		int inBucketIdx = position - count;
+		FplValue[][] newShape = shape.clone();
+		FplValue[] newBucket = shape[bucketIdx].clone();
+		newBucket[inBucketIdx] = element;
+		newShape[bucketIdx] = newBucket;
+		
+		return new FplList(newShape);
+	}
+
+	/**
 	 * Add one value as new first element of the list. (The "cons" of Lisp)
 	 *
 	 * @param value Element to insert at front.

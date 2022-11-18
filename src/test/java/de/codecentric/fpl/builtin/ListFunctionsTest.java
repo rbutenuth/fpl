@@ -317,6 +317,15 @@ public class ListFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void setWithInt() throws Exception {
+		FplList list = (FplList) evaluate("set", "(set-element '(0 1 2 3 4) 2 -1)");
+		assertEquals(5, list.size());
+		assertEquals(FplInteger.valueOf(0), list.get(0));
+		assertEquals(FplInteger.valueOf(1), list.get(1));
+		assertEquals(FplInteger.valueOf(-1), list.get(2)); // updated
+	}
+
+	@Test
 	public void subList() throws Exception {
 		FplList list = (FplList) evaluate("get", "(sub-list '(0 1 2 3 4) 1 3)");
 		AbstractListTest.check(list, 1, 3);

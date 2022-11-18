@@ -158,6 +158,14 @@ public class ListFunctions implements ScopePopulator {
 			}
 		});
 
+		scope.define(new AbstractFunction("set-element",
+				"Replace the element at position pos (counted from 0 ) from the given list.", "list", "pos", "element") {
+			@Override
+			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+				return evaluateToList(scope, parameters[0]).set((int) evaluateToLong(scope, parameters[1]), evaluateToAny(scope, parameters[2]));
+			}
+		});
+
 		scope.define(new AbstractFunction("sub-list",
 				"Return a part from the given list, including start, excluding end (counted from 0).", "list", "start",
 				"end") {
