@@ -62,7 +62,7 @@ public class SetTests extends AbstractListTest {
 	}
 
 	@Test
-	public void updateFirstWithReshape2() throws EvaluationException {
+	public void updateTenthsWithReshape() throws EvaluationException {
 		FplList list = create(0, 100, 4, 15, 11, 10, 10, 10, 10, 10, 10, 10);
 		list = list.set(10, number);
 		checkUpdated(10, 100, list);
