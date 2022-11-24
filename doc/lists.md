@@ -43,6 +43,16 @@ Replace the element at position pos (counted from 0 ) from the given list.
 (set-element some-list pos element)
 ```
 
+### patch-elements
+Replace some elements from this `list` with elements of another list. The second list
+must not have the same number of elements as are removed from the original list.
+`from` is the index of the first replaced element, `new-elements` is the list
+with the new elements, `num-replaced` elements will be removed.
+
+```
+(patch-elements list from new-elements num-replaced)
+```
+
 ### is-list
 Is expression a list?
 ```

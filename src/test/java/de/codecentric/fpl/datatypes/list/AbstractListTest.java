@@ -36,6 +36,14 @@ public class AbstractListTest {
 		}
 	}
 	
+	public static void checkValues(FplList list, int... values) throws EvaluationException {
+		assertEquals(list.size(), values.length);
+		for (int i = 0; i < values.length; i++) {
+			FplInteger v = (FplInteger) list.get(i);
+			assertEquals(values[i], v.getValue());
+		}
+	}
+	
 	public static FplList create(int from, int to, int... bucketSizes) {
 		return FplList.fromValuesWithShape(createValues(from, to), bucketSizes);
 	}

@@ -418,6 +418,30 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	}
 
 	/**
+	 * Replace some elements from this list with elements of another list. The second list
+	 * must not have the same number of elements as are removed from the original list.
+	 *
+	 * @param from Index from where the replacement starts
+	 * @param newElements New elements to patch in the original list
+	 * @param numReplaced Number of elements to be removed
+	 * @return The patched list.
+	 */
+	public FplList patch(int from, FplList newElements, int numReplaced) throws EvaluationException {
+		if (from < 0) {
+			throw new EvaluationException("from < 0");
+		}
+		if (numReplaced < 0) {
+			throw new EvaluationException("numReplaced negative");
+		}
+		int oldSize = size();
+		if (from + numReplaced > oldSize) {
+			throw new EvaluationException("from + numReplaced > size");
+		}
+		// TODO: optimize!
+		return subList(0, from).append(newElements).append(subList(from + numReplaced, size()));
+	}
+
+	/**
 	 * Add one value as new first element of the list. (The "cons" of Lisp)
 	 *
 	 * @param value Element to insert at front.
