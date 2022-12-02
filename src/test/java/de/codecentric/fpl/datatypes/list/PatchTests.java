@@ -1,5 +1,6 @@
 package de.codecentric.fpl.datatypes.list;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
@@ -31,25 +32,54 @@ public class PatchTests extends AbstractListTest {
 
 	@Test
 	public void patchAll() {
-		FplList result = create(0, 5).patch(0, create(6, 10), 5);
+		FplList original = create(0, 5);
+		FplList patch = create(6, 10);
+		FplList result = original.patch(0, patch, 5);
 		check(result, 6, 10);
+		checkPatched(original, result, 0, patch, 5);
 	}
 	
 	@Test
 	public void patchAtBeginning() {
-		FplList result = create(0, 5).patch(0, create(6, 9), 2);
+		FplList original = create(0, 5);
+		FplList patch = create(6, 9);
+		FplList result = original.patch(0, patch, 2);
 		checkValues(result, 6, 7, 8, 2, 3, 4);
+		checkPatched(original, result, 0, patch, 2);
 	}
 	
 	@Test
 	public void patchAtEnd() {
-		FplList result = create(0, 5).patch(3, create(6, 9), 2);
+		FplList original = create(0, 5);
+		FplList patch = create(6, 9);
+		FplList result = original.patch(3, patch, 2);
 		checkValues(result, 0, 1, 2, 6, 7, 8);
+		checkPatched(original, result, 3, patch, 2);
 	}
 	
 	@Test
 	public void patchInTheMiddle() {
-		FplList result = create(0, 6).patch(3, create(6, 8), 2);
+		FplList original = create(0, 6);
+		FplList patch = create(6, 8);
+		FplList result = original.patch(3, patch, 2);
 		checkValues(result, 0, 1, 2, 6, 7, 5);
+		checkPatched(original, result, 3, patch, 2);
+	}
+	
+	private void checkPatched(FplList original, FplList result, int from, FplList patch, int numReplaced) {
+		// check original is still unmodified (we assume it from 0..size)
+		check(original, 0, original.size());
+		int patchSize = patch.size();
+		int resultSize = original.size() + patchSize - numReplaced;
+		assertEquals(resultSize, result.size());
+		for (int i = 0; i < resultSize; i++) {
+			if (i < from) {
+				assertEquals(original.get(i), result.get(i), "position: " + i);
+			} else if (i < from + patchSize) {
+				assertEquals(patch.get(i - from), result.get(i), "position: " + i);
+			} else {
+				assertEquals(original.get(i + numReplaced - patchSize), result.get(i), "position: " + i);
+			}
+		}
 	}
 }
