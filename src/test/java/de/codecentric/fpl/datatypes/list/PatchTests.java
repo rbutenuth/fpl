@@ -31,6 +31,14 @@ public class PatchTests extends AbstractListTest {
 	}
 
 	@Test
+	public void patchNothing() {
+		FplList original = create(0, 6);
+		FplList patch = FplList.EMPTY_LIST;
+		FplList result = original.patch(3, patch, 0);
+		checkPatched(original, result, 3, patch, 0);
+	}
+	
+	@Test
 	public void patchAll() {
 		FplList original = create(0, 5);
 		FplList patch = create(6, 10);

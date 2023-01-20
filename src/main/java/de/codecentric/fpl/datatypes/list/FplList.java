@@ -1,6 +1,7 @@
 package de.codecentric.fpl.datatypes.list;
 
 import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToFunction;
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.copyOf;
@@ -422,23 +423,103 @@ public class FplList implements FplValue, Iterable<FplValue> {
 	 * must not have the same number of elements as are removed from the original list.
 	 *
 	 * @param from Index from where the replacement starts
-	 * @param newElements New elements to patch in the original list
+	 * @param patch New elements to patch in the original list
 	 * @param numReplaced Number of elements to be removed
 	 * @return The patched list.
 	 */
-	public FplList patch(int from, FplList newElements, int numReplaced) throws EvaluationException {
+	public FplList patch(int from, FplList patch, int numReplaced) throws EvaluationException {
+		// checks and easy cases, nothing to copy
 		if (from < 0) {
 			throw new EvaluationException("from < 0");
 		}
 		if (numReplaced < 0) {
 			throw new EvaluationException("numReplaced negative");
 		}
+		if (patch.isEmpty() && numReplaced == 0) {
+			return this;
+		}
 		int oldSize = size();
 		if (from + numReplaced > oldSize) {
 			throw new EvaluationException("from + numReplaced > size");
 		}
-		// TODO: optimize!
-		return subList(0, from).append(newElements).append(subList(from + numReplaced, size()));
+		if (oldSize == 0) {
+			return patch;
+		}
+		
+		// copy some buckets or reshape, let's compute the cut points in the original list. 
+		// Then we have "head" (left part from original list), "patch", and "tail"
+		// (right part from original list).
+		
+		int fromBucketIdx = 0;
+		int count = 0;
+		while (count + shape[fromBucketIdx].length <= from) {
+			count += shape[fromBucketIdx].length;
+			fromBucketIdx++;
+		}
+		int fromInBucketIdx = from - count;
+		int headSize = count;
+		int tailStart = from + numReplaced;
+		int tailSize = oldSize - tailStart;
+
+		int tailBucketIdx = 0;
+		while (count + shape[tailBucketIdx].length < tailStart) {
+			count += shape[tailBucketIdx].length;
+			tailBucketIdx++;
+		}
+		int tailInBucketIdx = tailStart - count;
+		
+		int resultNumBuckets = fromBucketIdx + 2; // buckets for head/left (last partial)
+		int countLastLeft;
+		// Let's see how much we can squeeze into the bucket starting with the last from the head/left
+		if (fromInBucketIdx == 0) {
+			// nothing, we just take the last one
+			resultNumBuckets++;
+			countLastLeft = 0; // and we start with an empty bucket
+		} else {
+			countLastLeft = shape[fromBucketIdx].length - fromInBucketIdx;
+		}
+		int patchIdx;
+		// When we start with a fresh bucket, we can use it always for the first bucket of the patch
+		if (countLastLeft == 0) {
+			patchIdx = 1;
+			countLastLeft += patch.shape[0].length;
+		} else {
+			patchIdx = 0;
+		}
+		while (patchIdx < patch.shape.length && countLastLeft + patch.shape[patchIdx].length < 2 * BASE_SIZE) {
+			countLastLeft += patch.shape[patchIdx].length;
+			patchIdx++;
+		}
+		// If bucket is full, switch to next one and clear number in bucket
+		if (countLastLeft + patch.shape[patchIdx].length >= 2 * BASE_SIZE) {
+			countLastLeft = 0;
+			resultNumBuckets++;
+		}
+		// All buckets from patch except the last one
+		resultNumBuckets += max(patch.shape[0].length - patchIdx - 1, 0);
+		
+		// When we open a new bucket, last from patch fits always, otherwise check it buckets does not grow too big
+		if (countLastLeft == 0 || countLastLeft + patch.shape[patch.shape.length - 1].length < 2 * BASE_SIZE) {
+			countLastLeft += countLastLeft + patch.shape[patch.shape.length - 1].length;
+		} else {
+			countLastLeft = 0;
+			resultNumBuckets++;
+		}
+		// Check if we can merge the first bucket from tail/right into the open bucket
+		if (countLastLeft == 0 || shape[tailBucketIdx].length < 2 * BASE_SIZE) {
+			
+		}
+		
+		int patchSize = patch.size();
+		int resultSize = oldSize + patchSize - numReplaced;
+
+		if (needsReshaping(resultNumBuckets, resultSize)) {
+			return subList(0, from).append(patch).append(subList(from + numReplaced, size()));
+		} else {
+			return subList(0, from).append(patch).append(subList(from + numReplaced, size()));
+		}
+			
+		//return new FplList(newShape);
 	}
 
 	/**
