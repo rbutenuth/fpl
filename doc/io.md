@@ -78,6 +78,7 @@ The callback handler functions are called with the following parameters:
 * headers Request headers as map (header names converted to lower case)
 * params Request parameters as map
 * body Request body as string. May be `nil`
+
 The function must return a list with three elements:
 * HTTP status code
 * map with response headers
