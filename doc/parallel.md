@@ -19,10 +19,12 @@ This can be used to implement fork-join algorithms, e.g. to compute Fibonacci nu
 (def-function par-fib (n)
 	(if-else (le n 2)
 		1
-		(reduce 
-			(lambda (acc value) (+ acc value)) 
-			0 
-			(parallel (par-fib (- n 1)) (par-fib (- n 2)))
+		(sequential
+            		(match-put 
+                		(a b)  
+                		(parallel (par-fib (- n 1)) (par-fib (- n 2)))
+            		)
+			(+ a b)
 		)
 	)
 )
@@ -52,7 +54,7 @@ function will wait for the result of the code running in parallel.
 ```
 Example:
 ```
-(put future (create-future ((java-class "java.lang.Thread") sleep 5000)))
+(put future (create-future ((java-class "java.lang.Thread") "sleep" 5000)))
 (future)
 ```
 Creates a future which will wait for 5 seconds, then wait until it completes. Between that
