@@ -69,8 +69,8 @@ Example for `handlers`:
 	("POST" "/other-path/" other-function)
 ```
 The `authenticator` must be `nil` or a function. The function receives two parameters:
-# user
-# password
+* user
+* password
 It must return `true` when the user is valid.
 
 The callback handler functions are called with the following parameters:
@@ -79,6 +79,6 @@ The callback handler functions are called with the following parameters:
 * params Request parameters as map
 * body Request body as string. May be `nil`
 The function must return a list with three elements:
-# HTTP status code
-# map with response headers
-# Body as string, may be `nil`
+* HTTP status code
+* map with response headers
+* Body as string, may be `nil`
