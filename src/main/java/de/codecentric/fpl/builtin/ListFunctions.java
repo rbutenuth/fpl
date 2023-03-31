@@ -166,21 +166,21 @@ public class ListFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("replace-elements",
-				"Replace some elements from this list with elements of another list. The second list "
-				+ "must not have the same number of elements as are removed from the original list. "
-				+ "from is the index of the first replaced element, `new-elements` is the list "
-				+ "with the new elements, `num-replaced` elements will be removed.",
-				"list", "from", "new-elements", "num-replaced") {
-			@Override
-			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				FplList list = evaluateToList(scope, parameters[0]);
-				int from = (int)evaluateToLong(scope, parameters[1]);
-				FplList newElements = evaluateToList(scope, parameters[2]);
-				int numReplaced = (int)evaluateToLong(scope, parameters[3]);
-				return list.patch(from, newElements, numReplaced);
-			}
-		});
+//		scope.define(new AbstractFunction("replace-elements",
+//				"Replace some elements from this list with elements of another list. The second list "
+//				+ "must not have the same number of elements as are removed from the original list. "
+//				+ "from is the index of the first replaced element, `new-elements` is the list "
+//				+ "with the new elements, `num-replaced` elements will be removed.",
+//				"list", "from", "new-elements", "num-replaced") {
+//			@Override
+//			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+//				FplList list = evaluateToList(scope, parameters[0]);
+//				int from = (int)evaluateToLong(scope, parameters[1]);
+//				FplList newElements = evaluateToList(scope, parameters[2]);
+//				int numReplaced = (int)evaluateToLong(scope, parameters[3]);
+//				return list.patch(from, newElements, numReplaced);
+//			}
+//		});
 
 		scope.define(new AbstractFunction("sub-list",
 				"Return a part from the given list, including start, excluding end (counted from 0).", "list", "start",

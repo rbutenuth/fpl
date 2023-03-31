@@ -25,6 +25,7 @@ import de.codecentric.fpl.datatypes.AbstractFunction;
 import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
+import de.codecentric.fpl.datatypes.FplMapDictionary;
 import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
@@ -486,9 +487,9 @@ public class StringFunctions implements ScopePopulator {
 			}
 
 			private FplValue deserializeMap(Map<String, Any> map) {
-				FplObject obj = new FplObject("dict");
+				FplMapDictionary obj = new FplMapDictionary();
 				for (Map.Entry<String, Any> entry : map.entrySet()) {
-					obj.put(entry.getKey(), deserialize(entry.getValue()));
+					obj.define(FplString.make((entry.getKey())), deserialize(entry.getValue()));
 				}
 				return obj;
 			}

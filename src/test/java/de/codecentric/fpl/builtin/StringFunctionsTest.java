@@ -16,6 +16,7 @@ import de.codecentric.fpl.AbstractFplTest;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.datatypes.AbstractFunction;
+import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplObject;
@@ -436,13 +437,13 @@ public class StringFunctionsTest extends AbstractFplTest {
 	
 	@Test
 	public void parseJsonObject() throws Exception {
-		FplObject obj = (FplObject)evaluate("parse-json", "(parse-json \"{\\\"key\\\": 1, \\\"another\\\": [0]}\")");
+		FplDictionary obj = (FplDictionary)evaluate("parse-json", "(parse-json \"{\\\"key\\\": 1, \\\"another\\\": [0]}\")");
 		int count = 0;
-		for (Iterator<Entry<String, FplValue>> iterator = obj.iterator(); iterator.hasNext();) {
-			Entry<String, FplValue> entry = iterator.next();
-			if (entry.getKey().equals("key")) {
+		for (Iterator<Entry<FplValue, FplValue>> iterator = obj.iterator(); iterator.hasNext();) {
+			Entry<FplValue, FplValue> entry = iterator.next();
+			if (entry.getKey().equals(FplString.make("key"))) {
 				assertEquals(1, ((FplInteger)entry.getValue()).getValue());
-			} else if (entry.getKey().equals("another")) {
+			} else if (entry.getKey().equals(FplString.make("another"))) {
 				assertTrue(entry.getValue() instanceof FplList);
 			} else {
 				fail("unknown key: " + entry.getKey());
@@ -454,11 +455,11 @@ public class StringFunctionsTest extends AbstractFplTest {
 	
 	@Test
 	public void parseJsonObjectNilKey() throws Exception {
-		FplObject obj = (FplObject)evaluate("parse-json", "(parse-json \"{\\\"nil\\\": 1}\")");
+		FplDictionary obj = (FplDictionary)evaluate("parse-json", "(parse-json \"{\\\"nil\\\": 1}\")");
 		int count = 0;
-		for (Iterator<Entry<String, FplValue>> iterator = obj.iterator(); iterator.hasNext();) {
-			Entry<String, FplValue> entry = iterator.next();
-			if (entry.getKey().equals("nil")) {
+		for (Iterator<Entry<FplValue, FplValue>> iterator = obj.iterator(); iterator.hasNext();) {
+			Entry<FplValue, FplValue> entry = iterator.next();
+			if (entry.getKey().equals(FplString.make("nil"))) {
 				assertEquals(1, ((FplInteger)entry.getValue()).getValue());
 			} else {
 				fail("unknown key: " + entry.getKey());
@@ -466,13 +467,5 @@ public class StringFunctionsTest extends AbstractFplTest {
 			count++;
 		}
 		assertEquals(1, count);
-	}
-	
-	@Test
-	public void parseJsonObjectInvalidKey() throws Exception {
-		EvaluationException e = assertThrows(EvaluationException.class, () -> {
-			evaluate("parse-json", "(parse-json \"{\\\"\\\": 1}\")");
-		});
-		assertEquals("\"\" is not a valid name", e.getMessage());
 	}
 }
