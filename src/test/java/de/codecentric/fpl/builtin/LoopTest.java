@@ -272,6 +272,33 @@ public class LoopTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void filterOfList2() throws Exception {
+		evaluate("counter", "(def counter 0)");
+		evaluate("filter", "(def-function my-filter (x i) (set counter i) (or (eq x 2) (eq x 3)))");
+		FplList filtered = (FplList) evaluate("filter", "(filter my-filter '(0 1 2 3 4))");
+		assertEquals(2, filtered.size());
+		for (int i = 0; i < 2; i++) {
+			assertEquals(FplInteger.valueOf(i + 2), filtered.get(i));
+		}
+		assertEquals(FplInteger.valueOf(4), scope.get("counter"));
+	}
+
+	@Test
+	public void filterOfEmptyList() throws Exception {
+		evaluate("counter", "(def counter 0)");
+		evaluate("filter", "(def-function my-filter (x i) (set counter i) (lt x 3))");
+		FplList filtered = (FplList) evaluate("filter", "(filter my-filter '())");
+		assertEquals(0, filtered.size());
+	}
+
+	@Test
+	public void filterReturningEmptyList() throws Exception {
+		evaluate("filter", "(def-function my-filter (x i) 0)");
+		FplList filtered = (FplList) evaluate("filter", "(filter my-filter '(1 2 3 4))");
+		assertEquals(0, filtered.size());
+	}
+
+	@Test
 	public void sort() throws Exception {
 		evaluate("values", "(def values '(4 5 9 8 7 8 6))");
 		FplList sorted = (FplList) evaluate("sort",

@@ -1,10 +1,8 @@
 package de.codecentric.fpl.builtin;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.ScopePopulator;
@@ -316,16 +314,48 @@ public class Loop implements ScopePopulator {
 				Function function = evaluateToFunction(scope, parameters[0]);
 				FplList list = evaluateToList(scope, parameters[1]);
 				Iterator<FplValue> iter = list.iterator();
-				List<FplValue> results = new ArrayList<>();
+				// Find first filtered element (if any exists)
+				FplValue initialNext = null;
+				boolean initialHasNext = false;
 				int i = 0;
-				while (iter.hasNext()) {
+				while (!initialHasNext && iter.hasNext()) {
 					FplValue value = iter.next();
 					if (isTrue(function.call(scope, FplLazy.makeEvaluated(scope, value), FplInteger.valueOf(i++)))) {
-						results.add(value);
+						initialNext = value;
+						initialHasNext = true;
 					}
 				}
-				// TODO: Change to fromIterator() for better performance (avoid copy).
-				return FplList.fromValues(results);
+				if (!initialHasNext) {
+					return FplList.EMPTY_LIST;
+				}
+				final FplValue transferNext = initialNext;
+				final boolean transferHasNext = initialHasNext;
+				final int transferI = i;
+				
+				return FplList.fromIterator(new Iterator<FplValue>() {
+					FplValue next = transferNext;
+					boolean hasNext = transferHasNext;
+					int j = transferI;
+					
+					@Override
+					public boolean hasNext() {
+						return hasNext;
+					}
+
+					@Override
+					public FplValue next() {
+						FplValue n = next;
+						hasNext = false;
+						while (!hasNext && iter.hasNext()) {
+							FplValue value = iter.next();
+							if (isTrue(function.call(scope, FplLazy.makeEvaluated(scope, value), FplInteger.valueOf(j++)))) {
+								next = value;
+								hasNext = true;
+							}
+						}
+						return n;
+					}
+				});
 			}
 		});
 
