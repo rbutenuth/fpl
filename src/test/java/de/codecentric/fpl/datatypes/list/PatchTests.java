@@ -1,11 +1,23 @@
 package de.codecentric.fpl.datatypes.list;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+import java.io.StringReader;
 
 import org.junit.jupiter.api.Test;
 
+import de.codecentric.fpl.DefaultFplEngine;
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.FplEngine;
+import de.codecentric.fpl.data.Scope;
+import de.codecentric.fpl.datatypes.FplValue;
+import de.codecentric.fpl.parser.ParseException;
+import de.codecentric.fpl.parser.Parser;
+import de.codecentric.fpl.parser.Scanner;
 
 public class PatchTests extends AbstractListTest {
 	
@@ -66,7 +78,31 @@ public class PatchTests extends AbstractListTest {
 		checkPatched(original, result, 3, patch, 2);
 	}
 	
-	private void checkPatched(FplList original, FplList result, int from, FplList patch, int numReplaced) {
+	@Test
+	public void patchInTheMiddleWithEvaluate() throws EvaluationException, ParseException, IOException {
+    	FplEngine engine = new DefaultFplEngine();
+        Scope scope = engine.getScope();
+
+		FplList original = create(0, 6);
+		scope.put("original", original);
+		
+		FplList patch = create(6, 8);
+		scope.put("patch", patch);
+		
+		FplList result = (FplList)evaluate(scope, "patch", "(replace-elements original 3 patch 2)");
+		checkValues(result, 0, 1, 2, 6, 7, 5);
+		checkPatched(original, result, 3, patch, 2);
+	}
+	
+    private FplValue evaluate(Scope s, String name, String input) throws ParseException, IOException, EvaluationException {
+        Parser p = new Parser(new Scanner(name, new StringReader(input)));
+        assertTrue(p.hasNext());
+        FplValue e = p.next();
+        assertFalse(p.hasNext());
+        return e.evaluate(s);
+    }
+
+    private void checkPatched(FplList original, FplList result, int from, FplList patch, int numReplaced) {
 		// check original is still unmodified (we assume it from 0..size)
 		check(original, 0, original.size());
 		int patchSize = patch.size();

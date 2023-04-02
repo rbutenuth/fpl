@@ -107,6 +107,16 @@ Return list without the last element.
 (remove-last some-list)
 ```
 
+### replace-elements
+Replace some elements from this list with elements of another list. It is not required for the second list
+to have the same number of elements as are removed from the original list.
+`from` is the index of the first replaced element, `new-elements` is the list
+with the new elements, `num-replaced` elements will be removed.
+```
+(replace-elements list from new-elements num-replaced)
+```
+
+
 ### size
 Number of elements in a list.
 ```

@@ -26,7 +26,6 @@ import de.codecentric.fpl.datatypes.FplDictionary;
 import de.codecentric.fpl.datatypes.FplDouble;
 import de.codecentric.fpl.datatypes.FplInteger;
 import de.codecentric.fpl.datatypes.FplMapDictionary;
-import de.codecentric.fpl.datatypes.FplObject;
 import de.codecentric.fpl.datatypes.FplString;
 import de.codecentric.fpl.datatypes.FplValue;
 import de.codecentric.fpl.datatypes.Symbol;
