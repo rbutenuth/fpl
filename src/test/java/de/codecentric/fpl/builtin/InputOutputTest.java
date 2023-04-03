@@ -65,7 +65,23 @@ public class InputOutputTest extends AbstractFplTest {
 			assertEquals("Unexpected end of source in list", e.getMessage());
 			StackTraceElement top = e.getStackTrace()[0];
 			assertEquals(file.toURI().toString(), top.getFileName());
-			assertEquals(1, top.getLineNumber());
+			assertEquals(0, top.getLineNumber());
+		} finally {
+			file.delete();
+		}
+	}
+
+	@Test
+	public void syntaxErrorInSecondExpression() throws Exception {
+		File file = writeToTempFile("(* 6 7)\n[");
+		try {
+			evaluate("evaluate", "(parse-resource \"" + file.toURI() + "\" 1)");
+			fail("missing exception");
+		} catch (EvaluationException e) {
+			assertEquals("Illegal character for symbol: [", e.getMessage());
+			StackTraceElement top = e.getStackTrace()[0];
+			assertEquals(file.toURI().toString(), top.getFileName());
+			assertEquals(0, top.getLineNumber());
 		} finally {
 			file.delete();
 		}

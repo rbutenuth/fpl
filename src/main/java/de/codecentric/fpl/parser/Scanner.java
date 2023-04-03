@@ -25,21 +25,25 @@ public class Scanner implements Closeable {
 	 * Create scanner with default start line 1.
 	 * 
 	 * @param name Name of the source (filename), not null.
-	 * @param line First line in the source, &gt;= 1.
+	 * @param line First line in the source, &gt;= 0.
+	 * @param line First columhn in the source, &gt;= 0.
 	 * @param rd   Reader, not null.
-	 * @throws IOException In case {@link Reader} throws.
+	 * @throws Parsexception In case {@link Reader} throws {@link IOException}
 	 */
-	public Scanner(String name, int line, Reader rd) throws IOException {
+	public Scanner(String name, int line, int column, Reader rd) throws ParseException {
 		if (name == null) {
 			throw new NullPointerException("name");
 		}
 		if (line < 1) {
 			throw new IllegalArgumentException("line must be >= 1, but is: " + line);
 		}
+		if (column < 1) {
+			throw new IllegalArgumentException("column must be >= 1, but is: " + column);
+		}
 		this.name = name;
 		this.rd = rd;
 		this.line = line;
-		column = 0;
+		this.column = column;
 		readChar();
 		// In first line of code, # is a comment character, allowing "#!/usr/bin/fpl" 
 		// as first line for starting an interpreter on Unix like operating systems.
@@ -54,10 +58,10 @@ public class Scanner implements Closeable {
 	 * 
 	 * @param name Name of the source (filename), not null.
 	 * @param rd   Reader, not null.
-	 * @throws IOException In case {@link Reader} throws.
+	 * @throws Parsexception In case {@link Reader} throws {@link IOException}
 	 */
 	public Scanner(String name, Reader rd) throws IOException {
-		this(name, 1, rd);
+		this(name, 1, 1, rd);
 	}
 
 	/**
@@ -65,7 +69,7 @@ public class Scanner implements Closeable {
 	 * @throws IOException    In case {@link Reader} throws.
 	 * @throws ParseException Illegal token.
 	 */
-	public Token next() throws IOException, ParseException {
+	public Token next() throws ParseException {
 		skipComment();
 		Position position = new Position(name, line, column);
 		if (eof) {
@@ -98,7 +102,7 @@ public class Scanner implements Closeable {
 		comment = new StringBuilder();
 	}
 
-	private void skipComment() throws IOException {
+	private void skipComment() throws ParseException {
 		while (ch == ';' || Character.isWhitespace(ch)) {
 			if (ch == ';') {
 				if (comment.length() > 0) {
@@ -114,7 +118,7 @@ public class Scanner implements Closeable {
 		}
 	}
 
-	private String skipRestOfLine() throws IOException {
+	private String skipRestOfLine() throws ParseException {
 		StringBuilder commentLine = new StringBuilder();
 		while (ch != '\n' && ch != '\r' && ch != -1) {
 			commentLine.append((char) ch);
@@ -123,7 +127,7 @@ public class Scanner implements Closeable {
 		return commentLine.toString();
 	}
 	
-	private Token number(Position position) throws IOException, ParseException {
+	private Token number(Position position) throws ParseException {
 		boolean negative = false;
 		if (ch == '-') {
 			readChar();
@@ -167,7 +171,7 @@ public class Scanner implements Closeable {
 		}
 	}
 
-	private Token symbol(Position position) throws IOException {
+	private Token symbol(Position position) throws ParseException {
 		StringBuilder sb = new StringBuilder();
 		while (ch != -1 && !Character.isWhitespace(ch) && NON_SYMBOL_CHARS.indexOf(ch) == -1) {
 			sb.append((char) ch);
@@ -177,7 +181,7 @@ public class Scanner implements Closeable {
 		return t;
 	}
 
-	private Token string(Position position) throws IOException, ParseException {
+	private Token string(Position position) throws ParseException {
 		readChar(); // skip leading "
 		StringBuilder sb = new StringBuilder();
 		while (ch != '"') {
@@ -215,7 +219,7 @@ public class Scanner implements Closeable {
 		return new Token(position, Id.STRING, sb.toString(), "");
 	}
 
-	private char readHexadecimalCharacter(Position position) throws IOException, ParseException {
+	private char readHexadecimalCharacter(Position position) throws ParseException {
 		char result = 0;
 		for (int i = 0; i < 4; i++) {
 			result <<= 4;
@@ -239,32 +243,40 @@ public class Scanner implements Closeable {
 		throw new ParseException(position, "Illegal hex digit: " + (char) ch);
 	}
 
-	private void readChar() throws IOException {
-		if (nextCh == -2) {
-			ch = rd.read();
-			nextCh = rd.read();
-		} else {
-			ch = nextCh;
-			nextCh = rd.read();
-		}
-		if (ch == -1) {
-			eof = true;
-			rd.close();
-		}
-		if (ch == '\n') {
-			line++;
-			column = 0;
-		} else if (ch == '\r') {
-			column = 0;
-		} else {
-			column++;
+	private void readChar() throws ParseException {
+		try {
+			if (nextCh == -2) {
+				ch = rd.read();
+				nextCh = rd.read();
+			} else {
+				ch = nextCh;
+				nextCh = rd.read();
+			}
+			if (ch == -1) {
+				eof = true;
+				rd.close();
+			}
+			if (ch == '\n') {
+				line++;
+				column = 1;
+			} else if (ch == '\r') {
+				column = 1;
+			} else {
+				column++;
+			}
+		} catch (IOException e) {
+			throw new ParseException(new Position(name, line, column), e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() throws ParseException {
 		eof = true;
 		ch = -1;
-		rd.close();
+		try {
+			rd.close();
+		} catch (IOException e) {
+			throw new ParseException(new Position(name, line, column), e.getMessage(), e);
+		}
 	}
 }

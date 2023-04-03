@@ -1,7 +1,6 @@
 package de.codecentric.fpl.parser;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,10 +32,9 @@ public class Parser implements Closeable {
 
 	/**
 	 * @param scanner Scanner, not null.
-	 * @throws ParseException On Syntax problems.
-	 * @throws IOException    I/O problems.
+	 * @throws ParseException On Syntax or I/O problems.
 	 */
-	public Parser(Scanner scanner) throws IOException {
+	public Parser(Scanner scanner) throws ParseException {
 		if (scanner == null) {
 			throw new NullPointerException("scanner");
 		}
@@ -45,7 +43,7 @@ public class Parser implements Closeable {
 		// side (caller) code would be more complicate because we would throw ParseException here.
 	}
 
-	public boolean hasNext() throws ParseException, IOException {
+	public boolean hasNext() throws ParseException {
 		if (!haveFetchedFirstToken) {
 			haveFetchedFirstToken = true;
 			fetchNextToken();
@@ -56,17 +54,16 @@ public class Parser implements Closeable {
 	/**
 	 * @return The next object in the input.
 	 * @throws NoSuchElementException On end of input
-	 * @throws ParseException On Syntax problems
-	 * @throws IOException I/O problems.
+	 * @throws ParseException On Syntax or I/O problems.
 	 */
-	public FplValue next() throws ParseException, IOException {
+	public FplValue next() throws ParseException {
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
 		return value();
 	}
 
-	private FplValue value() throws ParseException, IOException {
+	private FplValue value() throws ParseException {
 		FplValue result;
 		switch (nextToken.getId()) {
 		case LEFT_PAREN:
@@ -108,7 +105,7 @@ public class Parser implements Closeable {
 		return result;
 	}
 
-	private FplValue quote() throws ParseException, IOException {
+	private FplValue quote() throws ParseException {
 		List<FplValue> elements = new ArrayList<FplValue>();
 		elements.add(new Symbol("quote", nextToken.getPosition(), nextToken.getComment()));
 		fetchNextToken(); // skip '
@@ -116,7 +113,7 @@ public class Parser implements Closeable {
 		return FplList.fromValues(elements);
 	}
 
-	private FplValue list() throws ParseException, IOException {
+	private FplValue list() throws ParseException {
 		fetchNextToken(); // skip LEFT_PAREN
 		expectNotEof("Unexpected end of source in list");
 		if (nextToken.is(Id.RIGHT_PAREN)) {
@@ -133,19 +130,19 @@ public class Parser implements Closeable {
 		return FplList.fromValues(elements);
 	}
 
-	private void fetchNextToken() throws ParseException, IOException {
+	private void fetchNextToken() throws ParseException {
 		lastToken = nextToken;
 		nextToken = scanner.next();
 	}
 
-	private void expectNotEof(String message) throws ParseException, IOException {
+	private void expectNotEof(String message) throws ParseException {
 		if (nextToken.is(Id.EOF)) {
 			throw new ParseException(lastToken.getPosition(), message);
 		}
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close() throws ParseException {
 		nextToken = new Token(nextToken.getPosition(), Token.Id.EOF);
 		scanner.close();
 	}

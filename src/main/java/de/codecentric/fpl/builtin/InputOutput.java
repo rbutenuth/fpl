@@ -65,24 +65,33 @@ public class InputOutput implements ScopePopulator {
 					URI uri = new URI(uriAsString);
 					try (InputStream is = uri.toURL().openStream();
 							Parser p = new Parser(new Scanner(uriAsString, new BomAwareReader(is)))) {
-						List<FplValue> values = new ArrayList<>();
-						while (p.hasNext()) {
-							FplValue value = p.next();
-							if (evaluate) {
-								value = evaluateToAny(scope, value);
+						return FplList.fromIterator(new Iterator<FplValue>() {
+
+							@Override
+							public boolean hasNext() {
+								return p.hasNext();
 							}
-							values.add(value);
-						}
-						return FplList.fromValues(values);  // TODO: Change to fromIterator to avoid copying
+
+							@Override
+							public FplValue next() {
+								FplValue value;
+								try {
+									value = p.next();
+									if (evaluate) {
+										value = evaluateToAny(scope, value);
+									}
+									return value;
+								} catch (ParseException e) {
+									EvaluationException ee = new EvaluationException(e.getMessage(), e);
+									ee.add(new StackTraceElement("InputOutput", "parse-resource", uriAsString, 0));
+									throw ee;
+								}
+							}
+						});
 					}
-				} catch (IOException | URISyntaxException e) {
+				} catch (IOException | ParseException | URISyntaxException e) {
 					EvaluationException ee = new EvaluationException(e.getMessage(), e);
 					ee.add(new StackTraceElement("InputOutput", "parse-resource", uriAsString, 0));
-					throw ee;
-				} catch (ParseException e) {
-					EvaluationException ee = new EvaluationException(e.getMessage(), e);
-					Position pos = e.getPosition();
-					ee.add(new StackTraceElement("InputOutput", "parse-resource", uriAsString, pos.getLine()));
 					throw ee;
 				}
 			}

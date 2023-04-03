@@ -39,7 +39,7 @@ public class FplObjectTest extends AbstractFplTest {
 	@Test
 	public void positionListWithSymbol() throws Exception {
 		Position p = FplValue.position(evaluate("list", "'( foo )"));
-		assertEquals(new Position("list", 1, 4), p);
+		assertEquals(new Position("list", 1, 5), p);
 	}
 
 	@Test

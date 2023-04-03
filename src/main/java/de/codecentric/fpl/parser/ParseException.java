@@ -3,7 +3,7 @@ package de.codecentric.fpl.parser;
 /**
  * Scanner or parser problems, always contains information about the {@link Position} of problem.
  */
-public class ParseException extends Exception {
+public class ParseException extends RuntimeException {
     private static final long serialVersionUID = -5654631491269471825L;
     private Position position;
 

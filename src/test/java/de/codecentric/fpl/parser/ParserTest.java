@@ -134,7 +134,7 @@ public class ParserTest extends AbstractFplTest {
 			assertEquals("Unexpected end of source in list", e.getMessage());
 			assertEquals("syntax error", e.getPosition().getName());
 			assertEquals(1, e.getPosition().getLine());
-			assertEquals(2, e.getPosition().getColumn());
+			assertEquals(3, e.getPosition().getColumn());
 		}
 	}
 
@@ -160,7 +160,7 @@ public class ParserTest extends AbstractFplTest {
 			assertEquals("unexpected token: )", e.getMessage());
 			assertEquals("syntax error", e.getPosition().getName());
 			assertEquals(1, e.getPosition().getLine());
-			assertEquals(4, e.getPosition().getColumn());
+			assertEquals(5, e.getPosition().getColumn());
 		}
 	}
 
@@ -175,7 +175,7 @@ public class ParserTest extends AbstractFplTest {
 			assertEquals("Unexpected end of source in list", e.getMessage());
 			assertEquals("syntax error", e.getPosition().getName());
 			assertEquals(1, e.getPosition().getLine());
-			assertEquals(1, e.getPosition().getColumn());
+			assertEquals(2, e.getPosition().getColumn());
 		}
 	}
 

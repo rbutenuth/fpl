@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,16 @@ public class ScannerTest {
 	@Test
 	public void badLineNumber() throws IOException {
 		assertThrows(IllegalArgumentException.class, () -> {
-			try (Scanner s = new Scanner("bla", 0, new StringReader(""))) {
+			try (Scanner s = new Scanner("bla", 0, 1, new StringReader(""))) {
+				// not reached
+			}
+		});
+	}
+
+	@Test
+	public void badColumnNumber() throws IOException {
+		assertThrows(IllegalArgumentException.class, () -> {
+			try (Scanner s = new Scanner("bla", 1, 0, new StringReader(""))) {
 				// not reached
 			}
 		});
@@ -152,7 +162,7 @@ public class ScannerTest {
 			Position p = t.getPosition();
 			assertEquals("test", p.getName());
 			assertEquals(1, p.getLine());
-			assertEquals(1, p.getColumn());
+			assertEquals(2, p.getColumn());
 
 			t = sc.next();
 			assertNotNull(t);
@@ -163,7 +173,7 @@ public class ScannerTest {
 			assertNotNull(t);
 			assertEquals(Id.SYMBOL, t.getId());
 			assertEquals("bla", t.getStringValue());
-			assertEquals("Position[name=\"test\", line=1, column=4]", t.getPosition().toString());
+			assertEquals("Position[name=\"test\", line=1, column=5]", t.getPosition().toString());
 
 			t = sc.next();
 			assertNotNull(t);
@@ -224,7 +234,7 @@ public class ScannerTest {
 			Position p = t.getPosition();
 			assertEquals("test", p.getName());
 			assertEquals(7, p.getLine());
-			assertEquals(1, p.getColumn());
+			assertEquals(2, p.getColumn());
 		}
 	}
 
@@ -335,6 +345,54 @@ public class ScannerTest {
 			fail("missing exception");
 		} catch (ParseException pe) {
 			assertEquals("Illegal character for symbol: {", pe.getMessage());
+		}
+	}
+
+	@Test
+	public void exceptionOnRead() throws Exception {
+		try (Scanner sc = new Scanner("test", 1, 1, new OnReadExceptionReader())) {
+			sc.next();
+			fail("missing exception");
+		} catch (ParseException pe) {
+			assertEquals("bäm", pe.getMessage());
+		}
+	}
+	
+	private static class OnReadExceptionReader extends Reader {
+
+		@Override
+		public int read(char[] cbuf, int off, int len) throws IOException {
+			throw new IOException("bäm");
+		}
+
+		@Override
+		public void close() throws IOException {
+		}
+		
+	}
+	
+	@Test
+	public void exceptionOnClose() throws Exception {
+		try (Scanner sc = new Scanner("test", 1, 1, new OnCloseExceptionReader())) {
+			sc.next();
+			sc.close();
+			fail("missing exception");
+		} catch (ParseException pe) {
+			assertEquals("wont close", pe.getMessage());
+		}
+	}
+	
+	private static class OnCloseExceptionReader extends Reader {
+
+		@Override
+		public void close() throws IOException {
+			throw new IOException("wont close");
+		}
+
+		@Override
+		public int read(char[] cbuf, int off, int len) throws IOException {
+			cbuf[0] = ')';
+			return 1;
 		}
 	}
 }
