@@ -11,7 +11,6 @@ import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -75,17 +74,11 @@ public class InputOutput implements ScopePopulator {
 							@Override
 							public FplValue next() {
 								FplValue value;
-								try {
-									value = p.next();
-									if (evaluate) {
-										value = evaluateToAny(scope, value);
-									}
-									return value;
-								} catch (ParseException e) {
-									EvaluationException ee = new EvaluationException(e.getMessage(), e);
-									ee.add(new StackTraceElement("InputOutput", "parse-resource", uriAsString, 0));
-									throw ee;
+								value = p.next();
+								if (evaluate) {
+									value = evaluateToAny(scope, value);
 								}
+								return value;
 							}
 						});
 					}
@@ -100,20 +93,29 @@ public class InputOutput implements ScopePopulator {
 		scope.define(new AbstractFunction("parse-string", //
 				"Parse or evaluate all expressions within the string. Return a list which contains the results.",
 				"string", "evaluate") {
+
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String str = evaluateToString(scope, parameters[0]);
 				boolean evaluate = evaluateToBoolean(scope, parameters[1]);
 				try (Parser p = new Parser(new Scanner(str, new StringReader(str)))) {
-					List<FplValue> values = new ArrayList<>();
-					while (p.hasNext()) {
-						FplValue value = p.next();
-						if (evaluate) {
-							value = evaluateToAny(scope, value);
+					return FplList.fromIterator(new Iterator<FplValue>() {
+
+						@Override
+						public boolean hasNext() {
+							return p.hasNext();
 						}
-						values.add(value);
-					}
-					return FplList.fromValues(values);  // TODO: Change to fromIterator to avoid copying
+
+						@Override
+						public FplValue next() {
+							FplValue value;
+							value = p.next();
+							if (evaluate) {
+								value = evaluateToAny(scope, value);
+							}
+							return value;
+						}
+					});
 				} catch (ParseException | IOException e) {
 					EvaluationException ee = new EvaluationException(e.getMessage(), e);
 					// the cast does not have to be protected, the IOException will never be thrown
@@ -161,7 +163,7 @@ public class InputOutput implements ScopePopulator {
 				String uriAsString = evaluateToString(scope, parameters[0]);
 				try {
 					URI uri = new URI(uriAsString);
-					try (InputStream is =uri.toURL().openStream()) { 
+					try (InputStream is = uri.toURL().openStream()) {
 						return readFromInputStream(is);
 					}
 				} catch (IOException | URISyntaxException e) {
@@ -184,7 +186,7 @@ public class InputOutput implements ScopePopulator {
 				}
 			}
 		});
-		
+
 		scope.define(new AbstractFunction("http-request", //
 				"Execute an HTTP-request. Two additional parameters for basic auth (user, password) are possible", //
 				"url", "method", "headers", "query-params", "body...") {
@@ -194,7 +196,8 @@ public class InputOutput implements ScopePopulator {
 				try {
 					HttpRequest req = new HttpRequest();
 					if (parameters.length == 7) {
-						req.setBasicAuth(evaluateToString(scope, parameters[5]), evaluateToString(scope, parameters[6]));
+						req.setBasicAuth(evaluateToString(scope, parameters[5]),
+								evaluateToString(scope, parameters[6]));
 					} else if (parameters.length == 6) {
 						throw new EvaluationException("user set, password missing");
 					} else if (parameters.length > 7) {
@@ -213,8 +216,7 @@ public class InputOutput implements ScopePopulator {
 						}
 					}
 					HttpResponse res = new HttpClient().execute(req);
-					return FplList.fromValues(FplInteger.valueOf(res.getStatusCode()),
-							fplHeaders(res),
+					return FplList.fromValues(FplInteger.valueOf(res.getStatusCode()), fplHeaders(res),
 							res.hasBody() ? new FplString(res.getBodyAsString("UTF-8")) : null);
 				} catch (IOException | ScopeException e) {
 					throw new EvaluationException(e.getMessage(), e);
@@ -365,7 +367,8 @@ public class InputOutput implements ScopePopulator {
 				}
 
 				@Override
-				public HttpResponse handleRequest(HttpRequest req) throws EvaluationException, ScopeException, IOException {
+				public HttpResponse handleRequest(HttpRequest req)
+						throws EvaluationException, ScopeException, IOException {
 					HttpResponse res = new HttpResponse();
 					FplValue[] parameters = new FplValue[4];
 					// path Complete path, including the prefix defined in `handlers`.
@@ -436,7 +439,7 @@ public class InputOutput implements ScopePopulator {
 			} else {
 				params.put(new FplString(name), FplList.fromIterator(new Iterator<FplValue>() {
 					int i = 0;
-					
+
 					@Override
 					public boolean hasNext() {
 						return i < count;
@@ -446,7 +449,7 @@ public class InputOutput implements ScopePopulator {
 					public FplValue next() {
 						return new FplString(values.get(i++));
 					}
-				} , count));
+				}, count));
 			}
 		}
 		return params;
@@ -463,7 +466,7 @@ public class InputOutput implements ScopePopulator {
 				} else {
 					headers.put(new FplString(name.toLowerCase()), FplList.fromIterator(new Iterator<FplValue>() {
 						int i = 0;
-						
+
 						@Override
 						public boolean hasNext() {
 							return i < count;
@@ -473,13 +476,13 @@ public class InputOutput implements ScopePopulator {
 						public FplValue next() {
 							return new FplString(values.get(i++));
 						}
-					} , count));
+					}, count));
 				}
 			}
 		}
 		return headers;
 	}
-	
+
 	private FplString readFromInputStream(InputStream is) throws IOException {
 		try (Reader rd = new BomAwareReader(is)) {
 			StringBuilder sb = new StringBuilder();
