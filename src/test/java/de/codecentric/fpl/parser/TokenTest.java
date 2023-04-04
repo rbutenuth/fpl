@@ -3,8 +3,6 @@ package de.codecentric.fpl.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.parser.Token.Id;
@@ -12,63 +10,63 @@ import de.codecentric.fpl.parser.Token.Id;
 public class TokenTest {
 
 	@Test
-	public void positionNull1() throws IOException {
+	public void positionNull1() {
 		assertThrows(NullPointerException.class, () -> {
 			new Token(null, Id.INTEGER);
 		});
 	}
 
 	@Test
-	public void positionNull2() throws IOException {
+	public void positionNull2() {
 		assertThrows(NullPointerException.class, () -> {
 			new Token(null, 1);
 		});
 	}
 
 	@Test
-	public void positionNull3() throws IOException {
+	public void positionNull3() {
 		assertThrows(NullPointerException.class, () -> {
 			new Token(null, 3.14);
 		});
 	}
 
 	@Test
-	public void positionNull4() throws IOException {
+	public void positionNull4() {
 		assertThrows(NullPointerException.class, () -> {
 			new Token(null, Id.STRING, "str", "");
 		});
 	}
 
 	@Test
-	public void positionNull5() throws IOException {
+	public void positionNull5() {
 		assertThrows(NullPointerException.class, () -> {
 			new Token(null, Id.SYMBOL, "symbol", "");
 		});
 	}
 
 	@Test
-	public void badId1() throws IOException {
+	public void badId1() {
 		assertThrows(IllegalArgumentException.class, () -> {
 			new Token(Position.UNKNOWN, Id.INTEGER);
 		});
 	}
 
 	@Test
-	public void positionBadId2() throws IOException {
+	public void positionBadId2() {
 		assertThrows(IllegalArgumentException.class, () -> {
 			new Token(Position.UNKNOWN, Id.DOUBLE, "symbol", "");
 		});
 	}
 
 	@Test
-	public void positionBadString() throws IOException {
+	public void positionBadString() {
 		assertThrows(NullPointerException.class, () -> {
 			new Token(Position.UNKNOWN, Id.STRING, null, "");
 		});
 	}
 
 	@Test
-	public void getDouble() throws IOException {
+	public void getDouble() {
 		assertThrows(IllegalStateException.class, () -> {
 			Token t = new Token(Position.UNKNOWN, 1);
 			t.getDoubleValue();
@@ -76,7 +74,7 @@ public class TokenTest {
 	}
 
 	@Test
-	public void getString() throws IOException {
+	public void getString() {
 		assertThrows(IllegalStateException.class, () -> {
 			Token t = new Token(Position.UNKNOWN, 3);
 			t.getStringValue();
@@ -84,7 +82,7 @@ public class TokenTest {
 	}
 
 	@Test
-	public void getInteger() throws IOException {
+	public void getInteger() {
 		assertThrows(IllegalStateException.class, () -> {
 			Token t = new Token(Position.UNKNOWN, 3.14);
 			t.getIntegerValue();

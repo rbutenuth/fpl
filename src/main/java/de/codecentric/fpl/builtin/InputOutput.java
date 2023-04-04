@@ -116,7 +116,7 @@ public class InputOutput implements ScopePopulator {
 							return value;
 						}
 					});
-				} catch (ParseException | IOException e) {
+				} catch (ParseException e) {
 					EvaluationException ee = new EvaluationException(e.getMessage(), e);
 					// the cast does not have to be protected, the IOException will never be thrown
 					// when reading from a String

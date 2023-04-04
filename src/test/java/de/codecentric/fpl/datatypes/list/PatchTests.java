@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.io.StringReader;
 
 import org.junit.jupiter.api.Test;
@@ -79,7 +78,7 @@ public class PatchTests extends AbstractListTest {
 	}
 	
 	@Test
-	public void patchInTheMiddleWithEvaluate() throws EvaluationException, ParseException, IOException {
+	public void patchInTheMiddleWithEvaluate() throws EvaluationException, ParseException {
     	FplEngine engine = new DefaultFplEngine();
         Scope scope = engine.getScope();
 
@@ -94,7 +93,7 @@ public class PatchTests extends AbstractListTest {
 		checkPatched(original, result, 3, patch, 2);
 	}
 	
-    private FplValue evaluate(Scope s, String name, String input) throws ParseException, IOException, EvaluationException {
+    private FplValue evaluate(Scope s, String name, String input) throws ParseException, EvaluationException {
         Parser p = new Parser(new Scanner(name, new StringReader(input)));
         assertTrue(p.hasNext());
         FplValue e = p.next();

@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -26,7 +25,7 @@ import de.codecentric.fpl.datatypes.list.FplList;
 public class ParserTest extends AbstractFplTest {
 
 	@Test
-	public void scannerNull() throws ParseException, IOException {
+	public void scannerNull() throws ParseException {
 		assertThrows(NullPointerException.class, () -> {
 			try (Parser p = new Parser(null)) {
 				// not reached
@@ -72,7 +71,7 @@ public class ParserTest extends AbstractFplTest {
 		verifySimpleList(p);
 	}
 
-	private void verifySimpleList(Parser p) throws ParseException, IOException {
+	private void verifySimpleList(Parser p) throws ParseException {
 		assertTrue(p.hasNext());
 		FplList l = (FplList) p.next();
 		assertEquals(4, l.size());

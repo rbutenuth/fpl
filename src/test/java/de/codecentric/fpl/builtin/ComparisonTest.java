@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 
 import de.codecentric.fpl.AbstractFplTest;
@@ -184,7 +182,7 @@ public class ComparisonTest extends AbstractFplTest {
 	}
 
 	private boolean evaluateToBoolean(String name, String input)
-			throws ParseException, IOException, EvaluationException {
+			throws ParseException, EvaluationException {
 		FplValue value = evaluate(name, input);
 		long valueAsLong = ((FplInteger) value).getValue(); 
 		if (valueAsLong == 0) {

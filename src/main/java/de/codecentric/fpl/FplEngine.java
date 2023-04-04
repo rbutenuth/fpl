@@ -1,6 +1,5 @@
 package de.codecentric.fpl;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.util.List;
@@ -49,9 +48,8 @@ public interface FplEngine {
 	 * @param rd Reader
 	 * @param callback For expression results, catching exceptions, and print / println.
 	 * @return Results of all expressions evaluated.
-	 * @throws IOException For problems with the reader.
 	 */
-	public List<FplValue> evaluate(String sourceName, Reader rd, ResultCallback callback) throws IOException;
+	public List<FplValue> evaluate(String sourceName, Reader rd, ResultCallback callback) throws EvaluationException;
 	
 	/** 
 	 * Evaluate one expression, uses engine scope as {@link Scope}.

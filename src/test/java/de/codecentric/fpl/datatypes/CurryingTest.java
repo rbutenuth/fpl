@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -18,7 +17,7 @@ import de.codecentric.fpl.parser.ParseException;
 
 public class CurryingTest extends AbstractFplTest {
     @Test
-    public void noArguments() throws ParseException, IOException, EvaluationException {
+    public void noArguments() throws ParseException, EvaluationException {
         // Result should be the function itself
         AbstractFunction f = (AbstractFunction) evaluate("plus", "( + )");
         assertEquals(2, f.getMinimumNumberOfParameters());
@@ -26,7 +25,7 @@ public class CurryingTest extends AbstractFplTest {
     }
 
     @Test
-    public void oneMissingArgument() throws ParseException, IOException, EvaluationException {
+    public void oneMissingArgument() throws ParseException, EvaluationException {
         evaluate("plus", "(put plus3 ( + 3 ))");
         AbstractFunction f = (AbstractFunction)scope.get("plus3");
         assertEquals(1, f.getMinimumNumberOfParameters());

@@ -1,6 +1,5 @@
 package de.codecentric.fpl;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -95,7 +94,7 @@ public class DefaultFplEngine implements FplEngine {
 	}
 
 	@Override
-	public List<FplValue> evaluate(String sourceName, Reader rd, ResultCallback callback) throws IOException {
+	public List<FplValue> evaluate(String sourceName, Reader rd, ResultCallback callback) {
 		List<FplValue> results = new ArrayList<>();
 		boolean continueEvaluation = true;
 		try (Parser parser = new Parser(new Scanner(sourceName, rd))) {

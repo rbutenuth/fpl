@@ -17,10 +17,9 @@ import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Token.Id;
 
 /**
- * A simple Lisp parser. (It could nearly implementing {@link Iterator}, but
- * alas: Parse- and IOException...
+ * A simple Lisp parser.
  */
-public class Parser implements Closeable {
+public class Parser implements Closeable, Iterator<FplValue> {
 	private static Set<String> keepCommentSymbols = new HashSet<>();
 	static {
 		keepCommentSymbols.add("def-function");

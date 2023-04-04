@@ -60,7 +60,7 @@ public class Scanner implements Closeable {
 	 * @param rd   Reader, not null.
 	 * @throws Parsexception In case {@link Reader} throws {@link IOException}
 	 */
-	public Scanner(String name, Reader rd) throws IOException {
+	public Scanner(String name, Reader rd) throws ParseException {
 		this(name, 1, 1, rd);
 	}
 

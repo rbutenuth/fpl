@@ -50,11 +50,11 @@ public class AbstractFplTest {
         scope = null;
     }
 
-    protected FplValue evaluate(String name, String input) throws ParseException, IOException, EvaluationException {
+    protected FplValue evaluate(String name, String input) throws ParseException, EvaluationException {
     	return evaluate(scope, name, input);
     }
 
-    protected FplValue evaluate(Scope s, String name, String input) throws ParseException, IOException, EvaluationException {
+    protected FplValue evaluate(Scope s, String name, String input) throws ParseException, EvaluationException {
         Parser p = parser(name, input);
         assertTrue(p.hasNext());
         FplValue e = p.next();
@@ -62,7 +62,7 @@ public class AbstractFplTest {
         return e.evaluate(s);
     }
 
-	protected Parser parser(String name, String input) throws ParseException, IOException {
+	protected Parser parser(String name, String input) throws ParseException {
 		return new Parser(new Scanner(name, new StringReader(input)));
 	}
 	

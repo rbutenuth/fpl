@@ -17,7 +17,7 @@ public class ScannerTest {
 	private static String NL = System.lineSeparator();
 
 	@Test
-	public void nameNull() throws IOException {
+	public void nameNull() {
 		assertThrows(NullPointerException.class, () -> {
 			try (Scanner s = new Scanner(null, new StringReader(""))) {
 				// not reached
@@ -26,7 +26,7 @@ public class ScannerTest {
 	}
 
 	@Test
-	public void badLineNumber() throws IOException {
+	public void badLineNumber() {
 		assertThrows(IllegalArgumentException.class, () -> {
 			try (Scanner s = new Scanner("bla", 0, 1, new StringReader(""))) {
 				// not reached
@@ -35,7 +35,7 @@ public class ScannerTest {
 	}
 
 	@Test
-	public void badColumnNumber() throws IOException {
+	public void badColumnNumber() {
 		assertThrows(IllegalArgumentException.class, () -> {
 			try (Scanner s = new Scanner("bla", 1, 0, new StringReader(""))) {
 				// not reached
