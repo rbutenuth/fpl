@@ -18,34 +18,34 @@ import de.codecentric.fpl.parser.ParseException;
 import de.codecentric.fpl.parser.Parser;
 import de.codecentric.fpl.parser.Scanner;
 
-public class PatchTests extends AbstractListTest {
+public class ReplaceElementsTest extends AbstractListTest {
 	
 	@Test
 	public void patchOnEmptyList() {
-		FplList result = FplList.EMPTY_LIST.patch(0, create(1, 3), 0);
+		FplList result = FplList.EMPTY_LIST.replaceElements(0, create(1, 3), 0);
 		check(result, 1, 3);
 	}
 	
 	@Test
 	public void negativeFromThrowsException() {
-		assertThrows(EvaluationException.class, () -> { create(0, 5).patch(-1, FplList.EMPTY_LIST, 0); });
+		assertThrows(EvaluationException.class, () -> { create(0, 5).replaceElements(-1, FplList.EMPTY_LIST, 0); });
 	}
 
 	@Test
 	public void negativeNumReplacedThrowsException() {
-		assertThrows(EvaluationException.class, () -> { create(0, 5).patch(0, FplList.EMPTY_LIST, -1); });
+		assertThrows(EvaluationException.class, () -> { create(0, 5).replaceElements(0, FplList.EMPTY_LIST, -1); });
 	}
 
 	@Test
 	public void fromPlusNumReplacedBeyondEndThrowsException() {
-		assertThrows(EvaluationException.class, () -> { create(0, 5).patch(0, FplList.EMPTY_LIST, 6); });
+		assertThrows(EvaluationException.class, () -> { create(0, 5).replaceElements(0, FplList.EMPTY_LIST, 6); });
 	}
 
 	@Test
 	public void patchAll() {
 		FplList original = create(0, 5);
 		FplList patch = create(6, 10);
-		FplList result = original.patch(0, patch, 5);
+		FplList result = original.replaceElements(0, patch, 5);
 		check(result, 6, 10);
 		checkPatched(original, result, 0, patch, 5);
 	}
@@ -54,7 +54,7 @@ public class PatchTests extends AbstractListTest {
 	public void patchAtBeginning() {
 		FplList original = create(0, 5);
 		FplList patch = create(6, 9);
-		FplList result = original.patch(0, patch, 2);
+		FplList result = original.replaceElements(0, patch, 2);
 		checkValues(result, 6, 7, 8, 2, 3, 4);
 		checkPatched(original, result, 0, patch, 2);
 	}
@@ -63,7 +63,7 @@ public class PatchTests extends AbstractListTest {
 	public void patchAtEnd() {
 		FplList original = create(0, 5);
 		FplList patch = create(6, 9);
-		FplList result = original.patch(3, patch, 2);
+		FplList result = original.replaceElements(3, patch, 2);
 		checkValues(result, 0, 1, 2, 6, 7, 8);
 		checkPatched(original, result, 3, patch, 2);
 	}
@@ -72,7 +72,7 @@ public class PatchTests extends AbstractListTest {
 	public void patchInTheMiddle() {
 		FplList original = create(0, 6);
 		FplList patch = create(6, 8);
-		FplList result = original.patch(3, patch, 2);
+		FplList result = original.replaceElements(3, patch, 2);
 		checkValues(result, 0, 1, 2, 6, 7, 5);
 		checkPatched(original, result, 3, patch, 2);
 	}

@@ -178,7 +178,7 @@ public class ListFunctions implements ScopePopulator {
 				int from = (int)evaluateToLong(scope, parameters[1]);
 				FplList newElements = evaluateToList(scope, parameters[2]);
 				int numReplaced = (int)evaluateToLong(scope, parameters[3]);
-				return list.patch(from, newElements, numReplaced);
+				return list.replaceElements(from, newElements, numReplaced);
 			}
 		});
 
