@@ -24,7 +24,8 @@ public class ReplaceElementsTest extends AbstractListTest {
 	public void patchOnEmptyList() {
 		FplList result = FplList.EMPTY_LIST.replaceElements(0, create(1, 3), 0);
 		check(result, 1, 3);
-	}
+		check(FplList.EMPTY_LIST, 0, create(1, 3), 0, result);
+}
 	
 	@Test
 	public void negativeFromThrowsException() {
@@ -47,7 +48,7 @@ public class ReplaceElementsTest extends AbstractListTest {
 		FplList patch = create(6, 10);
 		FplList result = original.replaceElements(0, patch, 5);
 		check(result, 6, 10);
-		checkPatched(original, result, 0, patch, 5);
+		check(original, 0, patch, 5, result);
 	}
 	
 	@Test
@@ -56,7 +57,7 @@ public class ReplaceElementsTest extends AbstractListTest {
 		FplList patch = create(6, 9);
 		FplList result = original.replaceElements(0, patch, 2);
 		checkValues(result, 6, 7, 8, 2, 3, 4);
-		checkPatched(original, result, 0, patch, 2);
+		check(original, 0, patch, 2, result);
 	}
 	
 	@Test
@@ -64,8 +65,7 @@ public class ReplaceElementsTest extends AbstractListTest {
 		FplList original = create(0, 5);
 		FplList patch = create(6, 9);
 		FplList result = original.replaceElements(3, patch, 2);
-		checkValues(result, 0, 1, 2, 6, 7, 8);
-		checkPatched(original, result, 3, patch, 2);
+		check(original, 3, patch, 2, result);
 	}
 	
 	@Test
@@ -73,8 +73,7 @@ public class ReplaceElementsTest extends AbstractListTest {
 		FplList original = create(0, 6);
 		FplList patch = create(6, 8);
 		FplList result = original.replaceElements(3, patch, 2);
-		checkValues(result, 0, 1, 2, 6, 7, 5);
-		checkPatched(original, result, 3, patch, 2);
+		check(original, 3, patch, 2, result);
 	}
 	
 	@Test
@@ -102,8 +101,6 @@ public class ReplaceElementsTest extends AbstractListTest {
     }
 
     private void checkPatched(FplList original, FplList result, int from, FplList patch, int numReplaced) {
-		// check original is still unmodified (we assume it from 0..size)
-		check(original, 0, original.size());
 		int patchSize = patch.size();
 		int resultSize = original.size() + patchSize - numReplaced;
 		assertEquals(resultSize, result.size());
@@ -117,4 +114,15 @@ public class ReplaceElementsTest extends AbstractListTest {
 			}
 		}
 	}
+    
+    private void check(FplList original, int from, FplList patch, int numReplaced, FplList result) {
+		// check original is still unmodified (we assume it from 0..size)
+		check(original, 0, original.size());
+    	FplList reference = original.subList(0, from).append(patch).append(original.subList(from + numReplaced, original.size()));
+    	assertEquals(reference.size(), result.size());
+    	int size = reference.size();
+    	for (int i = 0; i < size; i++) {
+    		assertEquals(reference.get(i), result.get(i), "difference at position " + i);
+    	}
+    }
 }
