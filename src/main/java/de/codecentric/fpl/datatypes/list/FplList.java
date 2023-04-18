@@ -453,25 +453,25 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		// Then we have "head" (left part from original list), "patch", and "tail"
 		// (right part from original list).
 
-		int headBucketIdx = 0;
+		int patchStartBucketIdx = 0;
 		int count = 0;
-		while (count + shape[headBucketIdx].length <= from) {
-			count += shape[headBucketIdx].length;
-			headBucketIdx++;
+		while (count + shape[patchStartBucketIdx].length <= from) {
+			count += shape[patchStartBucketIdx].length;
+			patchStartBucketIdx++;
 		}
-		int headInBucketIdx = from - count;
+		int patchStartInBucketIdx = from - count;
 
 		int tailStart = from + numReplaced;
 		int tailSize = oldSize - tailStart;
 
-		int tailBucketIdx = max(0, headBucketIdx - 1);
+		int tailBucketIdx = patchStartBucketIdx;
 		while (count + shape[tailBucketIdx].length < tailStart) {
 			count += shape[tailBucketIdx].length;
 			tailBucketIdx++;
 		}
 		int tailInBucketIdx = tailStart - count;
 
-		int resultNumBuckets = headBucketIdx + 1 + patch.shape.length + shape.length - tailBucketIdx + 1;
+		int resultNumBuckets = patchStartBucketIdx + 1 + patch.shape.length + shape.length - tailBucketIdx + 1;
 
 		if (needsReshaping(resultNumBuckets, resultSize)) {
 			int[] bucketSizes = computeBucketSizes(resultSize);
@@ -479,16 +479,22 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			int destBucketIdx = 0;
 			int destInBucketIdx = 0;
 			count = 0;
-			headBucketIdx = 0;
-			headInBucketIdx = 0;
+			patchStartBucketIdx = 0;
+			patchStartInBucketIdx = 0;
 			FplValue[] subShape = new FplValue[bucketSizes[0]];
 			newShape[0] = subShape;
+			
+			// TODO:
+			// - copy whole slices
+			// - count backwards: stillToCopy
+			// - slice size minimum of stillToCopy, size in target bucket, size in source bucket
+			
 			// copy head
 			while (count++ < from) {
-				subShape[destInBucketIdx++] = shape[headBucketIdx][headInBucketIdx++];
-				if (headInBucketIdx == shape[headBucketIdx].length) {
-					headInBucketIdx = 0;
-					headBucketIdx++;
+				subShape[destInBucketIdx++] = shape[patchStartBucketIdx][patchStartInBucketIdx++];
+				if (patchStartInBucketIdx == shape[patchStartBucketIdx].length) {
+					patchStartInBucketIdx = 0;
+					patchStartBucketIdx++;
 				}
 				
 				if (destInBucketIdx == subShape.length) {
@@ -500,8 +506,8 @@ public class FplList implements FplValue, Iterable<FplValue> {
 					}
 				}
 			}
-			count--;
-			// copy batch
+			count = from;
+			// copy patch
 			int patchBucketIdx = 0;
 			int patchInBucketIdx = 0;
 			while (count++ < from + patchSize) {
@@ -521,16 +527,17 @@ public class FplList implements FplValue, Iterable<FplValue> {
 					}
 				}
 			}
-			count--;
+			count = from + patchSize;
 			
 			// copy tail
 			while (count++ < resultSize) {
-				subShape[destInBucketIdx++] = shape[tailBucketIdx][tailInBucketIdx++];
-				
 				if (tailInBucketIdx == shape[tailBucketIdx].length) {
 					tailInBucketIdx = 0;
 					tailBucketIdx++;
 				}
+				
+				FplValue v = shape[tailBucketIdx][tailInBucketIdx++];
+				subShape[destInBucketIdx++] = v;
 				
 				if (destInBucketIdx == subShape.length) {
 					destBucketIdx++;

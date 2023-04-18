@@ -46,36 +46,70 @@ public class ReplaceElementsTest extends AbstractListTest {
 	public void patchAll() {
 		FplList original = create(0, 5);
 		FplList patch = create(6, 10);
-		FplList result = original.replaceElements(0, patch, 5);
-		check(result, 6, 10);
-		check(original, 0, patch, 5, result);
+		replaceAndCheck(original, 0, patch, 5);
 	}
 	
 	@Test
 	public void patchAtBeginning() {
 		FplList original = create(0, 5);
 		FplList patch = create(6, 9);
-		FplList result = original.replaceElements(0, patch, 2);
-		checkValues(result, 6, 7, 8, 2, 3, 4);
-		check(original, 0, patch, 2, result);
+		replaceAndCheck(original, 0, patch, 2);
 	}
 	
 	@Test
 	public void patchAtEnd() {
 		FplList original = create(0, 5);
 		FplList patch = create(6, 9);
-		FplList result = original.replaceElements(3, patch, 2);
-		check(original, 3, patch, 2, result);
+		replaceAndCheck(original, 3, patch, 2);
+	}
+	
+	@Test
+	public void replaceCompleteFirstBucketWithReorg() {
+		FplList original = create(0, 100, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+		FplList patch = create(101, 121);
+		replaceAndCheck(original, 0, patch, 10);
+	}
+	
+	@Test
+	public void replaceCompleteSecondBucketWithReorg() {
+		FplList original = create(0, 100, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+		FplList patch = create(101, 121);
+		replaceAndCheck(original, 10, patch, 10);
+	}
+	
+	@Test
+	public void replaceCompleteSecondAndThirdBucketWithReorg() {
+		FplList original = create(0, 100, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+		FplList patch = create(101, 121);
+		replaceAndCheck(original, 10, patch, 20);
+	}
+	
+	@Test
+	public void replaceCompleteLastBucketWithReorg() {
+		FplList original = create(0, 100, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+		FplList patch = create(101, 121);
+		replaceAndCheck(original, 90, patch, 10);
+	}
+	
+	@Test
+	public void replacePartialSecondAndThirdBucketWithReorg() {
+		FplList original = create(0, 100, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+		FplList patch = create(101, 121);
+		replaceAndCheck(original, 15, patch, 10);
 	}
 	
 	@Test
 	public void patchInTheMiddle() {
 		FplList original = create(0, 6);
 		FplList patch = create(6, 8);
-		FplList result = original.replaceElements(3, patch, 2);
-		check(original, 3, patch, 2, result);
+		replaceAndCheck(original, 3, patch, 2);
 	}
 	
+	private void replaceAndCheck(FplList original, int from, FplList patch, int numReplaced) {
+		FplList result = original.replaceElements(from, patch, numReplaced);
+		check(original, from, patch, numReplaced, result);
+	}
+
 	@Test
 	public void patchInTheMiddleWithEvaluate() throws EvaluationException, ParseException {
     	FplEngine engine = new DefaultFplEngine();
