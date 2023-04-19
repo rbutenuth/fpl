@@ -99,6 +99,13 @@ public class ReplaceElementsTest extends AbstractListTest {
 	}
 	
 	@Test
+	public void removeCompleteLastBucketWithReorg() {
+		FplList original = create(0, 100, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+		FplList patch = FplList.EMPTY_LIST;
+		replaceAndCheck(original, 90, patch, 10);
+	}
+	
+	@Test
 	public void patchInTheMiddle() {
 		FplList original = create(0, 6);
 		FplList patch = create(6, 8);
