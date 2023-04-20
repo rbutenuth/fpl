@@ -1,7 +1,6 @@
 package de.codecentric.fpl.datatypes.list;
 
 import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToFunction;
-import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.copyOf;
@@ -484,18 +483,16 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			FplValue[] subShape = new FplValue[bucketSizes[0]];
 			newShape[0] = subShape;
 			
-			// TODO:
-			// - copy whole slices
-			// - count backwards: stillToCopy
-			// - slice size minimum of stillToCopy, size in target bucket, size in source bucket
-			
 			// copy head
-			while (count++ < from) {
-				subShape[destInBucketIdx++] = shape[patchStartBucketIdx][patchStartInBucketIdx++];
-				if (patchStartInBucketIdx == shape[patchStartBucketIdx].length) {
-					patchStartInBucketIdx = 0;
-					patchStartBucketIdx++;
-				}
+			while (count < from) {
+				int srcLimit = min(shape[patchStartBucketIdx].length - patchStartInBucketIdx, from - count);
+				int destLimit = min(subShape.length - destInBucketIdx, from - count);
+				int limit = min(srcLimit, destLimit);
+
+				arraycopy(shape[patchStartBucketIdx], patchStartInBucketIdx, subShape, destInBucketIdx, limit);
+				patchStartInBucketIdx += limit;
+				destInBucketIdx += limit;
+				count += limit;
 				
 				if (destInBucketIdx == subShape.length) {
 					destBucketIdx++;
@@ -505,13 +502,25 @@ public class FplList implements FplValue, Iterable<FplValue> {
 						destInBucketIdx = 0;
 					}
 				}
+				if (patchStartInBucketIdx == shape[patchStartBucketIdx].length) {
+					patchStartInBucketIdx = 0;
+					patchStartBucketIdx++;
+				}
 			}
 			count = from;
+			
 			// copy patch
 			int patchBucketIdx = 0;
 			int patchInBucketIdx = 0;
-			while (count++ < from + patchSize) {
-				subShape[destInBucketIdx++] = patch.shape[patchBucketIdx][patchInBucketIdx++];
+			while (count < from + patchSize) {
+				int srcLimit = patch.shape[patchBucketIdx].length - patchInBucketIdx;
+				int destLimit = subShape.length - destInBucketIdx;
+				int limit = min(srcLimit, destLimit);
+				
+				arraycopy(patch.shape[patchBucketIdx], patchInBucketIdx, subShape, destInBucketIdx, limit);
+				patchInBucketIdx += limit;
+				destInBucketIdx += limit;
+				count += limit;
 				
 				if (patchInBucketIdx == patch.shape[patchBucketIdx].length) {
 					patchInBucketIdx = 0;
@@ -530,14 +539,20 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			count = from + patchSize;
 			
 			// copy tail
-			while (count++ < resultSize) {
+			while (count < resultSize) {
+				int srcLimit = shape[tailBucketIdx].length - tailInBucketIdx;
+				int destLimit = bucketSizes.length - destBucketIdx;
+				int limit = min(srcLimit, destLimit);
+
+				arraycopy(shape[tailBucketIdx], tailInBucketIdx, subShape, destInBucketIdx, limit);
+				tailInBucketIdx += limit;
+				destInBucketIdx += limit;
+				count += limit;
+
 				if (tailInBucketIdx == shape[tailBucketIdx].length) {
 					tailInBucketIdx = 0;
 					tailBucketIdx++;
 				}
-				
-				FplValue v = shape[tailBucketIdx][tailInBucketIdx++];
-				subShape[destInBucketIdx++] = v;
 				
 				if (destInBucketIdx == subShape.length) {
 					destBucketIdx++;
