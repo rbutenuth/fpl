@@ -64,6 +64,13 @@ public class ReplaceElementsTest extends AbstractListTest {
 	}
 	
 	@Test
+	public void replaceCompleteFirstBucketNoReorg() {
+		FplList original = create(0, 100, 10, 60, 30);
+		FplList patch = create(101, 121);
+		replaceAndCheck(original, 0, patch, 10);
+	}
+	
+	@Test
 	public void replaceCompleteFirstBucketWithReorg() {
 		FplList original = create(0, 100, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
 		FplList patch = create(101, 121);

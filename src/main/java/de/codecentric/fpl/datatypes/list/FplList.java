@@ -461,7 +461,6 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int patchStartInBucketIdx = from - count;
 
 		int tailStart = from + numReplaced;
-		int tailSize = oldSize - tailStart;
 
 		int tailBucketIdx = patchStartBucketIdx;
 		while (count + shape[tailBucketIdx].length < tailStart) {
@@ -471,6 +470,8 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		int tailInBucketIdx = tailStart - count;
 
 		int resultNumBuckets = patchStartBucketIdx + 1 + patch.shape.length + shape.length - tailBucketIdx + 1;
+		// TODO: resultNumBuckets can be reduced when the join of the first/last bucket from the patch
+		// combined with the "cut" buckets from the original list are not too big. 
 
 		if (needsReshaping(resultNumBuckets, resultSize)) {
 			int[] bucketSizes = computeBucketSizes(resultSize);
@@ -485,9 +486,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			
 			// copy head
 			while (count < from) {
-				int srcLimit = min(shape[patchStartBucketIdx].length - patchStartInBucketIdx, from - count);
-				int destLimit = min(subShape.length - destInBucketIdx, from - count);
-				int limit = min(srcLimit, destLimit);
+				int limit = min(min(shape[patchStartBucketIdx].length - patchStartInBucketIdx, subShape.length - destInBucketIdx), from - count);
 
 				arraycopy(shape[patchStartBucketIdx], patchStartInBucketIdx, subShape, destInBucketIdx, limit);
 				patchStartInBucketIdx += limit;
@@ -507,15 +506,12 @@ public class FplList implements FplValue, Iterable<FplValue> {
 					patchStartBucketIdx++;
 				}
 			}
-			count = from;
 			
 			// copy patch
 			int patchBucketIdx = 0;
 			int patchInBucketIdx = 0;
 			while (count < from + patchSize) {
-				int srcLimit = patch.shape[patchBucketIdx].length - patchInBucketIdx;
-				int destLimit = subShape.length - destInBucketIdx;
-				int limit = min(srcLimit, destLimit);
+				int limit = min(patch.shape[patchBucketIdx].length - patchInBucketIdx, subShape.length - destInBucketIdx);
 				
 				arraycopy(patch.shape[patchBucketIdx], patchInBucketIdx, subShape, destInBucketIdx, limit);
 				patchInBucketIdx += limit;
@@ -536,13 +532,10 @@ public class FplList implements FplValue, Iterable<FplValue> {
 					}
 				}
 			}
-			count = from + patchSize;
 			
 			// copy tail
 			while (count < resultSize) {
-				int srcLimit = shape[tailBucketIdx].length - tailInBucketIdx;
-				int destLimit = bucketSizes.length - destBucketIdx;
-				int limit = min(srcLimit, destLimit);
+				int limit = min(shape[tailBucketIdx].length - tailInBucketIdx, bucketSizes.length - destBucketIdx);
 
 				arraycopy(shape[tailBucketIdx], tailInBucketIdx, subShape, destInBucketIdx, limit);
 				tailInBucketIdx += limit;
