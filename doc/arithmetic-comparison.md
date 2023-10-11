@@ -87,19 +87,19 @@ Logic not of parameter.
 ### and
 Logic and of parameters.
 ```
-(and expression)
+(and op1...)
 ```
 
 ### or
 Logic or of parameters.
 ```
-(or expression)
+(or op1...)
 ```
 
 ### xor
 Logic xor of parameters.
 ```
-(xor expression)
+(xor op1...)
 ```
 
 ## Type checking functions

@@ -39,7 +39,7 @@ A List starts with `(`, followed by the elements of the list, followed by `)`. A
 
 ### Quote
 
-The character `'` in front of a list blocks the evaluation of the list. This is a short cut for the function `qoute`.
+The character `'` in front of an expression blocks the evaluation of the expression. This is a short cut for the function `qoute`.
 
 ### Comments
 

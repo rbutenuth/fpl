@@ -1,19 +1,20 @@
 # Lambdas and Functions
 
-You call a functions by evaluating a list. The first element of the list is evaluated. When it is a function,
-it will be called with the remaining list elements as parameters. So
+You call a functions by evaluating a list. The first element of the list is evaluated. 
+When the result of its evaluation is a function, it will be called with the remaining
+list elements as parameters. So
 
 ```
 (+ 3 4)
 ```
 
 Evaluates to `7` in the following steps: First, the symbol `+` is evaluated. The result is the built-in 
-function "add". It will evaluate its parameters `3` and `4`. When you evaluate a number in fpl, it will evaluate
+function `add`. It will evaluate its parameters `3` and `4`. When you evaluate a number in FPL, it will evaluate
 to itself. After that, the two numbers will be added and the result `7` is returned.
 
 One of the steps sounds to be irrelevant here but will be important later: The parameters are passed to 
 the function "as is". They are _not_ evaluated at this moment! They are evaluated when they are needed within
-the function. For this reason, all parameters are passed together with their context to a function and evaluated
+the function. For this reason, all parameters are passed together with their context and evaluated
 on demand. That's called lazy evaluation and important for some features which will be discussed later.
 
 ## Define Lambdas and Functions
@@ -21,7 +22,7 @@ on demand. That's called lazy evaluation and important for some features which w
 Everything is fine so far when you just want to call built-in functions. But that's not the purpose of a
 language: You want to extend the existing features and capabilities with your own functions. 
 
-Functions in fpl are defined as lambda expressions. Of course, lambda itself is a function. To create a lambda
+Functions in FPL are defined as lambda expressions. Of course, lambda itself is a function. To create a lambda
 expression to square its parameter, write:
 
 ```
@@ -68,7 +69,7 @@ It combines the function definition with a lambda expression and its binding to 
 The two functions `lambda` and `def-function` are a little bit special: They only evaluate the parameter
 with the argument list, when it is not already a list. This is for convenience: This way you don't have to qoute
 the list of parameter names. The same holds for the code: You don't need to quote it. The downside: You are in trouble
-when you want to build code at runtime and make from it. Therefore, there are two special variants:
+when you want to build code at runtime. Therefore, there are two special variants:
 
 ```
 (lambda-dynamic parameter-list code-list)
@@ -124,7 +125,7 @@ would not be possible. Let's see another example:
 )
 ```
 
-Computing the `if` and the `else` part and then deciding wich one will be returned would result in an
+Computing the `if` and the `else` part and then deciding which one will be returned would result in an
 endless recursion. Lazy evaluation makes this function possible!
 
 ## Optional Arguments and Variable Argument Lists
@@ -154,7 +155,7 @@ b: list (4 5)
 ```
 
 
-## Currying
+## Currying (Schönfinkeln)
 
 What happens when you call a function with less parameters then specified in the function definition? In most
 programming languages the result would be an error or the remaining parameters would be set to `null`. In

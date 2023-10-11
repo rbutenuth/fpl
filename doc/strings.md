@@ -83,7 +83,7 @@ if no match found.
 
 ### replace-all
 Replaces each substring of this string that matches the given regex with the given replacement.
-(See String.replaceAll for more details.)
+(See Java String.replaceAll for more details.)
 ```
 (replace-all string regex replacement)
 ```

@@ -15,7 +15,11 @@ Example:
 )
 ```
 
-Or an efficient way to compute Fibonacci numbers: 
+The code defines a symbol with value 10. The loop is executed while the value of the symbol `counter` is >= 0. 
+So the the lines from 10 to 0 are printed.  The last `set` assigns the value -1. The function `set` returns the 
+value of the symbol before changing it, 0 in this case. As a consequence, the return value of the loop is 0.
+
+Another example, an efficient way to compute Fibonacci numbers: 
 ```
 (def-function fib (n)
 	(if-else (le n 2)
@@ -37,11 +41,6 @@ Or an efficient way to compute Fibonacci numbers:
 )
 ```
 
-
-The code defines a symbol with value 10. The loop is executed while the value of the symbol `counter` is >= 0. 
-So the the lines from 10 to 0 are printed.  The last `set` assigns the value -1. The function `set` returns the 
-value of the symbol before changing it, 0 in this case. As a consequence, the return value of the loop is 0.
-
 ### for-each
 Apply a lambda to all list elements, return evaluation result of last lambda.
 ```
@@ -49,8 +48,8 @@ Apply a lambda to all list elements, return evaluation result of last lambda.
 ```
 
 ### from-to-inclusive
-Apply a lambda to all numbers from start (inclusive) to end (inclusive). Start and end must be numbers.
-End may be smaller then start, in this case to sequence of numbers is decreasing.
+Apply a lambda to all numbers from `start` (inclusive) to `end` (inclusive). `atart` and `end` must be numbers.
+`end` may be smaller then `start`, in this case to sequence of numbers is decreasing.
 The lambda must accept one parameter, the current number.
 Result is the result of the last lambda evaluation.
 ```
@@ -58,8 +57,8 @@ Result is the result of the last lambda evaluation.
 ```
 
 ### from-to
-Apply a lambda to all numbers from start (inclusive) to end (exclusive). Start and end must be numbers.
-End may be smaller then start, in this case to sequence of numbers is decreasing.
+Apply a lambda to all numbers from `start` (inclusive) to `end` (exclusive). `start` and `end` must be numbers.
+`end` may be smaller then `start`, in this case to sequence of numbers is decreasing.
 The lambda must accept one parameter, the current number.
 Result is the result of the last lambda evaluation.
 ```
@@ -67,7 +66,7 @@ Result is the result of the last lambda evaluation.
 ```
 
 ### map-sequence
-Apply a lambda to all numbers from start (inclusive) to end (exclusive). Start and end must be numbers.
+Apply a lambda to all numbers from `start` (inclusive) to `end` (exclusive). Start and end must be numbers.
 End must not be less than start.
 The lambda must accept one parameter, the current number.
 Result is a list of the applied lambda for all the numbers in the sequence.
@@ -123,7 +122,7 @@ Example:
 ```
 (reduce (lambda (acc value index) (+ acc value)) 0 '(1 2 3 4 5 6))
 ```
-Computes the sum of the number 1 to 6.
+Computes the sum of the numbers 1 to 6.
 
 ### combine
 Take two lists as input, call a lambda with three parameters (element from first, second list, index)
@@ -156,8 +155,8 @@ result of the lambda is nil, the corresponding element is ignored.
 Apply a lambda to all list elements and return a dictionary. The dictionary is build from the results
 of the lambdas. The first must return the key as string, the second a value (any type). 
 When the key is nil, the second lambda is not called and nothing is put to the dictionary.
-Adding to the dictionary is done by put, so mappings may overwrite each other or even remove mappings,
-when value is nil.
+Adding to the dictionary is done by `put`, so mappings may overwrite each other or even remove mappings,
+when value is `nil`.
 
 The first lambda receives a list element as parameter and the index (starting from 0).
 The second lambda receives three parameters: The first is the previous value contained in the dictionary for the given
@@ -169,14 +168,14 @@ key (may be nil if no mapping exists), the second the list element to be mapped.
 ### map-to-sorted-dict
 Apply a lambda to all list elements and return a sorted dictionary. The dictionary is build from the results
 of the lambdas. The first must return the key as string, the second a value (any type). 
-When the key is nil, the second lambda is not called and nothing is put to the dictionary.
+When the `key` is `nil`, the second lambda is not called and nothing is put to the dictionary.
 Adding to the dictionary is done by put, so mappings may overwrite each other or even remove mappings,
-when value is nil.
+when value is `nil`.
 The first lambda receives a list element as parameter and the index (starting from 0).
 The second lambda receives three parameters: The first is the previous value contained in the dictionary for the given
 key (may be nil if no mapping exists), the second the list element to be mapped, the third the index (starting from 0).
-The third lambda controls the sorting of the dictionary. It takes two arguments (left, right) and must return a number:
-< 0 if left < right, 0 for left = right and > 0 for left > right. When the thirs lambda is nil, natural string ordering
+The third lambda controls the sorting of the dictionary. It takes two arguments (`left`, `right`) and must return a number:
+`< 0` if `left < right`, `0` for `left = right` and `> 0` for `left > right`. When the third lambda is nil, natural string ordering
 is used. 
 ```
 (map-to-sorted key-lambda value-lambda sort-lambda some-list)

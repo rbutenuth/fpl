@@ -2,7 +2,7 @@
 
 ## Introduction
 
-There are two builtin data structures in FPL: Immutable lists and mutable dictonaries. 
+There are two builtin data structures in FPL: Immutable lists and mutable dictionaries. 
 A dictionary is created with the function `dict`  
 
 ```
@@ -12,17 +12,17 @@ A dictionary is created with the function `dict`
 )
 ```
 
-There can't be nil values in a dictionary: When you put a nil value, the mapping for that key is simply
+There can't be `nil` values in a dictionary: When you put a `nil` value, the mapping for that key is simply
 removed from the dictionary.
 
-Keys can be any values (except nil), but only values where there is a meaningful hash code and equals 
+Keys can be any values (except `nil`), but only values where there is a meaningful hash code and equals 
 method in the backing Java code make sense: string, integer, double.   
 
 ## Functions
 
 ### dict
 
-Create a new dictionary from key value pairs. The number of parameters must be even, keys must not be nil.
+Create a new dictionary from key value pairs. The number of parameters must be even, keys must not be `nil`.
 
 ```
 (dict pairs...)
@@ -34,7 +34,7 @@ Create a new dictionary from key value pairs. The number of parameters must be e
 Create a new sorted dictionary from key value pairs.
 The lambda sort takes two arguments (left, right) and must return a number:
 < 0 if left < right, 0 for left = right and > 0 for left > right.
-When sort-lambda is nil, the natural string order is used. This works only when the keys
+When sort-lambda is `nil`, the natural string order is used. This works only when the keys
 are string, integer, or double.
 
 ```
@@ -60,9 +60,9 @@ Get a value from the scope of an object or dictionary.
 
 ### dict-put
 
-Put a value into the scope of an object or dictionary, key must not be nil,
+Put a value into the scope of an object or dictionary, key must not be `nil`,
 returns the old value associated with the key. When you want to remove a mapping, 
-set the value nil.
+set the value `nil`.
 
 ```
 (dict-put dictionary key value)
@@ -70,8 +70,8 @@ set the value nil.
 
 ### dict-set
 
-Change a value into the scope of an object or dictionary, key must be not nil,
-returns the old value associated with the key, new and old value must not be nil.
+Change a value into the scope of an object or dictionary, key must be not `nil`,
+returns the old value associated with the key, new and old value must not be `nil`.
 
 ```
 (dict-set dictionary key value)

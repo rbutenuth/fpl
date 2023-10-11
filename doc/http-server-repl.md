@@ -1,6 +1,6 @@
 # HTTP Server as REPL
 
-Part of fpl is a HTTP server based REPL (read evaluate print loop).
+Part of FPL is a HTTP server based REPL (read evaluate print loop).
 It is started by the main method of the class `de.codecentric.fpl.io.HttpServerMain`. 
 The main method has to be started with three arguments:
 
@@ -10,15 +10,14 @@ The main method has to be started with three arguments:
 
 All HTTP traffic to the server is protected by the given username/password with basic authentication. 
 
-Be careful with the username and password: Through the Java bridge, fpl can call Java code, which opens
-ab bunch of different ways to break into your computer!
+Be careful with the username and password: Through the Java bridge, FPL can call Java code, which opens a bunch of different ways to break into your computer!
 
 # Using the Server as REPL
 
 Sending a POST request to the URL /fpl will evaluate all given expressions. When you add the query parameter
 `lastBlockOnly`, only the last block (paragraph) will be executed. This is useful when you want to
 collect a whole "session" in Postman, but want to enter it one expression after the other. Just put an
-empty between the expressions to execute only one expression per call.
+empty line between the expressions to execute only one expression per call.
 
 # Terminate the Server
 

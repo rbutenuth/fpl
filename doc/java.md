@@ -34,5 +34,3 @@ with the remaining parameters as method parameters. Example:
 ```
 This code create an ArrayList, assigns it to `array-list`, adds the values 5 and 6, then calls the method `get` to retrieve
 the element at position 1, which is 6.
-
- 

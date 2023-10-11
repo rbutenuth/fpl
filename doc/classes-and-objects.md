@@ -5,20 +5,22 @@
 The core of FPL is functional, but some simple extensions allow object oriented programming with classes and instances (objects).
 How does it work? What is a class or an object? Both are not more than slightly extended [dictionaries](dictionaries.md).
 The difference between a dictionary and a class/object is the nested scoping: A dictionary is just a map or scope, but it
-has no parent scope. Whenever a key is looked up in a dictionary, it is either found in this dictionary or nil is returned.
+has no parent scope. Whenever a key is looked up in a dictionary, it is either found in this dictionary or `nil` is returned.
 
-On the other hand: A class or an object always has a parent scope. This can be another class or object or the global scope
-of FPL. That's the first part of the trick: An object is bound to its class by the scoping rules: The parent scope of the
+On the other hand: A class or an object always has a parent scope. This can be another class or object or the global FPL
+scope. That's the first part of the trick: An object is bound to its class by the scoping rules: The parent scope of the
 object is the class. You can create a new object with the function new-instance. Whenever you execute this function within
 a class, you create an object which "belongs" to this class. The coupling is just done by the scoping rules.
 
 With the help of the function sub-class it is possible to create a new class and to set the parent class in an explicit
-way. There is no difference between classes and objects on a technical level: It's all just scoping.
+way. There is no difference between classes and objects on a technical level: Everything just works by application of
+the scoping rules of FPL.
 
 How can you use classes and how can you call methods (functions defined in a class)? When designing FPL, I wanted a syntax 
-similar to existing object oriented languages without complicated syntax. The solution is quite simple: Objects and classes 
-are functions! When called, they evaluate (in the scope of the class or object) their first argument. 
-It must evaluate to a function. Then this function is called within the scope of the class or object. So the syntax is:
+similar to existing object oriented languages without extending the simple base syntax of FPL.
+The solution is quite simple: Objects and classes are functions! When called, they evaluate 
+(in the scope of the class or object) their first argument. It must evaluate to a function. 
+Then this function is called within the scope of the class or object. So the syntax is:
 
 ```
 (some-object-or-class evaluates-to-function first-real-arg second-real-arg)
@@ -95,7 +97,7 @@ Example:
 ```
 
 ### new-instance
-Create an instance of an object.
+Create an instance (object).
 
 Example: 
 
@@ -140,7 +142,7 @@ Example:
 ```
 
 ### this
-The next object in the scope chain, can be nil when not within an object context.
+The next object in the scope chain, can be `nil` when not within an object context.
 
 Example: 
 

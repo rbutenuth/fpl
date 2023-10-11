@@ -1,5 +1,9 @@
 # Lists
 
+Keep in mind: Lists are immutable. Function like `add-end` to _not_ modify
+the list given as first parameter, they will return a new list which looks
+like the original one with the added value.
+
 ### add-end
 Return a new list with expression added at the end of the given list.
 ```
@@ -66,7 +70,7 @@ Make a list out of the parameters.
 ```
 
 ### lower-half
-Return the lower half of a list (opposite to upper-half). In case the number of elements is not even,
+Return the lower half of a list (opposite to `upper-half`). In case the number of elements is not even,
 the lower half has one element less than the upper half.
 ```
 (lower-half some-list)
@@ -81,7 +85,7 @@ returns
 ```
 
 ### upper-half
-Return the upper half of a list (opposite to lower-half). In case the number of elements is not even,
+Return the upper half of a list (opposite to `lower-half`). In case the number of elements is not even,
 the lower half has one element less than the upper half.
 ```
 (upper-half some-list)
@@ -109,7 +113,7 @@ Return list without the last element.
 
 ### replace-elements
 Replace some elements from this list with elements of another list. It is not required for the second list
-to have the same number of elements as are removed from the original list.
+to have the same number of elements as elements are removed from the original list.
 `from` is the index of the first replaced element, `new-elements` is the list
 with the new elements, `num-replaced` elements will be removed.
 ```
@@ -136,8 +140,8 @@ Return a part from the given list, including start, excluding end (counted from 
 ```
 
 ### sort
-Sort a list. The lambda takes two arguments (left, right) and must return a number:
-< 0 if left < right, 0 for left = right and > 0 for left > right.
+Sort a list. The lambda takes two arguments (`left`, `right`) and must return a number:
+`< 0` if `left < right`, `0` for `left = right` and `>` 0 for `left > right`.
 ```
 (sort lambda some-list)
 ```
@@ -157,5 +161,3 @@ Example:
 	values
 )
 ```
-
-

@@ -5,7 +5,7 @@
 ### What is true?
 
 Conditional execution of function must have an understanding of truth. FPL has no explicit boolean
-value (you may know this from C). In FPL nearly everything is true, false is:
+value (you may know this from C). In FPL nearly everything is `true`, `false` is:
 * `nil`
 * An empty list
 * The integer 0
@@ -14,19 +14,19 @@ value (you may know this from C). In FPL nearly everything is true, false is:
 
 
 ### if
-Evaluate condition, if true, return evaluated if-part, otherwise return nil.
+Evaluate condition, if `true`, return evaluated if-part, otherwise return `nil`.
 ```
 (if condition if-part)
 ```
 
 ### if-else
-Evaluate condition, if true, return evaluated if-part, otherwise evaluated else-part.
+Evaluate condition, if `true`, return evaluated if-part, otherwise evaluated else-part.
 ```
 (if-else condition if-part else-part)
 ```
 
 ### cond
-Handle condition expression pairs. When the first condition is true, the first expression is executed and
+Handle condition expression pairs. When the first condition is `true`, the first expression is executed and
 the evaluation result is returned. When not, continue with next condition.
 When the number of parameters is not even, the last one is evaluated when all conditions are false.
 ```
@@ -47,8 +47,8 @@ Evaluate the expressions within a new scope, return value of last expression.
 ```
 
 ### pipeline
-Evaluate the expressions within a new scope, return value of last expression. "
-The evaluation result of the expressions is bound to the symbol given as parameter pipe-key.",
+Evaluate the expressions within a new scope, return value of last expression.
+The evaluation result of the expressions is bound to the symbol given as parameter `pipe-key`.,
 ```
 (pipeline pipe-key expressions...)
 ```
@@ -98,8 +98,15 @@ Open `resources`, evaluate (and return the value of) an `expression`, catch exce
 Example:
 ```
 (try-with ((a (open "a") (lambda (x) (close x))) 
-            (b (open "b") (lambda (x) (close x))) 
-          ) (sequential (put-global "a-in-code" a) (put-global "b-in-code" b) (throw "bam")) (lambda (message id stacktrace) (put-global "message" message) 42)) 
+           (b (open "b") (lambda (x) (close x))) 
+          )
+          (sequential 
+            (put-global "a-in-code" a)
+            (put-global "b-in-code" b)
+            (throw "bam")
+          )
+          (lambda (message id stacktrace) (put-global "message" message) 42)
+) 
 ```
 Opens two resources with some open function, the result is stored in the local scope in `a` and `b`. Then the sequential block is executed, which stores the
 resource in open state in two global variables, before throwing an exceptions. The `catch-function` stores the exception message in a global variable and

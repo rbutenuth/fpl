@@ -3,7 +3,7 @@
 ## def, set, and put
 
 Even when you design an untyped language, you can protect against some errors.
-For this reasons fpl distinguishes between `def`, `set`, and `put`.
+For this reasons FPL distinguishes between `def`, `set`, and `put`.
 
 For example, `(def x 42)` associates the symbol `x` with the value `42` in the current scope. 
 This works only when `x` is not associated with any value before, otherwise you get the error message
@@ -14,7 +14,7 @@ When you try `(set foo "bar")` without defining `foo` before, the error message 
 `No value with key foo found`.
 
 How do symbols look like? There are very few restrictions: They can't start with a digit and they can't contain any
-of the other special characters used by the fpl syntax: ` `, `"`, `(`, `)`, `[`, `]`, `{`, `}`, `:`.
+of the other special characters used by the FPL syntax: ` `, `"`, `(`, `)`, `[`, `]`, `{`, `}`, `:`.
 Some of the special characters (`[]{}:`) are reserved for future use. A symbol must not start with `'`, as this is a shortcut for the function `quote`. 
 So `++` is a valid symbol.
 
@@ -33,7 +33,7 @@ Examples:
 (match-put (x y) '("foo" "bar"))
 ```
 
-Assigns "foo" to x and "bar" to y, returns 1 (true)
+Assigns "foo" to `x` and "bar" to `y`, returns 1 (true)
 
 ```
 (match-put (x y) '("foo" "bar" "baz"))
@@ -41,12 +41,12 @@ Assigns "foo" to x and "bar" to y, returns 1 (true)
 
 Assigns nothing, returns 0 (false)
 
-Note that the first parameter of match-put is *not* evaluated. It must be a symbol or a (nested) list of symbols.
+Note that the first parameter of match-put is _not_ evaluated. It must be a symbol or a (nested) list of symbols.
 
 
 ## Short Cut for Functions: def-function
 
-A function in fpl is a lambda expression. To define a function to square a number, you just have to write
+A function in FPL is a lambda expression. To define a function to square a number, you just have to write
 `(lambda (x) (* x x))`. To apply this to the number `7`, just write:
 `((lambda (x) (* x x)) 7)` and you get the result 49. 
 
@@ -54,7 +54,7 @@ In most cases you don't want to write down a function definition every time you 
 To avoid this, you can assign the lambda expression to a symbol:
 `(def square (lambda (x) (* x x)))`
 Or with the short cut `def-function`:
-`(def-function square (x) (* x x))`. Looks like Lisp, but is fpl.
+`(def-function square (x) (* x x))`.
 To apply this to a number, write: `(square 4)`
 
 To make things a bit more formal: The function `lambda` defines a lambda expression. The first parameter
@@ -111,6 +111,6 @@ be evaluated. In case the result is a string, it is converted to a symbol. This 
 name of the assignment target dynamically with a function (which has to return a string). 
 
 What if you try to assign a value to a parameter of a function? This is not allowed and will cause an 
-error. So the bad style of assigning values to parameters is not legal in fpl.
+error. So the bad style of assigning values to parameters is not legal in FPL.
 
 
