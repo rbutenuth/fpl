@@ -98,7 +98,7 @@ public class StringFunctions implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				DecimalFormatSymbols symbols = new DecimalFormatSymbols(
-						new Locale(evaluateToString(scope, parameters[1])));
+						Locale.of(evaluateToString(scope, parameters[1])));
 				NumberFormat format = new DecimalFormat(evaluateToString(scope, parameters[0]), symbols);
 				FplValue number = evaluateToAny(scope, parameters[2]);
 				if (number instanceof FplDouble) {
@@ -118,7 +118,7 @@ public class StringFunctions implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				DecimalFormatSymbols symbols = new DecimalFormatSymbols(
-						new Locale(evaluateToString(scope, parameters[1])));
+						Locale.of(evaluateToString(scope, parameters[1])));
 				NumberFormat format = new DecimalFormat(evaluateToString(scope, parameters[0]), symbols);
 				String string = evaluateToString(scope, parameters[2]);
 				try {

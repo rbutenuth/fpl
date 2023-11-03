@@ -7,11 +7,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
@@ -56,7 +56,7 @@ public class ExecuteViaHttpTest {
 	}
 
 	@Test
-	public void stopServerWithGetTerminate() throws IOException {
+	public void stopServerWithGetTerminate() throws Exception {
 		HttpRequest req = new HttpRequest();
 		req.setBaseUri(baseUrl + "/terminate");
 		req.setBasicAuth(user, password);
@@ -66,7 +66,7 @@ public class ExecuteViaHttpTest {
 	}
 
 	@Test
-	public void stopServerWithFplFunction() throws IOException {
+	public void stopServerWithFplFunction() throws Exception {
 		InputStream is = getClass().getResourceAsStream("stop-server.fpl");
 		assertNotNull(is);
 		String response = ExecuteViaHttp.post(baseUrl, user, password, is, false);
@@ -75,7 +75,7 @@ public class ExecuteViaHttpTest {
 	}
 
 	@Test
-	public void getWithoutAuthGives401() throws IOException {
+	public void getWithoutAuthGives401() throws Exception {
 		HttpRequest req = new HttpRequest();
 		req.setBaseUri(baseUrl + "/terminate");
 		new HttpClient().execute(req);
@@ -84,7 +84,7 @@ public class ExecuteViaHttpTest {
 	}
 
 	@Test
-	public void postToBadUrlAuthGives404() throws IOException {
+	public void postToBadUrlAuthGives404() throws Exception {
 		HttpRequest req = new HttpRequest();
 		req.setBasicAuth(user, password);
 		req.setBaseUri(baseUrl.substring(0, baseUrl.indexOf("fpl")));
@@ -107,19 +107,19 @@ public class ExecuteViaHttpTest {
 	}
 
 	@Test
-	public void evaluateOneExpression() throws IOException {
+	public void evaluateOneExpression() throws Exception {
 		String response = ExecuteViaHttp.post(baseUrl, user, password, stream("(+ 3 4)"), false);
 		assertEquals("7", response.trim());
 	}
 
 	@Test
-	public void evaluatePrintExpression() throws IOException {
+	public void evaluatePrintExpression() throws Exception {
 		String response = ExecuteViaHttp.post(baseUrl, user, password, stream("(print 42)"), false);
 		assertEquals("42" + System.lineSeparator() + "nil", response.trim());
 	}
 
 	@Test
-	public void evaluateNil() throws IOException {
+	public void evaluateNil() throws Exception {
 		String response = ExecuteViaHttp.post(baseUrl, user, password, stream("nil"), false);
 		// nil -> null -> terminates the parsing loop, therefore "nothing" returned as
 		// result.
@@ -220,20 +220,20 @@ public class ExecuteViaHttpTest {
 	}
 
 	@Test
-	public void twoExpressionsReturnTwoResults() throws IOException {
+	public void twoExpressionsReturnTwoResults() throws Exception {
 		String response = ExecuteViaHttp.post(baseUrl, user, password, stream("(+ 3 4) (* 6 7)"), false);
 		assertEquals("7" + System.lineSeparator() + System.lineSeparator() + "42", response.trim());
 	}
 
 	@Test
-	public void oneExpressionFollowedByFailureGivesResultAndFailure() throws IOException {
+	public void oneExpressionFollowedByFailureGivesResultAndFailure() throws Exception {
 		String response = ExecuteViaHttp.post(baseUrl, user, password, stream("(+ 3 4)\n(/ 3 0)"), false);
 		assertEquals("7" + nl + nl + "java.lang.ArithmeticException: / by zero" + nl + "    at /(http-post:2)" + nl + "    at top-level(http-post:2)",
 				response.trim());
 	}
 
 	@Test
-	public void checkStacktrace() throws IOException {
+	public void checkStacktrace() throws Exception {
 		String input = "(def-function function-a (a) (function-b a))" + nl + //
 				"(def-function function-b (a) (function-c a))" + nl + //
 				"(def-function function-c (a) (/ 1 a))" + nl + //
@@ -252,33 +252,33 @@ public class ExecuteViaHttpTest {
 	}
 
 	@Test
-	public void checkParseException() throws IOException {
+	public void checkParseException() throws Exception {
 		String response = ExecuteViaHttp.post(baseUrl, user, password, stream("(+ 3 4"), false);
 		assertEquals("Unexpected end of source in list", response.trim());
 	}
 
 	@Test
-	public void oneExpressionExecutedLastBlockOnly() throws IOException {
+	public void oneExpressionExecutedLastBlockOnly() throws Exception {
 		String str = "(* 6 7)\r\n\r\n(+ 3 4)";
 		String response = ExecuteViaHttp.post(baseUrl + "?lastBlockOnly", user, password, stream(str), false);
 		assertEquals("7", response.trim());
 	}
 
 	@Test
-	public void badUserShouldReturn401() throws IOException {
+	public void badUserShouldReturn401() throws Exception {
 		String response = ExecuteViaHttp.post(baseUrl, user + "foo", password, stream("(+ 3 4) (* 6 7)"), false);
 		assertEquals("Failure: 401, reason: Unauthorized", response.trim());
 	}
 
 	@Test
-	public void wrongPasswordShouldReturn401() throws IOException {
+	public void wrongPasswordShouldReturn401() throws Exception {
 		String response = ExecuteViaHttp.post(baseUrl, user, password + "foo", stream("(+ 3 4) (* 6 7)"), false);
 		assertEquals("Failure: 401, reason: Unauthorized", response.trim());
 	}
 
 	@Test
-	public void wrongHttpMethodShouldReturn500() throws IOException {
-		URL url = new URL(baseUrl);
+	public void wrongHttpMethodShouldReturn500() throws Exception {
+		URL url = new URI(baseUrl).toURL();
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
 		byte[] bytes = (user + ":" + password).getBytes();
 		String basicAuth = "Basic " + Base64.getEncoder().encodeToString(bytes);

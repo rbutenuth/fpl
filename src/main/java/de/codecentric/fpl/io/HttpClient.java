@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map.Entry;
@@ -13,10 +15,11 @@ import java.util.Map.Entry;
  */
 public class HttpClient {
 
-	public HttpResponse execute(HttpRequest req) throws IOException {
+	public HttpResponse execute(HttpRequest req) throws IOException, URISyntaxException {
 		HttpResponse res = new HttpResponse();
 
-		URL url = new URL(req.getUri());
+		URL url = new URI(req.getUri()).toURL();
+
 		HttpURLConnection con = (HttpURLConnection) url.openConnection();
 		if (req.getBasicAuth() != null) {
 			con.setRequestProperty("Authorization", req.getBasicAuth());

@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 
 public class ExecuteViaHttp {
 
@@ -28,7 +29,7 @@ public class ExecuteViaHttp {
 	}
 
 	public static String post(String baseUrl, String user, String password, InputStream fis, boolean lastBlockOnly)
-			throws IOException {
+			throws IOException, URISyntaxException {
 		HttpRequest req = new HttpRequest();
 		if (lastBlockOnly) {
 			req.addParam("lastBlockOnly", "");

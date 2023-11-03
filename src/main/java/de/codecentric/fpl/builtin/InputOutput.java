@@ -218,7 +218,7 @@ public class InputOutput implements ScopePopulator {
 					HttpResponse res = new HttpClient().execute(req);
 					return FplList.fromValues(FplInteger.valueOf(res.getStatusCode()), fplHeaders(res),
 							res.hasBody() ? new FplString(res.getBodyAsString("UTF-8")) : null);
-				} catch (IOException | ScopeException e) {
+				} catch (IOException | ScopeException | URISyntaxException e) {
 					throw new EvaluationException(e.getMessage(), e);
 				}
 			}
