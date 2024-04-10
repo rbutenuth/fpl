@@ -1,0 +1,14 @@
+de.codecentric.fpl.builtin.Print
+de.codecentric.fpl.builtin.Assignment
+de.codecentric.fpl.builtin.Arithmetic
+de.codecentric.fpl.builtin.Logic
+de.codecentric.fpl.builtin.ListFunctions
+de.codecentric.fpl.builtin.StringFunctions
+de.codecentric.fpl.builtin.Comparison
+de.codecentric.fpl.builtin.ControlStructures
+de.codecentric.fpl.builtin.Parallel
+de.codecentric.fpl.builtin.Loop
+de.codecentric.fpl.builtin.Lambda
+de.codecentric.fpl.builtin.ClassAndObject
+de.codecentric.fpl.builtin.Dictionary
+de.codecentric.fpl.builtin.InputOutput

@@ -3,6 +3,7 @@ package de.codecentric.fpl.builtin;
 import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToAny;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
@@ -20,8 +21,9 @@ import de.codecentric.fpl.datatypes.list.FplList;
  */
 public class Assignment implements ScopePopulator {
 	@Override
-	public void populate(Scope scope) throws ScopeException, EvaluationException {
-
+	public void populate(FplEngine engine) throws ScopeException, EvaluationException {
+		Scope scope = engine.getScope();
+		
 		scope.define(new AbstractFunction("put",
 				"Assign symbol to evluated value in current scope, deletes if value is null", "symbol", "value") {
 			@Override

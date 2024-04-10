@@ -14,14 +14,10 @@ import de.codecentric.fpl.datatypes.FplValue;
  * FPL "print".
  */
 public class Print implements ScopePopulator {
-	private FplEngine engine;
-
-	public Print(FplEngine engine) {
-		this.engine = engine;
-	}
 
 	@Override
-	public void populate(Scope scope) throws ScopeException, EvaluationException {
+	public void populate(FplEngine engine) throws ScopeException, EvaluationException {
+		Scope scope = engine.getScope();
 		scope.define(new PrintFunction(false, "Print parameters.", engine));
 		scope.define(new PrintFunction(true, "Print parameters, followed by line break.", engine));
 	}

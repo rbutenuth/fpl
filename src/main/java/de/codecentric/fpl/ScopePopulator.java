@@ -8,10 +8,9 @@ import de.codecentric.fpl.data.ScopeException;
  */
 public interface ScopePopulator {
 	/**
-	 * Add functionality to a {@link Scope}. 
+	 * Add functionality to the default scope of a {@link FplEngine}. 
 	 * Should use {@link Scope#define(de.codecentric.fpl.datatypes.Symbol, de.codecentric.fpl.datatypes.FplValue)} 
-	 * overwriting already existing bindings. 
-	 * @param scope Target scope for the functionality.
+	 * @param engine The engine to be used. 
 	 */
-	public void populate(Scope scope) throws ScopeException, EvaluationException;
+	public void populate(FplEngine engine) throws ScopeException, EvaluationException;
 }

@@ -1,6 +1,7 @@
 package de.codecentric.fpl.builtin;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
@@ -18,7 +19,8 @@ public class Comparison implements ScopePopulator {
 	private static FplInteger FALSE = FplInteger.valueOf(0);
 
 	@Override
-	public void populate(Scope scope) throws ScopeException, EvaluationException {
+	public void populate(FplEngine engine) throws ScopeException, EvaluationException {
+		Scope scope = engine.getScope();
 		scope.define(new ComparisonFunction(CompareOperator.EQ, "Compare for equal."));
 		scope.define(new ComparisonFunction(CompareOperator.NE, "Compare for not equal."));
 		scope.define(new ComparisonFunction(CompareOperator.LT, "Compare left less than right."));

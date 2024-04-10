@@ -3,6 +3,7 @@ package de.codecentric.fpl.builtin;
 import java.util.Iterator;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
@@ -22,7 +23,8 @@ import static de.codecentric.fpl.datatypes.AbstractFunction.valueToSymbol;
 public class Lambda implements ScopePopulator {
 
 	@Override
-	public void populate(Scope scope) throws ScopeException, EvaluationException {
+	public void populate(FplEngine engine) throws ScopeException, EvaluationException {
+		Scope scope = engine.getScope();
 
 		scope.define(new AbstractFunction("lambda", "Create an anonymous function.", "parameter-list", "code...") {
 

@@ -1,6 +1,7 @@
 package de.codecentric.fpl.builtin;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.ParameterScope;
 import de.codecentric.fpl.data.Scope;
@@ -16,7 +17,8 @@ import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToAny;
  */
 public class ClassAndObject implements ScopePopulator {
 	@Override
-	public void populate(Scope scope) throws ScopeException, EvaluationException {
+	public void populate(FplEngine engine) throws ScopeException, EvaluationException {
+		Scope scope = engine.getScope();
 
 		scope.define(new AbstractFunction("class", "Create a new scope and execute the given code within it.",
 				"code...") {

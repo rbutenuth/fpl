@@ -1,6 +1,7 @@
 package de.codecentric.fpl.builtin;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
@@ -21,7 +22,8 @@ public class Logic implements ScopePopulator {
 	private final static FplInteger FALSE = FplInteger.valueOf(0);
 
 	@Override
-	public void populate(Scope scope) throws ScopeException, EvaluationException {
+	public void populate(FplEngine engine) throws ScopeException, EvaluationException {
+		Scope scope = engine.getScope();
 
 		scope.define(new LogicFunction("and", "Logic and of parameters."));
 		scope.define(new LogicFunction("or", "Logic or of parameters."));

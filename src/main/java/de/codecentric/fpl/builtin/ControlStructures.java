@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.MapScope;
 import de.codecentric.fpl.data.PipelineScope;
@@ -24,7 +25,8 @@ import static de.codecentric.fpl.builtin.Assignment.targetName;
  */
 public class ControlStructures implements ScopePopulator {
 	@Override
-	public void populate(Scope scope) throws ScopeException, EvaluationException {
+	public void populate(FplEngine engine) throws ScopeException, EvaluationException {
+		Scope scope = engine.getScope();
 
 		scope.define(new AbstractFunction("if-else", //
 				"Evaluate condition, if true, return evaluated if-part, otherwise evaluated else-part.", "condition",

@@ -3,6 +3,7 @@ package de.codecentric.fpl.builtin;
 import java.util.Iterator;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
@@ -19,7 +20,8 @@ import de.codecentric.fpl.datatypes.list.FplList;
  */
 public class ListFunctions implements ScopePopulator {
 	@Override
-	public void populate(Scope scope) throws ScopeException, EvaluationException {
+	public void populate(FplEngine engine) throws ScopeException, EvaluationException {
+		Scope scope = engine.getScope();
 
 		scope.define(new AbstractFunction("quote", "Don't evaluate the argument, return it as is.", "expression") {
 			@Override

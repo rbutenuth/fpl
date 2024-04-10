@@ -18,6 +18,7 @@ import com.jsoniter.any.Any;
 import com.jsoniter.output.JsonStream;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
@@ -35,7 +36,9 @@ public class StringFunctions implements ScopePopulator {
 	private static final String nl = System.lineSeparator();
 
 	@Override
-	public void populate(Scope scope) throws ScopeException, EvaluationException {
+	public void populate(FplEngine engine) throws ScopeException, EvaluationException {
+		Scope scope = engine.getScope();
+
 		scope.define(new AbstractFunction("describe", "Create a description in markdown format for a function",
 				"expression") {
 			@Override

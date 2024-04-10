@@ -22,12 +22,10 @@ import de.codecentric.fpl.datatypes.list.FplList;
 public class Parallel implements ScopePopulator {
 	private FplEngine engine;
 
-	public Parallel(FplEngine engine) {
-		this.engine = engine;
-	}
-
 	@Override
-	public void populate(Scope scope) throws ScopeException, EvaluationException {
+	public void populate(FplEngine engine) throws ScopeException, EvaluationException {
+		this.engine = engine;
+		Scope scope = engine.getScope();
 
 		scope.define(new AbstractFunction("thread-pool-size", "Create a new thread-pool with the given size.", "size") {
 			@Override

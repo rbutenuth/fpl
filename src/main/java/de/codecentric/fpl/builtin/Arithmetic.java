@@ -3,6 +3,7 @@ package de.codecentric.fpl.builtin;
 import java.math.BigInteger;
 
 import de.codecentric.fpl.EvaluationException;
+import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.ScopePopulator;
 import de.codecentric.fpl.data.Scope;
 import de.codecentric.fpl.data.ScopeException;
@@ -18,7 +19,9 @@ import de.codecentric.fpl.datatypes.FplValue;
 public class Arithmetic implements ScopePopulator {
 
 	@Override
-	public void populate(Scope scope) throws ScopeException, EvaluationException {
+	public void populate(FplEngine engine) throws ScopeException, EvaluationException {
+		Scope scope = engine.getScope();
+		
 		scope.define(new ArithmeticFunction(ArithmeticOperator.PLUS));
 		scope.define(new ArithmeticFunction(ArithmeticOperator.MINUS));
 		scope.define(new ArithmeticFunction(ArithmeticOperator.TIMES));

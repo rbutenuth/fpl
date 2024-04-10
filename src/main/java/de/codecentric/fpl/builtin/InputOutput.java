@@ -43,14 +43,10 @@ import de.codecentric.fpl.parser.Position;
 import de.codecentric.fpl.parser.Scanner;
 
 public class InputOutput implements ScopePopulator {
-	private FplEngine engine;
-
-	public InputOutput(FplEngine engine) {
-		this.engine = engine;
-	}
 
 	@Override
-	public void populate(Scope scope) throws ScopeException, EvaluationException {
+	public void populate(FplEngine engine) throws ScopeException, EvaluationException {
+		Scope scope = engine.getScope();
 
 		scope.define(new AbstractFunction("parse-resource", //
 				"Read or evaluate all expressions within the resource given by the URI. Return a list which contains the results. "
