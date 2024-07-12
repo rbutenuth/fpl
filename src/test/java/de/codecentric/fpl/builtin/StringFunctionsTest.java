@@ -3,6 +3,7 @@ package de.codecentric.fpl.builtin;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -174,7 +175,7 @@ public class StringFunctionsTest extends AbstractFplTest {
 			evaluate("bad", "(parse-number \"#.#\" \"US\" \"foo\")");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("Unparseable number: \"foo\"", e.getMessage());
+			assertEquals("java.text.ParseException: Unparseable number: \"foo\"", e.getMessage());
 		}
 	}
 
@@ -408,12 +409,24 @@ public class StringFunctionsTest extends AbstractFplTest {
 	}
 
 	@Test
+	public void parseJsonNumber() throws Exception {
+		FplInteger n = (FplInteger)evaluate("parse-json", "(parse-json \"42\")");
+		assertEquals(42, n.getValue());
+	}
+	
+	@Test
 	public void parseJsonListOfNumbers() throws Exception {
 		FplList list = (FplList)evaluate("parse-json", "(parse-json \"[ 1, 2, 3.14]\")");
 		assertEquals(3, list.size());
 		assertEquals(1, ((FplInteger)list.get(0)).getValue());
 		assertEquals(2, ((FplInteger)list.get(1)).getValue());
 		assertEquals(3.14, ((FplDouble)list.get(2)).getValue(), 0.00001);
+	}
+	
+	@Test
+	public void parseUnterminatedList() throws Exception {
+		EvaluationException e = assertThrows(EvaluationException.class, () -> evaluate("parse-json", "(parse-json \"[ 1, 2\")"));
+		assertTrue(e.getMessage().contains("Unexpected end-of-input"));
 	}
 	
 	@Test

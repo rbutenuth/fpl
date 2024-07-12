@@ -1,21 +1,22 @@
 package de.codecentric.fpl.builtin;
 
+import static de.codecentric.fpl.ExceptionWrapper.wrapException;
+
+import java.io.IOException;
+import java.io.StringWriter;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.jsoniter.JsonIterator;
-import com.jsoniter.ValueType;
-import com.jsoniter.any.Any;
-import com.jsoniter.output.JsonStream;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.FplEngine;
@@ -124,16 +125,14 @@ public class StringFunctions implements ScopePopulator {
 						Locale.of(evaluateToString(scope, parameters[1])));
 				NumberFormat format = new DecimalFormat(evaluateToString(scope, parameters[0]), symbols);
 				String string = evaluateToString(scope, parameters[2]);
-				try {
+				return wrapException(() -> {
 					Number number = format.parse(string);
 					if (number instanceof Double) {
 						return new FplDouble(number.doubleValue());
 					} else {
 						return FplInteger.valueOf(number.longValue());
 					}
-				} catch (ParseException e) {
-					throw new EvaluationException(e.getMessage());
-				}
+				});
 			}
 		});
 
@@ -175,18 +174,17 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("from-char", "Build a string from one characters (UTF integer).",
-				"char-as-int") {
+		scope.define(
+				new AbstractFunction("from-char", "Build a string from one characters (UTF integer).", "char-as-int") {
 
-			@Override
-			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				long character = evaluateToLong(scope, parameters[0]);
-				return new FplString(String.valueOf((char)character));
-			}
-		});
+					@Override
+					public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+						long character = evaluateToLong(scope, parameters[0]);
+						return new FplString(String.valueOf((char) character));
+					}
+				});
 
-		scope.define(new AbstractFunction("to-chars", "Build a list of UTF codes from a string.",
-				"string") {
+		scope.define(new AbstractFunction("to-chars", "Build a list of UTF codes from a string.", "string") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
@@ -194,7 +192,7 @@ public class StringFunctions implements ScopePopulator {
 				int length = str.length();
 				return FplList.fromIterator(new Iterator<FplValue>() {
 					int i = 0;
-					
+
 					@Override
 					public boolean hasNext() {
 						return i < length;
@@ -317,18 +315,20 @@ public class StringFunctions implements ScopePopulator {
 			}
 		});
 
-		scope.define(new AbstractFunction("split", "Split string by regular expression, limit number of results if limit is positive. " 
-				+ "0 will return all, but omit trailing empty string. -1 will return all.", "input-string", "regex", "limit") {
+		scope.define(new AbstractFunction("split",
+				"Split string by regular expression, limit number of results if limit is positive. "
+						+ "0 will return all, but omit trailing empty string. -1 will return all.",
+				"input-string", "regex", "limit") {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String input = evaluateToString(scope, parameters[0]);
 				String regex = evaluateToString(scope, parameters[1]);
-				int limit = (int)evaluateToLong(scope, parameters[2]);
+				int limit = (int) evaluateToLong(scope, parameters[2]);
 				String[] splitted = input.split(regex, limit);
-				return FplList. fromIterator(new Iterator<FplValue>() {
+				return FplList.fromIterator(new Iterator<FplValue>() {
 					int i = 0;
-					
+
 					@Override
 					public boolean hasNext() {
 						return i < splitted.length;
@@ -363,81 +363,80 @@ public class StringFunctions implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				FplValue value = evaluateToAny(scope, parameters[0]);
-				StringBuilder sb = new StringBuilder();
-				serialize(sb, value);
-				return new FplString(sb.toString());
+
+				return wrapException(() -> {
+					StringWriter strWriter = new StringWriter();
+					JsonGenerator generator = new JsonFactory().createGenerator(strWriter);
+					serialize(generator, value);
+					generator.flush();
+					return new FplString(strWriter.toString());
+				});
 			}
 
-			private void serialize(StringBuilder sb, FplValue value) throws EvaluationException {
+			private void serialize(JsonGenerator generator, FplValue value) throws EvaluationException, IOException {
 				if (value == null) {
-					sb.append("null");
+					generator.writeNull();
 				} else if (value instanceof FplList) {
-					serialiazeList(sb, (FplList) value);
+					serialiazeList(generator, (FplList) value);
 				} else if (value instanceof FplDictionary) {
-					serializeDictionary(sb, (FplDictionary) value);
+					serializeDictionary(generator, (FplDictionary) value);
 				} else if (value instanceof FplDouble) {
-					serializeDouble(sb, (FplDouble) value);
+					serializeDouble(generator, (FplDouble) value);
 				} else if (value instanceof FplInteger) {
-					serializeInteger(sb, (FplInteger) value);
+					serializeInteger(generator, (FplInteger) value);
 				} else if (value instanceof FplString) {
-					serializeString(sb, (FplString) value);
+					serializeString(generator, (FplString) value);
 				} else if (value instanceof Symbol) {
-					serializeSymbol(sb, (Symbol) value);
+					serializeSymbol(generator, (Symbol) value);
 				} else {
 					throw new EvaluationException("Can't serialize " + value.typeName() + " to json");
 				}
 			}
 
-			private void serialiazeList(StringBuilder sb, FplList list) throws EvaluationException {
-				sb.append("[");
-				boolean first = true;
+			private void serialiazeList(JsonGenerator generator, FplList list) throws EvaluationException, IOException {
+				generator.writeStartArray();
 				for (FplValue value : list) {
-					if (!first) {
-						sb.append(",");
-					}
-					first = false;
-					serialize(sb, value);
+					serialize(generator, value);
 				}
-				sb.append("]");
+				generator.writeEndArray();
+
 			}
 
-			private void serializeDictionary(StringBuilder sb, FplDictionary dict) throws EvaluationException {
-				boolean first = true;
-				sb.append("{");
+			private void serializeDictionary(JsonGenerator generator, FplDictionary dict)
+					throws EvaluationException, IOException {
+				generator.writeStartObject();
 				for (Entry<FplValue, FplValue> entry : dict) {
-					if (!first) {
-						sb.append(",");
-					}
 					FplValue key = entry.getKey();
-					String keyAsString = (key instanceof FplString) ? ((FplString)key).getContent() : key.toString();
-					sb.append(JsonStream.serialize(keyAsString));
-					sb.append(":");
-					serialize(sb, entry.getValue());
-					first = false;
+					String keyAsString = (key instanceof FplString) ? ((FplString) key).getContent() : key.toString();
+					generator.writeFieldName(keyAsString);
+					serialize(generator, entry.getValue());
 				}
-				sb.append("}");
+				generator.writeEndObject();
 			}
 
-			private void serializeDouble(StringBuilder sb, FplDouble d) throws EvaluationException {
-				sb.append(JsonStream.serialize(d.getValue()));
+			private void serializeDouble(JsonGenerator generator, FplDouble d) throws EvaluationException, IOException {
+				generator.writeNumber(d.getValue());
 			}
 
-			private void serializeInteger(StringBuilder sb, FplInteger i) throws EvaluationException {
-				sb.append(JsonStream.serialize(i.getValue()));
+			private void serializeInteger(JsonGenerator generator, FplInteger i)
+					throws EvaluationException, IOException {
+				generator.writeNumber(i.getValue());
 			}
 
-			private void serializeString(StringBuilder sb, FplString str) throws EvaluationException {
-				sb.append(JsonStream.serialize(str.getContent()));
+			private void serializeString(JsonGenerator generator, FplString str)
+					throws EvaluationException, IOException {
+				generator.writeString(str.getContent());
 			}
 
-			private void serializeSymbol(StringBuilder sb, Symbol symbol) throws EvaluationException {
+			private void serializeSymbol(JsonGenerator generator, Symbol symbol)
+					throws EvaluationException, IOException {
 				String name = symbol.getName();
 				if (name.equalsIgnoreCase("true")) {
-					sb.append("true");
+					generator.writeBoolean(true);
 				} else if (name.equalsIgnoreCase("false")) {
-					sb.append("false");
+					generator.writeBoolean(false);
 				} else {
-					sb.append(JsonStream.serialize(name));
+					generator.writeString(name);
 				}
 			}
 		});
@@ -450,59 +449,69 @@ public class StringFunctions implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String str = evaluateToString(scope, parameters[0]);
-				Any parsed = JsonIterator.deserialize(str);
-				return deserialize(parsed);
+				return wrapException(() -> {
+					try (JsonParser parser = new JsonFactory().createParser(str)) {
+						parser.nextToken();
+						return parse(parser);
+					}
+				});
 			}
 
-			private FplValue deserialize(Any any) {
-				ValueType t = any.valueType();
-				if (t == ValueType.ARRAY) {
-					return deserializeList(any.asList());
-				} else if (t == ValueType.OBJECT) {
-					return deserializeMap(any.asMap());
-				} else if (t == ValueType.STRING) {
-					return new FplString(any.toString());
-				} else if (t == ValueType.BOOLEAN) {
-					return any.toBoolean() ? FplInteger.valueOf(1) : FplInteger.valueOf(0);
-				} else if (t == ValueType.NUMBER) {
-					return deserializeNumber(any);
-				} else { // ValueType.NULL or INVALID
-					return null;
+			private FplValue parse(JsonParser parser) throws IOException {
+				FplValue result = null;
+				JsonToken token = parser.currentToken();
+
+				if (token == JsonToken.START_ARRAY) {
+					result = parseList(parser);
+				} else if (token == JsonToken.START_OBJECT) {
+					result = parseObject(parser);
+				} else if (token == JsonToken.VALUE_NUMBER_INT) {
+					result = FplInteger.valueOf(parser.getValueAsLong());
+				} else if (token == JsonToken.VALUE_NUMBER_FLOAT) {
+					result = new FplDouble(parser.getValueAsDouble());
+				} else if (token == JsonToken.VALUE_STRING) {
+					result = FplString.make(parser.getText());
+				} else if (token == JsonToken.VALUE_TRUE) {
+					result = FplInteger.valueOf(1);
+				} else if (token == JsonToken.VALUE_FALSE) {
+					result = FplInteger.valueOf(0);
+				} else { // JsonToken.VALUE_NULL
+					result = null;
 				}
+				parser.nextToken();
+				return result;
 			}
 
-			private FplValue deserializeList(List<Any> list) {
-				int size = list.size();
-				return FplList.fromIterator(new Iterator<FplValue>() {
-					int i = 0;
+			private FplList parseList(JsonParser parser) throws IOException {
+				parser.nextToken(); // skip START_ARRAY
+				FplList list = FplList.fromIterator(new Iterator<FplValue>() {
 
 					@Override
 					public boolean hasNext() {
-						return i < size;
+						JsonToken token = parser.currentToken();
+						return token != JsonToken.END_ARRAY;
 					}
 
 					@Override
 					public FplValue next() {
-						return deserialize(list.get(i++));
+						return wrapException(() -> { return parse(parser); });
 					}
-				}, size);
+				});
+				return list;
 			}
-
-			private FplValue deserializeMap(Map<String, Any> map) {
+			
+			private FplMapDictionary parseObject(JsonParser parser) throws IOException {
+				parser.nextToken(); // skip START_OBJECT
 				FplMapDictionary obj = new FplMapDictionary();
-				for (Map.Entry<String, Any> entry : map.entrySet()) {
-					obj.define(FplString.make((entry.getKey())), deserialize(entry.getValue()));
+				JsonToken token = parser.currentToken();
+				while (token != JsonToken.END_OBJECT) {
+					String key = parser.getText();
+					parser.nextToken();
+					FplValue value = parse(parser);
+					obj.define(FplString.make(key), value);
+					token = parser.currentToken();
 				}
 				return obj;
-			}
-
-			private FplValue deserializeNumber(Any any) {
-				String s = any.toString();
-				if (s.indexOf('.') >= 0) {
-					return new FplDouble(any.toDouble());
-				} else {
-					return FplInteger.valueOf(any.toLong());
-				}
 			}
 		});
 	}
