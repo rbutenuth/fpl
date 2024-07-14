@@ -175,7 +175,7 @@ public class StringFunctionsTest extends AbstractFplTest {
 			evaluate("bad", "(parse-number \"#.#\" \"US\" \"foo\")");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("java.text.ParseException: Unparseable number: \"foo\"", e.getMessage());
+			assertEquals("Unparseable number: \"foo\"", e.getMessage());
 		}
 	}
 

@@ -50,7 +50,7 @@ public class EvaluationException extends RuntimeException {
 			return cause.getCause().getMessage();
 		} else {
 			if (message == null || message.length() == 0) {
-				return cause.toString();
+				return cause.getMessage();
 			} else {
 				return message;
 			}

@@ -1,5 +1,7 @@
 package de.codecentric.fpl.builtin;
 
+import static de.codecentric.fpl.ExceptionWrapper.wrapException;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -125,11 +127,7 @@ public class Parallel implements ScopePopulator {
 
 					@Override
 					protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-						try {
-							return task.get();
-						} catch (InterruptedException | ExecutionException e) {
-							throw new EvaluationException(e);
-						}
+						return wrapException(() -> { return task.get();});
 					}
 				};
 			}
@@ -156,11 +154,9 @@ public class Parallel implements ScopePopulator {
 
 			@Override
 			public FplValue next() {
-				try {
+				return wrapException(() -> {
 					return tasks.get(i++).get();
-				} catch (InterruptedException | ExecutionException e) {
-					throw new EvaluationException(e);
-				}
+				});
 			}
 		}, size);
 	}

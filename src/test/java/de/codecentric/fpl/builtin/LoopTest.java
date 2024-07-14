@@ -47,7 +47,7 @@ public class LoopTest extends AbstractFplTest {
 			evaluate("for-each", "(for-each fail '(1 2 3 4))");
 			fail("should not be reached.");
 		} catch (EvaluationException expected) {
-			assertEquals("java.lang.ArithmeticException: / by zero", expected.getMessage());
+			assertEquals("/ by zero", expected.getMessage());
 		}
 	}
 
@@ -138,7 +138,7 @@ public class LoopTest extends AbstractFplTest {
 		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			evaluate("map-sequence", "(map-sequence (lambda (x) (/ 1 0)) 0 10)");
 		});
-		assertEquals("java.lang.ArithmeticException: / by zero", e.getMessage());
+		assertEquals("/ by zero", e.getMessage());
 	}
 
 	@Test
@@ -316,7 +316,7 @@ public class LoopTest extends AbstractFplTest {
 		EvaluationException e = assertThrows(EvaluationException.class, () -> {
 			evaluate("sort", "(sort (lambda (a b) (/ 1 0)) values)");
 		});
-		assertEquals("java.lang.ArithmeticException: / by zero", e.getMessage());
+		assertEquals("/ by zero", e.getMessage());
 	}
 
 	@Test
@@ -384,7 +384,7 @@ public class LoopTest extends AbstractFplTest {
 			evaluate("map", "(map square '(1 2 3 4))");
 			fail("should not be reached.");
 		} catch (EvaluationException expected) {
-			assertEquals("java.lang.ArithmeticException: / by zero", expected.getMessage());
+			assertEquals("/ by zero", expected.getMessage());
 		}
 	}
 

@@ -194,7 +194,7 @@ public class FplWrapperTest extends AbstractFplTest {
 			evaluate("abstract-class", "(java-instance\"de.codecentric.fpl.datatypes.FplWrapperTest$AbstractClass\")");
 			fail("exception missing");
 		} catch (EvaluationException e) {
-			assertEquals("java.lang.InstantiationException", e.getMessage());
+			assertEquals("Can't create instance of de.codecentric.fpl.datatypes.FplWrapperTest$AbstractClass: java.lang.InstantiationException", e.getMessage());
 		}
 	}
 

@@ -207,7 +207,7 @@ public class DictionaryTest extends AbstractFplTest {
 			FplSortedDictionary dict = (FplSortedDictionary) evaluate("sorted-dict", "(sorted-dict (lambda (a b) (/ 1 0)))");
 			dict.put(new FplString("a"), new FplString("a"));
 		});
-		assertEquals("java.lang.ArithmeticException: / by zero", e.getMessage());
+		assertEquals("/ by zero", e.getMessage());
 	}
 
 	@Test

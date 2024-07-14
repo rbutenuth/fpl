@@ -55,7 +55,7 @@ public class FplWrapper extends AbstractFunction {
 		} catch (ClassNotFoundException e) {
 			throw new EvaluationException("unknown class: " + className);
 		} catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
-			throw new EvaluationException(e.getMessage(), e);
+			throw new EvaluationException("Can't create instance of " + className + ": " + e.getClass().getName(), e);
 		}
 	}
 
