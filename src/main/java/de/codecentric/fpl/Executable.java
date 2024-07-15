@@ -1,8 +1,8 @@
 package de.codecentric.fpl;
 
 @FunctionalInterface
-public interface Executable<T> {
+public interface Executable {
 
-	T execute() throws Throwable;
+	void execute() throws Throwable;
 
 }

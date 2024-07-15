@@ -1,6 +1,7 @@
 package de.codecentric.fpl.io;
 
-import java.io.UnsupportedEncodingException;
+import static de.codecentric.fpl.ExceptionWrapper.wrapException;
+
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -141,10 +142,8 @@ public class HttpRequest extends HttpEntity {
 	}
 
 	protected String urlEncode(String value, String encoding) {
-		try {
+		return wrapException(() -> {
 			return URLEncoder.encode(value, encoding);
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalArgumentException("unknown encoding: " + encoding);
-		}
+		});
 	}
 }

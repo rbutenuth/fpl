@@ -1,5 +1,6 @@
 package de.codecentric.fpl.builtin;
 
+import static de.codecentric.fpl.ExceptionWrapper.wrapException;
 import de.codecentric.fpl.EvaluationException;
 import de.codecentric.fpl.FplEngine;
 import de.codecentric.fpl.ScopePopulator;
@@ -20,30 +21,29 @@ public class ClassAndObject implements ScopePopulator {
 	public void populate(FplEngine engine) throws ScopeException, EvaluationException {
 		Scope scope = engine.getScope();
 
-		scope.define(new AbstractFunction("class", "Create a new scope and execute the given code within it.",
-				"code...") {
+		scope.define(
+				new AbstractFunction("class", "Create a new scope and execute the given code within it.", "code...") {
 
-			@Override
-			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				Position position = parameters.length > 0 ? FplValue.position(parameters[0]) : Position.UNKNOWN;
-				return makeClass("class", position, skipParameterScopes(scope), parameters, 0);
-			}
+					@Override
+					protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+						Position position = parameters.length > 0 ? FplValue.position(parameters[0]) : Position.UNKNOWN;
+						return makeClass("class", position, skipParameterScopes(scope), parameters, 0);
+					}
 
-		});
+				});
 
-		scope.define(new AbstractFunction("def-class", 
+		scope.define(new AbstractFunction("def-class",
 				"Create a new scope and execute the given code within it. Assign the resulting class to \"name\"",
 				"name", "code...") {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String target = Assignment.targetName(scope, parameters[0]);
-				FplObject obj = makeClass(target, FplValue.position(parameters[0]), skipParameterScopes(scope), parameters, 1);
-				try {
+				FplObject obj = makeClass(target, FplValue.position(parameters[0]), skipParameterScopes(scope),
+						parameters, 1);
+				wrapException(() -> {
 					scope.define(target, obj);
-				} catch (ScopeException e) {
-					throw new EvaluationException(e.getMessage());
-				}
+				});
 				return obj;
 			}
 
@@ -62,19 +62,17 @@ public class ClassAndObject implements ScopePopulator {
 
 		});
 
-		scope.define(new AbstractFunction("def-sub-class", "Define a class and set the parent of the class.",
-				"name", "parent", "code...") {
+		scope.define(new AbstractFunction("def-sub-class", "Define a class and set the parent of the class.", "name",
+				"parent", "code...") {
 
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String target = Assignment.targetName(scope, parameters[0]);
 				FplObject parent = evaluateToObject(scope, parameters[1]);
 				FplObject obj = makeClass(target, FplValue.position(parameters[0]), parent, parameters, 2);
-				try {
+				wrapException(() -> {
 					scope.define(target, obj);
-				} catch (ScopeException e) {
-					throw new EvaluationException(e.getMessage());
-				}
+				});
 				return obj;
 			}
 
@@ -143,12 +141,10 @@ public class ClassAndObject implements ScopePopulator {
 			keys[i] = Assignment.targetName(scope, parameters[i * 2]);
 			values[i] = AbstractFunction.evaluateToAny(scope, parameters[i * 2 + 1]);
 		}
-		for (int i = 0; i < keyValueCount; i++) {
-			try {
+		wrapException(() -> {
+			for (int i = 0; i < keyValueCount; i++) {
 				object.put(keys[i], values[i]);
-			} catch (ScopeException e) {
-				throw new EvaluationException(e.getMessage());
 			}
-		}
+		});
 	}
 }

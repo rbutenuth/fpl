@@ -15,6 +15,8 @@ import de.codecentric.fpl.datatypes.FplWrapper;
 import de.codecentric.fpl.datatypes.Symbol;
 import de.codecentric.fpl.datatypes.list.FplList;
 import de.codecentric.fpl.parser.Position;
+
+import static de.codecentric.fpl.ExceptionWrapper.wrapException;
 import static de.codecentric.fpl.datatypes.AbstractFunction.valueToSymbol;
 
 /**
@@ -58,11 +60,9 @@ public class Lambda implements ScopePopulator {
 				FplList paramList = evaluateToListIfNotAlreadyList(scope, parameters[1]);
 				FplValue[] code = new FplValue[parameters.length - 2];
 				System.arraycopy(parameters, 2, code, 0, code.length);
-				try {
+				return wrapException(() -> {
 					return defineFunction(scope, name, position, FplValue.comments(parameters[0]), paramList, code);
-				} catch (IllegalArgumentException e) {
-					throw new EvaluationException(e.getMessage(), e);
-				}
+				});
 			}
 		});
 
@@ -156,12 +156,10 @@ public class Lambda implements ScopePopulator {
 
 	private FplLambda defineFunction(Scope scope, String name, Position position, String comment, FplList paramList, FplValue[] code)
 			throws EvaluationException {
-		FplLambda result = lambda(name, position, comment, paramList, code, scope);
-		try {
+		return wrapException(() -> {
+			FplLambda result = lambda(name, position, comment, paramList, code, scope);
 			scope.define(name, result);
-		} catch (ScopeException e) {
-			throw new EvaluationException(e.getMessage(), e);
-		}
-		return result;
+			return result;
+		});
 	}
 }

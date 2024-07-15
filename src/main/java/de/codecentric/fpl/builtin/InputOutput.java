@@ -1,5 +1,7 @@
 package de.codecentric.fpl.builtin;
 
+import static de.codecentric.fpl.ExceptionWrapper.wrapException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -142,13 +144,13 @@ public class InputOutput implements ScopePopulator {
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String filename = evaluateToString(scope, parameters[0]);
 				String content = evaluateToString(scope, parameters[1]);
-				try (FileOutputStream fos = new FileOutputStream(filename);
-						OutputStreamWriter writer = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
-					writer.write(content);
-					return new FplString(content);
-				} catch (IOException e) {
-					throw new EvaluationException(e);
-				}
+				return wrapException(() -> {
+					try (FileOutputStream fos = new FileOutputStream(filename);
+							OutputStreamWriter writer = new OutputStreamWriter(fos, StandardCharsets.UTF_8)) {
+						writer.write(content);
+						return new FplString(content);
+					}
+				});
 			}
 		});
 
@@ -157,14 +159,12 @@ public class InputOutput implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				String uriAsString = evaluateToString(scope, parameters[0]);
-				try {
+				return wrapException(() -> {
 					URI uri = new URI(uriAsString);
 					try (InputStream is = uri.toURL().openStream()) {
 						return readFromInputStream(is);
 					}
-				} catch (IOException | URISyntaxException e) {
-					throw new EvaluationException(e);
-				}
+				});
 			}
 		});
 
@@ -173,13 +173,11 @@ public class InputOutput implements ScopePopulator {
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
 				File file = new File(evaluateToString(scope, parameters[0]));
-				try {
+				return wrapException(() -> {
 					try (InputStream is = new FileInputStream(file)) {
 						return readFromInputStream(is);
 					}
-				} catch (IOException e) {
-					throw new EvaluationException(e);
-				}
+				});
 			}
 		});
 
@@ -189,7 +187,7 @@ public class InputOutput implements ScopePopulator {
 
 			@Override
 			public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				try {
+				return wrapException(() -> {
 					HttpRequest req = new HttpRequest();
 					if (parameters.length == 7) {
 						req.setBasicAuth(evaluateToString(scope, parameters[5]),
@@ -214,9 +212,7 @@ public class InputOutput implements ScopePopulator {
 					HttpResponse res = new HttpClient().execute(req);
 					return FplList.fromValues(FplInteger.valueOf(res.getStatusCode()), fplHeaders(res),
 							res.hasBody() ? new FplString(res.getBodyAsString("UTF-8")) : null);
-				} catch (IOException | ScopeException | URISyntaxException e) {
-					throw new EvaluationException(e.getMessage(), e);
-				}
+				});
 			}
 
 			private void setParams(HttpRequest req, FplDictionary dict) {
@@ -245,23 +241,20 @@ public class InputOutput implements ScopePopulator {
 						evaluateToFunctionOrNull(scope, parameters[1]));
 				HttpRequestHandler handler = new Handler(createHandlers(scope, parameters));
 
-				SimpleHttpServer server;
-				try {
-					server = new SimpleHttpServer(engine.getPool(), port, handler, authenticator);
-				} catch (IOException | IllegalArgumentException e) {
-					throw new EvaluationException(e.getMessage(), e);
-				}
+				return wrapException(() -> {
+					SimpleHttpServer server = new SimpleHttpServer(engine.getPool(), port, handler, authenticator);
+					return new AbstractFunction("terminate-server", "Terminate the HTTP server", "delay") {
+						
+						@Override
+						protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
+							int delay = (int) evaluateToLong(scope, parameters[0]);
+							server.terminate(delay);
+							server.waitForTermination();
+							return null;
+						}
+					};
+				});
 
-				return new AbstractFunction("terminate-server", "Terminate the HTTP server", "delay") {
-
-					@Override
-					protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-						int delay = (int) evaluateToLong(scope, parameters[0]);
-						server.terminate(delay);
-						server.waitForTermination();
-						return null;
-					}
-				};
 			}
 
 			private BasicAuthenticator createAuthenticator(Scope scope, Function authLambda) {

@@ -1,5 +1,7 @@
 package de.codecentric.fpl.builtin;
 
+import static de.codecentric.fpl.ExceptionWrapper.wrapException;
+
 import java.math.BigInteger;
 
 import de.codecentric.fpl.EvaluationException;
@@ -21,7 +23,7 @@ public class Arithmetic implements ScopePopulator {
 	@Override
 	public void populate(FplEngine engine) throws ScopeException, EvaluationException {
 		Scope scope = engine.getScope();
-		
+
 		scope.define(new ArithmeticFunction(ArithmeticOperator.PLUS));
 		scope.define(new ArithmeticFunction(ArithmeticOperator.MINUS));
 		scope.define(new ArithmeticFunction(ArithmeticOperator.TIMES));
@@ -37,11 +39,11 @@ public class Arithmetic implements ScopePopulator {
 				if (number instanceof FplInteger) {
 					return number;
 				} else { // must be FplDouble
-					return FplInteger.valueOf(Math.round(((FplDouble)number).getValue()));
+					return FplInteger.valueOf(Math.round(((FplDouble) number).getValue()));
 				}
 			}
 		});
-		
+
 		scope.define(new AbstractFunction("to-integer", //
 				"Cast (truncate) a double to a integer. `nil` is converted to 0.", "number") {
 			@Override
@@ -50,7 +52,7 @@ public class Arithmetic implements ScopePopulator {
 				if (number instanceof FplInteger) {
 					return number;
 				} else { // must be FplDouble
-					return FplInteger.valueOf((long)((FplDouble)number).getValue());
+					return FplInteger.valueOf((long) ((FplDouble) number).getValue());
 				}
 			}
 		});
@@ -149,7 +151,8 @@ public class Arithmetic implements ScopePopulator {
 		 * @param op Operator: +, -, *, /, %, **
 		 */
 		ArithmeticFunction(ArithmeticOperator op) throws EvaluationException {
-			super(op.name, op.comment, op == ArithmeticOperator.MINUS ? new String[] { "op..." } : new String[] { "op1", "op2", "ops..." });
+			super(op.name, op.comment, op == ArithmeticOperator.MINUS ? new String[] { "op..." }
+					: new String[] { "op1", "op2", "ops..." });
 			this.op = op;
 		}
 
@@ -159,7 +162,7 @@ public class Arithmetic implements ScopePopulator {
 		 */
 		@Override
 		public FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-			try {
+			return wrapException(() -> {
 				FplValue value = evaluateToAny(scope, parameters[0]);
 				boolean isDouble;
 				long intAccumulator = 0;
@@ -211,9 +214,7 @@ public class Arithmetic implements ScopePopulator {
 					}
 				}
 				return isDouble ? new FplDouble(doubleAccumulator) : FplInteger.valueOf(intAccumulator);
-			} catch (ArithmeticException ae) {
-				throw new EvaluationException(ae);
-			}
+			});
 		}
 	}
 }

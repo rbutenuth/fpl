@@ -1,5 +1,6 @@
 package de.codecentric.fpl.builtin;
 
+import static de.codecentric.fpl.ExceptionWrapper.wrapException;
 import static de.codecentric.fpl.datatypes.AbstractFunction.evaluateToAny;
 
 import de.codecentric.fpl.EvaluationException;
@@ -102,11 +103,9 @@ public class Assignment implements ScopePopulator {
 				"value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				try {
+				return wrapException(() -> {
 					return scope.replace(targetName(scope, parameters[0]), evaluateToAny(scope, parameters[1]));
-				} catch (ScopeException e) {
-					throw new EvaluationException(e.getMessage());
-				}
+				});
 			}
 		});
 
@@ -115,11 +114,9 @@ public class Assignment implements ScopePopulator {
 				"value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				try {
+				return wrapException(() -> {
 					return scope.define(targetName(scope, parameters[0]), evaluateToAny(scope, parameters[1]));
-				} catch (ScopeException e) {
-					throw new EvaluationException(e.getMessage());
-				}
+				});
 			}
 		});
 
@@ -128,7 +125,7 @@ public class Assignment implements ScopePopulator {
 				"symbol", "value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				try {
+				return wrapException(() -> {
 					Scope s = scope;
 					while (!(s instanceof FplObject) && s != null) {
 						s = s.getNext();
@@ -137,9 +134,7 @@ public class Assignment implements ScopePopulator {
 						throw new EvaluationException("No object found");
 					}
 					return s.define(targetName(scope, parameters[0]), evaluateToAny(scope, parameters[1]));
-				} catch (ScopeException e) {
-					throw new EvaluationException(e.getMessage());
-				}
+				});
 			}
 		});
 
@@ -148,25 +143,21 @@ public class Assignment implements ScopePopulator {
 				"value") {
 			@Override
 			protected FplValue callInternal(Scope scope, FplValue... parameters) throws EvaluationException {
-				try {
+				return wrapException(() -> {
 					Scope s = scope;
 					while (s.getNext() != null) {
 						s = s.getNext();
 					}
 					return s.define(targetName(scope, parameters[0]), evaluateToAny(scope, parameters[1]));
-				} catch (ScopeException e) {
-					throw new EvaluationException(e.getMessage());
-				}
+				});
 			}
 		});
 	}
 
 	public static FplValue put(Scope scope, String name, FplValue value) throws EvaluationException {
-		try {
+		return wrapException(() -> {
 			return scope.put(name, value);
-		} catch (ScopeException e) {
-			throw new EvaluationException(e.getMessage(), e);
-		}
+		});
 	}
 
 	/**
