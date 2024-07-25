@@ -11,6 +11,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import de.codecentric.fpl.EvaluationException;
+
 public class HttpRequestTest {
 	private HttpRequest req = new HttpRequest();
 
@@ -156,7 +158,7 @@ public class HttpRequestTest {
 
 	@Test
 	public void encodeWithException() {
-		assertThrows(IllegalArgumentException.class, () -> {
+		assertThrows(EvaluationException.class, () -> {
 			req.urlEncode("foo bar", "this charset does not exist");
 		});
 	}
