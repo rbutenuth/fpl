@@ -29,26 +29,26 @@ public class BomAwareReaderTest {
 	
 	@Test
 	public void bomUTF8() throws IOException {
-		withCharset(UTF_8, StandardCharsets.UTF_8);
+		withCharset(HELLO, UTF_8, StandardCharsets.UTF_8);
 	}
 
 	@Test
 	public void bomUTF8WithHeader() throws IOException {
-		withCharset(UTF_8_WITH_HEADER, StandardCharsets.UTF_8);
+		withCharset(HELLO, UTF_8_WITH_HEADER, StandardCharsets.UTF_8);
 	}
 
 	@Test
 	public void bomUTF16LE() throws IOException {
-		withCharset(UTF_16_LE, StandardCharsets.UTF_16LE);
+		withCharset(HELLO, UTF_16_LE, StandardCharsets.UTF_16LE);
 	}
 
 	@Test
 	public void bomUTF16BE() throws IOException {
-		withCharset(UTF_16_BE, StandardCharsets.UTF_16BE);
+		withCharset(HELLO, UTF_16_BE, StandardCharsets.UTF_16BE);
 	}
 
-	private void withCharset(int[] header, Charset charset) throws IOException {
-		byte[] hello = HELLO.getBytes(charset);
+	private void withCharset(String text, int[] header, Charset charset) throws IOException {
+		byte[] hello = text.getBytes(charset);
 		byte[] input = new byte[header.length + hello.length];
 		for (int i = 0; i < header.length; i++) {
 			input[i] = (byte) (0xff & header[i]);
