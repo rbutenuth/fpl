@@ -52,7 +52,6 @@ public class ExecuteViaHttpTest {
 	@Test
 	public void coverConstructors() {
 		new HttpServerMain();
-		new StreamUtil();
 	}
 
 	@Test

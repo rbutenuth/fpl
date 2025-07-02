@@ -145,7 +145,7 @@ public class SimpleHttpServer {
 
 	private void handleBody(HttpRequest req, InputStream is) throws IOException {
 		try {
-			req.setBody(StreamUtil.readStreamToBytes(is));
+			req.setBody(is.readAllBytes());
 		} finally {
 			is.close();
 		}
