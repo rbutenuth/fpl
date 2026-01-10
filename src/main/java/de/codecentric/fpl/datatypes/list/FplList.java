@@ -471,7 +471,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 
 		int resultNumBuckets = patchStartBucketIdx + 1 + patch.shape.length + shape.length - tailBucketIdx + 1;
 		// TODO: resultNumBuckets can be reduced when the join of the first/last bucket from the patch
-		// combined with the "cut" buckets from the original list are not too big. 
+		// combined with the "cut" buckets from the original list are not too big.
 
 		if (needsReshaping(resultNumBuckets, resultSize)) {
 			int[] bucketSizes = computeBucketSizes(resultSize);
@@ -483,7 +483,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 			patchStartInBucketIdx = 0;
 			FplValue[] subShape = new FplValue[bucketSizes[0]];
 			newShape[0] = subShape;
-			
+
 			// copy head
 			while (count < from) {
 				int limit = min(min(shape[patchStartBucketIdx].length - patchStartInBucketIdx, subShape.length - destInBucketIdx), from - count);
@@ -492,7 +492,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 				patchStartInBucketIdx += limit;
 				destInBucketIdx += limit;
 				count += limit;
-				
+
 				if (destInBucketIdx == subShape.length) {
 					destBucketIdx++;
 					if (destBucketIdx < bucketSizes.length) {
@@ -506,23 +506,23 @@ public class FplList implements FplValue, Iterable<FplValue> {
 					patchStartBucketIdx++;
 				}
 			}
-			
+
 			// copy patch
 			int patchBucketIdx = 0;
 			int patchInBucketIdx = 0;
 			while (count < from + patchSize) {
 				int limit = min(patch.shape[patchBucketIdx].length - patchInBucketIdx, subShape.length - destInBucketIdx);
-				
+
 				arraycopy(patch.shape[patchBucketIdx], patchInBucketIdx, subShape, destInBucketIdx, limit);
 				patchInBucketIdx += limit;
 				destInBucketIdx += limit;
 				count += limit;
-				
+
 				if (patchInBucketIdx == patch.shape[patchBucketIdx].length) {
 					patchInBucketIdx = 0;
 					patchBucketIdx++;
 				}
-				
+
 				if (destInBucketIdx == subShape.length) {
 					destBucketIdx++;
 					if (destBucketIdx < bucketSizes.length) {
@@ -532,7 +532,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 					}
 				}
 			}
-			
+
 			// copy tail
 			while (count < resultSize) {
 				int limit = min(shape[tailBucketIdx].length - tailInBucketIdx, bucketSizes.length - destBucketIdx);
@@ -546,7 +546,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 					tailInBucketIdx = 0;
 					tailBucketIdx++;
 				}
-				
+
 				if (destInBucketIdx == subShape.length) {
 					destBucketIdx++;
 					if (destBucketIdx < bucketSizes.length) {
@@ -556,7 +556,7 @@ public class FplList implements FplValue, Iterable<FplValue> {
 					}
 				}
 			}
-			
+
 			return new FplList(newShape);
 		} else {
 			return subList(0, from).append(patch).append(subList(from + numReplaced, size()));
@@ -1163,17 +1163,24 @@ public class FplList implements FplValue, Iterable<FplValue> {
 		FplValue function = first();
 		try {
 			return evaluateToFunction(scope, function).call(scope, createParameterArray());
-		} catch (EvaluationException e) {
+		} catch (Throwable t) {
+			throw addStackFplStackTraceInformation(t, function);
+		}
+	}
+
+	private EvaluationException addStackFplStackTraceInformation(Throwable t, FplValue function) {
+		if (t instanceof EvaluationException) {
+			EvaluationException e = (EvaluationException) t;
 			Position position = FplEngine.findPosition(function);
 			String method = (function instanceof Named) ? ((Named) function).getName() : "?";
 			e.add(new StackTraceElement(AbstractFunction.FPL, method, position.getName(), position.getLine()));
-			throw e;
-		} catch (Throwable t) {
+			return e;
+		} else {
 			Position position = FplEngine.findPosition(function);
 			String method = (function instanceof Named) ? ((Named) function).getName() : "?";
 			EvaluationException e = new EvaluationException(t.getMessage(), t);
 			e.add(new StackTraceElement(AbstractFunction.FPL, method, position.getName(), position.getLine()));
-			throw e;
+			return e;
 		}
 	}
 
