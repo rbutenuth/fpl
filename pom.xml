@@ -15,7 +15,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>21</java.version>
 		<jackson.version>2.20.1</jackson.version>
-		<junit.version>5.13.2</junit.version>
+		<junit.version>6.0.2</junit.version>
 	</properties>
 
 	<build>
